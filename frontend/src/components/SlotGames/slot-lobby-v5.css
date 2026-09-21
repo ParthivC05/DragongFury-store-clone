@@ -1,0 +1,1026 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+
+.slot-lobby-v5 {
+  --lobby-gold: #f2c14e;
+  --lobby-gold-deep: #b98717;
+  --lobby-gold-glow: rgba(242, 193, 78, 0.55);
+  --lobby-felt: #0e1524;
+  --lobby-line: rgba(255, 255, 255, 0.09);
+  --lobby-muted: #93a0b8;
+  --lobby-text: #f4f7ff;
+  --lobby-emerald: #34d399;
+}
+
+.slot-lobby-v5 .dash-welcome {
+  margin: 0 0 8px;
+}
+
+.slot-lobby-v5 .dash-welcome-slideshow {
+  border-radius: 16px;
+}
+
+.slot-lobby-coming-soon {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0 40px;
+}
+
+.slot-lobby-coming-soon img {
+  width: min(680px, 100%);
+  height: auto;
+  display: block;
+  border-radius: 16px;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-section {
+  margin-bottom: 8px;
+}
+
+.slot-lobby-v5 .dash-section-head {
+  display: none;
+}
+
+.slot-lobby-v5 .dash-slot-search {
+  margin: 16px 0 0;
+}
+
+.slot-lobby-v5 .dash-slot-search-field {
+  min-height: 52px;
+  border-radius: 15px;
+  border: 1px solid var(--lobby-line);
+  background: var(--lobby-felt);
+  box-shadow: none;
+}
+
+.slot-lobby-v5 .dash-slot-search-input {
+  height: 52px;
+  font-family: Inter, 'Plus Jakarta Sans', Rajdhani, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.slot-lobby-v5 .dash-slot-search-input::placeholder {
+  color: #6e7c95;
+}
+
+@media (max-width: 767px) {
+  .slot-lobby-v5 .dash-slot-carousel-section .dash-slot-search:not(.dash-slot-search--sticky) {
+    padding-right: 0;
+  }
+}
+
+.slot-lobby-chips {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 14px 0 2px;
+  margin: 0 -4px;
+  scrollbar-width: none;
+}
+
+.slot-lobby-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.slot-lobby-chip {
+  flex: 0 0 auto;
+  min-height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--lobby-line);
+  background: var(--lobby-felt);
+  color: var(--lobby-muted);
+  padding: 0 15px 0 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.77rem;
+  font-weight: 700;
+  font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.slot-lobby-chip svg {
+  width: 17px;
+  height: 17px;
+  color: var(--c, var(--lobby-muted));
+}
+
+.slot-lobby-chip[aria-pressed='true'] {
+  border-color: var(--c, var(--lobby-gold));
+  color: var(--lobby-text);
+  background: color-mix(in srgb, var(--c, var(--lobby-gold)) 13%, transparent);
+}
+
+.slot-lobby-divider {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 28px 0 2px;
+}
+
+.slot-lobby-divider span {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lobby-muted);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.slot-lobby-divider i {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--lobby-line), transparent);
+}
+
+.slot-lobby-divider i:first-child {
+  background: linear-gradient(270deg, var(--lobby-line), transparent);
+}
+
+.slot-lobby-v5 .dash-slot-carousel-block {
+  scroll-margin-top: calc(var(--dash-nav-h, 56px) + 12px);
+}
+
+.slot-lobby-v5 .dash-slot-carousel-block + .dash-slot-carousel-block {
+  margin-top: 18px;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-head {
+  align-items: flex-start;
+  margin: 22px 0 0;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  flex: 1;
+}
+
+.slot-lobby-v5 .slot-lobby-badge {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: var(--c, var(--lobby-gold));
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slot-lobby-v5 .slot-lobby-badge svg {
+  width: 21px;
+  height: 21px;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-label {
+  font-family: 'Archivo Black', 'Russo One', Impact, sans-serif;
+  font-size: 0.97rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--lobby-text);
+  line-height: 1.2;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-sub {
+  margin-top: 3px;
+  font-size: 0.64rem;
+  color: var(--lobby-muted);
+  font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+  font-weight: 500;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-show-all {
+  height: auto;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.67rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--lobby-muted);
+  border: 1px solid var(--lobby-line);
+  background: none;
+  box-shadow: none;
+  font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-nav {
+  display: none;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-scroll {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: clamp(148px, 18vw, 176px);
+  gap: 10px;
+  padding: 12px 4px 4px;
+  cursor: grab;
+}
+
+.slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll,
+.slot-lobby-v5 #slot-cat-live-casino .dash-slot-carousel-scroll {
+  grid-template-rows: auto;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
+  --others-gap: 12px;
+  --others-visible: 5.2;
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--others-gap);
+  grid-auto-columns: calc((100% - (var(--others-visible) - 1) * var(--others-gap)) / var(--others-visible));
+  overflow-x: auto;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll {
+  grid-template-rows: repeat(2, auto);
+}
+
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll {
+  --fish-art-h: 168px;
+  --others-gap: 12px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(2, auto);
+  grid-auto-columns: max-content;
+  gap: var(--others-gap);
+  overflow-x: auto;
+  align-items: start;
+}
+
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
+  grid-template-rows: auto;
+}
+
+.slot-lobby-v5 #slot-cat-top-fishing .dash-slot-carousel-scroll,
+.slot-lobby-v5 .dash-slot-carousel-scroll--ranked {
+  display: flex;
+  flex-wrap: nowrap;
+  grid-template-rows: none;
+  grid-auto-flow: unset;
+  grid-auto-columns: unset;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 32px 4px 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-ranked-unit {
+  --rank-size: clamp(6.4rem, 9.6vw, 8.4rem);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  isolation: isolate;
+  flex: 0 0 auto;
+  width: auto;
+  padding-left: 0;
+  scroll-snap-align: start;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-ranked-unit:has(.dash-slot-carousel-card-rank--wide) {
+  --rank-size: clamp(5.05rem, 7.7vw, 6.7rem);
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-rank {
+  position: relative;
+  left: auto;
+  top: auto;
+  bottom: auto;
+  z-index: 0;
+  display: block;
+  flex: 0 0 auto;
+  width: max-content;
+  font-family: 'Archivo Black', Impact, sans-serif;
+  font-size: var(--rank-size);
+  font-weight: 400;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 0.034em var(--lobby-gold);
+  paint-order: stroke fill;
+  text-shadow: none;
+  filter:
+    drop-shadow(0 0 8px var(--lobby-gold-glow))
+    drop-shadow(0 0 16px rgba(185, 135, 23, 0.35));
+  transform: translateX(10%);
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-rank--wide {
+  letter-spacing: -0.06em;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-scroll--compact {
+  display: flex;
+  grid-template-rows: none;
+  grid-auto-columns: unset;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card {
+  width: clamp(148px, 18vw, 176px);
+  border-radius: 15px;
+  border: 1px solid var(--lobby-line);
+  background: var(--lobby-felt);
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-art {
+  height: auto;
+  aspect-ratio: 3 / 4;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card,
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--lobby-line);
+  background: #0a0e16;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+  object-fit: contain !important;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-play,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-play,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-play {
+  display: none;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-meta,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-meta,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-meta {
+  padding: 8px 2px 0;
+}
+
+.slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-name,
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-name,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  width: max-content;
+  min-width: 0;
+  max-width: none;
+  justify-self: start;
+}
+
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: max-content;
+  height: var(--fish-art-h, 168px);
+  aspect-ratio: auto;
+}
+
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-img-slot {
+  position: relative;
+  inset: auto;
+  width: auto;
+  height: 100%;
+}
+
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+  position: relative !important;
+  inset: auto !important;
+  width: auto !important;
+  height: var(--fish-art-h, 168px) !important;
+  object-fit: contain !important;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--ranked {
+  position: relative;
+  z-index: 1;
+  width: clamp(148px, 18vw, 176px);
+  border: 1px solid var(--lobby-line);
+  border-radius: 15px;
+  background: var(--lobby-felt);
+  box-shadow: none;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
+  height: auto;
+  aspect-ratio: 3 / 4;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact),
+.slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub {
+  width: 159px;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
+.slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: 159px;
+  height: 187px;
+  aspect-ratio: 159 / 187;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 8px 9px 10px;
+  text-align: left;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-name {
+  padding: 0;
+  font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  text-align: left;
+  line-height: 1.28;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-play {
+  margin-top: 7px;
+  min-height: 31px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  background: linear-gradient(180deg, #f7d77c, var(--lobby-gold));
+  color: #1a1200;
+  font-weight: 800;
+  font-size: 0.68rem;
+  font-family: Inter, 'Plus Jakarta Sans', sans-serif;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-play svg {
+  width: 11px;
+  height: 11px;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact {
+  width: 88px;
+  background: none;
+  border: 0;
+  overflow: visible;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-art {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 18px;
+  border: 1px solid var(--lobby-line);
+  overflow: hidden;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-meta {
+  padding: 6px 0 0;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-name {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-align: center;
+  white-space: normal;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-play {
+  display: none;
+}
+
+.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card {
+  width: 100%;
+}
+
+.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card-art {
+  height: auto;
+  aspect-ratio: 3 / 4;
+}
+
+.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  width: 100%;
+}
+
+.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 159 / 187;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card,
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  width: 100%;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-art,
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--lobby-line);
+  background: #0a0e16;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-img,
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+  object-fit: contain !important;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-play {
+  display: none;
+}
+
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-meta {
+  padding: 8px 2px 0;
+}
+
+@media (max-width: 1279px) {
+  .slot-lobby-v5 .dash-slot-others-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .slot-lobby-v5 .dash-slot-others-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+.slot-lobby-v5 .dash-slot-fishing-grid {
+  --fish-art-h: 168px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 12px 16px;
+}
+
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card,
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  width: max-content;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-art,
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  width: max-content;
+  height: var(--fish-art-h);
+  aspect-ratio: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--lobby-line);
+  background: #0a0e16;
+}
+
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-img,
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+  position: relative !important;
+  inset: auto !important;
+  width: auto !important;
+  height: var(--fish-art-h) !important;
+  object-fit: contain !important;
+}
+
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-play {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .slot-lobby-v5 .dash-slot-fishing-grid {
+    --fish-art-h: 132px;
+    gap: 8px;
+  }
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-art:has(.dash-slot-carousel-card-img--logo),
+.slot-lobby-v5 .dash-slot-carousel-card:has(.dash-slot-carousel-card-img--logo) {
+  background: #000;
+}
+
+.slot-lobby-v5 .dash-slot-carousel-card-img--logo {
+  object-fit: contain !important;
+  padding: 16%;
+  background: #000;
+}
+
+.slot-lobby-v5 .lobby-win-ticker {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  overflow: hidden;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.13), transparent 70%);
+  border: 1px solid var(--lobby-line);
+  border-radius: 12px;
+}
+
+.slot-lobby-v5 .lobby-win-ticker-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: var(--lobby-emerald);
+  text-transform: uppercase;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.slot-lobby-v5 .lobby-win-ticker-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--lobby-emerald);
+  animation: lobby-win-pulse 1.6s infinite;
+}
+
+.slot-lobby-v5 .lobby-win-ticker-marquee {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+}
+
+.slot-lobby-v5 .lobby-win-ticker-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  white-space: nowrap;
+  animation: lobby-win-slide 26s linear infinite;
+}
+
+.slot-lobby-v5 .lobby-win-ticker-track span {
+  font-size: 0.73rem;
+  color: #c9d4e8;
+}
+
+.slot-lobby-v5 .lobby-win-ticker-track b {
+  color: var(--lobby-gold);
+  font-weight: 800;
+}
+
+@keyframes lobby-win-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes lobby-win-slide {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 767px) {
+  .slot-lobby-v5 .dash-slot-carousel-wrap {
+    overflow: visible;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-scroll {
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-template-columns: none !important;
+    grid-template-rows: repeat(2, auto) !important;
+    grid-auto-columns: calc((100vw - 36px) / 3.05);
+    gap: 8px !important;
+    padding: 10px 12px 14px !important;
+    margin: 0;
+    width: auto;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x proximity !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    cursor: grab;
+    touch-action: pan-x pan-y;
+  }
+
+  .slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-carousel-scroll {
+    grid-template-rows: auto !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
+    --others-gap: 8px;
+    --others-visible: 2.45;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    gap: var(--others-gap) !important;
+    grid-auto-columns: calc((100% - (var(--others-visible) - 1) * var(--others-gap)) / var(--others-visible)) !important;
+    padding: 10px 12px 14px !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll {
+    grid-template-rows: repeat(2, auto) !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll {
+    --fish-art-h: 132px;
+    --others-gap: 8px;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    grid-template-rows: repeat(2, auto) !important;
+    grid-auto-columns: max-content !important;
+    gap: var(--others-gap) !important;
+    padding: 10px 12px 14px !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
+    grid-template-rows: auto !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-top-fishing .dash-slot-carousel-scroll,
+  .slot-lobby-v5 .dash-slot-carousel-scroll--ranked {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    grid-template-rows: none !important;
+    grid-auto-flow: unset !important;
+    grid-auto-columns: unset !important;
+    align-items: flex-end !important;
+    gap: 8px !important;
+    padding: 20px 10px 8px !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-scroll--compact {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    grid-template-rows: none !important;
+    grid-auto-flow: unset !important;
+    grid-auto-columns: unset !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-scroll--compact > :nth-child(n + 8) {
+    display: none !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11) {
+    display: none !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11),
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11),
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11) {
+    display: revert !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card,
+  .slot-lobby-v5 .dash-slot-carousel-card--ranked,
+  .slot-lobby-v5 .dash-slot-carousel-card--compact {
+    width: calc((100vw - 36px) / 3.05) !important;
+    min-width: calc((100vw - 36px) / 3.05) !important;
+    max-width: calc((100vw - 36px) / 3.05) !important;
+    scroll-snap-align: start;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+    width: max-content !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-ranked-unit {
+    --rank-size: calc((100vw - 36px) / 3.05 * 0.78);
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    padding-left: 0;
+    align-items: flex-end !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-ranked-unit:has(.dash-slot-carousel-card-rank--wide) {
+    --rank-size: calc((100vw - 36px) / 3.05 * 0.62);
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-rank {
+    font-size: var(--rank-size) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    transform: translateX(10%);
+    color: transparent !important;
+    -webkit-text-fill-color: transparent !important;
+    -webkit-text-stroke-width: 0.032em;
+    -webkit-text-stroke-color: var(--lobby-gold);
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-art,
+  .slot-lobby-v5 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+    aspect-ratio: 4 / 3;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+    object-fit: contain !important;
+  }
+
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+    width: max-content;
+    height: var(--fish-art-h, 132px);
+    aspect-ratio: auto;
+  }
+
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: var(--fish-art-h, 132px) !important;
+    object-fit: contain !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
+  .slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 159 / 187;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
+    aspect-ratio: 3 / 4;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-art {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-img,
+  .slot-lobby-v5 .dash-slot-carousel-card-img--blur {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-img {
+    object-fit: cover;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--blur-fill .dash-slot-carousel-card-img,
+  .slot-lobby-v5 .dash-slot-carousel-card-art.dash-slot-carousel-card--blur-fill .dash-slot-carousel-card-img {
+    object-fit: contain;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-img--blur {
+    transform: scale(1.22);
+    object-fit: cover;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-img--blur {
+    display: none;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-meta {
+    padding: 6px 4px 8px;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-name {
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-card-play {
+    margin-top: 6px;
+    min-height: 26px;
+    font-size: 0.62rem;
+    border-radius: 8px;
+  }
+
+  .slot-lobby-v5 .dash-slot-carousel-nav {
+    display: none !important;
+  }
+}
+
+.slot-lobby-v5 .dash-slot-load-more-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 12px auto 32px;
+  text-align: center;
+}
+
+.slot-lobby-v5 .dash-slot-load-more-btn {
+  min-width: min(320px, calc(100% - 24px));
+  padding: 15px 32px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--lobby-gold) 0%, var(--lobby-gold-deep) 100%);
+  color: #16120a;
+  box-shadow: 0 10px 24px var(--lobby-gold-glow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot-lobby-v5 .lobby-win-ticker-track {
+    animation: none;
+  }
+}

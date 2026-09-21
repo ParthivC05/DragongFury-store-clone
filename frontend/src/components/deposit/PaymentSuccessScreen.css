@@ -1,0 +1,238 @@
+/* Payment Success Screen — Dragon Fury dashboard theme */
+
+.pss-root {
+  --pss-gold: #ffd700;
+  --pss-gold2: #f9d038;
+  --pss-teal: #00ffe0;
+  --pss-green: #3ddc7a;
+  --pss-green-deep: #00c853;
+  --pss-bg: #04060a;
+  --pss-card: #0d1320;
+  --pss-card2: #121a2a;
+  --pss-border: rgba(255, 215, 0, 0.22);
+  --pss-text: #f0ebe0;
+  --pss-muted: #8b98a5;
+  position: fixed;
+  inset: 0;
+  z-index: 10100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  font-family: Rajdhani, system-ui, sans-serif;
+  animation: pss-fade-in 0.3s ease-out;
+}
+
+@keyframes pss-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pss-backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 20%, rgba(61, 220, 122, 0.14) 0%, transparent 52%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(255, 215, 0, 0.06) 0%, transparent 55%),
+    rgba(4, 6, 10, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.pss-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 380px;
+  padding: 2.25rem 1.75rem 2rem;
+  border-radius: 24px;
+  border: 1px solid var(--pss-border);
+  background: linear-gradient(165deg, var(--pss-card2) 0%, var(--pss-card) 50%, rgba(8, 12, 18, 0.98) 100%);
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 0 60px rgba(61, 220, 122, 0.08);
+  text-align: center;
+  animation: pss-panel-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes pss-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Success icon */
+.pss-icon-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pss-icon-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(61, 220, 122, 0.35) 0%, transparent 70%);
+  animation: pss-glow-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pss-glow-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.pss-icon-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(61, 220, 122, 0.3);
+}
+
+.pss-icon-ring--outer {
+  inset: 0;
+  opacity: 0.5;
+}
+
+.pss-icon-ring--inner {
+  inset: 10px;
+  border-color: rgba(61, 220, 122, 0.45);
+}
+
+.pss-icon-core {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #152018 0%, #0d1320 100%);
+  border: 2px solid rgba(61, 220, 122, 0.5);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    0 0 24px rgba(61, 220, 122, 0.2);
+}
+
+.pss-check-svg {
+  width: 44px;
+  height: 44px;
+}
+
+.pss-check-path {
+  stroke: var(--pss-green);
+  stroke-dasharray: 56;
+  stroke-dashoffset: 56;
+  animation: pss-check-draw 0.55s ease-out 0.15s forwards;
+  filter: drop-shadow(0 0 8px rgba(61, 220, 122, 0.75));
+}
+
+@keyframes pss-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.pss-title {
+  margin: 0 0 0.65rem;
+  font-family: 'Russo One', sans-serif;
+  font-size: clamp(1.35rem, 4.5vw, 1.65rem);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.25;
+  color: var(--pss-green);
+  text-shadow: 0 0 24px rgba(61, 220, 122, 0.45);
+}
+
+.pss-subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--pss-muted);
+  line-height: 1.55;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pss-amount-line {
+  margin: 0 0 1.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pss-amount-value {
+  font-family: 'Russo One', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+  color: var(--pss-gold);
+  line-height: 1.2;
+}
+
+.pss-amount-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(240, 235, 224, 0.65);
+}
+
+.pss-play-btn {
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Boogaloo', cursive;
+  font-size: 1.25rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ffb347 0%, #ff8c00 45%, #ff6b00 100%);
+  border: 1px solid rgba(255, 180, 80, 0.45);
+  box-shadow:
+    0 6px 24px rgba(255, 107, 0, 0.35),
+    0 2px 0 rgba(255, 255, 255, 0.12) inset;
+  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+}
+
+.pss-play-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    0 8px 28px rgba(255, 107, 0, 0.42),
+    0 2px 0 rgba(255, 255, 255, 0.14) inset;
+}
+
+.pss-play-btn:active {
+  transform: translateY(0) scale(0.99);
+}
+
+@media (max-width: 380px) {
+  .pss-panel {
+    padding: 1.75rem 1.25rem 1.5rem;
+    border-radius: 20px;
+  }
+
+  .pss-icon-wrap {
+    width: 104px;
+    height: 104px;
+    margin-bottom: 1.25rem;
+  }
+
+  .pss-icon-core {
+    width: 76px;
+    height: 76px;
+  }
+}

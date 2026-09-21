@@ -1,0 +1,560 @@
+.dashboard h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.dashboard-intro {
+  margin: 0 0 1.5rem;
+  color: #555;
+}
+
+.dashboard-shift-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-shift-meta {
+  margin: 0 0 0.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.dashboard-shift-timer .dashboard-card-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-shift-balance {
+  margin: 0.4rem 0 0;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.dashboard-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-card {
+  padding: 1.25rem;
+  min-width: 140px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-card-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.dashboard-card-label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.dashboard-card-today {
+  border-left: 4px solid #3b82f6;
+}
+
+.dashboard-charts {
+  margin-top: 2rem;
+}
+
+.dashboard-series .dashboard-charts {
+  margin-top: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-charts h3,
+.dashboard-overview-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.2rem;
+}
+
+.dashboard-chart-wrap {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 1rem;
+  min-height: 280px;
+}
+
+.dashboard-chart-wrap h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.dashboard-chart-wrap .recharts-legend-item-text {
+  font-size: 12px;
+  color: #334155;
+}
+
+.dashboard-chart-wrap .recharts-default-tooltip {
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.dashboard-chart-wrap .recharts-tooltip-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.dashboard-series {
+  margin-top: 2rem;
+}
+
+.dashboard-series h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.dashboard-series-intro {
+  margin: 0 0 1rem;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.dashboard-series-three {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (min-width: 900px) {
+  .dashboard-series-three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.dashboard-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.dashboard-filter-bar-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dashboard-filter-bar-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dashboard-filter-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-filter-field-label {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.dashboard-filter-input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+  min-width: 140px;
+}
+
+.dashboard-filter-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+.dashboard-filter-chart-type {
+  margin-left: 0.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid #e2e8f0;
+}
+
+.dashboard-filter-preset {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #475569;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.dashboard-filter-preset:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+.dashboard-filter-preset[aria-pressed="true"] {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+
+.dashboard-filter-checkbox {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  margin-right: 0.5rem;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+.dashboard-filter-chart-type .dashboard-filter-field-label {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Legacy class for any other use */
+.dashboard-series-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-report-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-report-card {
+  flex: 1;
+  min-width: 140px;
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid #94a3b8;
+}
+
+.dashboard-report-card-signups {
+  border-left-color: #3b82f6;
+}
+
+.dashboard-report-card-topup {
+  border-left-color: #10b981;
+}
+
+.dashboard-report-card-withdraw {
+  border-left-color: #ef4444;
+}
+
+.dashboard-report-card-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.dashboard-report-card-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.dashboard-report-card-sub {
+  display: block;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.dashboard-series-loading {
+  padding: 1rem;
+  color: #666;
+}
+
+.dashboard-series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.dashboard-loading,
+.dashboard-error {
+  padding: 1rem;
+}
+
+.dashboard-error {
+  color: #c00;
+}
+
+.dashboard-scope {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.dashboard-section-title {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.dashboard-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.dashboard-range-label {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.dashboard-payments-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+}
+
+.dashboard-payments {
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.dashboard-payments-utc-note {
+  margin: -0.35rem 0 0.65rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dashboard-payments-filter-row label {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #4b5563;
+}
+
+.dashboard-payments-time-group {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.4rem;
+}
+
+.dashboard-payments-time-error {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.75rem;
+  color: #dc2626;
+}
+
+.dashboard-payments-time-group label {
+  margin: 0;
+}
+
+.dashboard-payments-filter-row input[type='date'],
+.dashboard-payments-filter-row input[type='time'] {
+  min-width: 130px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.dashboard-payments-time-group input[type='time'] {
+  min-width: 115px;
+}
+
+.dashboard-series-time-row {
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.dashboard-series-time-note {
+  flex: 1 1 100%;
+  margin: 0 0 0.15rem;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.dashboard-payments-filter-row input[type='date'] {
+  min-width: 150px;
+}
+
+.dashboard-payments-filter-row .dashboard-payments-store-select {
+  min-width: 160px;
+  max-width: 220px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  background: #fff;
+}
+
+.dashboard-payments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.dashboard-payments-block {
+  margin-top: 1rem;
+}
+
+.dashboard-payments-block:first-of-type {
+  margin-top: 0.35rem;
+}
+
+.dashboard-payments-block-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.dashboard-payments-block-hint {
+  margin: 0.2rem 0 0.65rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.dashboard-payments-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: #fff;
+}
+
+.dashboard-payments-card-highlight {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+.dashboard-payments-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+
+.dashboard-payments-card-head h4 {
+  margin: 0;
+}
+
+.dashboard-payments-card-sub {
+  margin: 0 0 0.55rem !important;
+  display: block !important;
+  font-size: 0.75rem !important;
+  color: #6b7280;
+  justify-content: flex-start !important;
+}
+
+.dashboard-payments-mode {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+}
+
+.dashboard-payments-mode-auto {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.dashboard-payments-mode-manual {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.dashboard-payments-card h4 {
+  margin: 0 0 0.45rem;
+  font-size: 0.9rem;
+}
+
+.dashboard-payments-card p {
+  margin: 0.35rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+}
+
+.dashboard-payments-breakdown {
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #dbeafe;
+}
+
+.dashboard-payments-breakdown-title {
+  margin: 0 0 0.25rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  justify-content: flex-start !important;
+}
+
+.dashboard-payments-breakdown p {
+  font-size: 0.78rem;
+  color: #374151;
+}
+
+.dashboard-payments-breakdown strong {
+  font-weight: 600;
+  text-align: right;
+}
+
+.dashboard-payments-method-row {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.dashboard-payments-method-row + .dashboard-payments-method-row {
+  margin-top: 0.35rem;
+}
+
+.dashboard-payments-method-name {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.dashboard-payments-method-amounts p {
+  margin: 0.15rem 0;
+}
+
+.dashboard-payments-fee {
+  color: #6b7280;
+}
+
+.dashboard-payments-fee strong {
+  color: #92400e;
+}

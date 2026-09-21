@@ -1,0 +1,650 @@
+/* ============================================================
+   BGM SOUND CONTROL — single button + modal
+   Classes prefixed .bgm- so nothing clashes with the site.
+   ============================================================ */
+:root {
+  --bgm-panel: #141b2c;
+  --bgm-panel-2: #1c2437;
+  --bgm-panel-3: #232c42;
+  --bgm-line: #2b3450;
+  --bgm-gold: #e6b45c;
+  --bgm-gold-dim: #8a6b33;
+  --bgm-text: #f1f4fa;
+  --bgm-text-dim: #97a1b8;
+  --bgm-green: #24c264;
+  --bgm-red: #e0243c;
+  --bgm-radius: 20px;
+  --bgm-font-display: 'Fredoka', 'Russo One', system-ui, sans-serif;
+  --bgm-font-body: 'Nunito', 'Rajdhani', system-ui, sans-serif;
+}
+
+/* ---------- widget anchor (desktop: right center; mobile: left mid-bottom) ---------- */
+.bgm-widget {
+  position: fixed;
+  left: auto;
+  right: 0;
+  top: 50%;
+  bottom: auto;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transform: translateY(-50%);
+}
+
+/* Hide edge tab while the music dialog is open so it can't sit on top of it */
+.bgm-widget.is-panel-open {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Hide the music tab while any other modal/overlay is open (tab is z-index 9999).
+   Matches Intercom/social-dock: app-modal-open + Radix data-scroll-locked. */
+body.app-modal-open:not(.bgm-modal-open) .bgm-widget,
+body[data-scroll-locked] .bgm-widget,
+body.welcome-modal-open .bgm-widget,
+body.onboarding-tutorial-active .bgm-widget,
+body.game-transfer-modal-open .bgm-widget,
+body.guest-spin-modal-open .bgm-widget,
+body.page-loader-active .bgm-widget,
+body.slot-game-play-active .bgm-widget {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Desktop stays vertically centered even when slots search is sticky */
+body.slots-search-sticky .bgm-widget {
+  z-index: 46;
+}
+
+/* ---------- 1. THE SINGLE BUTTON (old edge tab) ----------------- */
+.bgm-btn {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 52px;
+  height: 34px;
+  padding: 0 7px;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  background: rgba(13, 19, 32, 0.94);
+  border-top: 1.5px solid rgba(245, 196, 81, 0.45);
+  border-bottom: 1.5px solid rgba(245, 196, 81, 0.45);
+  border-left: 1.5px solid rgba(245, 196, 81, 0.45);
+  border-right: none;
+  color: #f5c451;
+  box-shadow:
+    -4px 0 20px rgba(0, 0, 0, 0.55),
+    0 0 16px rgba(245, 196, 81, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  outline: none;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.bgm-btn:hover {
+  transform: translateX(-2px);
+  border-color: rgba(245, 196, 81, 0.85);
+  box-shadow:
+    -6px 0 24px rgba(0, 0, 0, 0.65),
+    0 0 22px rgba(245, 196, 81, 0.32);
+}
+
+.bgm-btn:focus-visible {
+  outline: 2px solid rgba(245, 196, 81, 0.75);
+  outline-offset: 2px;
+}
+
+/* Waiting for user gesture (autoplay policy) — subtle hint, no layout shift */
+.bgm-btn.is-waiting:not(.is-muted) .bgm-btn__icon-wrap {
+  opacity: 0.72;
+}
+
+.bgm-btn__rule {
+  display: block;
+  width: 1px;
+  height: 16px;
+  background: linear-gradient(180deg, transparent, rgba(245, 196, 81, 0.55), transparent);
+  flex-shrink: 0;
+}
+
+.bgm-btn__icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0 5px;
+  flex-shrink: 0;
+}
+
+.bgm-btn__icon {
+  width: 15px;
+  height: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+.bgm-btn.is-muted {
+  color: rgba(245, 196, 81, 0.55);
+  background: rgba(10, 14, 22, 0.92);
+}
+
+.bgm-btn.is-muted .bgm-btn__rule {
+  background: linear-gradient(180deg, transparent, rgba(245, 196, 81, 0.28), transparent);
+}
+
+.bgm-btn.is-open {
+  border-color: rgba(245, 196, 81, 0.85);
+  background: rgba(20, 28, 44, 0.98);
+  box-shadow:
+    -4px 0 20px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(245, 196, 81, 0.28);
+}
+
+/* Mobile: left edge, mid-bottom — mirrored tab (round + gold on the RIGHT) */
+@media (max-width: 767px) {
+  .bgm-widget {
+    left: 0;
+    right: auto;
+    top: auto;
+    bottom: max(28vh, calc(152px + env(safe-area-inset-bottom, 0px)));
+    align-items: flex-start;
+    transform: none;
+  }
+
+  body.slots-search-sticky .bgm-widget {
+    top: auto;
+    bottom: max(28vh, calc(152px + env(safe-area-inset-bottom, 0px)));
+    z-index: 46;
+  }
+
+  .bgm-btn {
+    border-radius: 0 8px 8px 0;
+    border-top: 1.5px solid rgba(245, 196, 81, 0.45);
+    border-bottom: 1.5px solid rgba(245, 196, 81, 0.45);
+    border-left: none;
+    border-right: 1.5px solid rgba(245, 196, 81, 0.45);
+    box-shadow:
+      4px 0 20px rgba(0, 0, 0, 0.55),
+      0 0 16px rgba(245, 196, 81, 0.18);
+  }
+
+  .bgm-btn:hover {
+    transform: translateX(2px);
+    border-color: rgba(245, 196, 81, 0.85);
+    box-shadow:
+      6px 0 24px rgba(0, 0, 0, 0.65),
+      0 0 22px rgba(245, 196, 81, 0.32);
+  }
+
+  .bgm-btn.is-open {
+    border-color: rgba(245, 196, 81, 0.85);
+    box-shadow:
+      4px 0 20px rgba(0, 0, 0, 0.55),
+      0 0 22px rgba(245, 196, 81, 0.28);
+  }
+}
+
+@media (min-width: 768px) {
+  .bgm-widget {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .bgm-btn {
+    width: 56px;
+    height: 36px;
+    padding: 0 8px;
+  }
+
+  .bgm-btn__rule {
+    height: 18px;
+  }
+
+  .bgm-btn__icon-wrap {
+    width: 24px;
+    height: 24px;
+    margin: 0 6px;
+  }
+
+  .bgm-btn__icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* ---------- 2. MODAL ---------------------------------------- */
+.bgm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  background: rgba(6, 9, 17, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.22s,
+    visibility 0.22s;
+}
+
+.bgm-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.bgm-modal {
+  width: 100%;
+  max-width: 372px;
+  background: var(--bgm-panel);
+  border: 1px solid var(--bgm-line);
+  border-radius: var(--bgm-radius);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.62);
+  font-family: var(--bgm-font-body);
+  color: var(--bgm-text);
+  transform: translateY(14px) scale(0.97);
+  opacity: 0;
+  transition:
+    transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1),
+    opacity 0.24s;
+  overflow: hidden;
+}
+
+.bgm-overlay.is-open .bgm-modal {
+  transform: none;
+  opacity: 1;
+}
+
+.bgm-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 14px;
+}
+
+.bgm-eyebrow {
+  font-family: var(--bgm-font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bgm-gold);
+  margin: 0;
+}
+
+.bgm-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 1px solid var(--bgm-line);
+  background: transparent;
+  color: var(--bgm-text-dim);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: 0.2s;
+  padding: 0;
+}
+
+.bgm-close:hover {
+  color: var(--bgm-text);
+  background: var(--bgm-panel-2);
+}
+
+.bgm-close:focus-visible {
+  outline: 2px solid var(--bgm-gold);
+  outline-offset: 2px;
+}
+
+.bgm-master {
+  margin: 0 18px 12px;
+  padding: 14px;
+  background: var(--bgm-panel-2);
+  border: 1px solid var(--bgm-line);
+  border-radius: 14px;
+}
+
+.bgm-master-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bgm-speaker {
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 11px;
+  border: 1px solid var(--bgm-gold-dim);
+  background: rgba(230, 180, 92, 0.09);
+  color: var(--bgm-gold);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: 0.2s;
+  padding: 0;
+}
+
+.bgm-speaker:hover {
+  background: rgba(230, 180, 92, 0.18);
+}
+
+.bgm-speaker:focus-visible {
+  outline: 2px solid var(--bgm-gold);
+  outline-offset: 2px;
+}
+
+.bgm-speaker.is-muted {
+  border-color: var(--bgm-line);
+  background: transparent;
+  color: var(--bgm-text-dim);
+}
+
+.bgm-master-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.bgm-master-label b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--bgm-font-display);
+}
+
+.bgm-master-label span {
+  font-size: 12px;
+  color: var(--bgm-text-dim);
+}
+
+.bgm-pct {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--bgm-text-dim);
+  flex: none;
+}
+
+.bgm-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  margin: 14px 0 0;
+  border-radius: 99px;
+  background: linear-gradient(
+    to right,
+    var(--bgm-gold) 0 var(--pct, 40%),
+    var(--bgm-line) var(--pct, 40%) 100%
+  );
+  cursor: pointer;
+}
+
+.bgm-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--bgm-gold);
+  border: 3px solid var(--bgm-panel-2);
+  box-shadow: 0 0 0 1px var(--bgm-gold-dim);
+}
+
+.bgm-range::-moz-range-thumb {
+  width: 15px;
+  height: 15px;
+  border: 3px solid var(--bgm-panel-2);
+  border-radius: 50%;
+  background: var(--bgm-gold);
+}
+
+.bgm-range:focus-visible {
+  outline: 2px solid var(--bgm-gold);
+  outline-offset: 4px;
+}
+
+.bgm-master.is-muted .bgm-range {
+  background: linear-gradient(
+    to right,
+    var(--bgm-text-dim) 0 var(--pct, 40%),
+    var(--bgm-line) var(--pct, 40%) 100%
+  );
+}
+
+.bgm-master.is-muted .bgm-range::-webkit-slider-thumb {
+  background: var(--bgm-text-dim);
+  box-shadow: 0 0 0 1px var(--bgm-line);
+}
+
+.bgm-shuffle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 18px 14px;
+  padding: 13px 14px;
+  background: var(--bgm-panel-2);
+  border: 1px solid var(--bgm-line);
+  border-radius: 14px;
+}
+
+.bgm-shuffle div {
+  flex: 1;
+}
+
+.bgm-shuffle b {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--bgm-font-display);
+}
+
+.bgm-shuffle span {
+  font-size: 12px;
+  color: var(--bgm-gold);
+  opacity: 0.85;
+}
+
+.bgm-switch {
+  position: relative;
+  width: 50px;
+  height: 28px;
+  flex: none;
+  border: none;
+  border-radius: 99px;
+  background: var(--bgm-line);
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 0.25s;
+}
+
+.bgm-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(0.4, 1.3, 0.5, 1);
+}
+
+.bgm-switch[aria-checked='true'] {
+  background: var(--bgm-green);
+}
+
+.bgm-switch[aria-checked='true']::after {
+  transform: translateX(22px);
+}
+
+.bgm-switch:focus-visible {
+  outline: 2px solid var(--bgm-gold);
+  outline-offset: 3px;
+}
+
+.bgm-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 18px;
+  max-height: 236px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bgm-line) transparent;
+}
+
+.bgm-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.bgm-list::-webkit-scrollbar-thumb {
+  background: var(--bgm-line);
+  border-radius: 9px;
+}
+
+.bgm-track {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin-bottom: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--bgm-text);
+  font-family: var(--bgm-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+.bgm-track:hover {
+  background: var(--bgm-panel-3);
+}
+
+.bgm-track:focus-visible {
+  outline: 2px solid var(--bgm-gold);
+  outline-offset: -2px;
+}
+
+.bgm-track[aria-current='true'] {
+  color: var(--bgm-gold);
+  background: rgba(230, 180, 92, 0.07);
+  border-color: var(--bgm-gold-dim);
+}
+
+.bgm-track span {
+  flex: 1;
+}
+
+.bgm-mini {
+  display: none;
+  align-items: flex-end;
+  gap: 2px;
+  height: 13px;
+  flex: none;
+}
+
+.bgm-track[aria-current='true'] .bgm-mini {
+  display: flex;
+}
+
+.bgm-mini i {
+  display: block;
+  width: 2.5px;
+  border-radius: 2px;
+  background: var(--bgm-gold);
+  height: 4px;
+  animation: bgm-bounce-sm 0.8s ease-in-out infinite alternate;
+  transition:
+    height 0.3s,
+    background-color 0.3s;
+}
+
+.bgm-mini i:nth-child(2) {
+  animation-delay: 0.18s;
+  animation-duration: 0.6s;
+}
+
+.bgm-mini i:nth-child(3) {
+  animation-delay: 0.08s;
+  animation-duration: 0.95s;
+}
+
+@keyframes bgm-bounce-sm {
+  from {
+    height: 3px;
+  }
+  to {
+    height: 13px;
+  }
+}
+
+.bgm-modal.is-muted .bgm-mini i {
+  animation: none;
+  height: 3px;
+  background: var(--bgm-text-dim);
+}
+
+.bgm-foot {
+  margin-top: 6px;
+  padding: 12px 18px 16px;
+  border-top: 1px solid var(--bgm-line);
+  font-size: 12px;
+  color: var(--bgm-text-dim);
+  text-align: center;
+}
+
+.bgm-foot kbd {
+  font: inherit;
+  color: var(--bgm-gold);
+  border: 1px solid var(--bgm-gold-dim);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+@media (max-width: 420px) {
+  .bgm-modal {
+    max-width: none;
+  }
+
+  .bgm-list {
+    max-height: 44vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bgm-mini i {
+    animation: none !important;
+    height: 9px;
+  }
+
+  .bgm-overlay,
+  .bgm-modal,
+  .bgm-switch::after {
+    transition: none !important;
+  }
+}

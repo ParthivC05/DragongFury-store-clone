@@ -1,0 +1,34 @@
+.site-logo {
+  display: block;
+  width: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.site-logo--nav {
+  height: clamp(36px, 5vw, 44px);
+  max-width: min(220px, 58vw);
+}
+
+.site-logo--auth {
+  height: clamp(52px, 14vw, 72px);
+  max-width: min(280px, 85vw);
+  margin: 0 auto 13px;
+}
+
+.site-logo--drawer {
+  height: 36px;
+  max-width: 160px;
+}
+
+.site-logo--footer {
+  height: clamp(56px, 14vw, 80px);
+  max-width: min(280px, 80vw);
+  margin: 0 auto 8px;
+}
+
+.site-logo--loader {
+  height: 48px;
+  max-width: 160px;
+}

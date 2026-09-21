@@ -1,0 +1,190 @@
+.daily-bonus-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.daily-bonus-store-list h2,
+.daily-bonus-editor h2,
+.daily-bonus-editor h3 {
+  margin: 0 0 0.75rem;
+}
+
+.daily-bonus-store-list ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.daily-bonus-store-list button {
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  display: grid;
+  gap: 0.15rem;
+  cursor: pointer;
+}
+
+.daily-bonus-store-list button.is-active {
+  border-color: #0d7a52;
+  box-shadow: 0 0 0 1px #0d7a52;
+}
+
+.daily-bonus-store-list button span,
+.daily-bonus-store-list button em {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-style: normal;
+}
+
+.daily-bonus-editor-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.daily-bonus-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  align-items: flex-end;
+}
+
+.daily-bonus-enabled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+}
+
+.daily-bonus-toggle-hint {
+  margin: 0;
+  max-width: 240px;
+  text-align: right;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.daily-bonus-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.daily-bonus-day-card {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.55rem;
+  background: #fafafa;
+}
+
+.daily-bonus-day-title {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.daily-bonus-day-card label,
+.daily-bonus-segment-row label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+
+.daily-bonus-day-card input,
+.daily-bonus-day-card select,
+.daily-bonus-segment-row input,
+.daily-bonus-segment-row select {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.daily-bonus-package-list {
+  display: grid;
+  gap: 0.35rem;
+  max-height: 140px;
+  overflow: auto;
+  padding: 0.35rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.daily-bonus-package-item {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.daily-bonus-hint {
+  margin: 0 0 0.75rem;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.daily-bonus-segments {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.daily-bonus-segment-row {
+  display: grid;
+  grid-template-columns: 1fr 0.8fr 1.2fr 0.7fr 0.8fr auto;
+  gap: 0.5rem;
+  align-items: end;
+  padding: 0.65rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.daily-bonus-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.daily-bonus-actions .btn-primary {
+  background: #0d7a52;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .daily-bonus-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .daily-bonus-toggles {
+    align-items: flex-start;
+  }
+
+  .daily-bonus-toggle-hint {
+    text-align: left;
+  }
+
+  .daily-bonus-segment-row {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,850 @@
+/* Tabs: Games | Game configs (config visible to master_admin only) */
+.games-tabs-wrap {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.games-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.games-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: transparent;
+  font-size: 0.95rem;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.games-tab:hover {
+  color: #333;
+}
+
+.games-tab-active {
+  color: #4a7cff;
+  font-weight: 500;
+  border-bottom-color: #4a7cff;
+}
+
+/* Keep filter dropdowns and Add button aligned in one row */
+.games-page .page-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.games-page .games-header-filter-select.store-features-input {
+  width: auto;
+  min-width: 220px;
+  max-width: 280px;
+  flex: 0 0 auto;
+}
+
+.games-page .games-header-filter-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.games-page .games-header-filter-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.games-page .games-config-header-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.games-manual-logs-page-header {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.games-manual-logs-page-header .games-manual-logs-filters {
+  flex: 1 1 100%;
+  width: 100%;
+  justify-content: stretch;
+}
+
+.games-manual-logs-unified-filter.dashboard-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(max-content, auto);
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin: 0;
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.games-manual-logs-filter-zone {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.games-manual-logs-filter-zone-left {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+}
+
+.games-manual-logs-filter-zone-right {
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-bar-label {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-bar-fields {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-field {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-field-label {
+  flex-shrink: 0;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-input {
+  min-width: 128px;
+  width: 128px;
+}
+
+.games-manual-logs-filter-zone-right .dashboard-filter-preset {
+  flex-shrink: 0;
+}
+
+.games-manual-logs-unified-filter .games-manual-logs-filter-select {
+  min-width: 160px;
+  max-width: 220px;
+  cursor: pointer;
+}
+
+.games-manual-logs-unified-filter .games-manual-logs-filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+}
+
+@media (max-width: 900px) {
+  .games-manual-logs-unified-filter.dashboard-filter-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .games-manual-logs-filter-zone-left,
+  .games-manual-logs-filter-zone-right {
+    justify-content: flex-start;
+  }
+
+  .games-manual-logs-filter-zone-right {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .games-manual-logs-filter-zone-right .dashboard-filter-bar-fields {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}
+
+.games-manual-logs-wrap {
+  overflow-x: auto;
+}
+
+.games-manual-logs-table .games-manual-logs-date {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.games-manual-logs-error-cell {
+  max-width: 420px;
+  min-width: 220px;
+  font-size: 0.8125rem;
+  word-break: break-word;
+  white-space: normal;
+  vertical-align: top;
+}
+
+.games-manual-log-reason-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.games-manual-log-reason-block {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 280px;
+  overflow: auto;
+}
+
+.games-manual-log-reason-single {
+  max-height: 220px;
+}
+
+.games-manual-logs-api-cell .games-manual-log-reason-block {
+  color: #334155;
+}
+
+.games-manual-logs-table th:nth-child(6),
+.games-manual-logs-table td:nth-child(6) {
+  min-width: 280px;
+}
+
+.games-manual-logs-password-cell {
+  white-space: nowrap;
+}
+
+.games-manual-logs-reveal-btn {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.games-manual-logs-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+}
+
+.games-manual-logs-perpage select {
+  margin: 0 0.35rem;
+}
+
+.games-manual-logs-pagination-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.games-history-table .games-history-action {
+  display: inline-block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.games-history-table .games-history-field {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.games-history-table .games-history-action-mode_switched {
+  color: #b45309;
+}
+
+.games-history-table .games-history-action-created {
+  color: #047857;
+}
+
+.games-history-table .games-history-action-deleted {
+  color: #b91c1c;
+}
+
+.games-history-table .games-manual-logs-password-cell {
+  min-width: 8rem;
+}
+
+.games-history-table .games-history-password-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.games-history-table .games-view-password-toggle {
+  flex-shrink: 0;
+}
+
+.games-failure-detail-wrap {
+  margin-bottom: 1.5rem;
+}
+
+.games-failure-detail-table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 1080px;
+}
+
+.games-failure-detail-table th:nth-child(5),
+.games-failure-detail-table td:nth-child(5) {
+  width: 18%;
+  min-width: 13rem;
+  vertical-align: middle;
+}
+
+.games-failure-detail-table th:nth-child(6),
+.games-failure-detail-table td:nth-child(6) {
+  width: 6%;
+  min-width: 4.75rem;
+  max-width: 5.5rem;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.games-failure-detail-table th:nth-child(7),
+.games-failure-detail-table td:nth-child(7) {
+  width: 32%;
+  min-width: 20rem;
+}
+
+.games-failure-detail-table .games-manual-logs-password-cell {
+  white-space: normal;
+  vertical-align: middle;
+}
+
+.games-failure-detail-table .games-manual-logs-password-cell .games-failure-credentials-cell {
+  justify-content: center;
+  min-height: 100%;
+}
+
+.games-failure-detail-table .games-manual-logs-error-cell {
+  max-width: none;
+  min-width: 20rem;
+}
+
+.games-failure-detail-table .games-manual-log-reason-single {
+  max-height: 280px;
+}
+
+.games-failure-credentials-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 13rem;
+}
+
+.games-failure-credential-line {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.games-failure-cred-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .games-page .page-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .games-page .games-header-filter-wrap {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .games-page .games-header-filter-select.store-features-input {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.games-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.45);
+  animation: games-backdrop-in 0.2s ease-out;
+}
+
+@keyframes games-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.games-modal-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  max-width: 520px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.5rem 1.5rem 1.25rem;
+  animation: games-card-in 0.25s ease-out;
+}
+
+@keyframes games-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.games-modal-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.games-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.games-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.games-modal-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.games-modal-field-label-static {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.35rem;
+}
+
+/* Edit modal: current password — same visual weight as .store-features-input */
+.games-edit-current-password.games-view-password-cell {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-height: 2.625rem;
+  padding: 0 0.35rem 0 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.games-edit-current-password .games-view-password-value {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.4;
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  display: block;
+  font-size: 0.9375rem;
+}
+
+.games-modal-field .store-features-input {
+  width: 100%;
+  max-width: none;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.games-modal-field .store-features-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.games-password-input-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.games-password-input-wrap:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.games-modal-field .store-features-input.games-password-input {
+  border: none;
+  box-shadow: none;
+  padding-right: 0.35rem;
+}
+
+.games-modal-field .store-features-input.games-password-input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.games-modal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.games-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #eee;
+}
+
+.games-page .admin-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.games-page .admin-table tbody tr:hover td {
+  background: #f8fafc;
+}
+
+.games-page .admin-table td a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.games-page .admin-table td a:hover {
+  text-decoration: underline;
+}
+
+.games-actions {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.games-view-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.games-view-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  font-size: 0.9375rem;
+}
+
+.games-view-label {
+  font-weight: 500;
+  color: #374151;
+  min-width: 10rem;
+}
+
+.games-view-value-wrap {
+  word-break: break-all;
+  flex: 1;
+  min-width: 0;
+}
+
+.games-view-row-password .games-view-password-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.games-view-password-value {
+  font-family: ui-monospace, monospace;
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+/* Compact eye toggle — use in view + edit password rows */
+.games-password-eye-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  line-height: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.games-password-eye-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.games-password-eye-btn:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.games-password-eye-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* View modal password row (same compact eye as edit) */
+.games-view-password-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  line-height: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.games-view-password-toggle:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.games-view-password-toggle:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.games-view-password-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.games-view-body .games-view-row span:last-child a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.games-view-body .games-view-row span:last-child a:hover {
+  text-decoration: underline;
+}
+
+.games-modal-field-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* Bot mode badge in game table and view modal */
+.games-bot-mode-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.games-bot-mode-auto {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.games-bot-mode-manual {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.games-bot-mode-redeem-manual {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.games-api-mode-badge {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.games-mode-badges {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Extra action button colors for bot toggle */
+.admin-btn-success {
+  background: #059669;
+  color: #fff;
+  border-color: #059669;
+}
+.admin-btn-success:hover:not(:disabled) {
+  background: #047857;
+  border-color: #047857;
+}
+
+.admin-btn-warning {
+  background: #d97706;
+  color: #fff;
+  border-color: #d97706;
+}
+.admin-btn-warning:hover:not(:disabled) {
+  background: #b45309;
+  border-color: #b45309;
+}
+
+.games-modal-field-checkbox input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+.games-modal-hint {
+  margin: 0.25rem 0 0;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.games-change-password-desc {
+  margin: -0.5rem 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #6b7280;
+}
+
+.games-change-password-card .games-modal-title {
+  margin-bottom: 0.5rem;
+}
+
+.games-modal-readonly-link {
+  margin: 0;
+  font-size: 0.875rem;
+  word-break: break-all;
+}
+
+.games-modal-readonly-link a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.games-modal-readonly-link a:hover {
+  text-decoration: underline;
+}
+
+.games-image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.games-image-preview,
+.games-image-empty {
+  width: 100%;
+  max-width: 220px;
+  min-height: 120px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #f9fafb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.games-image-preview img,
+.games-image-thumb {
+  display: block;
+  max-width: 160px;
+  max-height: 120px;
+  object-fit: contain;
+}
+
+.games-image-empty {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.games-image-upload-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.games-image-upload-btn {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  color: #fff;
+  font-weight: 500;
+  margin: 0;
+}
+
+.games-modal-field label.games-image-upload-btn {
+  color: #fff;
+  font-weight: 500;
+}

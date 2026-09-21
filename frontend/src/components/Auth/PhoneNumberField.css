@@ -1,0 +1,189 @@
+.phone-cc-field {
+  display: flex;
+  align-items: stretch;
+  gap: 0.45rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.phone-cc-field__cc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  height: 100%;
+  min-height: 2.75rem;
+  min-width: 5.6rem;
+  border-radius: 13px;
+  padding: 0 0.7rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.phone-cc-field__cc--static {
+  cursor: default;
+}
+
+.phone-cc-field__cc-flag-svg {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.phone-cc-field__cc-code {
+  letter-spacing: 0.02em;
+}
+
+.phone-cc-field__national {
+  flex: 1;
+  min-width: 0;
+}
+
+/* DragonFury / verify modal */
+.phone-cc-field--dragonfury .phone-cc-field__cc,
+.phone-cc-field--gate .phone-cc-field__cc {
+  background: rgba(11, 8, 3, 0.8);
+  border: 1.5px solid var(--pj-b0, rgba(212, 168, 69, 0.35));
+  color: var(--pj-white, #fff6dc);
+  font-family: 'Nunito', sans-serif;
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national,
+.phone-cc-field--gate .phone-cc-field__national {
+  width: 100%;
+  background: rgba(11, 8, 3, 0.8);
+  border: 1.5px solid var(--pj-b0, rgba(212, 168, 69, 0.35));
+  border-radius: 13px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  color: var(--pj-white, #fff6dc);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.22s, background 0.2s;
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national::placeholder,
+.phone-cc-field--gate .phone-cc-field__national::placeholder {
+  color: rgba(212, 168, 69, 0.65);
+  opacity: 1;
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national:focus,
+.phone-cc-field--gate .phone-cc-field__national:focus {
+  border-color: var(--pj-gold2, #f9d038);
+  background: rgba(16, 11, 3, 0.9);
+  box-shadow: 0 0 0 3px rgba(232, 160, 16, 0.14), 0 0 28px rgba(249, 208, 56, 0.07);
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national.ok,
+.phone-cc-field--gate .phone-cc-field__national.ok {
+  border-color: var(--pj-green, #3ddc7a);
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national.err,
+.phone-cc-field--gate .phone-cc-field__national.err {
+  border-color: var(--pj-red, #e53935);
+  box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.12);
+}
+
+.phone-cc-field--dragonfury .phone-cc-field__national[readonly],
+.phone-cc-field--dragonfury .phone-cc-field__national:disabled,
+.phone-cc-field--gate .phone-cc-field__national[readonly],
+.phone-cc-field--gate .phone-cc-field__national:disabled {
+  opacity: 0.92;
+  cursor: default;
+}
+
+@media (max-width: 480px) {
+  .phone-cc-field {
+    gap: 0.35rem;
+  }
+
+  .phone-cc-field__cc {
+    min-width: 4.85rem;
+    min-height: 3rem;
+    padding: 0 0.45rem;
+    font-size: 0.8125rem;
+  }
+
+  .phone-cc-field__cc-flag-svg {
+    width: 18px;
+    height: 12px;
+  }
+
+  .phone-cc-field--dragonfury .phone-cc-field__national,
+  .phone-cc-field--gate .phone-cc-field__national {
+    font-size: 16px;
+    min-height: 3rem;
+    padding: 12px 10px;
+  }
+}
+
+/* Settings profile — signup-style inline phone OTP */
+.dash-phone-verify-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.dash-phone-verify-row .phone-cc-field {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-phone-verify-side {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+.dash-phone-verify-btn {
+  min-height: 2.75rem;
+  white-space: nowrap;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.dash-phone-verified-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0d3b24;
+  background: rgba(61, 220, 122, 0.28);
+  border: 1px solid rgba(61, 220, 122, 0.45);
+}
+
+.dash-phone-otp-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6rem;
+  width: 100%;
+}
+
+.dash-phone-otp-row .dash-input-field {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .dash-phone-verify-row,
+  .dash-phone-otp-row {
+    flex-direction: column;
+  }
+
+  .dash-phone-verify-side,
+  .dash-phone-verify-btn {
+    width: 100%;
+  }
+}

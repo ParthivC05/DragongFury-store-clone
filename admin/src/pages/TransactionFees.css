@@ -1,0 +1,18 @@
+.transaction-fees-page .tf-table tbody tr {
+  cursor: default;
+}
+
+.transaction-fees-page .tf-input {
+  width: 6.5rem;
+  max-width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.transaction-fees-page .tf-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

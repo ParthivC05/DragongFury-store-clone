@@ -1,0 +1,273 @@
+/* ============================================
+   Subscription Form – Industry-level UI
+   (New / Edit subscription – Dist admin)
+   ============================================ */
+
+.subscription-form-page.admin-form-page {
+  align-items: flex-start;
+  padding: 2rem 1.5rem 3rem;
+  min-height: auto;
+  background: #f8fafc;
+}
+
+/* Single container: no extra box so only the form card is visible */
+.subscription-form-page .admin-form-container {
+  max-width: 640px;
+  width: 100%;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.subscription-form-page .page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.subscription-form-page .page-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.subscription-form-page .admin-form-intro {
+  margin: 0.25rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #64748b;
+  max-width: 520px;
+}
+
+/* Form card container */
+.subscription-form-page .admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 4px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* Sections with clear separation */
+.subscription-form-page .admin-form-section {
+  padding: 1.75rem 2rem;
+  margin: 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.subscription-form-page .admin-form-section:last-of-type {
+  border-bottom: none;
+}
+
+.subscription-form-page .admin-form-section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border: none;
+}
+
+/* Form groups – consistent 24px vertical rhythm */
+.subscription-form-page .admin-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.subscription-form-page .admin-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.subscription-form-page .admin-form-group > label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.subscription-form-page .admin-form-group input[type="text"],
+.subscription-form-page .admin-form-group input[type="number"],
+.subscription-form-page .admin-form-group select,
+.subscription-form-page .admin-form-group textarea {
+  width: 100%;
+  max-width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #0f172a;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.subscription-form-page .admin-form-group input[type="number"] {
+  max-width: 160px;
+}
+
+.subscription-form-page .admin-form-group input:focus,
+.subscription-form-page .admin-form-group select:focus,
+.subscription-form-page .admin-form-group textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.subscription-form-page .admin-form-group textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.subscription-form-page .admin-form-group textarea::placeholder,
+.subscription-form-page .admin-form-group input::placeholder {
+  color: #94a3b8;
+}
+
+/* Hint text */
+.subscription-form-page .admin-form-hint {
+  display: block;
+  margin-top: 0.375rem;
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Billing type – card-style radio group */
+.subscription-form-page .admin-form-radio-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  max-width: 360px;
+}
+
+.subscription-form-page .admin-form-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.subscription-form-page .admin-form-radio-label:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.subscription-form-page .admin-form-radio-label input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: #3b82f6;
+}
+
+.subscription-form-page .admin-form-radio-label:has(input:checked) {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+/* Distributor block (master admin) */
+.subscription-form-page .admin-form-distributor-block {
+  padding: 1.25rem 1.5rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0;
+}
+
+.subscription-form-page .admin-form-distributor-block .admin-form-group {
+  margin-bottom: 0;
+}
+
+.subscription-form-page .admin-form-distributor-block label {
+  color: #334155;
+}
+
+.subscription-form-page .admin-form-distributor-select {
+  max-width: 280px;
+}
+
+/* Checkbox row */
+.subscription-form-page .admin-form-group-checkbox {
+  padding-top: 0.25rem;
+}
+
+.subscription-form-page .admin-form-group-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+.subscription-form-page .admin-form-group-checkbox input[type="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  accent-color: #3b82f6;
+}
+
+/* Actions footer */
+.subscription-form-page .admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 2rem;
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+}
+
+.subscription-form-page .admin-form-actions .admin-btn-primary {
+  min-width: 140px;
+}
+
+/* Back button */
+.subscription-form-page .page-header .admin-btn-secondary {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .subscription-form-page.admin-form-page {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  .subscription-form-page .admin-form-section,
+  .subscription-form-page .admin-form-actions {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .subscription-form-page .admin-form-radio-group {
+    grid-template-columns: 1fr;
+  }
+
+  .subscription-form-page .admin-form-group input[type="number"] {
+    max-width: 100%;
+  }
+}

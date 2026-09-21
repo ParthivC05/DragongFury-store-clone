@@ -1,0 +1,145 @@
+.daily-bonus-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+  color: #e8f5ef;
+}
+
+.daily-bonus-header {
+  text-align: center;
+}
+
+.daily-bonus-header h1,
+.daily-bonus-vouchers h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.6rem;
+}
+
+.daily-bonus-empty {
+  color: rgba(232, 245, 239, 0.78);
+  text-align: center;
+}
+
+.daily-bonus-days-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 0.5rem 0 1.5rem;
+  justify-items: stretch;
+}
+
+/* Center a lone last card (Day 7) in the middle column */
+.daily-bonus-days-grid > .daily-bonus-day:last-child:nth-child(3n + 1) {
+  grid-column: 2;
+}
+
+.daily-bonus-day {
+  border-radius: 14px;
+  padding: 0.9rem 0.75rem;
+  background: linear-gradient(160deg, rgba(13, 122, 82, 0.35), rgba(8, 40, 30, 0.85));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  gap: 0.45rem;
+  text-align: center;
+  min-width: 0;
+}
+
+@media (max-width: 720px) {
+  .daily-bonus-days-grid {
+    grid-template-columns: repeat(3, minmax(110px, 1fr));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 0.35rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .daily-bonus-days-grid {
+    grid-template-columns: repeat(3, minmax(100px, 1fr));
+    gap: 0.55rem;
+  }
+
+  .daily-bonus-day {
+    padding: 0.7rem 0.5rem;
+  }
+
+  .daily-bonus-day h2 {
+    font-size: 0.9rem;
+  }
+
+  .daily-bonus-reward {
+    font-size: 0.8rem;
+    min-height: 2em;
+  }
+}
+
+.daily-bonus-day h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.daily-bonus-reward {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ef0c8;
+  min-height: 2.4em;
+}
+
+.daily-bonus-day button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: #19c37d;
+  color: #06281b;
+}
+
+.daily-bonus-day button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #334155;
+  color: #cbd5e1;
+}
+
+.daily-bonus-day--claimed {
+  opacity: 0.75;
+}
+
+.daily-bonus-day--locked,
+.daily-bonus-day--missed {
+  filter: grayscale(0.35);
+}
+
+.daily-bonus-vouchers {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.daily-bonus-vouchers ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.daily-bonus-vouchers a {
+  display: inline-flex;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  background: rgba(25, 195, 125, 0.18);
+  color: #9ef0c8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.daily-bonus-vouchers-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(232, 245, 239, 0.65);
+}

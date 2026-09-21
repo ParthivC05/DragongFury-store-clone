@@ -1,0 +1,135 @@
+/* Bonus report — store-admin friendly */
+.br-page .ccw-header {
+  margin-bottom: 1rem;
+}
+
+.br-summary-grid {
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+}
+
+.br-summary-total {
+  border-left: 3px solid #d97706;
+}
+
+.br-summary-players {
+  border-left: 3px solid #059669;
+}
+
+.br-breakdown {
+  margin-bottom: 1.25rem;
+}
+
+.br-breakdown-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.br-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.65rem;
+}
+
+.br-breakdown-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.br-breakdown-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.br-breakdown-amount {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.br-breakdown-meta {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.br-amount {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.br-user-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.br-user-link:hover {
+  text-decoration: underline;
+}
+
+.br-code {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.br-note {
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.br-type-welcome {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.br-type-daily {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.br-type-vip {
+  background: #faf5ff;
+  color: #7e22ce;
+}
+
+.br-type-spin {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.br-type-referral {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.br-type-promo {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.br-type-package {
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+@media (max-width: 900px) {
+  .br-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,151 @@
+.welcome-signup-bonus-page .wsb-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.welcome-signup-bonus-page .wsb-toolbar .wl-field {
+  flex: 1 1 240px;
+  max-width: 360px;
+}
+
+.welcome-signup-bonus-page .wsb-refresh,
+.welcome-signup-bonus-page .wsb-save {
+  border: 1px solid #cbd5e1;
+  background: #111827;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome-signup-bonus-page .wsb-refresh:disabled,
+.welcome-signup-bonus-page .wsb-save:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.welcome-signup-bonus-page .wsb-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  color: #374151;
+  cursor: pointer;
+}
+
+.welcome-signup-bonus-page .wsb-amount {
+  width: 7.5rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.welcome-signup-bonus-page .wsb-amount--invalid {
+  border-color: #dc2626;
+  background: #fef2f2;
+}
+
+.welcome-signup-bonus-page .wsb-empty {
+  text-align: center;
+  color: #6b7280;
+  padding: 1.25rem;
+}
+
+.welcome-signup-bonus-page .wsb-image-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 9.5rem;
+}
+
+.welcome-signup-bonus-page .wsb-image-preview {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.welcome-signup-bonus-page .wsb-image-placeholder {
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.35rem;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  color: #64748b;
+  border-radius: 8px;
+  border: 1px dashed #cbd5e1;
+  background: #f8fafc;
+}
+
+.welcome-signup-bonus-page .wsb-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.welcome-signup-bonus-page .wsb-image-hint {
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.welcome-signup-bonus-page .wsb-upload,
+.welcome-signup-bonus-page .wsb-remove-image {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #111827;
+  border-radius: 6px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.welcome-signup-bonus-page .wsb-upload:has(input:disabled),
+.welcome-signup-bonus-page .wsb-remove-image:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.welcome-signup-bonus-page .wl-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.welcome-signup-bonus-page .wl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.welcome-signup-bonus-page .wl-table th,
+.welcome-signup-bonus-page .wl-table td {
+  padding: 0.75rem 0.85rem;
+  border-bottom: 1px solid #eef2f7;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.welcome-signup-bonus-page .wl-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.welcome-signup-bonus-page .wl-table tbody tr:last-child td {
+  border-bottom: none;
+}

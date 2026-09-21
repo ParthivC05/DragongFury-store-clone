@@ -1,0 +1,365 @@
+.wallet-limits-page {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+.wallet-limits-header {
+  margin-bottom: 1.25rem;
+}
+
+.wallet-limits-header h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.wallet-limits-header p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.55;
+  max-width: 46rem;
+}
+
+.wallet-limits-loading {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* How-it-works guide */
+.wl-guide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.wl-guide-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+}
+
+.wl-guide-num {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: #111827;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wl-guide-item strong {
+  display: block;
+  font-size: 0.9rem;
+  color: #111827;
+  margin-bottom: 0.15rem;
+}
+
+.wl-guide-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Cards */
+.wl-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 1.15rem 1.2rem 1.25rem;
+  margin-bottom: 1.1rem;
+  box-shadow: 0 2px 10px rgba(17, 24, 39, 0.04);
+}
+
+.wl-card--accent {
+  border-color: #c7d2fe;
+  background: linear-gradient(180deg, #f8faff 0%, #fff 40%);
+}
+
+.wl-card-head {
+  margin-bottom: 1rem;
+}
+
+.wl-card-head h2 {
+  margin: 0.35rem 0 0.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.wl-card-head p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.wl-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #374151;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+}
+
+.wl-badge--store {
+  color: #3730a3;
+  background: #e0e7ff;
+}
+
+.wl-subsection {
+  margin-bottom: 1.1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.wl-subsection:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.wl-subsection h3 {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.wl-subsection-desc {
+  margin: -0.35rem 0 0.75rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.wl-subsection--highlight {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.wl-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.85rem;
+}
+
+.wl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.875rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.wl-field input,
+.wl-field select {
+  height: 42px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0 0.75rem;
+  font-size: 0.9rem;
+  color: #111827;
+  font-weight: 500;
+  background: #fff;
+}
+
+.wl-field input:focus,
+.wl-field select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+.wl-field input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.wl-field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+  gap: 0.85rem;
+  align-items: end;
+}
+
+@media (max-width: 640px) {
+  .wl-field-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.wl-hint-box {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.85rem;
+  color: #065f46;
+  line-height: 1.4;
+}
+
+.wl-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.wl-actions--split {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.wl-actions button,
+.wl-btn-secondary {
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 600;
+  padding: 0 1.1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.wl-actions button:disabled,
+.wl-btn-secondary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.wl-btn-secondary {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.wl-btn-secondary:hover:not(:disabled) {
+  background: #f9fafb;
+}
+
+.wl-meta {
+  margin: 0.75rem 0 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.wl-store-status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin: 0.85rem 0 1rem;
+  font-size: 0.9rem;
+}
+
+.wl-status-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #9ca3af;
+  margin-bottom: 0.15rem;
+}
+
+.wl-muted {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.wl-store-status-note {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+}
+
+.wl-pill {
+  display: inline-block;
+  margin-left: 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 0.15rem 0.5rem;
+  vertical-align: middle;
+}
+
+.wl-pill--default {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.wl-pill--override {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.wl-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.wl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.wl-table th {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  background: #f9fafb;
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.wl-table td {
+  padding: 0.7rem 0.85rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #111827;
+}
+
+.wl-table tbody tr {
+  cursor: pointer;
+}
+
+.wl-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.wl-table tbody tr.is-selected {
+  background: #eef2ff;
+}
+
+.wl-table tbody tr:last-child td {
+  border-bottom: none;
+}

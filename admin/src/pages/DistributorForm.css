@@ -1,0 +1,313 @@
+/* Centered, containerized form layout – shared by all create/edit form pages */
+.admin-form-page,
+.distributor-form-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 8rem);
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.admin-form-container {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 10px 20px -4px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  padding: 2rem;
+}
+
+.admin-form-container .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-form-container .page-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.admin-form-container .page-error {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #b91c1c;
+  font-size: 0.9rem;
+}
+
+.admin-form-container .admin-form {
+  max-width: none;
+}
+
+.admin-form-container .page-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.distributor-form-page .page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.distributor-form-page h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.admin-form {
+  max-width: 400px;
+}
+
+.admin-form-group {
+  margin-bottom: 1rem;
+}
+
+.admin-form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.admin-form-group input[type="text"],
+.admin-form-group input[type="email"],
+.admin-form-group input[type="password"],
+.admin-form-group input[type="url"],
+.admin-form-group select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #111827;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.admin-form-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-form-password-wrapper input {
+  padding-right: 2.75rem !important;
+}
+
+.admin-form-password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.admin-form-password-toggle:hover {
+  color: #111827;
+}
+
+.admin-form-password-toggle:focus {
+  outline: none;
+  color: #4a7cff;
+}
+
+.admin-form-group select {
+  min-height: 42px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+.admin-form-group select:hover {
+  border-color: #d1d5db;
+}
+
+.admin-form-group select:focus {
+  outline: none;
+  border-color: #4a7cff;
+  box-shadow: 0 0 0 3px rgba(74, 124, 255, 0.15);
+}
+
+.admin-form-group select:disabled {
+  background-color: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Distributor block – prominent first step */
+.admin-form-distributor-block {
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.admin-form-distributor-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-form-distributor-label-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.admin-form-distributor-label-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  background: #4a7cff;
+  color: #fff;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin-form-distributor-label-badge-optional {
+  background: #64748b;
+  color: #fff;
+}
+
+.admin-form-distributor-input {
+  font-weight: 500;
+  border-color: #cbd5e1 !important;
+  padding: 0.55rem 0.75rem !important;
+}
+
+.admin-form-distributor-input:focus {
+  border-color: #4a7cff !important;
+  box-shadow: 0 0 0 3px rgba(74, 124, 255, 0.15);
+}
+
+.admin-form-distributor-select {
+  font-weight: 500;
+  border-color: #cbd5e1 !important;
+  background-color: #fff !important;
+}
+
+.admin-form-distributor-select:focus {
+  border-color: #4a7cff !important;
+}
+
+.admin-form-distributor-hint {
+  margin-top: 0.5rem;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-form-distributor-value .admin-form-readonly {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 0.55rem 0.75rem;
+}
+
+.admin-form-readonly {
+  background: #f0f0f0;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.admin-form-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.admin-form-group-checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Customer site URL – optional, grouped block */
+.admin-form-group-url-block {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.admin-form-url-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.admin-form-url-label-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.admin-form-url-label-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  background: #64748b;
+  color: #fff;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin-form-url-input {
+  font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+.admin-form-url-input:focus {
+  outline: none;
+  border-color: #4a7cff;
+  box-shadow: 0 0 0 3px rgba(74, 124, 255, 0.15);
+}
+
+.admin-form-url-input::placeholder {
+  color: #94a3b8;
+}
+
+.admin-form-url-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.admin-form-url-hint strong {
+  color: #475569;
+  font-weight: 600;
+}

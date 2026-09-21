@@ -1,0 +1,201 @@
+/* Chime deposits — full-width table (All deposits tab) */
+
+.ccd-page {
+  max-width: none;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.ccd-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ccd-table {
+  table-layout: fixed;
+  font-size: 0.8125rem;
+}
+
+.ccd-table th,
+.ccd-table td {
+  padding: 0.65rem 0.55rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.ccd-table th {
+  white-space: normal;
+  line-height: 1.25;
+  vertical-align: bottom;
+}
+
+.ccd-table .ccw-td-id,
+.ccd-table .ccw-td-date,
+.ccd-table .ccw-td-amount,
+.ccd-table .ccw-td-wait {
+  white-space: nowrap;
+}
+
+.ccd-table .ccw-td-username,
+.ccd-table .ccw-td-store,
+.ccd-table .ccw-processed-by {
+  max-width: none;
+}
+
+.ccd-table .ccw-actions {
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* Keep Approve / Reject visible when the table scrolls horizontally */
+.ccd-table th:last-child,
+.ccd-table td.ccw-td-actions {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: var(--color-surface, #fff);
+  box-shadow: -6px 0 10px rgba(0, 0, 0, 0.06);
+}
+
+.ccd-table th:last-child {
+  background: linear-gradient(to bottom, #fafafa, #f4f4f5);
+  z-index: 3;
+}
+
+.ccd-table tbody tr:hover td.ccw-td-actions {
+  background: #fafafa;
+}
+
+.ccd-col-id { width: 3.5%; }
+.ccd-col-date { width: 8%; }
+.ccd-col-store { width: 5.5%; }
+.ccd-col-user { width: 11%; }
+.ccd-col-method { width: 5.5%; }
+.ccd-col-sender { width: 8%; }
+.ccd-col-payto { width: 8%; }
+.ccd-col-amount { width: 6.5%; }
+.ccd-col-status { width: 7%; }
+.ccd-col-processed { width: 10%; }
+.ccd-col-wait { width: 10%; }
+.ccd-col-actions { width: 14%; }
+
+.ccd-table:not(.ccd-table--with-store) .ccd-col-date { width: 9%; }
+.ccd-table:not(.ccd-table--with-store) .ccd-col-user { width: 13%; }
+.ccd-table:not(.ccd-table--with-store) .ccd-col-sender { width: 9%; }
+.ccd-table:not(.ccd-table--with-store) .ccd-col-payto { width: 9%; }
+.ccd-table:not(.ccd-table--with-store) .ccd-col-processed { width: 11%; }
+.ccd-table:not(.ccd-table--with-store) .ccd-col-wait { width: 11%; }
+
+.ccd-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background: var(--color-surface-2, #f3f4f6);
+  border-radius: 8px;
+  padding: 0.2rem;
+  margin-bottom: 1.25rem;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.ccd-tab {
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.ccd-tab-active {
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111827);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ccd-totals-lead {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6b7280);
+  line-height: 1.5;
+}
+
+.ccd-totals-filters {
+  margin-bottom: 1rem;
+}
+
+.ccd-totals-filters .dashboard-filter-bar {
+  margin-bottom: 0.75rem;
+}
+
+.ccd-totals-toolbar {
+  margin-bottom: 0;
+}
+
+.ccd-filter-input {
+  padding: 0.45rem 0.85rem;
+  min-width: 12rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #111827);
+}
+
+.ccd-filter-input:focus {
+  outline: none;
+  border-color: var(--color-primary, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.ccd-totals-table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ccd-totals-table th,
+.ccd-totals-table td {
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ccd-totals-table th:last-child,
+.ccd-totals-table td:last-child {
+  position: static;
+  box-shadow: none;
+  background: inherit;
+}
+
+.ccd-totals-col-user { width: 28%; }
+.ccd-totals-col-store { width: 16%; }
+.ccd-totals-col-count { width: 14%; }
+.ccd-totals-col-amount { width: 20%; }
+.ccd-totals-col-date { width: 22%; }
+
+.ccd-totals-table:not(.ccd-table--with-store) .ccd-totals-col-user { width: 36%; }
+.ccd-totals-table:not(.ccd-table--with-store) .ccd-totals-col-count { width: 16%; }
+.ccd-totals-table:not(.ccd-table--with-store) .ccd-totals-col-amount { width: 24%; }
+.ccd-totals-table:not(.ccd-table--with-store) .ccd-totals-col-date { width: 24%; }
+
+@media (max-width: 768px) {
+  .ccd-table th,
+  .ccd-table td {
+    padding: 0.55rem 0.45rem;
+    font-size: 0.75rem;
+  }
+
+  .ccd-table .ccw-actions .admin-btn-sm {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    font-size: 0.72rem;
+  }
+}

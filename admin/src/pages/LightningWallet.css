@@ -1,0 +1,109 @@
+.lnw-page {
+  max-width: 52rem;
+}
+
+.lnw-rate {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.lnw-banner {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.lnw-banner--warn {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.lnw-hero {
+  margin: 0 0 1.25rem;
+  padding: 1.35rem 1.4rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: #111827;
+  color: #fff;
+}
+
+.lnw-hero-label {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+
+.lnw-hero-usd {
+  margin: 0;
+  font-size: 2.15rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.lnw-hero-crypto {
+  margin: 0.4rem 0 0;
+  font-size: 0.95rem;
+  color: #d1d5db;
+}
+
+.lnw-status {
+  margin: 0.75rem 0 0;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+}
+
+.lnw-grid {
+  display: grid;
+  gap: 0.9rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .lnw-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.lnw-card {
+  margin: 0;
+  padding: 1rem 1.05rem 0.95rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.lnw-card-label {
+  margin: 0 0 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.lnw-card-usd {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111827;
+}
+
+.lnw-card-crypto,
+.lnw-card-sats {
+  margin: 0.2rem 0 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.lnw-card-hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: #6b7280;
+}

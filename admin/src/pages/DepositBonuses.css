@@ -1,0 +1,363 @@
+.deposit-bonuses-page {
+  max-width: 920px;
+}
+
+.store-features-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.store-features-field label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.deposit-bonuses-intro {
+  margin-bottom: 1.25rem;
+}
+
+.deposit-bonuses-summary {
+  background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.deposit-bonuses-summary-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.deposit-bonuses-status {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.deposit-bonuses-status--on {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.deposit-bonuses-status--off {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.deposit-bonuses-summary-window {
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.deposit-bonuses-summary-tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .deposit-bonuses-summary-tiers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deposit-bonuses-summary-tier {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.deposit-bonuses-summary-tier-emoji {
+  font-size: 1.35rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.deposit-bonuses-summary-tier-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+}
+
+.deposit-bonuses-summary-tier-value {
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.deposit-bonuses-summary-stores {
+  margin: 0.85rem 0 0;
+  font-size: 0.9rem;
+  color: #475569;
+}
+
+.deposit-bonuses-guide p {
+  margin: 0 0 0.65rem;
+}
+
+.deposit-bonuses-section {
+  margin-bottom: 1.25rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.deposit-bonuses-section-title {
+  margin: 0 0 0.85rem;
+  font-size: 1.05rem;
+  color: #0f172a;
+}
+
+.deposit-bonuses-switch-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.deposit-bonuses-switch-card input {
+  margin-top: 0.2rem;
+}
+
+.deposit-bonuses-switch-card strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.deposit-bonuses-switch-card small {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.deposit-bonuses-scope-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 640px) {
+  .deposit-bonuses-scope-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deposit-bonuses-scope-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.deposit-bonuses-scope-card--active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.deposit-bonuses-scope-card strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.deposit-bonuses-scope-card small {
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.deposit-bonuses-store-picker {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.deposit-bonuses-store-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.deposit-bonuses-store-toolbar input[type='search'] {
+  flex: 1 1 200px;
+  min-width: 180px;
+}
+
+.deposit-bonuses-store-count {
+  margin: 0 0 0.65rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.deposit-bonuses-store-empty {
+  padding: 0.75rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.deposit-bonuses-store-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.5rem;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 0.25rem;
+}
+
+.deposit-bonuses-store-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #fff;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.deposit-bonuses-store-item--selected {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.deposit-bonuses-store-item input {
+  margin-top: 0.15rem;
+}
+
+.deposit-bonuses-store-item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.deposit-bonuses-store-item-text strong {
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+.deposit-bonuses-store-item-text small {
+  font-size: 0.75rem;
+  color: #64748b;
+  word-break: break-all;
+}
+
+.deposit-bonuses-tier-intro {
+  margin: -0.35rem 0 1rem;
+}
+
+.deposit-bonuses-tiers {
+  display: grid;
+  gap: 1rem;
+}
+
+.deposit-bonuses-tier-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  background: #fafafa;
+}
+
+.deposit-bonuses-tier-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.deposit-bonuses-tier-emoji {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.deposit-bonuses-tier-header h4 {
+  margin: 0 0 0.15rem;
+  font-size: 1rem;
+}
+
+.deposit-bonuses-tier-header p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.deposit-bonuses-tier-toggle {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.deposit-bonuses-tier-preview {
+  padding: 0.55rem 0.75rem;
+  margin-bottom: 0.85rem;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #166534;
+}
+
+.deposit-bonuses-tier-fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 640px) {
+  .deposit-bonuses-tier-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
+.deposit-bonuses-radio-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+
+.deposit-bonuses-radio-row label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+}
+
+.deposit-bonuses-tier-value-input {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.deposit-bonuses-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

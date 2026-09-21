@@ -1,0 +1,246 @@
+/* Phone OTP modals — reuse DragonFury email-verify theme + form fields */
+
+.phone-otp-overlay {
+  z-index: 10075;
+  pointer-events: auto;
+}
+
+.phone-otp-wrap {
+  z-index: 10076;
+  pointer-events: none;
+  padding: max(16px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  box-sizing: border-box;
+}
+
+.phone-otp-modal {
+  width: min(100%, 420px);
+  max-height: min(92dvh, 720px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+}
+
+.phone-otp-modal::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 0;
+  height: 2.5px;
+  background: linear-gradient(90deg, transparent, var(--pj-green), transparent);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.phone-otp-modal .pj-verify-status {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.phone-otp-modal .pj-verify-title {
+  overflow-wrap: anywhere;
+}
+
+.phone-otp-fields {
+  margin-top: 14px;
+  text-align: left;
+}
+
+.phone-otp-label {
+  display: block;
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--pj-off, #d4a845);
+}
+
+.phone-otp-phone-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  align-items: stretch;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.phone-otp-phone-row .phone-cc-field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.phone-otp-edit {
+  flex: 0 0 auto;
+  align-self: stretch;
+  min-height: 2.75rem;
+  min-width: 3.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--pj-b1, #503a10);
+  background: rgba(11, 8, 3, 0.75);
+  color: var(--pj-gold, #f9d038);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 0.75rem;
+  white-space: nowrap;
+}
+
+.phone-otp-edit:hover:not(:disabled) {
+  border-color: var(--pj-b2, #7a5c1a);
+  color: var(--pj-amber, #ffaa00);
+}
+
+.phone-otp-edit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.phone-otp-code {
+  width: 100%;
+  margin-bottom: 0.25rem;
+  padding: 12px 14px;
+  border-radius: 13px;
+  border: 1.5px solid var(--pj-b0, #2a1e08);
+  background: rgba(11, 8, 3, 0.8);
+  color: var(--pj-white, #fff6dc);
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-align: center;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phone-otp-code:focus {
+  border-color: var(--pj-gold2, #e8a010);
+  box-shadow: 0 0 0 3px rgba(232, 160, 16, 0.14);
+}
+
+.phone-otp-logout {
+  margin-top: 14px;
+  background: none;
+  border: none;
+  color: var(--pj-mute, #6b5020);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  min-height: 2.5rem;
+}
+
+.phone-otp-logout:hover {
+  color: var(--pj-off, #d4a845);
+}
+
+@media (max-width: 480px) {
+  .phone-otp-wrap {
+    align-items: center;
+    justify-content: center;
+    padding: max(12px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+
+  .phone-otp-modal {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px 14px 18px;
+    border-radius: 20px;
+    max-height: min(88dvh, 100%);
+  }
+
+  .phone-otp-modal .pj-verify-icon {
+    font-size: 34px;
+    margin-bottom: 8px;
+  }
+
+  .phone-otp-modal .pj-verify-title {
+    font-size: clamp(22px, 6.5vw, 26px);
+    letter-spacing: 1px;
+    padding: 0 28px;
+    margin-bottom: 12px;
+  }
+
+  .phone-otp-modal .pj-verify-status {
+    padding: 12px 12px;
+    border-radius: 12px;
+  }
+
+  .phone-otp-modal .pj-verify-status-label {
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .phone-otp-modal .pj-verify-status-text {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .phone-otp-fields {
+    margin-top: 12px;
+  }
+
+  .phone-otp-label {
+    font-size: 11px;
+  }
+
+  /* Keep flag + number + Edit on one row */
+  .phone-otp-phone-row {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .phone-otp-edit {
+    min-width: 3.35rem;
+    padding: 0 0.55rem;
+    font-size: 0.75rem;
+    min-height: 3rem;
+  }
+
+  .phone-otp-code {
+    font-size: 16px;
+    letter-spacing: 0.14em;
+    padding: 13px 12px;
+  }
+
+  .phone-otp-modal .pj-verify-footnote {
+    font-size: 11px;
+    margin-bottom: 14px;
+  }
+
+  .phone-otp-modal .pj-btn-login {
+    font-size: 18px;
+    letter-spacing: 2px;
+    padding: 13px 10px;
+    border-radius: 14px;
+  }
+
+  .phone-otp-modal .pj-verify-close {
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 360px) {
+  .phone-otp-modal {
+    padding: 20px 12px 16px;
+  }
+
+  .phone-otp-modal .pj-verify-title {
+    font-size: 21px;
+    padding: 0 24px;
+  }
+
+  .phone-otp-edit {
+    min-width: 3rem;
+    padding: 0 0.4rem;
+  }
+}

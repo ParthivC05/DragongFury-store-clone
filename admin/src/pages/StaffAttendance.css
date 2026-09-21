@@ -1,0 +1,77 @@
+.staff-attendance-page .page-subtitle {
+  margin: 0.25rem 0 1rem;
+  color: #555;
+  font-size: 0.92rem;
+}
+
+.staff-attendance-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.staff-attendance-tabs button {
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+}
+
+.staff-attendance-tabs button.active {
+  background: #1a1a2e;
+  color: #fff;
+  border-color: #1a1a2e;
+}
+
+.staff-attendance-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.staff-attendance-grant {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.staff-attendance-grant h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.staff-attendance-grant p {
+  margin: 0 0 0.75rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.staff-attendance-grant-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.staff-attendance-grant-row select,
+.staff-attendance-grant-row input {
+  padding: 0.5rem 0.7rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.staff-attendance-grant-row select {
+  min-width: 240px;
+  flex: 1;
+}
+
+.staff-attendance-grant-row input {
+  width: 5.5rem;
+}

@@ -1,0 +1,227 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.login-box {
+  width: 100%;
+  max-width: 36rem; /* xl */
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.login-box h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+
+.login-subtitle {
+  margin: 0 0 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.login-box label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.login-box input:not(.login-otp-box),
+.login-box textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.login-box textarea {
+  resize: vertical;
+}
+
+.login-error {
+  margin: 0 0 1rem;
+  color: #c00;
+  font-size: 0.875rem;
+}
+
+.login-success {
+  margin: 0 0 1rem;
+  color: #0a0;
+  font-size: 0.875rem;
+}
+
+.login-box p a {
+  text-decoration: underline;
+}
+
+.login-box p a:hover {
+  color: #333;
+}
+
+.login-link {
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  color: #1a1a2e;
+  font-size: 0.875rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.login-link:hover:not(:disabled) {
+  color: #333;
+}
+
+/* OTP step: digit boxes (new gen UI) */
+.login-otp-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.login-otp-boxes {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-otp-box {
+  width: 2.75rem;
+  height: 2.75rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+  color: #1a1a2e;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.login-otp-box:hover {
+  border-color: #d1d5db;
+  background: #fff;
+}
+
+.login-otp-box:focus {
+  outline: none;
+  border-color: #1a1a2e;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.15);
+}
+
+.login-otp-box::placeholder {
+  color: #9ca3af;
+}
+
+/* OTP step: two actions side by side */
+.login-otp-actions {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.login-otp-actions .login-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.login-otp-actions .login-link:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #1a1a2e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #252540;
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Reset password form: rules checklist + inline errors (same as Profile) */
+.reset-password-form .reset-password-field {
+  margin-bottom: 1rem;
+}
+
+.reset-password-form .reset-password-field label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.reset-password-form .reset-password-field input[aria-invalid="true"] {
+  border-color: #dc2626;
+}
+
+.reset-password-rules {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.reset-password-rules li {
+  margin-bottom: 0.25rem;
+}
+
+.reset-password-rule {
+  color: #6b7280;
+}
+
+.reset-password-rule.met {
+  color: #059669;
+}
+
+.reset-password-rule-icon {
+  display: inline-block;
+  width: 1.25em;
+  margin-right: 0.35rem;
+  font-weight: 700;
+}
+
+.reset-password-rule.met .reset-password-rule-icon {
+  color: #059669;
+}
+
+.reset-password-rule:not(.met) .reset-password-rule-icon {
+  color: #9ca3af;
+}
+
+.reset-password-field-error {
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  color: #dc2626;
+}

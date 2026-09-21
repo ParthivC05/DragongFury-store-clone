@@ -1,0 +1,83 @@
+/* KYC Config + KYC report pages */
+
+.didit-kyc-page .kyc-section {
+  margin-top: 1.75rem;
+}
+
+.didit-kyc-page .kyc-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.didit-kyc-page .kyc-summary-grid {
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 900px) {
+  .didit-kyc-page .kyc-summary-grid {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+.didit-kyc-page .kyc-summary--approved {
+  border-left: 3px solid #059669;
+}
+
+.didit-kyc-page .kyc-summary--pending {
+  border-left: 3px solid #d97706;
+}
+
+.didit-kyc-page .kyc-summary--declined {
+  border-left: 3px solid #dc2626;
+}
+
+.didit-kyc-page .kyc-status--approved {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.didit-kyc-page .kyc-status--declined {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.didit-kyc-page .kyc-status--pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.didit-kyc-page .kyc-status--default {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.didit-kyc-page .kyc-session-id {
+  display: inline-block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+
+.didit-kyc-page .kyc-session-cell {
+  max-width: 160px;
+}
+
+.didit-kyc-page .br-user-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.didit-kyc-page .br-user-link:hover {
+  text-decoration: underline;
+}

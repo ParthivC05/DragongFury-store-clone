@@ -1,0 +1,80 @@
+/* Wallet adjust report */
+.war-summary-grid {
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+}
+
+.war-summary-added {
+  border-left: 3px solid #059669;
+}
+
+.war-summary-removed {
+  border-left: 3px solid #dc2626;
+}
+
+.war-summary-count {
+  border-left: 3px solid #2563eb;
+}
+
+.war-type-add {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.war-type-deduct {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.war-wallet-badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.war-amount-add {
+  color: #047857;
+  font-weight: 700;
+}
+
+.war-amount-deduct {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.war-breakdown-add {
+  color: #047857;
+  font-size: 0.95rem !important;
+}
+
+.war-breakdown-remove {
+  color: #b91c1c;
+  font-size: 0.95rem !important;
+}
+
+.war-handler {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 140px;
+}
+
+.war-handler-name {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.war-handler-role {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .war-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

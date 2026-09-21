@@ -1,0 +1,913 @@
+/* Chime deposit modal — guided step flow (matches deposit-flow-redesign) */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&display=swap');
+
+.dash-chime-modal-root {
+  --chime-bg: #05080d;
+  --chime-card: #0d151d;
+  --chime-card-2: #0f1a20;
+  --chime-border-gold: rgba(230, 190, 90, 0.35);
+  --chime-gold: #e8c46a;
+  --chime-green: #22e08a;
+  --chime-green-deep: #0e5e3f;
+  --chime-red: #ff4d6a;
+  --chime-text: #eef3ef;
+  --chime-muted: #8ea198;
+  --chime-muted-dim: #5c6a65;
+  --dash-pj-green: #22e08a;
+  font-family: Inter, Rajdhani, system-ui, sans-serif;
+  color: var(--chime-text);
+}
+
+.dash-chime-modal-backdrop {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(34, 224, 138, 0.08), transparent 45%),
+    rgba(5, 8, 13, 0.92);
+  backdrop-filter: blur(10px);
+}
+
+.dash-chime-modal-root:not(.dash-chime-modal-root--onboarding) {
+  align-items: center;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Leave room for the onboarding guide (top on mobile, right on desktop) so Submit stays visible. */
+.dash-chime-modal-root--onboarding {
+  align-items: flex-start;
+  padding-top: max(6.75rem, calc(env(safe-area-inset-top, 0px) + 5.75rem));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.dash-chime-modal-root--onboarding .dash-chime-modal-shell {
+  max-height: calc(100dvh - 8.5rem - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  margin-top: 0;
+}
+
+@media (min-width: 768px) {
+  .dash-chime-modal-root--onboarding {
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+    padding-right: max(1rem, calc(18.5rem + 1.25rem));
+  }
+
+  .dash-chime-modal-root--onboarding .dash-chime-modal-shell {
+    max-height: calc(100dvh - 2rem);
+  }
+}
+
+.dash-chime-modal-shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 430px;
+  max-height: calc(100dvh - 2rem);
+  animation: dash-fade-up 0.45s ease-out both;
+}
+
+.dash-chime-guide-banner {
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, #123024, #0c1c17);
+  border: 1.5px solid var(--chime-green);
+  box-shadow:
+    0 8px 30px rgba(0, 0, 0, 0.5),
+    0 0 0 3px rgba(34, 224, 138, 0.08);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash-chime-guide-dot {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--chime-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', Rajdhani, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #04180f;
+  box-shadow: 0 0 0 6px rgba(34, 224, 138, 0.15);
+}
+
+.dash-chime-guide-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: var(--chime-text);
+}
+
+.dash-chime-guide-sub {
+  display: block;
+  font-weight: 400;
+  color: var(--chime-muted);
+  font-size: 12.5px;
+  margin-top: 2px;
+}
+
+.dash-chime-progress {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.dash-chime-progress-seg {
+  flex: 1;
+  height: 7px;
+  border-radius: 6px;
+  background: #1b262b;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-chime-progress-seg.done,
+.dash-chime-progress-seg.active {
+  background: var(--chime-green-deep);
+}
+
+.dash-chime-progress-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--chime-green);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.dash-chime-progress-seg.done .dash-chime-progress-fill {
+  width: 100%;
+}
+
+.dash-chime-progress-seg.active .dash-chime-progress-fill {
+  width: 55%;
+}
+
+.dash-chime-modal-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1 1 auto;
+  border-radius: 22px;
+  border: 1.5px solid var(--chime-border-gold);
+  background: var(--chime-card);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.dash-chime-modal-header {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px 0;
+  margin-bottom: 16px;
+}
+
+.dash-chime-modal-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.dash-chime-modal-logo {
+  height: 2rem !important;
+  max-width: 7.5rem !important;
+  width: auto !important;
+}
+
+.dash-chime-modal-header-close {
+  flex-shrink: 0;
+  border: 1.5px solid #2a5148;
+  color: #7fe2b8;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.dash-chime-modal-header-close:hover {
+  background: rgba(34, 224, 138, 0.08);
+  border-color: var(--chime-green);
+}
+
+.dash-chime-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 20px 22px;
+}
+
+.dash-chime-amount-card {
+  background: linear-gradient(135deg, #151f16, #0c1410);
+  border: 1.5px solid rgba(230, 190, 90, 0.5);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.dash-chime-amount-card-label {
+  font-size: 13px;
+  color: var(--chime-muted);
+  margin-bottom: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dash-chime-amount-card-amt {
+  font-family: 'Fredoka', 'Russo One', sans-serif;
+  font-weight: 700;
+  font-size: 2.75rem;
+  color: var(--chime-gold);
+  line-height: 1;
+}
+
+.dash-chime-amount-card-warn {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: var(--chime-red);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.dash-chime-copy-amt {
+  margin-top: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  background: rgba(230, 190, 90, 0.15);
+  color: var(--chime-gold);
+  font-weight: 700;
+  padding: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.dash-chime-copy-amt:hover {
+  background: rgba(230, 190, 90, 0.22);
+}
+
+.dash-chime-copy-amt.copied {
+  background: rgba(34, 224, 138, 0.18);
+  color: var(--chime-green);
+}
+
+.dash-chime-step {
+  border: 1.5px solid #223029;
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 14px;
+  background: var(--chime-card-2);
+  transition: all 0.35s ease;
+  position: relative;
+}
+
+.dash-chime-step.active {
+  border-color: var(--chime-green);
+  box-shadow:
+    0 0 0 4px rgba(34, 224, 138, 0.14),
+    0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.dash-chime-step.done {
+  opacity: 0.55;
+}
+
+.dash-chime-step.locked {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Unlocked but not yet the focused step (e.g. 1 char typed) — still clickable */
+.dash-chime-step.ready {
+  opacity: 0.85;
+  pointer-events: auto;
+}
+
+.dash-chime-step-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.dash-chime-step-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fredoka', Rajdhani, sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  background: #233229;
+  color: #7c9188;
+  border: 1.5px solid #2e4238;
+}
+
+.dash-chime-step.active .dash-chime-step-num {
+  background: var(--chime-green);
+  color: #04180f;
+  border-color: var(--chime-green);
+}
+
+.dash-chime-step.done .dash-chime-step-num {
+  background: var(--chime-green-deep);
+  color: var(--chime-green);
+  border-color: var(--chime-green);
+}
+
+.dash-chime-step-title {
+  font-weight: 700;
+  font-size: 15.5px;
+  color: var(--chime-text);
+}
+
+.dash-chime-step-sub {
+  font-size: 12.5px;
+  color: var(--chime-muted);
+  margin-top: 1px;
+}
+
+.dash-chime-qr-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0 14px;
+}
+
+.dash-chime-qr-image {
+  width: 180px;
+  height: 180px;
+  max-width: 100%;
+  border-radius: 14px;
+  background: #fff;
+  padding: 10px;
+  object-fit: contain;
+  display: block;
+}
+
+.dash-chime-btn-green {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 26px;
+  padding: 16px;
+  font-family: 'Fredoka', Rajdhani, sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  background: linear-gradient(135deg, #34e69a, #17b56e);
+  color: #04180f;
+  box-shadow: 0 6px 18px rgba(34, 224, 138, 0.35);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.dash-chime-step.active .dash-chime-btn-green {
+  animation: dash-chime-pulse 1.8s ease-in-out infinite;
+}
+
+.dash-chime-btn-green:hover {
+  transform: scale(1.01);
+}
+
+@keyframes dash-chime-pulse {
+  0%,
+  100% {
+    box-shadow: 0 6px 18px rgba(34, 224, 138, 0.35);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 6px 26px rgba(34, 224, 138, 0.6);
+    transform: scale(1.015);
+  }
+}
+
+.dash-chime-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #0b1512;
+  border: 1.5px solid #223029;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-top: 10px;
+}
+
+.dash-chime-tag-value {
+  font-weight: 700;
+  font-size: 15.5px;
+  flex: 1;
+  min-width: 0;
+  word-break: break-word;
+  color: var(--chime-text);
+}
+
+.dash-chime-tag-copy {
+  border: 1.5px solid #2e4238;
+  background: transparent;
+  color: #7fe2b8;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.dash-chime-tag-copy:hover {
+  border-color: var(--chime-green);
+  background: rgba(34, 224, 138, 0.08);
+}
+
+.dash-chime-step-next-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.dash-chime-btn-next {
+  border: 1.5px solid #2e4238;
+  background: transparent;
+  color: #7fe2b8;
+  border-radius: 10px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+
+.dash-chime-btn-next:hover:not(:disabled) {
+  border-color: var(--chime-green);
+  background: rgba(34, 224, 138, 0.08);
+}
+
+.dash-chime-btn-next:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.dash-chime-uname {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 10px;
+  background: #060b09;
+  border: 1.5px solid #2e4238;
+  color: var(--chime-text);
+  font-size: 15.5px;
+  font-family: inherit;
+  font-weight: 600;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.dash-chime-uname-wrap {
+  margin-top: 10px;
+  background: #060b09;
+  border-color: #2e4238;
+}
+
+.dash-chime-uname-wrap .dash-chime-uname {
+  margin-top: 0;
+  padding: 14px 14px 14px 6px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dash-chime-uname-wrap .dash-chime-uname:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.dash-chime-uname-wrap.is-disabled {
+  opacity: 0.7;
+}
+
+.dash-chime-uname:focus {
+  border-color: var(--chime-green);
+  box-shadow: 0 0 0 3px rgba(34, 224, 138, 0.2);
+}
+
+.dash-chime-uname:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.dash-chime-uname-wrap .dash-chime-uname:disabled {
+  opacity: 1;
+}
+
+.dash-chime-uname::placeholder {
+  color: var(--chime-muted-dim);
+  font-weight: 500;
+}
+
+.dash-chime-hint {
+  font-size: 12px;
+  color: var(--chime-muted-dim);
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
+
+.dash-chime-check {
+  color: var(--chime-green);
+  font-weight: 700;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.dash-chime-submit {
+  width: 100%;
+  border: none;
+  border-radius: 26px;
+  padding: 17px;
+  margin-top: 6px;
+  font-family: 'Fredoka', Rajdhani, sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  background: #1c2e26;
+  color: #4f6459;
+  cursor: not-allowed;
+  transition: background 0.25s, color 0.25s, box-shadow 0.25s;
+}
+
+.dash-chime-submit.ready,
+.dash-chime-submit.ready:not(:disabled) {
+  background: linear-gradient(135deg, #34e69a, #17b56e);
+  color: #04180f;
+  box-shadow: 0 6px 20px rgba(34, 224, 138, 0.4);
+  cursor: pointer;
+  animation: dash-chime-pulse 1.8s ease-in-out infinite;
+}
+
+.dash-chime-submit:disabled:not(.ready) {
+  opacity: 1;
+  cursor: not-allowed;
+}
+
+.dash-chime-footer-link {
+  text-align: center;
+  margin-top: 4px;
+}
+
+.dash-chime-back-link {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  color: var(--chime-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.dash-chime-back-link:hover {
+  color: var(--chime-green);
+}
+
+.dash-chime-min-hint {
+  text-align: center;
+  margin: 12px 0 0;
+  color: var(--chime-muted-dim);
+  font-size: 12px;
+}
+
+.dash-chime-payto-status {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  color: var(--chime-muted);
+}
+
+.dash-chime-payto-error {
+  margin: 8px 0 16px;
+  font-size: 14px;
+  color: var(--chime-gold);
+  font-weight: 600;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.dash-chime-comeback-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.dash-chime-comeback-card {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 18px;
+  padding: 22px 20px 18px;
+  background: var(--chime-card-2, #0f1a16);
+  border: 1.5px solid #2e4238;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  text-align: center;
+}
+
+.dash-chime-comeback-title {
+  margin: 0 0 10px;
+  font-family: 'Fredoka', Rajdhani, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--chime-text, #e8f5ef);
+}
+
+.dash-chime-comeback-text {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #c8ddd2;
+}
+
+.dash-chime-comeback-text strong {
+  color: #7fe2b8;
+  font-weight: 700;
+}
+
+.dash-chime-comeback-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 18px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #34e69a, #17b56e);
+  color: #04180f;
+  cursor: pointer;
+}
+
+.dash-chime-comeback-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* ——— Chime / Cash App withdraw modal (shared shell + card) ——— */
+
+.dash-chime-withdraw-card {
+  flex: none;
+  width: 100%;
+}
+
+.dash-chime-modal-header-title {
+  margin: 0;
+  font-family: Fredoka, Inter, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--chime-text);
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.dash-chime-modal-cashapp-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+}
+
+.dash-chime-modal-cashapp-icon svg {
+  max-height: 32px;
+  width: auto;
+}
+
+.dash-chime-modal-paypal-icon svg {
+  width: 32px;
+  height: 32px;
+  max-height: 32px;
+}
+
+.dash-chime-withdraw-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 4px;
+}
+
+.dash-chime-modal-desc {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--chime-muted);
+}
+
+.dash-chime-modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.dash-chime-section-label {
+  display: block;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--chime-muted);
+}
+
+.dash-chime-amount-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1.5px solid var(--chime-border-gold);
+  background: linear-gradient(135deg, #151f16, #0c1410);
+}
+
+.dash-chime-amount-symbol {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--chime-muted);
+  line-height: 1;
+}
+
+.dash-chime-amount-value {
+  font-family: Fredoka, Inter, system-ui, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: var(--chime-gold);
+  line-height: 1;
+}
+
+.dash-chime-amount-currency {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--chime-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dash-chime-field-hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--chime-muted-dim);
+}
+
+.dash-chime-withdraw-input,
+.dash-chime-modal-field .dash-input-field {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 600;
+  color: var(--chime-text);
+  background: rgba(4, 6, 10, 0.8);
+  border: 1.5px solid #2a5148;
+  border-radius: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dash-chime-username-field {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.dash-chime-username-field--prefixed {
+  border: 1.5px solid #2a5148;
+  border-radius: 12px;
+  background: rgba(4, 6, 10, 0.8);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.dash-chime-username-field--prefixed:focus-within {
+  border-color: var(--chime-green);
+  box-shadow: 0 0 0 3px rgba(34, 224, 138, 0.12);
+}
+
+.dash-chime-username-prefix {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 0 4px 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--chime-muted);
+  line-height: 1;
+  user-select: none;
+}
+
+.dash-chime-username-field--prefixed .dash-chime-withdraw-input {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  padding-left: 6px;
+}
+
+.dash-chime-username-field--prefixed .dash-chime-withdraw-input:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.dash-chime-withdraw-input:focus,
+.dash-chime-modal-field .dash-input-field:focus {
+  outline: none;
+  border-color: var(--chime-green);
+  box-shadow: 0 0 0 3px rgba(34, 224, 138, 0.12);
+}
+
+.dash-chime-withdraw-input::placeholder,
+.dash-chime-modal-field .dash-input-field::placeholder {
+  color: var(--chime-muted-dim);
+  opacity: 1;
+}
+
+.dash-chime-modal-footer {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: stretch;
+  gap: 10px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid rgba(42, 81, 72, 0.55);
+  background: rgba(4, 6, 10, 0.35);
+}
+
+@media (min-width: 640px) {
+  .dash-chime-modal-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+.dash-chime-modal-footer .dash-btn-outline,
+.dash-chime-modal-footer .dash-btn-cta {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+@media (min-width: 640px) {
+  .dash-chime-modal-footer .dash-btn-outline {
+    width: auto;
+  }
+
+  .dash-chime-modal-footer .dash-btn-cta {
+    width: auto;
+    min-width: 160px;
+  }
+}

@@ -1,0 +1,293 @@
+/* Guest landing deposit / withdrawal dropdown bar — kept tiny so first paint
+   does not pull the full landing-dragonfury.css (~80KB). */
+
+.lp-pay-bar {
+  width: 100%;
+  background: rgba(8, 12, 18, 0.98);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 215, 0, 0.08);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.12);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+.lp-pay-bar--inline {
+  position: static;
+  margin: 6px 0 0;
+  border-top: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+}
+
+.lp-pay-bar--inline .lp-pay-bar-inner {
+  padding: 6px 12px 6px;
+}
+
+@media (max-width: 767px) {
+  .lp-pay-bar--inline {
+    margin: 4px 0 0;
+  }
+
+  .lp-pay-bar--inline .lp-pay-bar-inner {
+    padding: 5px 10px 4px;
+  }
+}
+
+.lp-pay-bar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  max-width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 10px 16px 4px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+.lp-pay-dropdown {
+  position: relative;
+  flex: 1;
+  max-width: 220px;
+}
+
+.lp-pay-dropdown--open {
+  z-index: 120;
+}
+
+.lp-pay-action {
+  flex: 1;
+  max-width: 220px;
+  min-width: 0;
+}
+
+.lp-pay-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 7px 12px;
+  border-radius: 22px;
+  font-family: Rajdhani, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid transparent;
+}
+
+.lp-pay-btn--deposit {
+  color: #fff;
+  background: linear-gradient(135deg, var(--lp-green, #00e676), #00c853);
+  box-shadow: 0 3px 14px rgba(0, 230, 118, 0.45);
+}
+
+.lp-pay-btn--deposit:hover {
+  box-shadow: 0 4px 18px rgba(0, 230, 118, 0.6);
+}
+
+.lp-pay-btn--withdrawal {
+  color: #fff;
+  background: linear-gradient(135deg, #ff3355, var(--lp-fire, #ff3d00));
+  border-color: transparent;
+  box-shadow: 0 3px 14px rgba(255, 51, 85, 0.45);
+}
+
+.lp-pay-btn--withdrawal:hover {
+  box-shadow: 0 4px 18px rgba(255, 51, 85, 0.6);
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit,
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
+  position: relative;
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-dropdown--open .lp-pay-btn--deposit,
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-dropdown--open .lp-pay-btn--withdrawal {
+  animation: none;
+  transform: none;
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit::after,
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  clip-path: inset(0 round 22px);
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 60%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: lp-pay-btn-shine 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit > *,
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal > * {
+  position: relative;
+  z-index: 1;
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit {
+  animation: lp-pay-deposit-glow 2.2s ease-in-out infinite;
+}
+
+body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
+  animation: lp-pay-withdraw-glow 2.2s ease-in-out infinite;
+  animation-delay: 0.35s;
+}
+
+@keyframes lp-pay-btn-shine {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -100% 0; }
+}
+
+@keyframes lp-pay-deposit-glow {
+  0%, 100% {
+    box-shadow:
+      0 3px 14px rgba(0, 230, 118, 0.45),
+      0 0 0 0 rgba(0, 230, 118, 0.35);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 6px 24px rgba(0, 230, 118, 0.7),
+      0 0 0 4px rgba(0, 230, 118, 0.28);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes lp-pay-withdraw-glow {
+  0%, 100% {
+    box-shadow:
+      0 3px 14px rgba(255, 51, 85, 0.45),
+      0 0 0 0 rgba(255, 61, 0, 0.35);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 6px 24px rgba(255, 51, 85, 0.7),
+      0 0 0 4px rgba(255, 61, 0, 0.28);
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit,
+  body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
+    animation: none;
+  }
+
+  body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--deposit::after,
+  body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal::after {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.lp-pay-btn--link2play {
+  color: var(--lp-gold, #ffd700);
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.45);
+  text-decoration: none;
+  box-shadow: 0 3px 14px rgba(255, 215, 0, 0.2);
+}
+
+.lp-pay-btn--link2play:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 4px 18px rgba(255, 215, 0, 0.35);
+}
+
+.lp-pay-chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.lp-pay-down-arrow {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.lp-pay-chevron--open {
+  transform: rotate(180deg);
+}
+
+.lp-pay-menu {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: rgba(13, 19, 32, 0.98);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.lp-pay-menu--portal {
+  position: fixed;
+  z-index: 10050;
+  box-sizing: border-box;
+}
+
+.lp-pay-menu-item {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--lp-text, #f0ebe0);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lp-pay-menu-item:hover {
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--lp-gold, #ffd700);
+}
+
+.lp-pay-menu-empty {
+  display: block;
+  padding: 10px 12px;
+  color: var(--lp-muted, #93a4be);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+@media (max-width: 480px) {
+  .lp-pay-bar-inner {
+    padding: 9px 12px 3px;
+    gap: 8px;
+  }
+
+  .lp-pay-dropdown {
+    max-width: none;
+  }
+
+  .lp-pay-action {
+    max-width: none;
+  }
+
+  .lp-pay-btn {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+}

@@ -1,0 +1,167 @@
+.geo-blocker {
+  --geo-accent: #d4af37;
+  --geo-glow: rgba(212, 175, 55, 0.16);
+  --geo-bg-from: #0a0c12;
+  --geo-bg-mid: #12161f;
+  --geo-bg-to: #0d1018;
+  --geo-text: #f5f0e6;
+  --geo-muted: rgba(245, 240, 230, 0.82);
+  --geo-faint: rgba(245, 240, 230, 0.45);
+  --geo-signoff: rgba(245, 240, 230, 0.55);
+  --geo-email: #7eb6ff;
+
+  box-sizing: border-box;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  height: 100dvh;
+  max-height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 0%, var(--geo-glow), transparent 55%),
+    linear-gradient(165deg, var(--geo-bg-from) 0%, var(--geo-bg-mid) 45%, var(--geo-bg-to) 100%);
+  color: var(--geo-text);
+}
+
+html:has(.geo-blocker) #pj-lcp-boot {
+  display: none !important;
+}
+
+.geo-blocker__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.5rem 1.25rem;
+}
+
+.geo-blocker__logo {
+  max-height: 44px;
+  width: auto;
+}
+
+.geo-blocker__brand-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.geo-blocker__main {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: 44rem;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.geo-blocker__avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.geo-blocker__avatar {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(320px, 58vw);
+  max-height: min(38vh, 320px);
+  object-fit: contain;
+}
+
+.geo-blocker__mark {
+  display: block;
+  width: min(160px, 42vw);
+  height: auto;
+  color: var(--geo-accent);
+}
+
+.geo-blocker__title {
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.25rem, 2.8vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.geo-blocker__copy {
+  margin: 0 0 0.55rem;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.45;
+  color: var(--geo-muted);
+}
+
+.geo-blocker__states {
+  margin: 0 0 0.7rem;
+  font-size: clamp(0.9rem, 1.9vw, 1rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--geo-accent);
+}
+
+.geo-blocker__email {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1rem, 2.1vw, 1.1rem);
+  font-weight: 650;
+  color: var(--geo-email);
+  text-decoration: none;
+}
+
+.geo-blocker__email:hover {
+  text-decoration: underline;
+}
+
+.geo-blocker__ref {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  color: var(--geo-faint);
+}
+
+.geo-blocker__signoff {
+  margin: 0.5rem 0 0;
+  font-size: clamp(0.9rem, 1.8vw, 0.95rem);
+  font-style: italic;
+  color: var(--geo-signoff);
+}
+
+@media (max-height: 720px) {
+  .geo-blocker__avatar {
+    max-width: min(240px, 48vw);
+    max-height: min(30vh, 240px);
+  }
+
+  .geo-blocker__mark {
+    width: min(120px, 36vw);
+  }
+}
+
+@media (max-height: 580px) {
+  .geo-blocker__avatar {
+    max-width: min(170px, 38vw);
+    max-height: min(24vh, 170px);
+  }
+
+  .geo-blocker__mark {
+    width: min(88px, 28vw);
+  }
+
+  .geo-blocker__header {
+    min-height: 2.5rem;
+    padding: 0.3rem 1rem;
+  }
+
+  .geo-blocker__logo {
+    max-height: 32px;
+  }
+}

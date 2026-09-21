@@ -1,0 +1,15 @@
+.store-staff-page .page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.store-staff-page .page-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.store-staff-page .hint { font-size: 0.85rem; color: var(--text-muted, #666); }

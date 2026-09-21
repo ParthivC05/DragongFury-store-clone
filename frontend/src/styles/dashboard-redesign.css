@@ -1,0 +1,489 @@
+/*
+ * Dashboard redesign — adapts the casino-slots-redesign-v2.html look to the
+ * live app. Scoped under `.dashboard` (the authenticated home root) so other
+ * pages keep the original theme. Loaded after dashboard-dragonfury.css so these
+ * rules win. The existing slideshow (DashboardWelcome) is intentionally kept.
+ */
+
+/* Ambient sparks + confetti canvases (from the redesign mockup) */
+.dash-fx-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.dash-fx-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.dashboard {
+  --rd-bg: #0a0d14;
+  --rd-panel: #0f1520;
+  --rd-panel-2: #141c2a;
+  --rd-line: rgba(255, 255, 255, 0.06);
+  --rd-line-2: rgba(255, 255, 255, 0.12);
+  --rd-gold: #f5c451;
+  --rd-gold-deep: #c8962b;
+  --rd-gold-glow: rgba(245, 196, 81, 0.3);
+  --rd-green: #2fd17a;
+  --rd-green-deep: #13a35c;
+  --rd-green-glow: rgba(47, 209, 122, 0.4);
+  --rd-teal: #2dd4bf;
+  --rd-cyan: #3fc9e0;
+  --rd-red: #ff5630;
+  --rd-violet: #7b6cf6;
+  --rd-txt: #eaeef6;
+  --rd-dim: #9aa4b8;
+  --rd-faint: #93a4be;
+  --rd-r-md: 14px;
+  --rd-r-lg: 20px;
+  --rd-shadow: 0 22px 50px -22px rgba(0, 0, 0, 0.75);
+  --rd-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Numeric / tabular text uses Space Grotesk like the file */
+.dashboard .tabular-nums,
+.dashboard .num,
+.dashboard .dash-gc-balance,
+.dashboard .dash-invite-stat-val,
+.dashboard .dash-games-tab-count {
+  font-family: 'Space Grotesk', 'Plus Jakarta Sans', monospace;
+}
+
+/* Display headings use Bricolage Grotesque */
+.dashboard .dash-section-title,
+.dashboard .dash-gc-title,
+.dashboard .dash-invite-head h2,
+.dashboard .dash-game-card h3 {
+  font-family: 'Bricolage Grotesque', 'Plus Jakarta Sans', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* ─────────────── SIDEBAR (Reelhouse rows + theme) ─────────────── */
+@media (min-width: 1024px) {
+  .dashboard .dash-side {
+    width: 264px;
+  }
+
+  .dashboard .dash-side-nav {
+    background:
+      linear-gradient(180deg, rgba(15, 21, 32, 0.72) 0%, rgba(10, 14, 22, 0.45) 100%);
+    border: 1px solid rgba(255, 215, 0, 0.12);
+    border-radius: 14px;
+    padding: 10px 0 12px;
+    gap: 0;
+    box-shadow: none;
+  }
+}
+
+.dashboard .dash-side-group-label {
+  letter-spacing: 0.11em;
+  color: var(--rd-faint, #63728b);
+  font-weight: 600;
+  font-size: 10px;
+  margin: 0;
+}
+
+.dashboard .dash-side-item {
+  border: 0;
+  background: transparent;
+  border-radius: 9px;
+  color: var(--rd-dim, #a2b0c6);
+  font-family: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 13.5px;
+  letter-spacing: 0;
+  gap: 10px;
+  min-height: 0;
+  padding: 8px 10px;
+  box-shadow: none;
+  transform: none;
+  animation: none;
+}
+
+.dashboard .dash-side-icon {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border-radius: 8px;
+  color: #fff;
+  background: linear-gradient(145deg, var(--acc), var(--acc2));
+  border: none;
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--acc2) 35%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.dashboard .dash-side-icon svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+  width: 15px;
+  height: 15px;
+}
+
+.dashboard .dash-side-item-title {
+  font-family: Inter, 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-weight: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.dashboard .dash-side-item-sub {
+  display: none !important;
+}
+
+.dashboard .dash-side-item:hover {
+  color: var(--rd-txt, #edf2f9);
+  background: rgba(255, 215, 0, 0.06);
+  border-color: transparent;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+.dashboard .dash-side-item:hover .dash-side-icon {
+  transform: none;
+  background: linear-gradient(145deg, var(--acc), var(--acc2));
+  box-shadow:
+    0 3px 10px color-mix(in srgb, var(--acc2) 45%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+  color: #fff;
+}
+
+.dashboard .dash-side-item:hover .dash-side-item-sub {
+  color: inherit;
+}
+
+.dashboard .dash-side-item.active {
+  color: #fff;
+  font-weight: 500;
+  background: rgba(255, 215, 0, 0.1);
+  border-color: transparent;
+  box-shadow: none;
+  animation: none;
+  filter: none;
+}
+
+.dashboard .dash-side-item.active::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--rd-gold, #f5b93e);
+  border-radius: 0 3px 3px 0;
+  box-shadow: none;
+}
+
+.dashboard .dash-side-item.active .dash-side-icon {
+  color: #fff;
+  background: linear-gradient(145deg, var(--acc), var(--acc2));
+  border-color: transparent;
+  box-shadow:
+    0 3px 10px color-mix(in srgb, var(--acc2) 45%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.dashboard .dash-side-item.active .dash-side-item-sub {
+  color: inherit;
+}
+
+.dashboard .dash-side-item--quiet {
+  color: var(--rd-faint, #63728b);
+  font-size: 12.5px;
+  padding: 7px 10px;
+}
+
+.dashboard .dash-side-badge--hot {
+  background: rgba(255, 215, 0, 0.14);
+  color: var(--rd-gold, #f5b93e);
+  border: none;
+}
+
+.dashboard .dash-side-badge--free,
+.dashboard .dash-side-badge--ready,
+.dashboard .dash-side-badge--spin {
+  background: rgba(61, 217, 160, 0.14);
+  color: #3dd9a0;
+  border: none;
+}
+
+/* ─────────────── GAMES heading + tabs ─────────────── */
+.dashboard .dash-section-title {
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.dashboard .dash-section-sub {
+  font-size: 13.5px;
+  color: var(--rd-dim);
+}
+
+.dashboard .dash-games-panel {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.dashboard .dash-games-tabs {
+  border-bottom: 1px solid var(--rd-line);
+  padding: 0;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.dashboard .dash-games-tab {
+  flex: 0 0 auto;
+  border-radius: 0;
+  padding: 12px 18px;
+  color: var(--rd-faint);
+  background: transparent;
+  box-shadow: none;
+}
+
+.dashboard .dash-games-tab.active {
+  color: var(--rd-gold);
+  background: transparent;
+  box-shadow: none;
+}
+
+.dashboard .dash-games-tab.active::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(90deg, var(--rd-gold), var(--rd-gold-deep));
+  box-shadow: 0 0 10px var(--rd-gold-glow);
+}
+
+.dashboard .dash-games-tab {
+  position: relative;
+}
+
+.dashboard .dash-games-tab-count {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--rd-dim);
+}
+
+.dashboard .dash-games-tab.active .dash-games-tab-count {
+  background: rgba(245, 196, 81, 0.15);
+  color: var(--rd-gold);
+}
+
+/* ─────────────── GAME CARDS (file .game look) ─────────────── */
+.dashboard .dash-games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+  padding: 0;
+}
+
+.dashboard .dash-games-grid--3 {
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+}
+
+.dashboard .dash-game-card {
+  background: linear-gradient(165deg, var(--rd-panel-2), var(--rd-panel));
+  border: 1px solid var(--rd-line);
+  border-radius: var(--rd-r-lg);
+}
+
+.dashboard .dash-game-card::after {
+  border-radius: var(--rd-r-lg);
+  background: linear-gradient(140deg, var(--g1, var(--rd-gold)), transparent 55%);
+}
+
+.dashboard .dash-game-card:hover {
+  border-color: var(--rd-line);
+  box-shadow: var(--rd-shadow);
+}
+
+.dashboard .dash-gc-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 9px 22px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.dashboard .dash-gc-ribbon {
+  width: 104px;
+  height: 104px;
+}
+
+.dashboard .dash-game-card--discount .dash-gc-header-body {
+  padding-right: 46px;
+}
+
+.dashboard .dash-gc-ribbon-band {
+  top: 18px;
+  right: -38px;
+  left: auto;
+  width: 148px;
+  padding: 6px 0 5px;
+}
+
+.dashboard .dash-gc-ribbon-pct {
+  font-size: 12px;
+}
+
+.dashboard .dash-gc-title {
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.dashboard .dash-gc-online {
+  color: var(--rd-dim);
+}
+
+.dashboard .dash-gc-online-dot {
+  background: var(--rd-green);
+  box-shadow: 0 0 6px var(--rd-green);
+}
+
+/* Decorative game badges (Hot / New / Top) */
+.dashboard .dash-gc-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 9px;
+  border-radius: 99px;
+}
+
+.dashboard .dash-gc-badge--hot {
+  background: linear-gradient(135deg, #ff8a3d, var(--rd-red));
+  color: #fff;
+  box-shadow: 0 4px 12px -2px rgba(255, 86, 48, 0.45);
+}
+
+.dashboard .dash-gc-badge--new {
+  background: linear-gradient(135deg, var(--rd-cyan), #1f9fd6);
+  color: #012;
+}
+
+.dashboard .dash-gc-badge--top {
+  background: linear-gradient(135deg, var(--rd-gold), var(--rd-gold-deep));
+  color: #3a2700;
+}
+
+/* Buttons — green Register, teal Existing-User-Login */
+.dashboard .dash-gc-btn-add {
+  background: linear-gradient(145deg, var(--rd-green), var(--rd-green-deep));
+  color: #022;
+  border: none;
+  box-shadow: 0 8px 18px -8px var(--rd-green-glow);
+  font-weight: 700;
+}
+
+.dashboard .dash-gc-btn-add:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -8px var(--rd-green-glow);
+}
+
+.dashboard .dash-btn-outline {
+  color: var(--rd-teal);
+  border: 1px solid rgba(45, 212, 191, 0.28);
+  background: transparent;
+  font-weight: 600;
+}
+
+.dashboard .dash-btn-outline:hover:not(:disabled) {
+  background: rgba(45, 212, 191, 0.08);
+  border-color: var(--rd-teal);
+}
+
+.dashboard .dash-gc-btn-play {
+  background: linear-gradient(145deg, var(--rd-gold), var(--rd-gold-deep));
+  color: #3a2700;
+}
+
+.dashboard .dash-gc-btn-withdraw {
+  background: rgba(255, 86, 48, 0.12);
+  color: var(--rd-red);
+  border: 1px solid rgba(255, 86, 48, 0.3);
+}
+
+/* Pending state accent like the file */
+.dashboard .dash-gc-status-pending {
+  color: var(--rd-gold);
+}
+
+/* ─────────────── INVITE card accents ─────────────── */
+.dashboard .dash-invite-head h2 {
+  color: var(--rd-gold);
+  font-weight: 700;
+}
+
+.dashboard .dash-invite-stat-val.tabular-nums,
+.dashboard .dash-invite-stat-val {
+  font-weight: 700;
+}
+
+.dashboard .dash-lobby-mix {
+  gap: 22px;
+  padding: 0;
+}
+
+.dashboard .dash-lobby-mix-row {
+  gap: 14px;
+}
+
+.dashboard .dash-lobby-mix-games {
+  gap: 18px;
+}
+
+.dashboard .dash-home-cat-rail {
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+@media (max-width: 767px) {
+  .dashboard .dash-lobby-mix {
+    gap: 10px;
+  }
+
+  .dashboard .dash-lobby-mix-row {
+    gap: 8px;
+  }
+
+  .dashboard .dash-lobby-mix-games {
+    gap: 8px;
+  }
+
+  .dashboard .dash-lobby-mix .dash-gc-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+  }
+
+  .dashboard .dash-lobby-mix .dash-gc-title {
+    font-size: 0.95rem;
+  }
+
+  .dashboard .dash-lobby-mix .dash-game-card--discount .dash-gc-header-body {
+    padding-right: 42px;
+  }
+
+  .dashboard .dash-lobby-mix .dash-gc-btn-play {
+    display: inline-flex;
+  }
+}

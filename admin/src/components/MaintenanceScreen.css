@@ -1,0 +1,105 @@
+.maint-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212, 175, 55, 0.18), transparent 55%),
+    linear-gradient(165deg, #0a0c12 0%, #12161f 45%, #0d1018 100%);
+  color: #f5f0e6;
+}
+
+.maint-screen__glow {
+  position: absolute;
+  inset: auto 10% 12% 10%;
+  height: 40%;
+  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.12), transparent 70%);
+  pointer-events: none;
+}
+
+.maint-screen__card {
+  position: relative;
+  width: min(460px, 100%);
+  text-align: center;
+}
+
+.maint-screen__logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.maint-screen__logo img {
+  max-height: 72px;
+  width: auto;
+}
+
+.maint-screen__header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.maint-screen__header-ring {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, rgba(247, 231, 176, 0.35), rgba(212, 175, 55, 0.15));
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
+}
+
+.maint-screen__header-inner {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.maint-screen__header-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.25rem, 3.5vw, 1.6rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #f7e7b0;
+  text-align: left;
+}
+
+.maint-screen__title {
+  margin: 0 0 12px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.65rem, 4vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #f7e7b0;
+}
+
+.maint-screen__copy {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: rgba(245, 240, 230, 0.78);
+}
+
+.maint-screen__copy--second {
+  margin-top: 14px;
+}
+
+.maint-screen__support {
+  margin: 22px 0 0;
+  font-size: 0.85rem;
+  color: rgba(245, 240, 230, 0.55);
+}
+
+.maint-screen__support a {
+  color: #e8c96a;
+  text-decoration: none;
+}
+
+.maint-screen__support a:hover {
+  text-decoration: underline;
+}

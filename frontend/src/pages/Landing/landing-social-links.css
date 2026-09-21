@@ -1,0 +1,171 @@
+/* Social icons — kept separate so the floating dock does not need landing-dragonfury.css */
+
+.lp-social-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: -12px 0 24px;
+}
+
+.lp-footer-social.lp-social-row {
+  margin: 0 0 22px;
+}
+
+.lp-social-dock {
+  position: fixed;
+  right: 12px;
+  left: auto;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--lp-side-fab-gap, 12px);
+  pointer-events: none;
+  opacity: 1;
+  --lp-side-fab-size: 42px;
+  bottom: calc(
+    var(--intercom-launcher-bottom, 20px) + var(--intercom-launcher-size, 64px)
+  );
+}
+
+.dash-root > .lp-social-dock,
+body > .lp-social-dock {
+  position: fixed;
+  right: 12px;
+  left: auto;
+  z-index: 9998;
+}
+
+.lp-social-dock .lp-social-link:last-child {
+  margin-bottom: var(--lp-side-fab-gap, 12px);
+}
+
+.lp-social-dock .lp-social-link {
+  pointer-events: auto;
+  width: var(--lp-side-fab-size, 42px);
+  height: var(--lp-side-fab-size, 42px);
+  flex-shrink: 0;
+  opacity: 1;
+  background-color: #1a2234;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.lp-social-dock .lp-social-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.lp-social-dock .lp-social-link--facebook-group .lp-social-icon--image {
+  width: 20px;
+  height: 20px;
+  transform: scale(1.65);
+}
+
+@media (min-width: 768px) {
+  .lp-social-dock {
+    right: 16px;
+    gap: var(--lp-side-fab-gap, 12px);
+    --lp-side-fab-size: 44px;
+  }
+
+  .lp-social-dock .lp-social-link {
+    width: 44px;
+    height: 44px;
+  }
+
+  .lp-social-dock .lp-social-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .lp-social-dock .lp-social-link--facebook-group .lp-social-icon--image {
+    width: 22px;
+    height: 22px;
+    transform: scale(1.65);
+  }
+}
+
+body.welcome-modal-open .lp-social-dock,
+body.guest-spin-modal-open .lp-social-dock,
+body.hide-intercom-launcher .lp-social-dock,
+body.app-modal-open .lp-social-dock,
+body[data-scroll-locked] .lp-social-dock,
+body.onboarding-tutorial-active .lp-social-dock,
+body.game-transfer-modal-open .lp-social-dock,
+body.page-loader-active .lp-social-dock,
+body.slot-game-play-active .lp-social-dock,
+body.intercom-maximized .lp-social-dock {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lp-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: #fff;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  opacity: 1;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.lp-social-link:hover {
+  transform: translateY(-2px) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.45),
+    0 0 18px rgba(255, 215, 0, 0.18);
+}
+
+.lp-social-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.lp-social-link--facebook-group .lp-social-icon--image {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.65);
+  border-radius: 50%;
+}
+
+.lp-social-link--facebook {
+  background: linear-gradient(145deg, #1877f2 0%, #0d5dbf 100%);
+  background-color: #1877f2;
+}
+
+.lp-social-link--facebook-group {
+  background: linear-gradient(145deg, #1877f2 0%, #0d5dbf 100%);
+  background-color: #1877f2;
+  overflow: hidden;
+}
+
+.lp-social-link--messenger {
+  background: linear-gradient(145deg, #00b2ff 0%, #006aff 55%, #a033ff 100%);
+  background-color: #0084ff;
+}
+
+.lp-social-link--static {
+  cursor: default;
+  pointer-events: none;
+}

@@ -1,0 +1,266 @@
+.dep-page {
+  max-width: none;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dep-filters .dep-filter-input {
+  padding: 0.45rem 0.75rem;
+  min-width: 10rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+
+.dep-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.dep-summary-card {
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: var(--color-surface, #fff);
+}
+
+.dep-summary-card h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.dep-summary-line {
+  margin: 0.35rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+}
+
+.dep-summary-line strong {
+  font-size: 0.86rem;
+}
+
+.dep-filters .dep-apply {
+  margin-left: 0.25rem;
+}
+
+.dep-date-range {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
+}
+
+.dep-date-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.dep-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.dep-table.dep-table {
+  width: 100%;
+  min-width: 1120px;
+  table-layout: fixed;
+  font-size: 0.8125rem;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.dep-table.dep-table th,
+.dep-table.dep-table td {
+  padding: 0.65rem 0.55rem;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.dep-table.dep-table th {
+  white-space: nowrap;
+  line-height: 1.25;
+  vertical-align: bottom;
+}
+
+/* Enough room so ID (#order:…) and date never paint over each other */
+.dep-col-id { width: 8.5%; }
+.dep-col-date { width: 12%; }
+.dep-col-code { width: 7%; }
+.dep-col-player { width: 15%; }
+.dep-col-amount { width: 7%; }
+.dep-col-payment { width: 10%; }
+.dep-col-ref { width: 14%; }
+.dep-col-status { width: 7%; }
+
+.dep-table .ccw-td-id {
+  width: auto;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.7rem;
+}
+
+.dep-table .ccw-td-date {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.75rem;
+}
+
+.dep-table .ccw-td-amount {
+  white-space: nowrap;
+}
+
+.dep-table .ccw-td-store {
+  max-width: none;
+  font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dep-player-username {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #6b7280);
+  margin-top: 0.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dep-payment-cell {
+  line-height: 1.35;
+}
+
+.dep-payment-method {
+  display: block;
+  font-weight: 500;
+}
+
+.dep-payment-provider {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #6b7280);
+  margin-top: 0.1rem;
+}
+
+.dep-ref-cell {
+  line-height: 1.35;
+}
+
+.dep-ref-line {
+  display: block;
+}
+
+.dep-tx-line {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.dep-mono {
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+}
+
+.dep-crypto-cell {
+  line-height: 1.35;
+}
+
+.dep-crypto-cell .dep-crypto {
+  display: inline;
+  font-weight: 600;
+  margin-right: 0.35rem;
+}
+
+.dep-crypto-cell .dep-tx,
+.dep-tx-line .dep-tx {
+  display: inline;
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.dep-status {
+  text-transform: capitalize;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.dep-pager {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.dep-pager-meta {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.dep-page-size-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.dep-pager-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.dep-page-size-label {
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.dep-page-size-select {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--color-border, #e5e7eb);
+  border-radius: 8px;
+  background: var(--color-surface, #fff);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 760px) {
+  .dep-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dep-date-range {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .dep-date-field {
+    flex: 1 1 100%;
+  }
+
+  .dep-pager {
+    flex-wrap: wrap;
+  }
+
+  .dep-table.dep-table th,
+  .dep-table.dep-table td {
+    padding: 0.55rem 0.45rem;
+    font-size: 0.75rem;
+  }
+}

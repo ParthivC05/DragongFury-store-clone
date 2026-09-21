@@ -1,0 +1,264 @@
+.vip-page h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+}
+
+.vip-intro {
+  margin: 0 0 1rem;
+  color: #555;
+}
+
+.vip-section {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.vip-placeholder {
+  margin: 0;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.vip-outer-card.vip-card {
+  margin-top: 1rem;
+}
+
+/* Card containers (Spin Wheel style) */
+.vip-levels-card,
+.vip-faq-card {
+  margin-bottom: 0;
+}
+
+.vip-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: #f3f4f6;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.vip-card-title {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: #111827;
+}
+
+.vip-card-meta {
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+.vip-card-add-row {
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 0;
+}
+
+.vip-tab-actions {
+  padding: 0.75rem 1rem;
+  background: #fff;
+}
+
+.vip-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.vip-tab {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.vip-tab:hover {
+  color: #374151;
+}
+
+.vip-tab-active {
+  color: #111827;
+  border-bottom-color: #3b82f6;
+}
+
+.vip-tab-panel {
+  outline: none;
+}
+
+.vip-tab-panel[hidden] {
+  display: none;
+}
+
+.vip-section-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+
+.vip-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 0;
+  background: #fff;
+}
+
+.vip-table .vip-col-num {
+  width: 2.5rem;
+}
+
+.vip-add-row {
+  margin-bottom: 0;
+}
+
+/* FAQ card list */
+.vip-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 1rem;
+  background: #fff;
+}
+
+.vip-faq-item {
+  padding: 1rem 1.25rem;
+  background: #fafbfc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  border-left: 3px solid #3b82f6;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.vip-faq-item:hover {
+  border-left-color: #2563eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.vip-faq-item-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.vip-faq-drag-handle {
+  cursor: grab;
+  color: #94a3b8;
+  font-size: 1rem;
+  letter-spacing: -0.05em;
+  user-select: none;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.vip-faq-item:hover .vip-faq-drag-handle {
+  color: #64748b;
+}
+
+.vip-faq-item:active .vip-faq-drag-handle {
+  cursor: grabbing;
+}
+
+.vip-faq-item.vip-faq-dragging {
+  opacity: 0.6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.vip-faq-item-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #374151;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+
+.vip-faq-remove {
+  margin-left: auto;
+}
+
+.vip-faq-field-label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.vip-faq-field-label:last-of-type {
+  margin-bottom: 0;
+}
+
+.vip-faq-field-label > span {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.35rem;
+}
+
+.vip-faq-question {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9375rem;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.vip-faq-question:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.vip-faq-answer {
+  display: block;
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.vip-faq-answer:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.vip-actions {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vip-actions-guide {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+  color: #555;
+}

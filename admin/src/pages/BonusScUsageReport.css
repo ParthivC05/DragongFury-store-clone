@@ -1,0 +1,176 @@
+/* Bonus SC used & left — very simple admin report */
+
+.bsu-page .ccw-header {
+  margin-bottom: 1rem;
+}
+
+.bsu-help {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  color: #0f172a;
+}
+
+.bsu-help-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bsu-help ul {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.bsu-help li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.bsu-dot {
+  flex-shrink: 0;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.3rem;
+  border-radius: 999px;
+}
+
+.bsu-dot-left { background: #059669; }
+.bsu-dot-used { background: #c2410c; }
+.bsu-dot-given { background: #2563eb; }
+
+.bsu-filter-bar {
+  align-items: center;
+}
+
+.bsu-store-select {
+  min-width: 160px;
+}
+
+.bsu-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.bsu-card {
+  border-radius: 16px;
+  padding: 1.15rem 1.25rem;
+  border: 2px solid transparent;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+}
+
+.bsu-card-left {
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+}
+
+.bsu-card-used {
+  background: #fff7ed;
+  border-color: #fdba74;
+}
+
+.bsu-card-given {
+  background: #eff6ff;
+  border-color: #93c5fd;
+}
+
+.bsu-card-label {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.bsu-card-amount {
+  margin: 0.35rem 0 0.25rem;
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.bsu-card-amount span {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.bsu-card-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.bsu-table-section {
+  margin-top: 1.5rem;
+}
+
+.bsu-table-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* Keep header + cell text aligned the same (left) */
+.bsu-page .bsu-table th,
+.bsu-page .bsu-table td {
+  text-align: left;
+  vertical-align: top;
+}
+
+.bsu-page .bsu-table th.bsu-col-num,
+.bsu-page .bsu-table td.bsu-col-num {
+  text-align: left;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.bsu-user-link {
+  color: #1d4ed8;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bsu-user-link:hover {
+  text-decoration: underline;
+}
+
+.bsu-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.875rem;
+}
+
+.bsu-phone {
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.bsu-num-left { color: #047857; font-weight: 700; }
+.bsu-num-used { color: #c2410c; font-weight: 700; }
+.bsu-num-given { color: #1d4ed8; font-weight: 700; }
+
+.bsu-tfoot td {
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+}
+
+@media (max-width: 900px) {
+  .bsu-cards {
+    grid-template-columns: 1fr;
+  }
+}

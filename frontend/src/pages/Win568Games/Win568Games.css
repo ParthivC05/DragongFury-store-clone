@@ -1,0 +1,76 @@
+.dash-win568-section {
+  margin-top: 28px;
+}
+
+.dash-win568-section:first-of-type {
+  margin-top: 8px;
+}
+
+.dash-win568-section-title {
+  margin: 0 0 12px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: #ffd75e;
+}
+
+.dash-slot-game-card-title {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(8, 10, 18, 0.82);
+  color: #f4f7fb;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.dash-slot-game-card-title--hero {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: calc(100% - 16px);
+  background: transparent;
+  font-size: 0.92rem;
+  color: #eaf1f8;
+}
+
+.dash-win568-catalog {
+  margin-top: 14px;
+}
+
+.dash-win568-more-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+.dash-win568-more-status {
+  margin: 0;
+  color: #9aa6b8;
+  font-size: 0.82rem;
+}
+
+.dash-win568-more {
+  min-width: 180px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255, 215, 94, 0.35);
+  border-radius: 10px;
+  background: rgba(255, 215, 94, 0.12);
+  color: #ffd75e;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dash-win568-more:hover {
+  background: rgba(255, 215, 94, 0.2);
+}

@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+Disallow: /deposit
+Disallow: /withdraw
+Disallow: /settings
+Disallow: /account
+Disallow: /promotions
+Disallow: /spinwheel
+Disallow: /play/
+Disallow: /k7n2m9qx4h
+Disallow: /p9w4x7c2jm
+Disallow: /auth/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /*?*session=
+Disallow: /*?*token=
+
+Sitemap: https://dragonfury.com/sitemap.xml

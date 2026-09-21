@@ -1,0 +1,222 @@
+﻿/* Slots Transactions report (store-admin friendly) */
+.stx-page .ccw-header {
+  margin-bottom: 1rem;
+}
+
+.stx-help-box {
+  margin-bottom: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.stx-help-box strong {
+  color: #0f172a;
+}
+
+.stx-help-box ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.15rem;
+}
+
+.stx-help-box li {
+  margin: 0.25rem 0;
+}
+
+.stx-filters {
+  align-items: center;
+  gap: 0.85rem 1rem;
+}
+
+.stx-filter-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.stx-filter-field .ccw-filter-label {
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+  flex-shrink: 0;
+}
+
+.stx-filter-field .dep-filter-input {
+  margin: 0;
+  height: 2.25rem;
+  box-sizing: border-box;
+}
+
+.stx-date-field {
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.stx-date-field .dashboard-filter-bar-label {
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1.2;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.stx-date-field .dashboard-filter-bar-fields {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+}
+
+.stx-date-field .dashboard-filter-preset,
+.stx-date-field .dashboard-filter-input {
+  height: 2.25rem;
+  box-sizing: border-box;
+}
+
+.stx-date-field .dashboard-filter-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+}
+
+.stx-filter-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stx-date-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.stx-date-wrap .dashboard-filter-bar {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.stx-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.stx-summary-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stx-summary-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+
+.stx-summary-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.stx-summary-meta {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.stx-summary-deposit {
+  border-left: 3px solid #059669;
+}
+
+.stx-summary-withdraw {
+  border-left: 3px solid #dc2626;
+}
+
+.stx-summary-signup {
+  border-left: 3px solid #2563eb;
+}
+
+.stx-table {
+  min-width: 960px;
+}
+
+.stx-type-badge {
+  display: inline-block;
+  padding: 0.22rem 0.55rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.stx-type-deposit {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.stx-type-withdraw {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.stx-type-signup {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.stx-type-other {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.stx-amount-deposit {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.stx-amount-withdraw {
+  color: #059669;
+  font-weight: 600;
+}
+
+.stx-handled-badge {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.stx-handled-auto {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.stx-handled-manual {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+@media (max-width: 900px) {
+  .stx-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}

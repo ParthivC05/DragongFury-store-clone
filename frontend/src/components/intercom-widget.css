@@ -1,0 +1,335 @@
+:root {
+  --intercom-launcher-bottom: 20px;
+  --intercom-launcher-size: 64px;
+  --lp-side-fab-gap: 12px;
+}
+
+.pj-intercom-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: var(--intercom-launcher-bottom);
+  z-index: 999999;
+  width: var(--intercom-launcher-size);
+  height: var(--intercom-launcher-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  color: #120900;
+  background: linear-gradient(135deg, #ffef9f 0%, #ffd700 42%, #ff8c00 100%);
+  box-shadow: 0 12px 32px rgba(255, 140, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.pj-intercom-launcher:hover,
+.pj-intercom-launcher:focus-visible {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 16px 40px rgba(255, 140, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.24) inset;
+  outline: none;
+}
+
+.pj-intercom-launcher-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.pj-support-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999998;
+  background: rgba(0, 0, 0, 0.52);
+}
+
+.pj-support-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 100%;
+  z-index: 999999;
+  display: flex;
+  flex-direction: column;
+  color: #f8fafc;
+  background: #070b16;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.pj-support-header,
+.pj-support-greeting,
+.pj-support-footer-nav {
+  background: linear-gradient(180deg, #0d1424 0%, #080d18 100%);
+  border-color: rgba(255, 215, 0, 0.12);
+}
+
+.pj-support-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.12);
+}
+
+.pj-support-brand {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  gap: 10px;
+  font-size: 12px;
+  color: rgba(248, 250, 252, 0.74);
+}
+
+.pj-support-logo {
+  width: auto;
+  max-width: 140px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.pj-support-close {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  color: #f8fafc;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.pj-support-close:hover,
+.pj-support-close:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.pj-support-greeting {
+  padding: 18px 16px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.pj-support-greeting h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.pj-support-greeting p {
+  margin: 6px 0 0;
+  color: rgba(248, 250, 252, 0.78);
+}
+
+.pj-support-scroll {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 215, 0, 0.38) #070b16;
+}
+
+.pj-support-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 14px;
+  border: 1px solid rgba(255, 215, 0, 0.16);
+  border-radius: 14px;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.07);
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+
+.pj-support-action:hover,
+.pj-support-action:focus-visible {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.pj-support-action strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pj-support-action small {
+  display: block;
+  margin-top: 3px;
+  color: rgba(248, 250, 252, 0.66);
+  font-size: 12px;
+}
+
+.pj-support-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: rgba(255, 215, 0, 0.88);
+}
+
+.pj-support-topics {
+  padding-top: 4px;
+}
+
+.pj-support-section-label {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: rgba(248, 250, 252, 0.62);
+}
+
+.pj-support-topic {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 10px;
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pj-support-topic:hover,
+.pj-support-topic:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.pj-support-chevron {
+  width: 16px;
+  height: 16px;
+  color: rgba(248, 250, 252, 0.55);
+}
+
+.pj-support-footer-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.pj-support-footer-btn,
+.pj-support-footer-link {
+  min-width: 74px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 11px;
+  color: rgba(248, 250, 252, 0.68);
+  background: transparent;
+  text-decoration: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pj-support-footer-btn.is-active {
+  color: #120900;
+  background: linear-gradient(135deg, #ffd700, #ff8c00);
+}
+
+.pj-support-footer-btn:hover,
+.pj-support-footer-link:hover,
+.pj-support-footer-btn:focus-visible,
+.pj-support-footer-link:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+}
+
+.pj-support-footer-icon {
+  width: 20px;
+  height: 20px;
+}
+
+body.hide-intercom-launcher:not(.intercom-maximized) .pj-intercom-launcher,
+body.app-modal-open:not(.intercom-maximized) .pj-intercom-launcher,
+body[data-scroll-locked]:not(.intercom-maximized) .pj-intercom-launcher,
+body.welcome-modal-open .pj-intercom-launcher,
+body.onboarding-tutorial-active .pj-intercom-launcher,
+body.game-transfer-modal-open .pj-intercom-launcher,
+body.guest-spin-modal-open .pj-intercom-launcher,
+body.page-loader-active:not(.intercom-maximized) .pj-intercom-launcher,
+body.slot-game-play-active .pj-intercom-launcher {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.app-modal-open:not(.intercom-maximized) .pj-support-panel,
+body.app-modal-open:not(.intercom-maximized) .pj-support-backdrop,
+body[data-scroll-locked]:not(.intercom-maximized) .pj-support-panel,
+body[data-scroll-locked]:not(.intercom-maximized) .pj-support-backdrop,
+body.welcome-modal-open .pj-support-panel,
+body.welcome-modal-open .pj-support-backdrop,
+body.onboarding-tutorial-active .pj-support-panel,
+body.onboarding-tutorial-active .pj-support-backdrop,
+body.game-transfer-modal-open .pj-support-panel,
+body.game-transfer-modal-open .pj-support-backdrop,
+body.guest-spin-modal-open .pj-support-panel,
+body.guest-spin-modal-open .pj-support-backdrop,
+body.page-loader-active:not(.intercom-maximized) .pj-support-panel,
+body.page-loader-active:not(.intercom-maximized) .pj-support-backdrop,
+body.slot-game-play-active .pj-support-panel,
+body.slot-game-play-active .pj-support-backdrop {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --intercom-launcher-bottom: calc(9.75rem + env(safe-area-inset-bottom, 0px));
+    --intercom-launcher-size: 64px;
+  }
+
+  body.guest-hide-buy-withdraw {
+    --intercom-launcher-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.intercom-maximized {
+    overflow: hidden;
+  }
+
+  body.intercom-maximized .dash-bottom-wrap,
+  body.intercom-maximized .lp-sticky-cta-wrap,
+  body.intercom-maximized .lp-social-dock,
+  body.intercom-maximized .pj-intercom-launcher {
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .pj-support-panel {
+    top: auto;
+    right: 24px;
+    bottom: 24px;
+    width: min(386px, calc(100vw - 32px));
+    height: min(720px, calc(100vh - 48px));
+    max-height: calc(100vh - 48px);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+}

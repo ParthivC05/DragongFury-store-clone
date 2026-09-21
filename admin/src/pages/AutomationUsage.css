@@ -1,0 +1,248 @@
+.au-page {
+  padding: 0 0 2rem;
+  max-width: 1100px;
+}
+
+.au-header {
+  margin-bottom: 1.25rem;
+}
+
+.au-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.au-subtitle {
+  margin: 0;
+  color: var(--text-muted, #6b7280);
+  font-size: 0.9rem;
+}
+
+.au-filter-bar {
+  margin-bottom: 0.5rem;
+}
+
+.au-filter-bar .au-store-select,
+.au-errors-filter-select {
+  min-width: 10rem;
+  cursor: pointer;
+}
+
+.au-errors-filter-bar {
+  margin-bottom: 0.75rem;
+}
+
+.au-range-label {
+  margin: 0 0 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted, #6b7280);
+}
+
+/* Top summary: 3 numbers only */
+.au-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.au-summary-item {
+  flex: 1;
+  min-width: 7rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  background: var(--card-bg, #fff);
+}
+
+.au-summary-item.success {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.au-summary-item.failure {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.au-summary-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+  margin-bottom: 0.2rem;
+}
+
+.au-summary-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.au-summary-pct {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.au-summary-item.success .au-summary-pct {
+  color: #15803d;
+}
+
+.au-summary-item.failure .au-summary-pct {
+  color: #b91c1c;
+}
+
+.au-summary-item.success .au-summary-value {
+  color: #15803d;
+}
+
+.au-summary-item.failure .au-summary-value {
+  color: #dc2626;
+}
+
+/* Sections */
+.au-block {
+  margin-bottom: 2rem;
+}
+
+.au-block-title {
+  margin: 0 0 0.65rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.au-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 8px;
+  background: var(--card-bg, #fff);
+}
+
+.au-table-failures {
+  border-color: #fecaca;
+}
+
+.au-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.au-table th,
+.au-table td {
+  padding: 0.65rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #e5e7eb);
+}
+
+.au-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #374151;
+}
+
+.au-table td.num,
+.au-table th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.au-table tr:last-child td {
+  border-bottom: none;
+}
+
+.au-game-name {
+  font-weight: 500;
+}
+
+.au-num-success {
+  color: #15803d;
+}
+
+.au-num-failure {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.au-pct-success {
+  color: #15803d;
+  font-size: 0.85rem;
+}
+
+.au-pct-failure {
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.au-table tr.has-failure .au-num-failure {
+  font-weight: 700;
+}
+
+.au-total-row td {
+  background: #f9fafb;
+  border-top: 2px solid #e5e7eb;
+}
+
+.au-no-failures {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.9rem;
+}
+
+.au-empty {
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--text-muted, #6b7280);
+}
+
+.au-nowrap {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.au-game-username {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+.au-error-text {
+  color: #991b1b;
+  font-size: 0.85rem;
+  max-width: 28rem;
+  word-break: break-word;
+}
+
+.au-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  font-size: 0.85rem;
+  color: var(--text-muted, #6b7280);
+}
+
+.au-pagination button,
+.au-pagination select {
+  margin-left: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--border-color, #d1d5db);
+  border-radius: 6px;
+  background: var(--input-bg, #fff);
+  font-size: 0.85rem;
+}
+
+.au-pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

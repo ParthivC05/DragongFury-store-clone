@@ -1,0 +1,943 @@
+/* Play header: logo (left) · wallet (center) · home + close (right) */
+.spm-iframe-header.spm-iframe-header--play {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+}
+
+.spm-iframe-header--play .spm-iframe-header-actions {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.spm-iframe-header-home {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 215, 0, 0.4);
+  background: rgba(255, 215, 0, 0.06);
+  color: var(--dash-gold, #ffd700);
+  font-family: Rajdhani, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.spm-iframe-header-home-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.spm-iframe-header-home:hover {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.55);
+  color: var(--dash-gold, #ffd700);
+}
+
+.spm-iframe-header-home:active {
+  transform: scale(0.98);
+}
+
+.spm-iframe-header-minmax {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 12px;
+  border: 1.5px solid rgba(255, 215, 0, 0.4);
+  background: rgba(255, 215, 0, 0.06);
+  color: var(--dash-gold, #ffd700);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
+}
+
+.spm-iframe-header-minmax:hover {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.55);
+}
+
+.spm-iframe-header-minmax:active {
+  transform: scale(0.98);
+}
+
+.spm-iframe-header-minmax svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.spm-play-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  justify-self: start;
+}
+
+.spm-play-logo-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #ffd700, #ff8c00 60%, #ff3d00);
+  box-shadow: 0 3px 12px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.spm-play-logo-inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  background: rgba(6, 9, 16, 0.82);
+  font-size: 15px;
+}
+
+.spm-play-logo-text {
+  font-family: 'Bebas Neue', Rajdhani, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1;
+  background: linear-gradient(92deg, #ffe89a 0%, #ffd700 45%, #ff8c00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spm-play-wallet--toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  width: min(100%, 280px);
+  max-width: 100%;
+}
+
+.spm-play-wallet-coin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(8, 12, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.spm-play-wallet-amount {
+  font-family: 'Russo One', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--dash-gold, #ffd700);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.spm-play-wallet-label {
+  font-family: Rajdhani, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--dash-muted, #8a98b0);
+}
+
+@media (max-width: 560px) {
+  .spm-iframe-header.spm-iframe-header--play {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .spm-play-logo {
+    flex-shrink: 0;
+    justify-self: start;
+  }
+
+  .spm-play-logo-text {
+    display: none;
+  }
+
+  .spm-play-wallet {
+    justify-self: center;
+    width: max-content;
+    max-width: 100%;
+    min-width: 0;
+    padding: 5px 11px;
+    gap: 5px;
+    overflow: hidden;
+  }
+
+  .spm-play-wallet--toggle {
+    padding: 0;
+    overflow: visible;
+  }
+
+  .spm-play-wallet-amount {
+    font-size: 14px;
+  }
+
+  .spm-play-wallet-label {
+    display: none;
+  }
+
+  .spm-iframe-header--play .spm-iframe-header-actions {
+    flex-shrink: 0;
+    justify-self: end;
+    gap: 6px;
+  }
+
+  .spm-iframe-header-home {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .spm-iframe-header-minmax {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .spm-iframe-header-minmax svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .spm-iframe-header-home span {
+    display: none;
+  }
+
+  .spm-iframe-header--play .spm-iframe-header-close {
+    padding: 7px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Full-page slot play — hide support chat and other floating widgets */
+body.slot-game-play-active .pj-intercom-launcher {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* ============================================================
+   Mobile immersive — collapse the browser address bar + fill the
+   visible viewport (iOS & Android). Mirrors the Orionstars logic.
+   ============================================================ */
+
+:root {
+  --slot-header-h: calc(var(--dash-nav-h, 56px) + env(safe-area-inset-top, 0px));
+}
+
+/* The document MUST be able to scroll briefly, otherwise mobile browsers
+   refuse to collapse the URL/address bar. */
+html.slot-game-route,
+html.slot-game-route body {
+  margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #000;
+  overscroll-behavior-y: none;
+}
+
+.slot-game-immersive-root {
+  position: relative;
+  width: 100%;
+  z-index: 10080;
+  background: #000;
+}
+
+/* Android Chrome — page must scroll briefly to collapse the URL bar. */
+html.android-chrome-collapse,
+html.android-chrome-collapse body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  min-height: 150vh !important;
+  height: auto !important;
+}
+
+html.android-chrome-collapse #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  min-height: 130vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Android (and generic) immersive: wrapper is JS-pinned to visualViewport,
+   header sits on top, iframe fills the rest. */
+html.slot-game-immersive-active:not(.ios-slot-game-device) #slot-game-fullscreen-wrapper {
+  min-height: var(--game-vvh, 100dvh);
+  height: var(--game-vvh, 100dvh);
+  max-height: var(--game-vvh, 100dvh);
+}
+
+/* iOS — dvh + safe-area + document scroll (no Fullscreen API on iframes). */
+html.ios-slot-game-device.slot-game-immersive-active,
+html.ios-slot-game-device.slot-game-immersive-active body {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  min-height: calc(100svh + 12px);
+  height: auto !important;
+  overscroll-behavior-y: none;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  min-height: calc(var(--game-vvh, 100dvh) + 8px);
+  height: auto !important;
+  max-height: none !important;
+}
+
+/* On iOS the header stays pinned while the iframe area fills the visible viewport. */
+html.ios-slot-game-device.slot-game-immersive-active #slot-game-fullscreen-wrapper .spm-iframe-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active #slot-game-fullscreen-wrapper .spm-iframe-shell {
+  height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h));
+  min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h));
+}
+
+/* Briefly expand page while nudging scroll to collapse iOS browser chrome */
+html.ios-collapse-scroll,
+html.ios-collapse-scroll body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 140vh !important;
+}
+
+html.ios-collapse-scroll #slot-game-fullscreen-wrapper {
+  min-height: 140vh !important;
+  height: auto !important;
+}
+
+html.ios-chrome-collapse,
+html.ios-chrome-collapse body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  height: auto !important;
+  min-height: 140vh !important;
+}
+
+html.ios-chrome-collapse.ios-chrome-landscape,
+html.ios-chrome-collapse.ios-chrome-landscape body {
+  overflow-x: auto !important;
+  min-width: 150vw !important;
+  min-height: 130vh !important;
+}
+
+html.ios-chrome-collapse #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  min-height: 130vh !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+html.ios-chrome-collapse.ios-chrome-landscape #slot-game-fullscreen-wrapper {
+  min-width: 130vw !important;
+  width: auto !important;
+}
+
+/* iOS portrait — document scroll so Safari bottom / Chrome top bar can collapse */
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game,
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game body,
+html.slot-game-route.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game body.slot-game-mode {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  height: auto !important;
+  min-height: calc(100dvh + var(--ios-portrait-scroll-slack, 120px)) !important;
+  overscroll-behavior-y: auto;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: var(--game-vvh, 100dvh) !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  transform: none !important;
+  z-index: auto;
+  padding-top: 0 !important;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game .spm-iframe {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-top: 0 !important;
+  height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  max-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  border: none !important;
+  z-index: 1 !important;
+}
+
+/* Landscape — pin iframe flush below fixed header */
+html.ios-slot-game-device.slot-game-immersive-active:not(.ios-portrait-slot-game) .spm-iframe {
+  position: fixed !important;
+  top: var(--slot-header-h) !important;
+  left: 0 !important;
+  margin-top: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  max-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+}
+
+html.ios-portrait-bar-expanded .spm-iframe {
+  pointer-events: none;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game:not(.ios-portrait-bar-expanded) .spm-iframe {
+  pointer-events: auto !important;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-chrome-bar-expanded .spm-iframe {
+  pointer-events: none !important;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-chrome-bar-expanded,
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-chrome-bar-expanded body,
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-chrome-bar-expanded #slot-game-fullscreen-wrapper {
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active:not(.ios-portrait-slot-game).ios-chrome-bar-expanded body.slot-game-mode {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  min-height: calc(100dvh + 120px) !important;
+  min-width: calc(100dvw + 120px) !important;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-portrait-slot-game.ios-portrait-bar-expanded,
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-portrait-slot-game.ios-portrait-bar-expanded body,
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-portrait-slot-game.ios-portrait-bar-expanded #slot-game-fullscreen-wrapper {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active.ios-portrait-slot-game .slot-game-ios-scroll-edge {
+  height: 52px;
+}
+
+html.ios-collapse-scroll--portrait,
+html.ios-collapse-scroll--portrait body,
+html.ios-portrait-collapse,
+html.ios-portrait-collapse body,
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game.ios-collapse-scroll body.slot-game-mode {
+  min-height: 165vh !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+html.ios-collapse-scroll--portrait #slot-game-fullscreen-wrapper,
+html.ios-portrait-collapse #slot-game-fullscreen-wrapper,
+html.ios-slot-game-device.slot-game-immersive-active.ios-portrait-slot-game.ios-collapse-scroll body.slot-game-mode #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  min-height: 155vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+html.ios-chrome-slot-game.slot-game-immersive-active .slot-game-ios-scroll-edge {
+  height: 44px;
+}
+
+.slot-game-ios-scroll-edge {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  z-index: 1000040;
+  touch-action: pan-y;
+  background: transparent;
+}
+
+.slot-game-ios-scroll-rail {
+  display: block;
+  width: 100%;
+  height: 72px;
+  flex-shrink: 0;
+  background: #000;
+  touch-action: pan-y;
+}
+
+html.ios-slot-game-device.slot-game-immersive-active:not(.ios-portrait-slot-game) .slot-game-ios-scroll-rail {
+  display: none;
+}
+
+/* iOS swipe-up gate — document must scroll natively */
+html.ios-swipe-gate-active.slot-game-route,
+html.ios-swipe-gate-active.slot-game-route body {
+  height: auto !important;
+  min-height: 165vh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y;
+}
+
+html.ios-swipe-gate-active.slot-game-route body.slot-game-mode {
+  overflow-y: auto !important;
+  min-height: calc(165vh + var(--ios-portrait-scroll-slack, 120px)) !important;
+  height: auto !important;
+}
+
+html.ios-swipe-gate-active #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  min-height: 155vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.sg-swipe-overlay-scroll-rail {
+  display: block;
+  width: 100%;
+  min-height: 120px;
+  height: 18vh;
+  flex-shrink: 0;
+  background: #000;
+  touch-action: pan-y;
+}
+
+/* iOS swipe-up fullscreen prompt (Safari + Chrome portrait) */
+.sg-swipe-up-overlay {
+  position: fixed;
+  inset: var(--slot-header-h) 0 0 0;
+  z-index: 1000048;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding:
+    clamp(0.75rem, 3vw, 1.25rem)
+    clamp(1rem, 4.5vw, 1.5rem)
+    max(clamp(1.25rem, 5vw, 2rem), env(safe-area-inset-bottom, 0px));
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  touch-action: pan-y;
+  font-family: Rajdhani, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.sg-swipe-up-overlay__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 21rem);
+  max-height: 100%;
+  gap: clamp(0.65rem, 2.5vw, 1.1rem);
+  text-align: center;
+  color: #fff;
+}
+
+.sg-swipe-up-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 16.5rem);
+  min-height: 2.85rem;
+  padding: 0.7rem 1.25rem;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+  background: transparent;
+  color: #fff;
+  font-size: clamp(0.84rem, 3.6vw, 0.95rem);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.sg-swipe-up-exit:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.sg-swipe-up-divider {
+  margin: clamp(0.35rem, 2vw, 0.85rem) 0;
+  font-size: clamp(0.84rem, 3.4vw, 0.95rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.sg-swipe-up-title {
+  margin: 0;
+  padding: 0 0.25rem;
+  font-size: clamp(1.05rem, 4.6vw, 1.42rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.sg-swipe-up-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(3.5rem, 14vw, 4.5rem);
+  height: clamp(3.5rem, 14vw, 4.5rem);
+  margin-top: clamp(0.25rem, 1.5vw, 0.65rem);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  animation: sg-swipe-up-bounce 1.6s ease-in-out infinite;
+}
+
+.sg-swipe-up-chevron svg {
+  width: clamp(1.65rem, 7vw, 2.25rem);
+  height: clamp(1.65rem, 7vw, 2.25rem);
+}
+
+@keyframes sg-swipe-up-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
+}
+
+@media (max-height: 680px) {
+  .sg-swipe-up-overlay__inner {
+    gap: 0.5rem;
+  }
+
+  .sg-swipe-up-divider {
+    margin: 0.25rem 0;
+  }
+
+  .sg-swipe-up-chevron {
+    margin-top: 0.15rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .sg-swipe-up-exit {
+    white-space: normal;
+    min-height: 2.65rem;
+  }
+}
+
+.slot-game-ios-scroll-tail {
+  height: 12px;
+  width: 100%;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Keep the play header in fullscreen so min/max stays reachable. */
+:fullscreen .spm-iframe-header,
+:-webkit-full-screen .spm-iframe-header {
+  display: grid !important;
+}
+
+:fullscreen .spm-iframe-shell,
+:-webkit-full-screen .spm-iframe-shell {
+  flex: 1 1 auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+html.slot-game-immersive-active.slot-game-user-exited-fullscreen #slot-game-fullscreen-wrapper {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: var(--game-vvh, 100dvh) !important;
+  min-height: var(--game-vvh, 100dvh) !important;
+  max-height: var(--game-vvh, 100dvh) !important;
+  overflow: visible !important;
+  transform: none !important;
+  z-index: auto !important;
+}
+
+html.slot-game-immersive-active.slot-game-user-exited-fullscreen:not(.ios-slot-game-device) .spm-iframe {
+  position: fixed !important;
+  top: calc(var(--game-vv-top, env(safe-area-inset-top, 0px)) + var(--slot-header-h)) !important;
+  left: var(--game-vv-left, 0px) !important;
+  width: var(--game-vvw, 100vw) !important;
+  max-width: var(--game-vvw, 100vw) !important;
+  height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  max-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+}
+
+/* ── "Swipe up" hint — fades out after the address bar has had time to collapse ── */
+.slot-game-swipe-hint {
+  position: fixed;
+  left: 50%;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 1000040;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-family: Rajdhani, system-ui, sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: rgba(10, 14, 22, 0.82);
+  border: 1px solid rgba(255, 215, 0, 0.32);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+  animation: slot-game-swipe-hint 4.5s ease forwards;
+}
+
+.slot-game-swipe-hint-arrow {
+  font-size: 16px;
+  line-height: 1;
+  color: var(--dash-gold, #ffd700);
+  animation: slot-game-swipe-bounce 1.2s ease-in-out infinite;
+}
+
+@keyframes slot-game-swipe-hint {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  12%,
+  72% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    visibility: hidden;
+  }
+}
+
+@keyframes slot-game-swipe-bounce {
+  0%,
+  100% {
+    transform: translateY(2px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .slot-game-swipe-hint {
+    display: none;
+  }
+}
+
+/* ============================================================
+   Bona portrait gate — mobile landscape must rotate to play.
+   Non-dismissible; disappears only when orientation is portrait.
+   ============================================================ */
+.bona-portrait-gate {
+  position: fixed;
+  inset: var(--slot-header-h) 0 0 0;
+  z-index: 1000050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  padding:
+    clamp(0.75rem, 3vw, 1.25rem)
+    clamp(1rem, 4.5vw, 1.5rem)
+    max(clamp(1.25rem, 5vw, 2rem), env(safe-area-inset-bottom, 0px));
+  background: rgba(4, 6, 10, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+  touch-action: none;
+  font-family: Rajdhani, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.bona-portrait-gate__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 22rem);
+  max-height: 100%;
+  gap: clamp(0.55rem, 2.2vw, 0.95rem);
+  text-align: center;
+  color: #fff;
+}
+
+.bona-portrait-gate__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(4rem, 14vw, 5.25rem);
+  height: clamp(4rem, 14vw, 5.25rem);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 215, 0, 0.35);
+  color: var(--dash-gold, #ffd700);
+  background: rgba(255, 215, 0, 0.08);
+  animation: bona-portrait-gate-pulse 1.8s ease-in-out infinite;
+}
+
+.bona-portrait-gate__icon svg {
+  width: clamp(1.85rem, 7vw, 2.4rem);
+  height: clamp(1.85rem, 7vw, 2.4rem);
+}
+
+.bona-portrait-gate__title {
+  margin: 0;
+  padding: 0 0.25rem;
+  font-family: 'Russo One', Rajdhani, system-ui, sans-serif;
+  font-size: clamp(1.1rem, 4.4vw, 1.45rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.bona-portrait-gate__desc {
+  margin: 0;
+  padding: 0 0.35rem;
+  font-size: clamp(0.88rem, 3.4vw, 1rem);
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(240, 235, 224, 0.78);
+  text-wrap: balance;
+}
+
+@keyframes bona-portrait-gate-pulse {
+  0%,
+  100% {
+    transform: rotate(-8deg) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: rotate(8deg) scale(1.04);
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   Bona Games are portrait-first. In landscape the iframe must be
+   letterboxed to a tall aspect ratio so the game sees a portrait
+   viewport and does not self-rotate content sideways.
+   ============================================================ */
+@media (orientation: landscape) and (max-height: 560px) {
+  .slot-game-play--bona .spm-iframe-shell--bona {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    background: #000;
+    overflow: hidden !important;
+  }
+
+  .slot-game-play--bona .spm-iframe--bona,
+  html.ios-slot-game-device.slot-game-immersive-active:not(.ios-portrait-slot-game)
+    .slot-game-play--bona
+    .spm-iframe--bona,
+  html.slot-game-immersive-active:not(.ios-slot-game-device)
+    .slot-game-play--bona
+    .spm-iframe--bona {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    flex: 0 0 auto !important;
+    height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+    min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+    max-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+    width: min(
+      100%,
+      calc((var(--game-vvh, 100dvh) - var(--slot-header-h)) * 9 / 16)
+    ) !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    aspect-ratio: 9 / 16;
+  }
+
+  html.ios-slot-game-device.slot-game-immersive-active:not(.ios-portrait-slot-game)
+    .slot-game-play--bona
+    .spm-iframe-shell--bona {
+    height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+    min-height: calc(var(--game-vvh, 100dvh) - var(--slot-header-h)) !important;
+  }
+}
+
+/* Soft rotate hint when the letterbox leaves empty side gutters */
+@media (orientation: landscape) and (max-height: 560px) {
+  .slot-game-play--bona .slot-game-swipe-hint {
+    display: none;
+  }
+}

@@ -1,0 +1,265 @@
+/* Store detail — layout on top of shared UserDetail.css primitives */
+
+.store-detail-page {
+  max-width: 1100px;
+}
+
+.store-detail-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.store-detail-toolbar .ud-breadcrumb {
+  margin-bottom: 0;
+}
+
+.store-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.store-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.store-detail-section-span {
+  grid-column: 1 / -1;
+}
+
+.ud-dl-item--full {
+  grid-column: 1 / -1;
+}
+
+.store-detail-external-link {
+  color: #2563eb;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+.store-detail-external-link:hover {
+  text-decoration: underline;
+}
+
+.store-detail-empty {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  color: #4b5563;
+}
+
+.store-detail-empty p {
+  margin: 0 0 1rem;
+}
+
+.store-detail-tabs-wrap {
+  margin-bottom: 1rem;
+}
+
+.store-detail-tab-panel {
+  margin-bottom: 0;
+}
+
+.store-detail-tab-meta {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.store-detail-table {
+  font-size: 0.875rem;
+}
+
+.store-detail-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.store-detail-page-indicator {
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.store-detail-muted {
+  color: #9ca3af;
+  font-size: 0.8125rem;
+}
+
+.store-detail-provider-code {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  word-break: break-all;
+}
+
+.store-detail-payment-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.store-detail-payments-block {
+  margin-top: 1rem;
+}
+
+.store-detail-payments-block:first-child {
+  margin-top: 0;
+}
+
+.store-detail-payments-block-title {
+  margin: 0 0 0.55rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.store-detail-payment-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  background: #fff;
+}
+
+.store-detail-payment-card-highlight {
+  border-color: #93c5fd;
+  background: #f8fbff;
+}
+
+.store-detail-payment-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.15rem;
+}
+
+.store-detail-payment-card-head h3 {
+  margin: 0;
+}
+
+.store-detail-payment-sub {
+  margin: 0 0 0.55rem !important;
+  display: block !important;
+  font-size: 0.75rem !important;
+  color: #6b7280;
+  justify-content: flex-start !important;
+}
+
+.store-detail-payment-mode {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+}
+
+.store-detail-payment-mode-auto {
+  color: #065f46;
+  background: #d1fae5;
+}
+
+.store-detail-payment-mode-manual {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.store-detail-payment-card h3 {
+  margin: 0 0 0.45rem;
+  font-size: 0.9rem;
+}
+
+.store-detail-payment-card p {
+  margin: 0.35rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+}
+
+.store-detail-payment-card strong {
+  font-size: 0.86rem;
+}
+
+.store-detail-payment-breakdown {
+  margin-top: 0.55rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #dbeafe;
+}
+
+.store-detail-payment-breakdown-title {
+  margin: 0 0 0.25rem !important;
+  font-size: 0.72rem !important;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  justify-content: flex-start !important;
+}
+
+.store-detail-payment-breakdown p {
+  font-size: 0.78rem;
+}
+
+.store-detail-payment-method-row {
+  margin-top: 0.45rem;
+  padding: 0.4rem 0.5rem;
+  border-radius: 8px;
+  background: #f1f5f9;
+}
+
+.store-detail-payment-method-row + .store-detail-payment-method-row {
+  margin-top: 0.35rem;
+}
+
+.store-detail-payment-method-name {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.store-detail-payment-method-amounts p {
+  margin: 0.15rem 0;
+}
+
+.store-detail-payments-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.store-detail-payments-filter-row label {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #4b5563;
+}
+
+.store-detail-payments-filter-row input[type='date'] {
+  min-width: 150px;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.82rem;
+}

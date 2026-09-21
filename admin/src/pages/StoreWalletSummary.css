@@ -1,0 +1,12 @@
+/* Store wallet summary — tfoot and net column */
+
+.sws-tfoot-row td {
+  border-top: 2px solid var(--color-border, #e5e7eb);
+  background: var(--color-surface-muted, #f9fafb);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+.sws-net {
+  font-weight: 700;
+}

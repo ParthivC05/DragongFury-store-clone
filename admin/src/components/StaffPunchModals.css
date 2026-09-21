@@ -1,0 +1,52 @@
+.staff-punch-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.staff-punch-modal {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 440px;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+}
+
+.staff-punch-modal h3 {
+  margin: 0 0 0.4rem;
+}
+
+.staff-punch-copy {
+  margin: 0 0 1rem;
+  color: #555;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.staff-punch-modal label {
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.staff-punch-modal input {
+  display: block;
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.staff-punch-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

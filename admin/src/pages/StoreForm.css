@@ -1,0 +1,329 @@
+/* Store edit: wider layout when page permissions are shown */
+.store-form-page.admin-form-page {
+  align-items: flex-start;
+}
+
+.store-form-page .admin-form-container.store-form-container--wide {
+  max-width: 920px;
+}
+
+.store-form-page .admin-form {
+  max-width: none;
+}
+
+.store-form-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1.25rem;
+}
+
+.store-form-details-grid .admin-form-group-span-2,
+.store-form-details-grid .admin-form-distributor-block,
+.store-form-details-grid .admin-form-group-url-block,
+.store-form-details-grid .admin-form-group-checkbox {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+  .store-form-details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .store-form-details-grid .admin-form-group-span-2,
+  .store-form-details-grid .admin-form-distributor-block,
+  .store-form-details-grid .admin-form-group-url-block,
+  .store-form-details-grid .admin-form-group-checkbox {
+    grid-column: auto;
+  }
+}
+
+/* ——— Simple page permissions board ——— */
+.store-perm-board {
+  margin: 1.75rem 0 0.5rem;
+  padding: 1.25rem 1.25rem 1.35rem;
+  border: 2px solid #dbeafe;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 40%);
+}
+
+.store-perm-board__intro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed #bfdbfe;
+}
+
+.store-perm-board__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.store-perm-board__hint {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.store-perm-board__hint strong {
+  color: #166534;
+}
+
+.store-perm-board__hint em {
+  font-style: normal;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.store-perm-board__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.store-perm-board__count {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  background: #ecfdf5;
+  border: 1px solid #86efac;
+  color: #166534;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.store-perm-board__btn {
+  height: 34px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.store-perm-board__btn--on {
+  background: #dcfce7 !important;
+  border-color: #86efac !important;
+  color: #166534 !important;
+}
+
+.store-perm-board__btn--off {
+  background: #fee2e2 !important;
+  border-color: #fca5a5 !important;
+  color: #991b1b !important;
+}
+
+.store-perm-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.store-perm-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.store-perm-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.store-perm-dot--on {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+.store-perm-dot--off {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.store-perm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .store-perm-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .store-perm-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .store-perm-board {
+    padding: 1rem;
+  }
+}
+
+.store-perm-tile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border-radius: 12px;
+  border: 2px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+}
+
+.store-perm-tile:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 6px 16px -12px rgba(37, 99, 235, 0.45);
+}
+
+.store-perm-tile--on {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.store-perm-tile--off {
+  border-color: #fecaca;
+  background: #fff7f7;
+  opacity: 0.92;
+}
+
+.store-perm-tile__switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background 0.15s;
+}
+
+.store-perm-tile--on .store-perm-tile__switch {
+  background: #22c55e;
+}
+
+.store-perm-tile--off .store-perm-tile__switch {
+  background: #f87171;
+}
+
+.store-perm-tile__knob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+  transition: transform 0.15s;
+}
+
+.store-perm-tile--on .store-perm-tile__knob {
+  transform: translateX(20px);
+}
+
+.store-perm-tile__body {
+  min-width: 0;
+  flex: 1;
+}
+
+.store-perm-tile__name {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.25;
+}
+
+.store-perm-tile__state {
+  display: inline-block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.store-perm-tile--on .store-perm-tile__state {
+  color: #15803d;
+}
+
+.store-perm-tile--off .store-perm-tile__state {
+  color: #b91c1c;
+}
+
+.store-perm-tile input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+/* Grouped permissions (e.g. Manual Requests) span full width */
+.store-perm-group {
+  grid-column: 1 / -1;
+  padding: 0.95rem 1rem;
+  border-radius: 12px;
+  border: 2px solid #dbeafe;
+  background: #f8fbff;
+}
+
+.store-perm-group__title {
+  margin: 0 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.store-perm-group__desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.store-perm-group__kids {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (max-width: 800px) {
+  .store-perm-group__kids {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .store-perm-group__kids {
+    grid-template-columns: 1fr;
+  }
+}

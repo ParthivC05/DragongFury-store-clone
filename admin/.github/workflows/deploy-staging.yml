@@ -1,0 +1,69 @@
+name: Deploy Partner Platform Admin (staging)
+
+on:
+  pull_request:
+    branches: [staging]
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Build & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install, lint, build
+        run: |
+          npm install
+          npm run lint
+          npm run build
+
+  deploy:
+    name: Deploy to staging EC2
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.STAGING_EC2_HOST }}
+          username: ${{ secrets.STAGING_EC2_USER }}
+          key: ${{ secrets.STAGING_EC2_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.STAGING_EC2_SSH_PORT || 22 }}
+          command_timeout: 30m
+          script: |
+            set -e
+            DEPLOY_PATH="/var/www/partner-platform-admin"
+            export NODE_OPTIONS="--max-old-space-size=2048"
+
+            cd "$DEPLOY_PATH"
+            echo ">>> Pulling origin/staging..."
+            git fetch origin
+            git checkout staging
+            git reset --hard origin/staging
+
+            echo ">>> Installing deps (if needed)..."
+            if [ ! -d node_modules ] || [ package-lock.json -nt node_modules ]; then
+              npm install
+            else
+              echo ">>> Deps up to date, skip install"
+            fi
+
+            echo ">>> Building admin frontend..."
+            npm run build
+            chmod -R o+rX "$DEPLOY_PATH/dist" || true
+
+            echo ">>> Done."
+            ls -la dist | head -n 5

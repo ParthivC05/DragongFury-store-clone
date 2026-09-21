@@ -1,0 +1,217 @@
+/**
+ * Typography for Help page content.
+ * .help-api-content: HTML from DB (dangerouslySetInnerHTML)
+ * .help-tab-body: Static fallback tab content (React children)
+ */
+
+.help-api-content,
+.help-tab-body {
+  @apply text-gray-200;
+  line-height: 1.6;
+}
+
+.help-api-content h1,
+.help-tab-body h1 {
+  @apply text-xl font-bold text-gray-100 mt-6 mb-3;
+}
+.help-api-content h1:first-child,
+.help-tab-body h1:first-child {
+  @apply mt-0;
+}
+
+.help-api-content h2,
+.help-tab-body h2 {
+  @apply text-lg font-bold text-gray-100 mt-5 mb-2;
+}
+.help-api-content h2:first-child,
+.help-tab-body h2:first-child {
+  @apply mt-0;
+}
+
+.help-api-content h3,
+.help-tab-body h3 {
+  @apply text-base font-semibold text-gray-100 mt-4 mb-2;
+}
+.help-api-content h3:first-child,
+.help-tab-body h3:first-child {
+  @apply mt-0;
+}
+
+.help-api-content h4,
+.help-tab-body h4 {
+  @apply text-sm font-semibold text-gray-100 mt-4 mb-2;
+}
+.help-api-content h4:first-child,
+.help-tab-body h4:first-child {
+  @apply mt-0;
+}
+
+.help-api-content h5,
+.help-api-content h6,
+.help-tab-body h5,
+.help-tab-body h6 {
+  @apply text-sm font-semibold text-gray-200 mt-3 mb-1;
+}
+
+.help-api-content p,
+.help-tab-body p {
+  @apply mb-3 text-sm text-gray-200;
+}
+
+.help-api-content ul,
+.help-tab-body ul {
+  @apply list-disc pl-6 my-3 text-sm text-gray-200 space-y-1;
+}
+
+.help-api-content ol,
+.help-tab-body ol {
+  @apply list-decimal pl-6 my-3 text-sm text-gray-200 space-y-1;
+}
+
+.help-api-content li,
+.help-tab-body li {
+  @apply text-gray-200;
+}
+
+.help-api-content strong,
+.help-tab-body strong {
+  @apply font-semibold text-gray-100;
+}
+
+.help-api-content em,
+.help-tab-body em {
+  @apply italic text-gray-300;
+}
+
+.help-api-content a,
+.help-tab-body a {
+  @apply text-orange-300 hover:text-orange-200 underline;
+}
+
+.help-api-content blockquote,
+.help-tab-body blockquote {
+  @apply border-l-4 border-gray-600 pl-4 my-3 italic text-gray-400;
+}
+
+.help-api-content code,
+.help-tab-body code {
+  @apply px-1.5 py-0.5 rounded bg-gray-700 text-gray-200 text-xs font-mono;
+}
+
+.help-api-content pre,
+.help-tab-body pre {
+  @apply p-4 rounded-lg bg-gray-800 text-gray-200 text-sm overflow-x-auto my-3;
+}
+
+.help-api-content img,
+.help-tab-body img {
+  @apply max-w-full h-auto rounded-lg my-3;
+}
+
+/* Quill alignment & formatting (ql-align-*, ql-indent-*, ql-direction-rtl) */
+.help-api-content .ql-align-left,
+.help-tab-body .ql-align-left {
+  text-align: left;
+}
+.help-api-content .ql-align-center,
+.help-tab-body .ql-align-center {
+  text-align: center;
+}
+.help-api-content .ql-align-right,
+.help-tab-body .ql-align-right {
+  text-align: right;
+}
+/* Center/right images inside aligned divs (block elements need margin, not text-align) */
+.help-api-content .ql-align-center img,
+.help-tab-body .ql-align-center img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.help-api-content .ql-align-right img,
+.help-tab-body .ql-align-right img {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+.help-api-content .ql-align-justify,
+.help-tab-body .ql-align-justify {
+  text-align: justify;
+}
+.help-api-content .ql-direction-rtl,
+.help-tab-body .ql-direction-rtl {
+  direction: rtl;
+  text-align: inherit;
+}
+.help-api-content .ql-indent-1:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-1:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-1:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-1:not(.ql-direction-rtl) { padding-left: 3em; }
+.help-api-content .ql-indent-2:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-2:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-2:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-2:not(.ql-direction-rtl) { padding-left: 6em; }
+.help-api-content .ql-indent-3:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-3:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-3:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-3:not(.ql-direction-rtl) { padding-left: 9em; }
+.help-api-content .ql-indent-4:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-4:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-4:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-4:not(.ql-direction-rtl) { padding-left: 12em; }
+.help-api-content .ql-indent-5:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-5:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-5:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-5:not(.ql-direction-rtl) { padding-left: 15em; }
+.help-api-content .ql-indent-6:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-6:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-6:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-6:not(.ql-direction-rtl) { padding-left: 18em; }
+.help-api-content .ql-indent-7:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-7:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-7:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-7:not(.ql-direction-rtl) { padding-left: 21em; }
+.help-api-content .ql-indent-8:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-8:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-8:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-8:not(.ql-direction-rtl) { padding-left: 24em; }
+.help-api-content .ql-indent-9:not(.ql-direction-rtl),
+.help-api-content li.ql-indent-9:not(.ql-direction-rtl),
+.help-tab-body .ql-indent-9:not(.ql-direction-rtl),
+.help-tab-body li.ql-indent-9:not(.ql-direction-rtl) { padding-left: 27em; }
+.help-api-content .ql-indent-1.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-1.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-1.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-1.ql-direction-rtl.ql-align-right { padding-right: 3em; }
+.help-api-content .ql-indent-2.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-2.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-2.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-2.ql-direction-rtl.ql-align-right { padding-right: 6em; }
+.help-api-content .ql-indent-3.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-3.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-3.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-3.ql-direction-rtl.ql-align-right { padding-right: 9em; }
+.help-api-content .ql-indent-4.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-4.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-4.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-4.ql-direction-rtl.ql-align-right { padding-right: 12em; }
+.help-api-content .ql-indent-5.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-5.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-5.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-5.ql-direction-rtl.ql-align-right { padding-right: 15em; }
+.help-api-content .ql-indent-6.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-6.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-6.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-6.ql-direction-rtl.ql-align-right { padding-right: 18em; }
+.help-api-content .ql-indent-7.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-7.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-7.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-7.ql-direction-rtl.ql-align-right { padding-right: 21em; }
+.help-api-content .ql-indent-8.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-8.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-8.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-8.ql-direction-rtl.ql-align-right { padding-right: 24em; }
+.help-api-content .ql-indent-9.ql-direction-rtl.ql-align-right,
+.help-api-content li.ql-indent-9.ql-direction-rtl.ql-align-right,
+.help-tab-body .ql-indent-9.ql-direction-rtl.ql-align-right,
+.help-tab-body li.ql-indent-9.ql-direction-rtl.ql-align-right { padding-right: 27em; }

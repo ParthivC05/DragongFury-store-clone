@@ -1,0 +1,431 @@
+/* Game Logs page - super admin, distributor admin, store admin */
+
+.game-logs-page {
+  padding: 0 1.5rem 2.5rem;
+  background: #f1f5f9;
+  min-height: 100%;
+}
+
+.game-logs-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem 1.25rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.game-logs-header-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.game-logs-title {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.game-logs-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.game-logs-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 1rem;
+}
+
+.game-logs-store-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 10rem;
+}
+
+.game-logs-store-filter-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.game-logs-store-filter select {
+  min-width: 10rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #0f172a;
+  font-size: 0.875rem;
+}
+
+.game-logs-store-filter select:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.game-logs-header-actions .dashboard-filter-bar {
+  margin-bottom: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.game-logs-header-actions .dashboard-filter-bar-label {
+  display: none;
+}
+
+.game-logs-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.game-logs-section-heading {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.game-logs-ratio-desc {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: #64748b;
+  line-height: 1.5;
+  max-width: 56rem;
+}
+
+.game-logs-ratio-desc-intro {
+  margin: 0 0 0.5rem;
+}
+
+.game-logs-ratio-definitions {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.game-logs-ratio-definitions li {
+  margin-bottom: 0.25rem;
+}
+
+.game-logs-ratio-definitions li:last-child {
+  margin-bottom: 0;
+}
+
+.game-logs-loading {
+  padding: 0.5rem 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Charts (Game Logs Reports) */
+.game-logs-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.game-logs-chart-main,
+.game-logs-chart-secondary {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.game-logs-chart-main .dashboard-chart-wrap,
+.game-logs-chart-secondary .dashboard-chart-wrap {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.game-logs-chart-secondary .dashboard-chart-description {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* Auto & Manual ratio */
+.game-logs-ratio-cards {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.game-logs-ratio-card {
+  padding: 1.25rem 1.75rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  min-width: 140px;
+}
+
+.game-logs-ratio-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.game-logs-ratio-label {
+  font-size: 0.875rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* Deposit & Withdraw stats */
+.game-logs-stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+}
+
+.game-logs-stats-card {
+  padding: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.game-logs-stats-deposit {
+  background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+  border-color: #a7f3d0;
+}
+
+.game-logs-stats-withdraw {
+  background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+  border-color: #fecaca;
+}
+
+.game-logs-stats-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.5rem;
+}
+
+.game-logs-stats-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.35rem;
+}
+
+.game-logs-stats-meta {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Tabs */
+.game-logs-tabs-section {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.game-logs-tabs-header {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.game-logs-tab {
+  padding: 0.65rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+}
+
+.game-logs-tab:hover {
+  color: #334155;
+  background: #f8fafc;
+}
+
+.game-logs-tab-active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+  background: #eff6ff;
+}
+
+.game-logs-panel-title {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.game-logs-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.game-logs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.game-logs-table th,
+.game-logs-table td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.game-logs-table th {
+  font-weight: 600;
+  color: #475569;
+  background: #f8fafc;
+}
+
+.game-logs-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.game-logs-td-date {
+  white-space: nowrap;
+  color: #64748b;
+}
+
+.game-logs-user-sub {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+.game-logs-th-amount,
+.game-logs-td-amount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.game-logs-td-amount {
+  font-weight: 500;
+}
+
+.game-logs-status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.game-logs-status-success {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.game-logs-status-failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.game-logs-empty {
+  padding: 1.5rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.game-logs-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.game-logs-perpage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.game-logs-perpage select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.game-logs-pagination-info {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.game-logs-pagination-btns {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.game-logs-pagination-btns button {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #475569;
+}
+
+.game-logs-pagination-btns button:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.game-logs-pagination-btns button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.game-logs-pagination-btns span {
+  font-size: 0.85rem;
+  color: #64748b;
+  padding: 0 0.5rem;
+}
+
+/* Handled-by badge in game log tables */
+.game-logs-doneby-badge {
+  display: inline-block;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.game-logs-doneby-auto   { background: #d1fae5; color: #065f46; }
+.game-logs-doneby-manual { background: #ede9fe; color: #5b21b6; }

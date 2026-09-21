@@ -6,7 +6,6 @@ const {
   applyRollbackDelta
 } = require('../gitslotpark/callbacks/gitslotparkCallbackWallet.service');
 const { formatBalance } = require('../gitslotpark/gitslotparkSign.helpers');
-const { resolvePlayCoin } = require('../playCoin/playCoinSession.service');
 
 function money(value) {
   return formatBalance(value);
@@ -25,8 +24,7 @@ function walletMeta(kind, key, extra) {
 }
 
 async function getScorpioBalance(userId, transaction) {
-  const coinType = await resolvePlayCoin({ userId, provider: 'scorpio' });
-  return money(await getPlayableBalance(userId, transaction, coinType));
+  return money(await getPlayableBalance(userId, transaction));
 }
 
 async function applyScorpioDebit(userId, amount, key, extra, transaction) {
@@ -37,19 +35,17 @@ async function applyScorpioDebit(userId, amount, key, extra, transaction) {
     err.code = 'ERR_NOT_ENOUGH_MONEY';
     throw err;
   }
-  const coinType = await resolvePlayCoin({ userId, provider: 'scorpio' });
   return applyBalanceDelta(
     userId,
     -debit,
     walletMeta('bet', key, extra),
     transaction,
-    { betAmount: debit, coinType }
+    { betAmount: debit }
   );
 }
 
 async function applyScorpioCredit(userId, amount, key, extra, transaction) {
   const credit = money(amount);
-  const coinType = await resolvePlayCoin({ userId, provider: 'scorpio' });
   if (Math.abs(credit) < 0.0001) {
     return getScorpioBalance(userId, transaction);
   }
@@ -58,19 +54,17 @@ async function applyScorpioCredit(userId, amount, key, extra, transaction) {
     credit,
     walletMeta(extra?.kind || 'win', key, extra),
     transaction,
-    { winAmount: credit, coinType }
+    { winAmount: credit }
   );
 }
 
 async function applyScorpioRollback(userId, originalTransactionId, reverseDelta, key, extra, transaction) {
-  const coinType = await resolvePlayCoin({ userId, provider: 'scorpio' });
   return applyRollbackDelta(
     userId,
     originalTransactionId,
     money(reverseDelta),
     walletMeta('cancel', key, extra),
-    transaction,
-    { coinType }
+    transaction
   );
 }
 

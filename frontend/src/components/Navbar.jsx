@@ -4,8 +4,6 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useVipStatus } from '../context/VipStatusContext';
 import { AccountIcon, ChevronDownIcon, BellIcon, SCCoinIcon, PlusIcon, LockIcon } from '../assets/icons';
-import { isGcCoinsEnabled } from '../config/gcCoins';
-import { HeaderCoinToggle } from './HeaderCoinToggle';
 import { SiteLogo } from './SiteLogo';
 import { getVipTierStyle } from '../utils/vipTierColors';
 import { lockBodyScroll } from '../utils/bodyScrollLock';
@@ -49,7 +47,7 @@ function formatWalletAmount(n) {
 }
 
 export function Navbar() {
-  const { user, isAuthenticated, logout, balanceSc, balanceGc, pscWalletUsable, bscWalletUsable, rscWalletUsable, lockedBalanceSc, balanceLoading } = useAuth();
+  const { user, isAuthenticated, logout, balanceSc, pscWalletUsable, bscWalletUsable, rscWalletUsable, lockedBalanceSc, balanceLoading } = useAuth();
   const { vipStatus } = useVipStatus();
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,8 +66,6 @@ export function Navbar() {
   const [phoneUnlockOpen, setPhoneUnlockOpen] = useState(false);
   const lockedSc = Number(lockedBalanceSc) || 0;
   const unlockedTotal = Number(balanceSc) || 0;
-  const showGc = isGcCoinsEnabled();
-  const gcAmount = Number(balanceGc) || 0;
   const pillAmount = unlockedTotal > 0 ? unlockedTotal : lockedSc;
   const isAuthPage = AUTH_PATHS.includes(location.pathname);
   const isDashboardLayout =
@@ -226,18 +222,8 @@ export function Navbar() {
         </div>
       </div>
     ) : (
-      <div className="dash-wallet-wrap my-1.5" ref={walletRef}>
-        <div className={`dash-wallet-pill onboarding-navbar-wallet${showGc ? ' dash-wallet-pill--toggle' : ''}`}>
-          {showGc ? (
-            <HeaderCoinToggle
-              onSelectedClick={() => {
-                setScBreakdownOpen(true);
-                if (localStorage.getItem('onboarding_pending') === 'true') {
-                  window.dispatchEvent(new CustomEvent('onboarding:wallet-opened'));
-                }
-              }}
-            />
-          ) : (
+      <div className="my-1.5" ref={walletRef}>
+        <div className="dash-wallet-pill onboarding-navbar-wallet">
           <button
             type="button"
             onClick={() => {
@@ -261,7 +247,6 @@ export function Navbar() {
               <span className="dash-wallet-label ml-0.5"> SC</span>
             </span>
           </button>
-          )}
           {lockedSc > 0 ? (
             <button
               type="button"
@@ -308,14 +293,6 @@ export function Navbar() {
                   </p>
                 ) : null}
                 <dl className="dash-wallet-breakdown-list">
-                  {showGc ? (
-                    <div className="dash-wallet-breakdown-row">
-                      <dt>Gold Coins</dt>
-                      <dd className="dash-wallet-breakdown-gc">
-                        {Number(gcAmount).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                      </dd>
-                    </div>
-                  ) : null}
                   <div className="dash-wallet-breakdown-row onboarding-sc-info">
                     <dt>Purchased SC</dt>
                     <dd>

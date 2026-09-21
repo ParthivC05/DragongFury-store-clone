@@ -9,6 +9,11 @@ const dollarpay = require('../paymentProviders/dollarpay/dollarpay.client');
 const { payoutLabel } = require('./settleDollarpayWithdrawal.service');
 const { zeroRemainingWalletsAfterNeverDepositedWithdraw } = require('./neverDepositedWithdraw.service');
 const { redeemableForFrozenWithdrawal } = require('./walletBuckets.service');
+const {
+  reservedFrozenByOtherWithdrawals,
+  thisRequestFrozenSlice,
+  captureThisWithdrawalFreeze
+} = require('./withdrawalFreeze.service');
 
 function canAccessRequest(req, row) {
   if (req.role === ROLES.MASTER_ADMIN) return true;
@@ -106,15 +111,16 @@ async function approveChimeCashappWithdrawalRequest(requestId, adminUserId, req,
     throw err;
   }
 
-  const balance = Number(wallet.balance) || 0;
-  const playBalance = Number(wallet.playBalance) || 0;
-  const frozenBalance = Number(wallet.frozenBalance) || 0;
+  const othersReservedForApprove = await reservedFrozenByOtherWithdrawals(userId, {
+    excludeChimeId: requestId
+  });
+  const thisFrozen = thisRequestFrozenSlice(wallet, amount, othersReservedForApprove);
   if (amount > redeemableForFrozenWithdrawal(wallet) + 0.005) {
     const err = new Error('Insufficient redeemable balance for this user. Cannot approve.');
     err.statusCode = 400;
     throw err;
   }
-  if (amount > frozenBalance + 0.005) {
+  if (amount > thisFrozen + 0.005) {
     const err = new Error('Frozen balance does not match this request. Cannot approve.');
     err.statusCode = 400;
     throw err;
@@ -389,31 +395,47 @@ async function approveChimeCashappWithdrawalRequest(requestId, adminUserId, req,
     };
   }
 
-  // Manual (non-DollarPay): deduct immediately.
-  const newBalance = Math.round((balance - amount) * 100) / 100;
-  const newFrozen = Math.max(0, Math.round((frozenBalance - amount) * 100) / 100);
-  const newPlay = Math.min(playBalance, Math.max(0, newBalance - newFrozen));
-
+  // Manual (non-DollarPay): deduct immediately, but only this request's freeze.
   await db.sequelize.transaction(async (t) => {
-    await wallet.update({ balance: newBalance, frozenBalance: newFrozen, playBalance: newPlay }, { transaction: t });
-    const { recordWalletChange } = require('./scLedger.service');
-    await wallet.reload({ transaction: t });
-    await recordWalletChange({
-      userId,
-      currencyCode,
-      direction: 'DEBIT',
-      amount,
-      wallet,
-      ledger: {
-        eventType: 'WITHDRAWAL',
-        sourceType: 'CHIME_WITHDRAWAL',
-        sourceId: requestId,
-        paymentId: requestId,
-        createdBy: adminUserId,
-        remarks: `${payoutLabel(row.payoutType)} withdrawal approved`
-      },
+    const lockedWallet = await db.Wallet.findOne({
+      where: { userId, currencyCode },
+      transaction: t,
+      lock: t.LOCK.UPDATE
+    });
+    if (!lockedWallet) {
+      const err = new Error('User wallet not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+    const othersReserved = await reservedFrozenByOtherWithdrawals(userId, {
+      excludeChimeId: requestId,
       transaction: t
     });
+    const captured = await captureThisWithdrawalFreeze(lockedWallet, {
+      amount,
+      othersReserved,
+      transaction: t
+    });
+    if (captured.debit > 0.005) {
+      const { recordWalletChange } = require('./scLedger.service');
+      await lockedWallet.reload({ transaction: t });
+      await recordWalletChange({
+        userId,
+        currencyCode,
+        direction: 'DEBIT',
+        amount: captured.debit,
+        wallet: lockedWallet,
+        ledger: {
+          eventType: 'WITHDRAWAL',
+          sourceType: 'CHIME_WITHDRAWAL',
+          sourceId: requestId,
+          paymentId: requestId,
+          createdBy: adminUserId,
+          remarks: `${payoutLabel(row.payoutType)} withdrawal approved`
+        },
+        transaction: t
+      });
+    }
     await row.update(
       {
         status: 'completed',
@@ -423,12 +445,12 @@ async function approveChimeCashappWithdrawalRequest(requestId, adminUserId, req,
       },
       { transaction: t }
     );
-    if (db.UserTransaction) {
+    if (db.UserTransaction && captured.debit > 0.005) {
       await db.UserTransaction.create(
         {
           userId,
           type: 'withdraw',
-          amount,
+          amount: captured.debit,
           currencyCode,
           description: `${payoutLabel(row.payoutType)} withdrawal approved (request #${requestId})`
         },

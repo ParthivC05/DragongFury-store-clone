@@ -14,7 +14,6 @@ const EMPTY_PKG_FORM = {
   group_id: '',
   title: '',
   final_sc: '',
-  gc_coin: '',
   actual_price: '',
   final_price: '',
   discount_label: '',
@@ -23,10 +22,6 @@ const EMPTY_PKG_FORM = {
   starts_at: '',
   ends_at: '',
   is_active: true
-}
-
-function isPlayjuwaStore(storeCode) {
-  return String(storeCode || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'dragonfury'
 }
 
 function toLocalInputValue(iso) {
@@ -101,8 +96,6 @@ export default function DepositPackages() {
     }
     return null
   }, [isStoreAdmin, user, selectedStore])
-
-  const showGcCoins = isPlayjuwaStore(scope?.storeCode)
 
   const loadStores = useCallback(async () => {
     if (!isMaster) {
@@ -218,7 +211,6 @@ export default function DepositPackages() {
       group_id: String(groupId),
       title: pkg?.title || '',
       final_sc: pkg?.final_sc != null ? String(pkg.final_sc) : '',
-      gc_coin: pkg?.gc_coin != null && Number(pkg.gc_coin) > 0 ? String(pkg.gc_coin) : '',
       actual_price: pkg?.actual_price != null ? String(pkg.actual_price) : '',
       final_price: pkg?.final_price != null ? String(pkg.final_price) : '',
       discount_label: pkg?.discount_label || '',
@@ -248,9 +240,6 @@ export default function DepositPackages() {
         group_id: Number(group.id),
         title: pkgForm.title.trim() || null,
         final_sc: Number(pkgForm.final_sc),
-        ...(showGcCoins
-          ? { gc_coin: pkgForm.gc_coin.trim() === '' ? 0 : Number(pkgForm.gc_coin) }
-          : {}),
         actual_price: Number(pkgForm.actual_price),
         final_price: Number(pkgForm.final_price),
         discount_label: pkgForm.discount_label.trim() || null,
@@ -492,7 +481,6 @@ export default function DepositPackages() {
                       <thead>
                         <tr>
                           <th>SC</th>
-                          {showGcCoins ? <th>GC (optional)</th> : null}
                           <th>Actual</th>
                           <th>Price</th>
                           <th>Label</th>
@@ -504,14 +492,11 @@ export default function DepositPackages() {
                       <tbody>
                         {packages.length === 0 ? (
                           <tr className="deposit-packages-table-empty">
-                            <td colSpan={showGcCoins ? 8 : 7}>No packages yet. Add one below.</td>
+                            <td colSpan={7}>No packages yet. Add one below.</td>
                           </tr>
                         ) : packages.map((pkg) => (
                           <tr key={pkg.id}>
                             <td><strong>{pkg.final_sc}</strong></td>
-                            {showGcCoins ? (
-                              <td>{Number(pkg.gc_coin) > 0 ? Number(pkg.gc_coin).toLocaleString() : '—'}</td>
-                            ) : null}
                             <td><s>{pkg.actual_price}</s></td>
                             <td>{pkg.final_price}</td>
                             <td>{pkg.discount_label || '—'}</td>
@@ -558,21 +543,6 @@ export default function DepositPackages() {
                           Final SC *
                           <input className={inputClass} required type="number" step="0.01" min="0" value={pkgForm.final_sc} onChange={(e) => setPkgForm((f) => ({ ...f, final_sc: e.target.value }))} />
                         </label>
-                        {showGcCoins ? (
-                          <label>
-                            Gold Coins (optional)
-                            <input
-                              className={inputClass}
-                              type="number"
-                              step="1"
-                              min="0"
-                              placeholder="0"
-                              value={pkgForm.gc_coin}
-                              onChange={(e) => setPkgForm((f) => ({ ...f, gc_coin: e.target.value }))}
-                            />
-                            <small className="store-features-hint">DragonFury entertainment coins. Leave blank if this package should not include GC.</small>
-                          </label>
-                        ) : null}
                         <label>
                           Actual price (strikethrough) *
                           <input className={inputClass} required type="number" step="0.01" min="0" value={pkgForm.actual_price} onChange={(e) => setPkgForm((f) => ({ ...f, actual_price: e.target.value }))} />

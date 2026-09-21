@@ -1,7 +1,90 @@
-import { useMemo, useRef, useState, useEffect, useCallback } from 'react'
-import ReactQuill from 'react-quill'
-import 'react-quill/dist/quill.snow.css'
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState, useEffect, useCallback } from 'react'
+import Quill from 'quill'
+import 'quill/dist/quill.snow.css'
 import './RichTextEditor.css'
+
+function QuillField({ value = '', onChange, modules, placeholder, className }, ref) {
+  const wrapRef = useRef(null)
+  const quillRef = useRef(null)
+  const lastHtmlRef = useRef(value || '')
+  const appliedPropRef = useRef(value || '')
+  const onChangeRef = useRef(onChange)
+  const modulesRef = useRef(modules)
+  const placeholderRef = useRef(placeholder)
+
+  onChangeRef.current = onChange
+  modulesRef.current = modules
+  placeholderRef.current = placeholder
+
+  useImperativeHandle(ref, () => ({
+    getEditor: () => quillRef.current
+  }), [])
+
+  useEffect(() => {
+    const wrap = wrapRef.current
+    if (!wrap) return undefined
+
+    const host = document.createElement('div')
+    wrap.appendChild(host)
+
+    const quill = new Quill(host, {
+      theme: 'snow',
+      modules: modulesRef.current,
+      placeholder: placeholderRef.current
+    })
+    quillRef.current = quill
+
+    const initial = lastHtmlRef.current
+    if (initial && initial !== '<p><br></p>') {
+      quill.clipboard.dangerouslyPasteHTML(initial, 'silent')
+      lastHtmlRef.current = quill.root.innerHTML
+      appliedPropRef.current = initial
+    }
+
+    const handleChange = () => {
+      const html = quill.root.innerHTML
+      lastHtmlRef.current = html
+      appliedPropRef.current = html
+      onChangeRef.current?.(html)
+    }
+    quill.on('text-change', handleChange)
+
+    return () => {
+      quill.off('text-change', handleChange)
+      quillRef.current = null
+      wrap.innerHTML = ''
+    }
+  }, [])
+
+  useEffect(() => {
+    const quill = quillRef.current
+    if (!quill) return
+    const next = value || ''
+    if (next === appliedPropRef.current || next === lastHtmlRef.current) return
+    if (next === quill.root.innerHTML) {
+      appliedPropRef.current = next
+      lastHtmlRef.current = next
+      return
+    }
+    const selection = quill.getSelection()
+    if (!next || next === '<p><br></p>') {
+      quill.setText('', 'silent')
+    } else {
+      quill.clipboard.dangerouslyPasteHTML(next, 'silent')
+    }
+    appliedPropRef.current = next
+    lastHtmlRef.current = quill.root.innerHTML
+    if (selection) {
+      const length = quill.getLength()
+      quill.setSelection(Math.min(selection.index, Math.max(length - 1, 0)), selection.length, 'silent')
+    }
+  }, [value])
+
+  return <div ref={wrapRef} className={className} />
+}
+
+const QuillFieldWithRef = forwardRef(QuillField)
+QuillFieldWithRef.displayName = 'QuillField'
 
 /**
  * Modal for inserting an image by upload (preferred) and/or URL.
@@ -251,34 +334,13 @@ export function RichTextEditor({
     [imageHandler]
   )
 
-  const formats = [
-    'header',
-    'bold',
-    'italic',
-    'underline',
-    'strike',
-    'color',
-    'background',
-    'script',
-    'list',
-    'bullet',
-    'indent',
-    'align',
-    'blockquote',
-    'code-block',
-    'link',
-    'image'
-  ]
-
   return (
     <div className="rich-text-editor-wrap" style={{ minHeight }}>
-      <ReactQuill
+      <QuillFieldWithRef
         ref={quillRef}
-        theme="snow"
         value={value}
         onChange={onChange}
         modules={modules}
-        formats={formats}
         placeholder={placeholder}
         className="rich-text-quill"
       />

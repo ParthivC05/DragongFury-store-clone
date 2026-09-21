@@ -31,14 +31,14 @@ const IDLE_SPIN_SPEED = 38;
 const IDLE_SPIN_RESTART_MS = 1800;
 
 const RAYS_GRADIENT = `conic-gradient(from 0deg at 50% 50%,
-  transparent 0deg 15deg, rgba(255,215,0,0.16) 15deg 30deg, transparent 30deg 45deg,
-  rgba(155,89,255,0.14) 45deg 60deg, transparent 60deg 75deg, rgba(0,255,224,0.12) 75deg 90deg,
-  transparent 90deg 105deg, rgba(255,215,0,0.15) 105deg 120deg, transparent 120deg 135deg,
-  rgba(155,89,255,0.13) 135deg 150deg, transparent 150deg 165deg, rgba(0,255,224,0.11) 165deg 180deg,
-  transparent 180deg 195deg, rgba(255,215,0,0.16) 195deg 210deg, transparent 210deg 225deg,
-  rgba(155,89,255,0.14) 225deg 240deg, transparent 240deg 255deg, rgba(0,255,224,0.12) 255deg 270deg,
-  transparent 270deg 285deg, rgba(255,215,0,0.15) 285deg 300deg, transparent 300deg 315deg,
-  rgba(155,89,255,0.13) 315deg 330deg, transparent 330deg 345deg, rgba(0,255,224,0.11) 345deg 360deg)`;
+  transparent 0deg 15deg, rgba(182,255,42,0.22) 15deg 30deg, transparent 30deg 45deg,
+  rgba(143,227,26,0.16) 45deg 60deg, transparent 60deg 75deg, rgba(212,255,106,0.14) 75deg 90deg,
+  transparent 90deg 105deg, rgba(182,255,42,0.2) 105deg 120deg, transparent 120deg 135deg,
+  rgba(111,191,0,0.16) 135deg 150deg, transparent 150deg 165deg, rgba(182,255,42,0.12) 165deg 180deg,
+  transparent 180deg 195deg, rgba(182,255,42,0.22) 195deg 210deg, transparent 210deg 225deg,
+  rgba(143,227,26,0.16) 225deg 240deg, transparent 240deg 255deg, rgba(212,255,106,0.14) 255deg 270deg,
+  transparent 270deg 285deg, rgba(182,255,42,0.2) 285deg 300deg, transparent 300deg 315deg,
+  rgba(111,191,0,0.16) 315deg 330deg, transparent 330deg 345deg, rgba(182,255,42,0.12) 345deg 360deg)`;
 
 const SPARKLE_POSITIONS = [
   { left: '12%', top: '18%', delay: 'spinwheel-sparkle-delay-1' },
@@ -150,8 +150,7 @@ export function GuestSpinWheelWidget({ onWin, compact = true, className = '', wi
         if (cancelled) return;
         const apiSegments = Array.isArray(config?.segments) ? config.segments : [];
         if (apiSegments.length === 0) return;
-        // Landing wheel always uses the cream/orange palette (same as partner
-        // guest fallback / designed spin UI) — keep API types/values/labels only.
+        // Landing wheel uses Dragon Fury lime/ink wedges — keep API types/values/labels only.
         const palette = GUEST_SPIN_WHEEL_SEGMENTS.map((s) => s.color);
         setSegments(
           apiSegments.map((seg, i) => ({
@@ -379,7 +378,7 @@ export function GuestSpinWheelWidget({ onWin, compact = true, className = '', wi
 
           <div
             ref={wheelContainerRef}
-            className="absolute inset-0 rounded-full overflow-hidden ring-2 ring-[rgba(255,215,0,0.25)]"
+            className="absolute inset-0 rounded-full overflow-hidden ring-2 ring-[rgba(182,255,42,0.35)]"
             style={{ width: '100%', height: '100%', margin: 0 }}
           />
 

@@ -23,7 +23,7 @@ const PROVIDER_OPTIONS = [
   { value: 'win568', label: 'Win568' }
 ]
 
-function formatAmount(amount) {
+function formatSc(amount) {
   if (amount == null || !Number.isFinite(Number(amount))) return '0.00'
   return Number(amount).toLocaleString('en-US', {
     minimumFractionDigits: 2,
@@ -167,8 +167,9 @@ export default function GameReport() {
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize) || 1)
   const isProviderTab = tab === 'provider'
-  const colCount = isProviderTab ? 6 : 8
-  const hasGcTotals = summary && (Number(summary.gcWagered) !== 0 || Number(summary.gcWon) !== 0)
+  const isCategoryTab = tab === 'category'
+  const isGroupedTab = isProviderTab || isCategoryTab
+  const colCount = isCategoryTab ? 7 : isProviderTab ? 5 : 7
 
   function handlePreset(range) {
     if (!range?.startDate || range?.endDate == null) return
@@ -209,7 +210,11 @@ export default function GameReport() {
       setOrderDirection((d) => (d === 'ASC' ? 'DESC' : 'ASC'))
     } else {
       setOrderBy(nextKey)
-      setOrderDirection(nextKey === 'game_name' || nextKey === 'provider' || nextKey === 'game_id' || nextKey === 'currency' ? 'ASC' : 'DESC')
+      setOrderDirection(
+        nextKey === 'game_name' || nextKey === 'provider' || nextKey === 'game_id' || nextKey === 'category'
+          ? 'ASC'
+          : 'DESC'
+      )
     }
     setPage(1)
   }
@@ -218,11 +223,15 @@ export default function GameReport() {
     if (nextTab === tab) return
     setTab(nextTab)
     setPage(1)
-    if (nextTab === 'provider' && (orderBy === 'game_id' || orderBy === 'game_name')) {
+    if (nextTab === 'provider' && (orderBy === 'game_id' || orderBy === 'game_name' || orderBy === 'category')) {
       setOrderBy('provider')
       setOrderDirection('ASC')
     }
-    if (nextTab === 'game' && orderBy === 'provider') {
+    if (nextTab === 'category') {
+      setOrderBy('sc_wagered')
+      setOrderDirection('DESC')
+    }
+    if (nextTab === 'game' && (orderBy === 'provider' || orderBy === 'category')) {
       setOrderBy('sc_wagered')
       setOrderDirection('DESC')
     }
@@ -233,35 +242,35 @@ export default function GameReport() {
       <header className="ccw-header">
         <h1 className="ccw-title">Casino games report</h1>
         <p className="ccw-subtitle">
-          See how much players bet and won on each slots game, and how much the house kept.
+          See how much players bet and won on each slots game, provider, or category, and how much the house kept.
         </p>
       </header>
 
       <div className="stx-help-box gr-help-box" role="note">
         <strong>How we count the numbers</strong>
         <p className="gr-help-lead">
-          Think of one piggy bank for each game and currency. Players put coins in when they bet. They take coins out when they win. What is left is the house result. 1GameHub Gold Coin play is counted separately as <b>GC</b> so it is never mixed with Sweep Coins.
+          Think of one piggy bank for each game. Players put coins in when they bet. They take coins out when they win. What is left is the house result.
         </p>
         <div className="gr-formula">
           <div className="gr-formula-row">
-            <span className="gr-formula-label">Wagered</span>
+            <span className="gr-formula-label">SC Bet (Wagered)</span>
             <span className="gr-formula-eq">=</span>
-            <span className="gr-formula-text">all coins players <b>bet</b> in that currency (SC or GC)</span>
+            <span className="gr-formula-text">all Sweep Coins players <b>bet</b></span>
           </div>
           <div className="gr-formula-row">
-            <span className="gr-formula-label">Won</span>
+            <span className="gr-formula-label">SC Won</span>
             <span className="gr-formula-eq">=</span>
-            <span className="gr-formula-text">all coins players <b>won back</b> in that currency</span>
+            <span className="gr-formula-text">all Sweep Coins players <b>won back</b></span>
           </div>
           <div className="gr-formula-row">
             <span className="gr-formula-label">GGR</span>
             <span className="gr-formula-eq">=</span>
-            <span className="gr-formula-text"><b>Wagered − Won</b> for the same currency</span>
+            <span className="gr-formula-text"><b>SC Bet (Wagered) − SC Won</b></span>
           </div>
           <div className="gr-formula-row">
             <span className="gr-formula-label">Payout</span>
             <span className="gr-formula-eq">=</span>
-            <span className="gr-formula-text">(Won ÷ Wagered) × 100</span>
+            <span className="gr-formula-text">(SC Won ÷ SC Bet (Wagered)) × 100</span>
           </div>
         </div>
         <div className="gr-example">
@@ -275,7 +284,7 @@ export default function GameReport() {
             Payout = 920 ÷ 1,000 = <b>92%</b> (players got 92% back)
           </p>
           <p className="gr-example-hint">
-            Green GGR = house is ahead. Red GGR = players won more than they bet. GC rows use the same math in Gold Coins.
+            Green GGR = house is ahead. Red GGR = players won more than they bet.
           </p>
         </div>
       </div>
@@ -316,16 +325,16 @@ export default function GameReport() {
         </div>
 
         <div className="stx-filter-field">
-          <label className="ccw-filter-label" htmlFor="gr-search">Game</label>
+          <label className="ccw-filter-label" htmlFor="gr-search">{isCategoryTab ? 'Category' : 'Game'}</label>
           <input
             id="gr-search"
             type="search"
             className="dep-filter-input"
-            placeholder="Name or ID"
+            placeholder={isCategoryTab ? 'Fishing, slots…' : 'Name or ID'}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') applyFilters() }}
-            aria-label="Game name search"
+            aria-label={isCategoryTab ? 'Category search' : 'Game name search'}
           />
         </div>
 
@@ -370,6 +379,15 @@ export default function GameReport() {
         >
           Provider
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'category'}
+          className={`gr-tab${tab === 'category' ? ' is-active' : ''}`}
+          onClick={() => handleTab('category')}
+        >
+          Category
+        </button>
       </div>
 
       {loading ? (
@@ -380,22 +398,27 @@ export default function GameReport() {
             <table className="ccw-table stx-table gr-table">
               <thead>
                 <tr>
-                  {!isProviderTab && (
+                  {isCategoryTab && (
+                    <th scope="col" className="gr-th gr-th-num">Rank</th>
+                  )}
+                  {!isGroupedTab && (
                     <SortHeader id="game_id" label="ID" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} />
                   )}
                   <SortHeader
-                    id={isProviderTab ? 'provider' : 'game_name'}
-                    label={isProviderTab ? 'Provider' : 'Name'}
+                    id={isCategoryTab ? 'category' : isProviderTab ? 'provider' : 'game_name'}
+                    label={isCategoryTab ? 'Category' : isProviderTab ? 'Provider' : 'Name'}
                     orderBy={orderBy}
                     orderDirection={orderDirection}
                     onSort={handleSort}
                   />
-                  {!isProviderTab && (
+                  {!isGroupedTab && (
                     <SortHeader id="provider" label="Provider" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} />
                   )}
-                  <SortHeader id="currency" label="Currency" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} />
-                  <SortHeader id="sc_wagered" label="Wagered" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
-                  <SortHeader id="sc_won" label="Won" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
+                  {isCategoryTab && (
+                    <th scope="col" className="gr-th gr-th-num">Games</th>
+                  )}
+                  <SortHeader id="sc_wagered" label="SC Bet (Wagered)" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
+                  <SortHeader id="sc_won" label="SC Won" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
                   <SortHeader id="ggr" label="GGR" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
                   <SortHeader id="payout" label="Payout" orderBy={orderBy} orderDirection={orderDirection} onSort={handleSort} align="right" />
                 </tr>
@@ -404,28 +427,37 @@ export default function GameReport() {
                 {rows.length === 0 ? (
                   <tr>
                     <td colSpan={colCount} className="ccw-empty">
-                      No slot play found for these filters.
+                      {isCategoryTab
+                        ? 'No category play found for these filters.'
+                        : 'No slot play found for these filters.'}
                     </td>
                   </tr>
                 ) : (
-                  rows.map((row) => (
-                    <tr key={`${row.provider || 'gsp'}-${row.currency || 'SC'}-${row.gameId || row.gameName}`}>
-                      {!isProviderTab && (
+                  rows.map((row, index) => (
+                    <tr key={`${row.provider || 'gsp'}-${row.gameId || row.gameName || row.categoryId}`}>
+                      {isCategoryTab && (
+                        <td className="gr-td-num gr-rank">{(page - 1) * pageSize + index + 1}</td>
+                      )}
+                      {!isGroupedTab && (
                         <td className="gr-td-text gr-id">{row.gameId || <span className="ccw-dash">—</span>}</td>
                       )}
-                      <td className="gr-td-text gr-name">{isProviderTab ? (row.providerLabel || row.gameName) : row.gameName}</td>
-                      {!isProviderTab && (
+                      <td className="gr-td-text gr-name">
+                        {isCategoryTab
+                          ? (row.categoryLabel || row.gameName)
+                          : isProviderTab
+                            ? (row.providerLabel || row.gameName)
+                            : row.gameName}
+                      </td>
+                      {!isGroupedTab && (
                         <td className="gr-td-text">{row.providerLabel || <span className="ccw-dash">—</span>}</td>
                       )}
-                      <td className="gr-td-text">
-                        <span className={`gr-currency ${row.currency === 'GC' ? 'gr-currency--gc' : 'gr-currency--sc'}`}>
-                          {row.currency === 'GC' ? 'GC' : 'SC'}
-                        </span>
-                      </td>
-                      <td className="gr-td-num">{formatAmount(row.scWagered)}</td>
-                      <td className="gr-td-num">{formatAmount(row.scWon)}</td>
+                      {isCategoryTab && (
+                        <td className="gr-td-num">{row.gameCount || 0}</td>
+                      )}
+                      <td className="gr-td-num">{formatSc(row.scWagered)}</td>
+                      <td className="gr-td-num">{formatSc(row.scWon)}</td>
                       <td className={`gr-td-num ${Number(row.ggr) >= 0 ? 'gr-ggr-pos' : 'gr-ggr-neg'}`}>
-                        {formatAmount(row.ggr)}
+                        {formatSc(row.ggr)}
                       </td>
                       <td className="gr-td-num">{formatPayout(row.payout)}</td>
                     </tr>
@@ -435,29 +467,16 @@ export default function GameReport() {
               {rows.length > 0 && summary && (
                 <tfoot>
                   <tr className="gr-totals-row">
-                    <td colSpan={isProviderTab ? 2 : 4} className="gr-td-text gr-name">
-                      SC totals ({summary.gameCount || total} {isProviderTab ? 'rows' : 'games'})
+                    <td colSpan={isCategoryTab ? 3 : isProviderTab ? 1 : 3} className="gr-td-text gr-name">
+                      Totals ({summary.gameCount || total} {isCategoryTab ? 'categories' : isProviderTab ? 'providers' : 'games'})
                     </td>
-                    <td className="gr-td-num">{formatAmount(summary.scWagered)}</td>
-                    <td className="gr-td-num">{formatAmount(summary.scWon)}</td>
+                    <td className="gr-td-num">{formatSc(summary.scWagered)}</td>
+                    <td className="gr-td-num">{formatSc(summary.scWon)}</td>
                     <td className={`gr-td-num ${Number(summary.ggr) >= 0 ? 'gr-ggr-pos' : 'gr-ggr-neg'}`}>
-                      {formatAmount(summary.ggr)}
+                      {formatSc(summary.ggr)}
                     </td>
                     <td className="gr-td-num">{formatPayout(summary.payout)}</td>
                   </tr>
-                  {hasGcTotals ? (
-                    <tr className="gr-totals-row gr-totals-row--gc">
-                      <td colSpan={isProviderTab ? 2 : 4} className="gr-td-text gr-name">
-                        GC totals
-                      </td>
-                      <td className="gr-td-num">{formatAmount(summary.gcWagered)}</td>
-                      <td className="gr-td-num">{formatAmount(summary.gcWon)}</td>
-                      <td className={`gr-td-num ${Number(summary.gcGgr) >= 0 ? 'gr-ggr-pos' : 'gr-ggr-neg'}`}>
-                        {formatAmount(summary.gcGgr)}
-                      </td>
-                      <td className="gr-td-num">{formatPayout(summary.gcPayout)}</td>
-                    </tr>
-                  ) : null}
                 </tfoot>
               )}
             </table>

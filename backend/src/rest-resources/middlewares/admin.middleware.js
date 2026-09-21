@@ -217,15 +217,17 @@ const ADMIN_PATH_SKIP = new Set(['me', 'auth']);
 function canAccessStoresNestedRoute(req, pathSegments) {
   if (pathSegments[0] !== 'stores') return null;
 
-  // GET /stores — list only, so Landing payment links / Game Logs / Slots pickers work
-  // without granting full Stores management.
+  // GET /stores — list only, so Landing payment links / Game Logs / Slots /
+  // Geo IP allowlist pickers work without granting full Stores management.
   if (
     pathSegments.length === 1 &&
     String(req.method || '').toUpperCase() === 'GET' &&
     (canAdmin(req, ADMIN_FEATURE_KEYS.LANDING_PAYMENT_LINKS) ||
       canAdmin(req, ADMIN_FEATURE_KEYS.GAME_LOGS) ||
       canAdmin(req, ADMIN_FEATURE_KEYS.FOOTER_PAGES) ||
-      canAdmin(req, ADMIN_FEATURE_KEYS.GAMES))
+      canAdmin(req, ADMIN_FEATURE_KEYS.GAMES) ||
+      canAdmin(req, ADMIN_FEATURE_KEYS.GEO_IP_ALLOWLIST) ||
+      canAdmin(req, ADMIN_FEATURE_KEYS.FINGERPRINT_SIGNUP_IP_ALLOWLIST))
   ) {
     return true;
   }

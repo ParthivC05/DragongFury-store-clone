@@ -179,7 +179,6 @@ async function creditWalletOnce(order, tx, providerTransactionId, transaction) {
   if (existingLedger) return { credited: false, alreadyCredited: true };
 
   const { PURCHASED_CURRENCY_CODE } = require('./getCurrencySetting.service');
-  const { creditGcCoins } = require('./gcWallet.service');
   const displayCurrency = await getCurrencySetting();
   const currencyCode = PURCHASED_CURRENCY_CODE;
   const [wallet] = await db.Wallet.findOrCreate({
@@ -213,9 +212,8 @@ async function creditWalletOnce(order, tx, providerTransactionId, transaction) {
     }
   }, { transaction });
 
-  const packageMeta = normalizePackageMeta(meta);
-
   if (db.UserTransaction) {
+    const packageMeta = normalizePackageMeta(meta);
     const depositDescription = packageMeta
       ? formatPackageDepositDescription(packageMeta, displayCurrency)
       : `Deposit ${extractMethod(tx) || PROVIDER}`;
@@ -232,22 +230,6 @@ async function creditWalletOnce(order, tx, providerTransactionId, transaction) {
       description: depositDescription,
       metadata: depositMetadata
     }, { transaction });
-  }
-
-  const creditGc = (meta.creditGc != null ? Number(meta.creditGc) : null)
-    ?? (packageMeta?.creditGc != null ? Number(packageMeta.creditGc) : NaN);
-  if (Number.isFinite(creditGc) && creditGc > 0) {
-    await creditGcCoins(order.userId, creditGc, {
-      transaction,
-      description: packageMeta
-        ? formatPackageDepositDescription(packageMeta, displayCurrency)
-        : 'Gold Coins package credit',
-      metadata: {
-        deposit_order_id: order.id,
-        provider_transaction_id: providerTransactionId,
-        creditGc
-      }
-    });
   }
 
   return { credited: true, alreadyCredited: false };

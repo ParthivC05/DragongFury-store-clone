@@ -11,8 +11,8 @@ import { SCORPIO_GAMES_SLUG, isScorpioPlayProvider } from '../../config/scorpio'
 import { useAuth } from '../../context/AuthContext';
 import { AppLoader } from '../../components/AppLoader';
 import { HomeIcon, SCCoinIcon } from '../../assets/icons';
-import { HeaderCoinToggle } from '../../components/HeaderCoinToggle';
 import { site } from '../../config/site';
+import { SiteLogo } from '../../components/SiteLogo';
 import { isMessageFromGameFrame, isSlotGameExitMessage } from '../../components/SlotGames/slotGameExitMessages';
 import { useSlotGameImmersive } from './useSlotGameImmersive';
 import { SlotGameSwipeUpOverlay } from '../../components/SlotGames/SlotGameSwipeUpOverlay';
@@ -32,13 +32,18 @@ import {
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { lockPlayPageZoom } from '../../utils/lockPlayPageZoom';
 import { DepositRequiredModal } from '../../components/Games/DepositRequiredModal';
-import { CoinSelectorModal } from '../../components/Games/CoinSelectorModal';
-import { shouldPromptPlayCoin } from '../../config/gcCoins';
-import { useCoinType } from '../../context/CoinContext';
 import { useDepositRequiredGate } from '../../hooks/useDepositRequiredGate';
 import { isDepositRequiredError } from '../../utils/depositRequired';
 import '../../components/deposit/SecurePaymentModal.css';
 import '../../components/SlotGames/SlotGamePlayPage.css';
+
+function formatWalletSc(value) {
+  if (value == null) return '0.00';
+  return Number(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
 
 function sanitizeWin568PlayUrl(rawUrl) {
   const raw = String(rawUrl || '').trim();
@@ -75,7 +80,6 @@ export function SlotGamePlayPage() {
   const { gameId } = useParams();
   const [searchParams] = useSearchParams();
   const { balanceSc } = useAuth();
-  const { setCoinType } = useCoinType();
   const {
     hasDeposit,
     loading: depositGateLoading,
@@ -87,15 +91,13 @@ export function SlotGamePlayPage() {
   } = useDepositRequiredGate();
   const iframeRef = useRef(null);
   const returnToRef = useRef('/casino');
-  const launchedSessionRef = useRef({ gameId: null, provider: null, gpid: null, portfolio: null, coinType: null });
+  const launchedSessionRef = useRef({ gameId: null, provider: null, gpid: null, portfolio: null });
   const settlingRef = useRef(false);
   const firekirinBalanceRefreshRef = useRef(false);
 
   const provider = resolvePlayProvider(
     location.state?.provider || searchParams.get('provider') || 'pragmatic'
   );
-  const needsCoinSelect = shouldPromptPlayCoin(provider);
-  const [playCoinType, setPlayCoinType] = useState(null);
   const win568Gpid = location.state?.gpid ?? searchParams.get('g') ?? searchParams.get('gpid');
   const win568Portfolio =
     location.state?.portfolio
@@ -293,17 +295,11 @@ export function SlotGamePlayPage() {
     if (
       launchedSessionRef.current.gameId === gameId &&
       launchedSessionRef.current.provider === provider &&
-      launchedSessionRef.current.coinType === (playCoinType || 'SC') &&
       String(launchedSessionRef.current.gpid || '') === String(
         provider === 'scorpio' ? scorpioProviderId : win568Gpid || ''
       ) &&
       String(launchedSessionRef.current.portfolio || '') === String(win568Portfolio || '')
     ) {
-      return undefined;
-    }
-
-    if (needsCoinSelect && !playCoinType) {
-      setLoading(false);
       return undefined;
     }
 
@@ -315,28 +311,25 @@ export function SlotGamePlayPage() {
 
     (async () => {
       try {
-        const coinType = playCoinType || 'SC';
         const res =
           provider === 'win568'
             ? await win568Api.launchWin568Game({
                 gameid: win568Gameid,
                 gpid: win568Gpid,
-                portfolio: win568Portfolio,
-                coinType
+                portfolio: win568Portfolio
               })
             : provider === 'scorpio'
             ? await scorpioApi.launchScorpioGame({
                 gameCode: scorpioGameCode,
-                providerId: scorpioProviderId,
-                coinType
+                providerId: scorpioProviderId
               })
             : provider === 'bona'
-            ? await bonaApi.launchBonaGame(gameId, coinType)
+            ? await bonaApi.launchBonaGame(gameId)
             : provider === 'onegamehub'
-              ? await onegamehubApi.launchOneGameHubGame(gameId, coinType)
+              ? await onegamehubApi.launchOneGameHubGame(gameId)
               : provider === 'firekirin'
                 ? await gamesApi.enterFirekirinExclusiveGame(gameId)
-                : await gitslotparkApi.launchSlotGame(gameId, provider, coinType);
+                : await gitslotparkApi.launchSlotGame(gameId, provider);
         const url = res?.url ? sanitizeWin568PlayUrl(String(res.url).trim()) : '';
         if (!url) {
           throw new Error('Game launch URL not returned');
@@ -346,8 +339,7 @@ export function SlotGamePlayPage() {
             gameId,
             provider,
             gpid: provider === 'scorpio' ? scorpioProviderId : win568Gpid,
-            portfolio: win568Portfolio,
-            coinType: playCoinType || 'SC'
+            portfolio: win568Portfolio
           };
           setGameUrl(url);
         }
@@ -371,7 +363,7 @@ export function SlotGamePlayPage() {
     return () => {
       cancelled = true;
     };
-  }, [gameId, provider, gameUrl, hasDeposit, depositGateLoading, openDepositRequiredModal, refresh, win568Gpid, win568Portfolio, win568Gameid, scorpioProviderId, scorpioGameCode, needsCoinSelect, playCoinType]);
+  }, [gameId, provider, gameUrl, hasDeposit, depositGateLoading, openDepositRequiredModal, refresh, win568Gpid, win568Portfolio, win568Gameid, scorpioProviderId, scorpioGameCode]);
 
   useEffect(() => {
     if (!gameUrl) return undefined;
@@ -533,35 +525,16 @@ export function SlotGamePlayPage() {
     >
       <header className="spm-iframe-header spm-iframe-header--play">
         <div className="spm-play-logo" aria-label={site.platformName}>
-          <span className="spm-play-logo-ring" aria-hidden>
-            <span className="spm-play-logo-inner">🎰</span>
-          </span>
-          <span className="spm-play-logo-text">{site.platformName}</span>
+          <SiteLogo variant="nav" className="spm-play-logo-img" />
         </div>
 
-        {needsCoinSelect ? (
-          <div className="spm-play-wallet spm-play-wallet--toggle">
-            <HeaderCoinToggle
-              variant="gameplay"
-              onChange={(next) => {
-                if (playCoinType && playCoinType !== next) setPlayCoinType(next);
-              }}
-            />
-          </div>
-        ) : (
-          <div className="spm-play-wallet" aria-live="polite" title="Your Sweepstakes Coins balance">
-            <span className="spm-play-wallet-coin" aria-hidden>
-              <SCCoinIcon className="w-full h-full" />
-            </span>
-            <span className="spm-play-wallet-amount">
-              {Number(balanceSc || 0).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </span>
-            <span className="spm-play-wallet-label">SC</span>
-          </div>
-        )}
+        <div className="spm-play-wallet" aria-live="polite" title="Your Sweepstakes Coins balance">
+          <span className="spm-play-wallet-coin" aria-hidden>
+            <SCCoinIcon className="w-full h-full" />
+          </span>
+          <span className="spm-play-wallet-amount">{formatWalletSc(balanceSc)}</span>
+          <span className="spm-play-wallet-label">SC</span>
+        </div>
 
         <div className="spm-iframe-header-actions">
           <SlotGameFullscreenToggle immersiveLocked={immersiveReady} />
@@ -662,22 +635,6 @@ export function SlotGamePlayPage() {
         }}
         activationBonusType={activationBonusType}
       />
-      {needsCoinSelect && !playCoinType && hasDeposit && !depositGateLoading && !depositRequiredModalOpen ? (
-        <CoinSelectorModal
-          game={{
-            title: gameName,
-            name: gameName,
-            image: location.state?.image,
-            iconUrls: location.state?.iconUrls,
-          }}
-          onClose={() => navigate(returnTo, { replace: true })}
-          onLaunch={(mode) => {
-            const coin = mode === 'gc' ? 'GC' : 'SC';
-            setCoinType(coin);
-            setPlayCoinType(coin);
-          }}
-        />
-      ) : null}
     </div>
   );
 }

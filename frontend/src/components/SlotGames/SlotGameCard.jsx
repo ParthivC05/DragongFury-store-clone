@@ -70,7 +70,7 @@ export function SlotGameCard({
                   alt=""
                   aria-hidden
                   className="dash-slot-game-card-img dash-slot-carousel-card-img--blur"
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                 />
               )}
@@ -78,7 +78,7 @@ export function SlotGameCard({
                 src={imgSrc}
                 alt=""
                 className={`dash-slot-game-card-img${isLogo ? ' dash-slot-carousel-card-img--logo' : ''}`}
-                loading="lazy"
+                loading="eager"
                 decoding="async"
                 onError={handleImgError}
               />

@@ -1,6 +1,8 @@
 import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
 import { HomeCasinoCoverflow } from './HomeCasinoCoverflow';
 import { DepositRequiredModal } from '../Games/DepositRequiredModal';
+import { FIREKIRIN_EXCLUSIVE_PATH } from '../../hooks/useFirekirinExclusiveGames';
 
 function CreateFirekirinAccountModal({ gameTitle, loading, onConfirm, onClose }) {
   const title = String(gameTitle || '').trim();
@@ -89,6 +91,16 @@ export function FirekirinExclusiveSlider({ games, onPlay, playingGameId }) {
           <span className="dash-home-cat-rail-title-text">Firekirin Exclusive</span>
           <span className="dash-home-cat-rail-title-mark" aria-hidden="true" />
         </h3>
+        <Link
+          to={FIREKIRIN_EXCLUSIVE_PATH}
+          className="dash-home-cat-rail-all no-underline"
+          aria-label="See all Firekirin Exclusive games"
+        >
+          See all
+          <span className="dash-home-cat-rail-all-arrow" aria-hidden="true">
+            ›
+          </span>
+        </Link>
       </header>
       <HomeCasinoCoverflow
         games={list}

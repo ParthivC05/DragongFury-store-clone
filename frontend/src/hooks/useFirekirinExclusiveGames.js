@@ -8,6 +8,7 @@ import { isDepositRequiredError } from '../utils/depositRequired';
 import { scrollToGamesSection } from '../utils/scrollToGames';
 import { GAME_PLACEHOLDER } from '../utils/gitslotparkLandingGames';
 
+export const FIREKIRIN_EXCLUSIVE_PATH = '/firekirin-exclusive';
 const COVERFLOW_GAME_COUNT = 24;
 
 function mapExclusiveGame(item) {
@@ -27,7 +28,7 @@ function mapExclusiveGame(item) {
   };
 }
 
-export function useFirekirinExclusiveGames({ enabled = false } = {}) {
+export function useFirekirinExclusiveGames({ enabled = false, limit = COVERFLOW_GAME_COUNT } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
@@ -159,7 +160,7 @@ export function useFirekirinExclusiveGames({ enabled = false } = {}) {
   }, [creatingAccount]);
 
   return {
-    games: games.slice(0, COVERFLOW_GAME_COUNT),
+    games: limit == null ? games : games.slice(0, limit),
     hasGames: games.length > 0,
     loading,
     launchingGameId,

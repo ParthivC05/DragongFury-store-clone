@@ -23,21 +23,22 @@ function formatUpdatedAt(value) {
 
 function Switch({ id, checked, disabled, onChange }) {
   return (
-    <label
-      className="pp-switch"
-      htmlFor={id}
-      style={disabled ? { opacity: 0.55, cursor: 'not-allowed' } : undefined}
+    <button
+      type="button"
+      id={id}
+      className={`pp-switch${checked ? ' pp-switch--on' : ''}`}
+      role="switch"
+      aria-checked={checked ? 'true' : 'false'}
+      disabled={!!disabled}
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (disabled) return
+        onChange(!checked)
+      }}
     >
-      <input
-        id={id}
-        type="checkbox"
-        className="pp-switch__input"
-        checked={!!checked}
-        disabled={!!disabled}
-        onChange={(e) => onChange(e.target.checked)}
-      />
       <span className="pp-switch__slider" />
-    </label>
+    </button>
   )
 }
 
@@ -82,32 +83,42 @@ export default function ActivateBonusModal() {
 
   async function handleToggle(store, nextEnabled) {
     const key = storeKey(store)
+    const previous = store.requireDepositToActivateBonus !== false
+    const next = nextEnabled === true
     setSavingKey(key)
+    setStores((prev) =>
+      prev.map((row) =>
+        storeKey(row) === key ? { ...row, requireDepositToActivateBonus: next } : row
+      )
+    )
     try {
-      const payload = { requireDepositToActivateBonus: nextEnabled === true }
+      const payload = { requireDepositToActivateBonus: next }
       if (isMasterAdmin) {
         payload.storeCode = store.storeCode
         if (store.distributorCode != null) payload.distributorCode = store.distributorCode
       }
       const updated = await welcomeSignupBonusApi.updateActivateBonusModal(payload)
+      const saved =
+        updated?.requireDepositToActivateBonus ?? updated?.data?.requireDepositToActivateBonus
       setStores((prev) =>
         prev.map((row) =>
           storeKey(row) === key
             ? {
                 ...row,
-                requireDepositToActivateBonus: updated.requireDepositToActivateBonus !== false,
-                updatedAt: updated.updatedAt || row.updatedAt,
-                updatedBy: updated.updatedBy || row.updatedBy
+                requireDepositToActivateBonus: typeof saved === 'boolean' ? saved : next,
+                updatedAt: updated?.updatedAt || updated?.data?.updatedAt || row.updatedAt,
+                updatedBy: updated?.updatedBy || updated?.data?.updatedBy || row.updatedBy
               }
             : row
         )
       )
-      toast.success(
-        nextEnabled
-          ? `Popup is ON for ${store.storeCode}`
-          : `Popup is OFF for ${store.storeCode}`
-      )
+      toast.success(next ? `Popup is ON for ${store.storeCode}` : `Popup is OFF for ${store.storeCode}`)
     } catch (err) {
+      setStores((prev) =>
+        prev.map((row) =>
+          storeKey(row) === key ? { ...row, requireDepositToActivateBonus: previous } : row
+        )
+      )
       toast.error(err.message || 'Could not save. Please try again.')
     } finally {
       setSavingKey(null)

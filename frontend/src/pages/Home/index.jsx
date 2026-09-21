@@ -13,6 +13,7 @@ import { GamesGridSkeleton } from '../../components/Home/GamesGridSkeleton';
 import { LandingPaymentButtons } from '../../components/LandingPaymentButtons';
 import { GuestHomePlatforms } from '../../components/Home/GuestHomePlatforms';
 import { GuestPlatformsGridSkeleton } from '../../components/Home/GamesSection/GuestPlatformsGrid';
+import { FuryArenaSection } from '../../components/Home/FuryArenaSection';
 import { WelcomeBonusModal } from '../../components/Home/WelcomeBonusModal';
 import { useWelcomeBonusScrollModal } from '../../hooks/useWelcomeBonusScrollModal';
 import { useWelcomeBonusImagePreload } from '../../hooks/useWelcomeBonusImagePreload';
@@ -30,19 +31,9 @@ const GamesSection = lazy(() =>
 const SpinWinSection = lazy(() =>
   import('../../components/SpinWinSection').then((m) => ({ default: m.SpinWinSection }))
 );
-const DepositBonusPromoSection = lazy(() =>
-  import('../../components/Home/DepositBonusPromoSection').then((m) => ({
-    default: m.DepositBonusPromoSection,
-  }))
-);
 const PaymentMethodsSection = lazy(() =>
   import('../../components/PaymentMethodsSection').then((m) => ({
     default: m.PaymentMethodsSection,
-  }))
-);
-const LandingInfoSections = lazy(() =>
-  import('../../components/LandingInfoSections').then((m) => ({
-    default: m.LandingInfoSections,
   }))
 );
 const InviteFriendsSection = lazy(() =>
@@ -77,7 +68,7 @@ function GamesLoading({ isGuest }) {
             <h2 className="dash-priority-lobby-title">Top Game Platforms</h2>
           </div>
         </div>
-        <GuestPlatformsGridSkeleton count={9} priorityLobby />
+        <GuestPlatformsGridSkeleton count={12} priorityLobby />
       </section>
     );
   }
@@ -139,8 +130,16 @@ export function Home() {
   useEffect(() => {
     if (belowFoldReady) return undefined;
     const ready = () => setBelowFoldReady(true);
+    if (document.readyState === 'complete') {
+      ready();
+      return undefined;
+    }
     window.addEventListener('load', ready, { once: true });
-    return () => window.removeEventListener('load', ready);
+    const timeoutId = window.setTimeout(ready, 600);
+    return () => {
+      window.removeEventListener('load', ready);
+      window.clearTimeout(timeoutId);
+    };
   }, [belowFoldReady]);
 
   useEffect(() => {
@@ -220,7 +219,7 @@ export function Home() {
   }, [hash]);
 
   return (
-    <div className="dashboard dash-page">
+    <div className="dashboard dash-page dash-page--fury">
       {welcomeModalEnabled && (
         <WelcomeBonusModal
           open={welcomeModalOpen}
@@ -245,13 +244,21 @@ export function Home() {
         />
 
         <div className="dash-main">
-          <DashboardWelcome isAuthenticated={isAuthenticated} />
+          <div className="dash-fury-hero">
+            <DashboardWelcome isAuthenticated={isAuthenticated} />
 
-          <h1 className="dash-home-h1">{site.seoTitle || site.platformName}</h1>
+            <h1 className="dash-home-h1">{site.seoTitle || site.platformName}</h1>
 
-          {!isAuthenticated ? <LandingPaymentButtons inline highlight /> : null}
+            {!isAuthenticated ? (
+              <div className="dash-fury-actions">
+                <LandingPaymentButtons inline highlight />
+              </div>
+            ) : null}
+          </div>
 
           <RecentBigWins />
+
+          {showGuestSections ? <FuryArenaSection /> : null}
 
           {!loading && isAuthenticated && belowFoldReady ? (
             <Suspense fallback={null}>
@@ -283,19 +290,7 @@ export function Home() {
 
           {showGuestSections && belowFoldReady && (
             <Suspense fallback={null}>
-              <DepositBonusPromoSection isAuthenticated={isAuthenticated} />
-            </Suspense>
-          )}
-
-          {showGuestSections && belowFoldReady && (
-            <Suspense fallback={null}>
               <PaymentMethodsSection />
-            </Suspense>
-          )}
-
-          {showGuestSections && belowFoldReady && (
-            <Suspense fallback={null}>
-              <LandingInfoSections />
             </Suspense>
           )}
 

@@ -552,16 +552,20 @@ export function GameCard({
     return status;
   }
 
-  // Load balance when the user has a game account (on mount / tab switch) and when parent
-  // signals a refresh (e.g. after top-up or redeem). No red toast for game/bot APIs.
+  // Do not fetch on page load. Call GET /api/games/:id/balance only when the user
+  // clicks Refresh balance, or when the parent bumps this trigger after a successful
+  // top-up / redeem. No red toast for game/bot APIs.
   useEffect(() => {
     if (isManualFlow || !hasAccount) {
       setBalance(null);
       setEntriesBalance(null);
       setWinningsBalance(null);
       setBalanceUnavailable(false);
+      setPasswordStale(false);
       return undefined;
     }
+
+    if (!balanceRefreshTrigger) return undefined;
 
     let cancelled = false;
     (async () => {
@@ -723,7 +727,7 @@ export function GameCard({
       <GameCardDiscountBadge game={game} />
       <div className="dash-gc-inner">
         <header className="dash-gc-header">
-          <GameImage game={game} className="dash-gc-thumb" />
+          <GameImage game={game} className="dash-gc-thumb" loading="eager" fetchPriority="high" />
           <div className="dash-gc-header-body">
             {(hasAccount || isPending) && (
               <div className={`dash-gc-status${isPending ? ' dash-gc-status-pending' : ''}`}>
@@ -744,11 +748,7 @@ export function GameCard({
                         : undefined
                   }
                 >
-                  {balance != null
-                    ? formatSc(balance)
-                    : balanceLoading || balanceUnavailable
-                      ? '—'
-                      : '$0'}
+                  {balance != null ? formatSc(balance) : '—'}
                 </p>
                 <button
                   type="button"

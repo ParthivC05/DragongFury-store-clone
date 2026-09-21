@@ -22,24 +22,22 @@
 }
 
 .dashboard {
-  --rd-bg: #0a0d14;
-  --rd-panel: #0f1520;
-  --rd-panel-2: #141c2a;
-  --rd-line: rgba(255, 255, 255, 0.06);
-  --rd-line-2: rgba(255, 255, 255, 0.12);
-  --rd-gold: #f5c451;
-  --rd-gold-deep: #c8962b;
-  --rd-gold-glow: rgba(245, 196, 81, 0.3);
-  --rd-green: #2fd17a;
-  --rd-green-deep: #13a35c;
-  --rd-green-glow: rgba(47, 209, 122, 0.4);
-  --rd-teal: #2dd4bf;
-  --rd-cyan: #3fc9e0;
+  --rd-gold: #B6FF2A;
+  --rd-gold-deep: #6FBF00;
+  --rd-gold-glow: rgba(182, 255, 42, 0.3);
+  --rd-green: #B6FF2A;
+  --rd-green-deep: #6FBF00;
+  --rd-green-glow: rgba(182, 255, 42, 0.4);
+  --rd-bg: #0a0c0a;
+  --rd-panel: #121512;
+  --rd-panel-2: #181c18;
+  --rd-txt: #f3f7f0;
+  --rd-dim: #8d9a88;
+  --rd-teal: #8fe31a;
+  --rd-cyan: #b6ff2a;
   --rd-red: #ff5630;
-  --rd-violet: #7b6cf6;
-  --rd-txt: #eaeef6;
-  --rd-dim: #9aa4b8;
-  --rd-faint: #93a4be;
+  --rd-violet: #6FBF00;
+  --rd-faint: #8d9a88;
   --rd-r-md: 14px;
   --rd-r-lg: 20px;
   --rd-shadow: 0 22px 50px -22px rgba(0, 0, 0, 0.75);
@@ -74,7 +72,7 @@
   .dashboard .dash-side-nav {
     background:
       linear-gradient(180deg, rgba(15, 21, 32, 0.72) 0%, rgba(10, 14, 22, 0.45) 100%);
-    border: 1px solid rgba(255, 215, 0, 0.12);
+    border: 1px solid rgba(182, 255, 42, 0.12);
     border-radius: 14px;
     padding: 10px 0 12px;
     gap: 0;
@@ -139,7 +137,7 @@
 
 .dashboard .dash-side-item:hover {
   color: var(--rd-txt, #edf2f9);
-  background: rgba(255, 215, 0, 0.06);
+  background: rgba(182, 255, 42, 0.06);
   border-color: transparent;
   transform: none;
   box-shadow: none;
@@ -162,7 +160,7 @@
 .dashboard .dash-side-item.active {
   color: #fff;
   font-weight: 500;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(182, 255, 42, 0.1);
   border-color: transparent;
   box-shadow: none;
   animation: none;
@@ -203,7 +201,7 @@
 }
 
 .dashboard .dash-side-badge--hot {
-  background: rgba(255, 215, 0, 0.14);
+  background: rgba(182, 255, 42, 0.14);
   color: var(--rd-gold, #f5b93e);
   border: none;
 }

@@ -1,4 +1,4 @@
-import { ROLES } from './roles'
+import { ROLES, isTechnicalStaff } from './roles'
 import { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS, canAccessFeature, canAccessAdminFeature } from './permissions'
 
 /** In development only: master admin can access Games without the Games permission (legacy testing). */
@@ -68,8 +68,8 @@ export const NAV_ROUTES = [
   { path: '/dashboard-slideshow', label: 'Homepage pictures', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.DASHBOARD_SLIDESHOW, adminPermissionKey: ADMIN_FEATURE_KEYS.DASHBOARD_SLIDESHOW },
   { path: '/dashboard-promo-modals', label: 'Login popups', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.DASHBOARD_PROMO_MODALS, adminPermissionKey: ADMIN_FEATURE_KEYS.DASHBOARD_PROMO_MODALS },
   { path: '/daily-bonus', label: 'Daily bonus', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.DAILY_BONUS, adminPermissionKey: ADMIN_FEATURE_KEYS.DAILY_BONUS },
-  { path: '/email-campaigns', label: 'Email campaigns', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.EMAIL_CAMPAIGNS, adminPermissionKey: ADMIN_FEATURE_KEYS.EMAIL_CAMPAIGNS, storeCodes: ['dragonfury'] },
-  { path: '/push-campaigns', label: 'Push notifications', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.PUSH_CAMPAIGNS, adminPermissionKey: ADMIN_FEATURE_KEYS.PUSH_CAMPAIGNS, storeCodes: ['dragonfury'] },
+  { path: '/email-campaigns', label: 'Email campaigns', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.EMAIL_CAMPAIGNS, adminPermissionKey: ADMIN_FEATURE_KEYS.EMAIL_CAMPAIGNS, storeCodes: ['playjuwa'] },
+  { path: '/push-campaigns', label: 'Push notifications', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.PUSH_CAMPAIGNS, adminPermissionKey: ADMIN_FEATURE_KEYS.PUSH_CAMPAIGNS },
   { path: '/deposit-packages', label: 'Deposit packages', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.DEPOSIT_PACKAGES, adminPermissionKey: ADMIN_FEATURE_KEYS.DEPOSIT_PACKAGES },
   { path: '/automation-usage', label: 'Automation usage', allowedRoles: [ROLES.MASTER_ADMIN], adminPermissionKey: ADMIN_FEATURE_KEYS.AUTOMATION_USAGE },
   { path: '/geo-ip-allowlist', label: 'Geo IP allowlist', allowedRoles: [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN], permissionKey: STORE_FEATURE_KEYS.GEO_IP_ALLOWLIST, adminPermissionKey: ADMIN_FEATURE_KEYS.GEO_IP_ALLOWLIST },
@@ -158,6 +158,7 @@ export const ROUTE_ACCESS = {
   'chime-deposits': [ROLES.MASTER_ADMIN, ROLES.DISTRIBUTOR_ADMIN, ROLES.STORE_ADMIN],
   'chime-accounts': [ROLES.MASTER_ADMIN, ROLES.DISTRIBUTOR_ADMIN, ROLES.STORE_ADMIN],
   'profile': [ROLES.MASTER_ADMIN, ROLES.DISTRIBUTOR_ADMIN, ROLES.STORE_ADMIN],
+  's7k9n2': [ROLES.MASTER_ADMIN],
   'help': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'support-tickets': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'social-links': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
@@ -170,7 +171,8 @@ export const ROUTE_ACCESS = {
   'link2play/:id/edit': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'footer': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'footer/pages/new': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
-  'footer/pages/:id/edit': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN]
+  'footer/pages/:id/edit': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
+  'footer/legal/:pageKey': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN]
 }
 
 /** Path segment -> permission key for store_admin permission check. */
@@ -333,6 +335,8 @@ export function canAccessPath(pathname, role, user = null) {
     }
   }
   if (!roleAllowed) return false
+  // Unlisted technical-staff page: not in sidebar; super admin and other roles are blocked.
+  if (firstSegment === 's7k9n2') return isTechnicalStaff(user)
   if (user && role === ROLES.MASTER_ADMIN && ADMIN_PATH_ANY_PERMISSION[firstSegment]) {
     if (!hasAnyAdminPermission(user, ADMIN_PATH_ANY_PERMISSION[firstSegment])) return false
   } else if (user && role === ROLES.MASTER_ADMIN && ADMIN_PATH_PERMISSION[firstSegment]) {

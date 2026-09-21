@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useConfirm } from '../context/ConfirmContext'
 import { ROLES } from '../constants/roles'
+import { ADMIN_FEATURE_KEYS, filterStoreCodesByAdminScope } from '../constants/permissions'
 import './Bonus.css'
 import './BlogPosts.css'
 
@@ -18,7 +19,7 @@ const PAGE_SIZE = 20
 function formatDate(d) {
   if (!d) return '—'
   const date = new Date(d)
-  return `${date.toLocaleDateString(undefined, { dateStyle: 'short' })} ${date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}`
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 export default function BlogPosts() {
@@ -66,15 +67,16 @@ export default function BlogPosts() {
     getStores({ limit: 200 })
       .then((res) => {
         const rows = res.list || res.stores || res.items || []
-        setStoreOptions(
+        const codes = [...new Set(
           rows
             .map((s) => s.storeCode || s.store_code)
             .filter(Boolean)
-            .sort((a, b) => String(a).localeCompare(String(b)))
-        )
+            .map((code) => String(code))
+        )].sort((a, b) => a.localeCompare(b))
+        setStoreOptions(filterStoreCodesByAdminScope(codes, user?.adminPermissions, ADMIN_FEATURE_KEYS.BLOG_POSTS))
       })
       .catch(() => setStoreOptions([]))
-  }, [isMaster])
+  }, [isMaster, user])
 
   const applyFilters = (e) => {
     e?.preventDefault?.()
@@ -87,7 +89,7 @@ export default function BlogPosts() {
     setBusyId(post.id)
     try {
       await toggleAdminBlogPost(post.id, !post.isActive)
-      toast.success(post.isActive ? 'Post deactivated.' : 'Post activated.')
+      toast.success(post.isActive ? 'Hidden from the website.' : 'Now showing on the website.')
       load()
     } catch (err) {
       toast.error(err.message || 'Failed to toggle status.')
@@ -117,16 +119,17 @@ export default function BlogPosts() {
   }
 
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  const liveCount = posts.filter((p) => p.isActive).length
 
   return (
-    <div className="blog-admin-page">
-      <div className="blog-admin-header">
+    <div className="blog-admin-page blog-studio">
+      <div className="blog-studio-hero">
         <div>
           <h2>Blog posts</h2>
           <p className="blog-admin-intro">
             {isMaster
-              ? 'Create store-scoped blog posts. Posts for dragonfury appear on the Dragon Fury user site.'
-              : 'Posts you publish here appear on your store’s user site blog page.'}
+              ? 'Add a blog post, change one, or hide one. It is okay to go slow.'
+              : 'Add a blog post for your website. It is okay to go slow.'}
           </p>
         </div>
         <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
@@ -139,6 +142,11 @@ export default function BlogPosts() {
           Publishing for store <strong>{user.storeCode}</strong>
         </p>
       )}
+
+      <div className="blog-studio-stats">
+        <span>{total} blog posts</span>
+        <span>{liveCount} published on this page</span>
+      </div>
 
       <form className="blog-admin-filters" onSubmit={applyFilters}>
         <input
@@ -154,7 +162,7 @@ export default function BlogPosts() {
             value={storeDraft}
             onChange={(e) => setStoreDraft(e.target.value)}
           >
-            <option value="">All stores</option>
+            <option value="">All stores I can manage</option>
             {storeOptions.map((code) => (
               <option key={code} value={code}>{code}</option>
             ))}
@@ -163,79 +171,68 @@ export default function BlogPosts() {
         <button type="submit" className="admin-btn admin-btn-secondary">Filter</button>
       </form>
 
-      <div className="table-wrap">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Slug</th>
-              <th>Category</th>
-              {isMaster && <th>Store</th>}
-              <th>Status</th>
-              <th>Google</th>
-              <th>Created</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
-              <tr><td colSpan={isMaster ? 8 : 7}>Loading…</td></tr>
-            ) : posts.length === 0 ? (
-              <tr><td colSpan={isMaster ? 8 : 7}>No blog posts yet.</td></tr>
-            ) : (
-              posts.map((post) => (
-                <tr key={post.id}>
-                  <td>
-                    <div className="blog-admin-title-cell">
-                      {post.titleImage ? (
-                        <img src={post.titleImage} alt="" className="blog-admin-thumb" />
-                      ) : null}
-                      <span>{post.title}</span>
-                    </div>
-                  </td>
-                  <td><code>{post.slug}</code></td>
-                  <td>{post.category || '—'}</td>
-                  {isMaster && <td>{post.storeCode}</td>}
-                  <td>
-                    <span className={`blog-admin-badge${post.isActive ? ' is-active' : ''}`}>
-                      {post.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`blog-admin-badge${post.allowIndex !== false ? ' is-index' : ' is-noindex'}`}>
-                      {post.allowIndex !== false ? 'Index' : 'Noindex'}
-                    </span>
-                  </td>
-                  <td>{formatDate(post.createdAt)}</td>
-                  <td>
-                    <div className="blog-admin-actions">
-                      <Link className="admin-btn admin-btn-secondary admin-btn-sm" to={`/blog/${post.id}/edit`}>
-                        Edit
-                      </Link>
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn-secondary admin-btn-sm"
-                        disabled={busyId === post.id}
-                        onClick={() => handleToggle(post)}
-                      >
-                        {post.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn-danger admin-btn-sm"
-                        disabled={busyId === post.id}
-                        onClick={() => handleDelete(post)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+      {loading ? (
+        <p className="blog-studio-empty">Loading blog posts…</p>
+      ) : posts.length === 0 ? (
+        <div className="blog-studio-empty">
+          <p>No blog posts yet.</p>
+          <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
+            Add blog post
+          </button>
+        </div>
+      ) : (
+        <div className="blog-studio-grid">
+          {posts.map((post) => (
+            <article key={post.id} className="blog-studio-card">
+              <div className="blog-studio-cover">
+                {post.titleImage ? (
+                  <img src={post.titleImage} alt="" />
+                ) : (
+                  <div className="blog-studio-cover-fallback" />
+                )}
+                <div className="blog-studio-cover-meta">
+                  <span className={`blog-admin-badge${post.isActive ? ' is-active' : ''}`}>
+                    {post.isActive ? 'Live' : 'Draft'}
+                  </span>
+                  <span className={`blog-admin-badge${post.allowIndex !== false ? ' is-index' : ' is-noindex'}`}>
+                    {post.allowIndex !== false ? 'Google' : 'Hidden'}
+                  </span>
+                </div>
+              </div>
+              <div className="blog-studio-body">
+                {post.category && <p className="blog-studio-cat">{post.category}</p>}
+                <h3>{post.title}</h3>
+                <p className="blog-studio-slug">/{post.slug}</p>
+                <p className="blog-studio-date">
+                  {formatDate(post.createdAt)}
+                  {isMaster && post.storeCode ? ` · ${post.storeCode}` : ''}
+                </p>
+                <div className="blog-admin-actions">
+                  <Link className="admin-btn admin-btn-secondary admin-btn-sm" to={`/blog/${post.id}/edit`}>
+                    Edit
+                  </Link>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-secondary admin-btn-sm"
+                    disabled={busyId === post.id}
+                    onClick={() => handleToggle(post)}
+                  >
+                    {post.isActive ? 'Hide' : 'Show'}
+                  </button>
+                  <button
+                    type="button"
+                    className="admin-btn admin-btn-danger admin-btn-sm"
+                    disabled={busyId === post.id}
+                    onClick={() => handleDelete(post)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
 
       {totalPages > 1 && (
         <div className="blog-admin-pager">

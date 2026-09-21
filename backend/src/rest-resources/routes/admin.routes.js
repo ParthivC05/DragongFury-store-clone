@@ -326,7 +326,7 @@ router.get('/redeem-percentage/stores', adminRedeemPercentageController.listStor
 router.put('/redeem-percentage', adminRedeemPercentageController.updateRedeemPercentageAdmin);
 router.post('/redeem-percentage/reset-to-default', adminRedeemPercentageController.resetRedeemPercentageAdmin);
 
-// Per-store payin/payout fees — super admin + technical staff only
+// Per-store payin/payout fees — super admin + technical staff; admin reporting only
 router.get('/transaction-fees', adminTransactionFeesController.getTransactionFeesAdmin);
 router.get('/transaction-fees/stores', adminTransactionFeesController.listStoreTransactionFeesAdmin);
 router.put('/transaction-fees', adminTransactionFeesController.updateTransactionFeesAdmin);
@@ -385,7 +385,7 @@ router.patch(
   adminSupportTicketsController.updateStatus
 );
 
-// Blog posts – store-scoped (dragonfury admin posts appear on dragonfury user site)
+// Blog posts – store-scoped (playjuwa admin posts appear on playjuwa user site)
 router.post(
   '/blog/upload-image',
   (req, res, next) => {
@@ -409,7 +409,7 @@ router.put('/blog/:id', adminBlogController.update);
 router.put('/blog/:id/toggle', adminBlogController.toggle);
 router.delete('/blog/:id', adminBlogController.remove);
 
-// Link2Play catalog – DragonFury only
+// Link2Play catalog – PlayJuwa only
 router.post(
   '/link2play/upload-image',
   (req, res, next) => {
@@ -452,6 +452,9 @@ router.post(
 );
 router.get('/footer/settings', adminFooterController.getSettings);
 router.put('/footer/settings', adminFooterController.updateSettings);
+router.get('/footer/legal', adminFooterController.listLegalPages);
+router.get('/footer/legal/:pageKey', adminFooterController.getLegalPage);
+router.put('/footer/legal/:pageKey', adminFooterController.updateLegalPage);
 router.get('/footer/menus', adminFooterController.listMenus);
 router.get('/footer/menus/:id', adminFooterController.getMenu);
 router.post('/footer/menus', adminFooterController.createMenu);
@@ -511,7 +514,7 @@ router.patch('/bonus/codes/:id', adminBonusController.updateCode);
 router.delete('/bonus/codes/:id', adminBonusController.removeCode);
 router.get('/bonus/transactions', adminBonusController.listTransactions);
 
-// DragonFury email campaigns (no-deposit reengagement) — dragonfury store only
+// PlayJuwa email campaigns (no-deposit reengagement) — playjuwa store only
 router.post(
   '/email-campaigns/upload-image',
   (req, res, next) => {
@@ -565,6 +568,7 @@ router.get('/push-campaigns', adminPushCampaignsController.listCampaigns);
 router.post('/push-campaigns', adminPushCampaignsController.createCampaign);
 router.get('/push-campaigns/:id', adminPushCampaignsController.getCampaign);
 router.patch('/push-campaigns/:id', adminPushCampaignsController.updateCampaign);
+router.delete('/push-campaigns/:id', adminPushCampaignsController.deleteCampaign);
 router.get('/push-campaigns/:id/test-users', adminPushCampaignsController.listTestUsers);
 router.post('/push-campaigns/:id/test-users', adminPushCampaignsController.addTestUser);
 router.delete('/push-campaigns/:id/test-users/:testUserId', adminPushCampaignsController.removeTestUser);

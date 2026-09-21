@@ -14,11 +14,9 @@ const WALLET_ACTIONS = {
   CANCEL: 'cancel'
 };
 
-/** 1GameHub wire currency for Sweep Coins (SSC) and Gold Coins (GOC). */
+/** 1GameHub wire currency for Sweep Coins. GC/GOC is not used. */
 const HUB_CURRENCY = 'SSC';
-const HUB_CURRENCY_GC = 'GOC';
 const PLATFORM_COIN = 'SC';
-const SUPPORTED_HUB_CURRENCIES = new Set([HUB_CURRENCY, HUB_CURRENCY_GC]);
 
 const SESSION_PREFIX = 'og';
 const SESSION_TTL_MS = 5 * 60 * 60 * 1000; // 5 hours
@@ -95,9 +93,7 @@ module.exports = {
   PROVIDER_ACTIONS,
   WALLET_ACTIONS,
   HUB_CURRENCY,
-  HUB_CURRENCY_GC,
   PLATFORM_COIN,
-  SUPPORTED_HUB_CURRENCIES,
   SESSION_PREFIX,
   SESSION_TTL_MS,
   TX_STATUS,

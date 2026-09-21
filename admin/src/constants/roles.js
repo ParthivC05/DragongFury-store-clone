@@ -22,3 +22,8 @@ export function canAccessUsersList(role) {
 export function canAccessStoreSettings(role) {
   return role === ROLES.STORE_ADMIN
 }
+
+/** Platform technical staff: master_admin assigned to an admin role. Super admin has no adminRoleId. */
+export function isTechnicalStaff(user) {
+  return Boolean(user && user.role === ROLES.MASTER_ADMIN && user.adminRoleId != null)
+}

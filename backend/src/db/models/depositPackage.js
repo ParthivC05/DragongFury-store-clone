@@ -35,12 +35,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: 'final_sc'
       },
-      gcCoin: {
-        type: DataTypes.DECIMAL(18, 2),
-        allowNull: false,
-        defaultValue: 0,
-        field: 'gc_coin'
-      },
       actualPrice: {
         type: DataTypes.DECIMAL(18, 2),
         allowNull: false,

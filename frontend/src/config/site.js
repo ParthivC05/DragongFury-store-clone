@@ -17,17 +17,17 @@ export const site = {
   seoTitle:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_TITLE
       ? String(import.meta.env.VITE_SEO_TITLE).trim()
-      : 'DragonFury - Access 20+ Sweepstakes Game Systems Online',
+      : 'Dragon Fury | Instant sweepstakes games in black and green',
   /** Default meta description for SEO */
   seoDescription:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_DESCRIPTION
       ? String(import.meta.env.VITE_SEO_DESCRIPTION).trim()
-      : 'Dragon Fury, Orion Stars, Golden Dragon, Fire Kirin & more — all in one place. Explore our full games list and start playing today.',
+      : 'Dragon Fury is a black-and-green sweepstakes lobby for fish games, slots, and exclusive platforms. Join free and play in minutes.',
   /** Header / auth / footer / landing logo image */
   logoUrl:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LOGO_URL
       ? String(import.meta.env.VITE_LOGO_URL).trim()
-      : '/optimized/logo.webp',
+      : '/logo.png',
   /** Alias for screens that still read landingLogoUrl — same as post-login logo */
   get landingLogoUrl() {
     return this.logoUrl;
@@ -36,11 +36,11 @@ export const site = {
   loaderLogoUrl:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LOADER_LOGO_URL
       ? String(import.meta.env.VITE_LOADER_LOGO_URL).trim()
-      : '/logo-bg.png',
+      : '/logo.png',
   /** Browser tab icon (favicon) */
   faviconUrl: typeof import.meta !== 'undefined' && import.meta.env?.VITE_FAVICON_URL
     ? String(import.meta.env.VITE_FAVICON_URL).trim()
-    : '/optimized/logo.webp',
+    : '/logo.png',
   /** Current year for copyright */
   year: new Date().getFullYear(),
   /** Copyright text */
@@ -51,15 +51,15 @@ export const site = {
   supportEmail: 'support@dragonfury.com',
   /** Support / contact phone */
   supportPhone: '+1 (987) 654-3210',
-  /** Geo-blocker palette (navy + gold) */
+  /** Geo-blocker palette (black + lime) */
   geoTheme: {
-    accent: '#d4af37',
-    glow: 'rgba(212, 175, 55, 0.16)',
-    bgFrom: '#0a0c12',
-    bgMid: '#12161f',
-    bgTo: '#0d1018',
-    text: '#f5f0e6',
-    email: '#7eb6ff',
+    accent: '#B6FF2A',
+    glow: 'rgba(182, 255, 42, 0.18)',
+    bgFrom: '#0a0c0a',
+    bgMid: '#121512',
+    bgTo: '#0d120d',
+    text: '#f3f7f0',
+    email: '#B6FF2A',
   },
   /** Social profile URLs (optional — icons hidden when empty) */
   socialLinks: {

@@ -17,7 +17,7 @@
   border: none;
   border-radius: 999px;
   color: #120900;
-  background: linear-gradient(135deg, #ffef9f 0%, #ffd700 42%, #ff8c00 100%);
+  background: linear-gradient(135deg, #ffef9f 0%, #B6FF2A 42%, #ff8c00 100%);
   box-shadow: 0 12px 32px rgba(255, 140, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
@@ -61,7 +61,7 @@
 .pj-support-greeting,
 .pj-support-footer-nav {
   background: linear-gradient(180deg, #0d1424 0%, #080d18 100%);
-  border-color: rgba(255, 215, 0, 0.12);
+  border-color: rgba(182, 255, 42, 0.12);
 }
 
 .pj-support-header {
@@ -70,7 +70,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.12);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.12);
 }
 
 .pj-support-brand {
@@ -112,7 +112,7 @@
 
 .pj-support-greeting {
   padding: 18px 16px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.1);
 }
 
 .pj-support-greeting h2 {
@@ -135,7 +135,7 @@
   padding: 16px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 215, 0, 0.38) #070b16;
+  scrollbar-color: rgba(182, 255, 42, 0.38) #070b16;
 }
 
 .pj-support-action {
@@ -146,7 +146,7 @@
   width: 100%;
   min-height: 64px;
   padding: 14px;
-  border: 1px solid rgba(255, 215, 0, 0.16);
+  border: 1px solid rgba(182, 255, 42, 0.16);
   border-radius: 14px;
   color: inherit;
   text-align: left;
@@ -159,7 +159,7 @@
 .pj-support-action:hover,
 .pj-support-action:focus-visible {
   background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(255, 215, 0, 0.3);
+  border-color: rgba(182, 255, 42, 0.3);
   transform: translateY(-1px);
   outline: none;
 }
@@ -181,7 +181,7 @@
   width: 22px;
   height: 22px;
   flex-shrink: 0;
-  color: rgba(255, 215, 0, 0.88);
+  color: rgba(182, 255, 42, 0.88);
 }
 
 .pj-support-topics {
@@ -222,7 +222,7 @@
   align-items: center;
   justify-content: space-around;
   padding: 12px 16px;
-  border-top: 1px solid rgba(255, 215, 0, 0.12);
+  border-top: 1px solid rgba(182, 255, 42, 0.12);
   flex-shrink: 0;
 }
 
@@ -245,7 +245,7 @@
 
 .pj-support-footer-btn.is-active {
   color: #120900;
-  background: linear-gradient(135deg, #ffd700, #ff8c00);
+  background: linear-gradient(135deg, #B6FF2A, #ff8c00);
 }
 
 .pj-support-footer-btn:hover,
@@ -328,7 +328,7 @@ body.slot-game-play-active .pj-support-backdrop {
     width: min(386px, calc(100vw - 32px));
     height: min(720px, calc(100vh - 48px));
     max-height: calc(100vh - 48px);
-    border: 1px solid rgba(255, 215, 0, 0.15);
+    border: 1px solid rgba(182, 255, 42, 0.15);
     border-radius: 18px;
     overflow: hidden;
   }

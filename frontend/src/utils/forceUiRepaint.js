@@ -15,6 +15,9 @@ export function forceUiRepaint() {
     root.classList.remove('ui-force-repaint');
     window.dispatchEvent(new Event('resize'));
   });
+  window.setTimeout(() => {
+    root.classList.remove('ui-force-repaint');
+  }, 80);
 }
 
 /** Subscribe once: repaint whenever the tab becomes visible again. */
@@ -26,10 +29,12 @@ export function startTabResumeRepaint() {
     if (document.visibilityState !== 'visible') return;
     if (scheduled) return;
     scheduled = true;
-    requestAnimationFrame(() => {
+    const run = () => {
       scheduled = false;
       forceUiRepaint();
-    });
+    };
+    requestAnimationFrame(run);
+    window.setTimeout(run, 120);
   };
 
   document.addEventListener('visibilitychange', onVisible);

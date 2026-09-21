@@ -2,7 +2,6 @@ const db = require('../../db/models');
 const { getWalletLimitsForUser } = require('./getWalletLimits.service');
 const { getCurrencySetting, PURCHASED_CURRENCY_CODE } = require('./getCurrencySetting.service');
 const { creditPurchasedSc, creditBonusSc } = require('./walletBuckets.service');
-const { creditGcCoins } = require('./gcWallet.service');
 const { splitPurchaseAndPackageBonus } = require('./scLedger.service');
 const { applyReferralDepositReward } = require('../affiliate/applyReferralDepositReward.service');
 const { applySignupBonusCodeOnDeposit } = require('../bonusCodes/applySignupBonusCodeOnDeposit.service');
@@ -102,19 +101,6 @@ async function deposit(userId, body) {
           eventType: 'PACKAGE_BONUS',
           bonusType: 'PACKAGE_BONUS',
           suffix: 'bonus'
-        }
-      });
-    }
-    const creditGc = packageMeta?.creditGc != null ? Number(packageMeta.creditGc) : 0;
-    if (creditGc > 0) {
-      await creditGcCoins(userId, creditGc, {
-        transaction: t,
-        description: packageMeta
-          ? formatPackageDepositDescription(packageMeta, displayCurrency)
-          : `Gold Coins ${method || 'deposit'}`,
-        metadata: {
-          packageId: packageMeta?.packageId || null,
-          creditGc
         }
       });
     }

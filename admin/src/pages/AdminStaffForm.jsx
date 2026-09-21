@@ -11,7 +11,7 @@ function describeFooterAccess(role) {
   if (!role) {
     return {
       title: 'Full admin',
-      text: 'No role selected — this person can manage footer links for all stores (full admin).'
+      text: 'No role selected — this person can manage footer links and blog posts for all stores (full admin).'
     }
   }
   const perms = role.permissions || {}
@@ -33,6 +33,35 @@ function describeFooterAccess(role) {
   return {
     title: 'Footer: all stores',
     text: 'This role can manage footer links for every store.'
+  }
+}
+
+function describeBlogAccess(role) {
+  if (!role) {
+    return {
+      title: 'Blog: all stores',
+      text: 'No role selected — this person can manage blog posts for all stores (full admin).'
+    }
+  }
+  const perms = role.permissions || {}
+  if (perms[ADMIN_FEATURE_KEYS.BLOG_POSTS] !== true) {
+    return {
+      title: 'No blog access',
+      text: 'This role cannot manage blog posts. Turn on “Blog posts” in Admin roles if needed.'
+    }
+  }
+  const scope = perms.blog_posts_store_scope === 'particular' ? 'particular' : 'all'
+  if (scope === 'particular') {
+    const codes = Array.isArray(perms.blog_posts_store_codes) ? perms.blog_posts_store_codes.filter(Boolean) : []
+    const storeLabel = codes.length ? codes.join(', ') : 'a store you still need to pick on the role'
+    return {
+      title: 'Blog: one store',
+      text: `This role can manage blog posts only for: ${storeLabel}.`
+    }
+  }
+  return {
+    title: 'Blog: all stores',
+    text: 'This role can manage blog posts for every store.'
   }
 }
 
@@ -92,6 +121,7 @@ export default function AdminStaffForm() {
   }, [adminRoles, form.adminRoleId])
 
   const footerAccess = describeFooterAccess(selectedRole)
+  const blogAccess = describeBlogAccess(selectedRole)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -203,14 +233,16 @@ export default function AdminStaffForm() {
               <div className="staff-footer-access-note">
                 <strong>{footerAccess.title}</strong>
                 <p>{footerAccess.text}</p>
+                <strong style={{ display: 'block', marginTop: '0.75rem' }}>{blogAccess.title}</strong>
+                <p>{blogAccess.text}</p>
                 {selectedRole ? (
                   <p style={{ marginTop: '0.45rem' }}>
-                    To change All stores / One store for footer:{' '}
+                    To change All stores / One store for footer or blog:{' '}
                     <Link to={`/admin-roles/${selectedRole.id}/edit`}>Edit this role</Link>
                   </p>
                 ) : (
                   <p style={{ marginTop: '0.45rem' }}>
-                    To give limited footer access, create/edit a role under{' '}
+                    To give limited footer or blog access, create/edit a role under{' '}
                     <Link to={teamAccessPath({ scope: 'platform', tab: 'roles' })}>Role and staff management</Link>, then pick it here.
                   </p>
                 )}

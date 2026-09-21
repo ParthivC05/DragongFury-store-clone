@@ -104,7 +104,7 @@ export default function StoreDetail() {
   const showUsers = canUseMasterPermission(user, ADMIN_FEATURE_KEYS.USERS)
   const showGames = canUseMasterPermission(user, ADMIN_FEATURE_KEYS.GAMES)
   const showDeposits = canUseMasterPermission(user, ADMIN_FEATURE_KEYS.USER_DEPOSITS)
-  const showPaymentTotals = canUseMasterPermission(user, ADMIN_FEATURE_KEYS.PAYMENT_TOTALS)
+  const showPaymentTotals = isMasterAdmin && canAccessAdminFeature(user, ADMIN_FEATURE_KEYS.PAYMENT_TOTALS)
   const canEditStoreSocialLinks = canUseMasterPermission(user, ADMIN_FEATURE_KEYS.SOCIAL_LINKS)
   const canEditStoreLandingPaymentLinks = isMasterAdmin || isDistributorAdmin
   const showWithdrawals =

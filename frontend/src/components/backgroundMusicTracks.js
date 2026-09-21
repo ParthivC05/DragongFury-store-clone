@@ -15,7 +15,7 @@ export const BG_MUSIC_VOLUME_STORAGE_KEY = 'bg_music_volume';
 
 export const BG_MUSIC_SHUFFLE_INTERVAL_MS = 30_000;
 export const BG_MUSIC_CROSSFADE_MS = 1_500;
-export const BG_MUSIC_DEFAULT_VOLUME = 10;
+export const BG_MUSIC_DEFAULT_VOLUME = 5;
 
 export function readBgMusicStorage(key) {
   try {

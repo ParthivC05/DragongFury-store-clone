@@ -11,8 +11,8 @@ export function getOneGameHubGames() {
   return getRequest(`${ONEGAMEHUB_BASE}/games`);
 }
 
-export function launchOneGameHubGame(gameid, coinType = 'SC') {
-  return postRequest(`${ONEGAMEHUB_BASE}/launch`, { gameid: String(gameid), coinType });
+export function launchOneGameHubGame(gameid) {
+  return postRequest(`${ONEGAMEHUB_BASE}/launch`, { gameid: String(gameid) });
 }
 
 export function getOneGameHubRecentlyPlayed(params = {}) {

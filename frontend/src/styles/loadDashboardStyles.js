@@ -11,6 +11,7 @@ export function loadDashboardStyles() {
     dashboardStylesPromise = Promise.all([
       import('./dashboard-dragonfury.css'),
       import('./dashboard-redesign.css'),
+      import('./dashboard-fury-layout.css'),
     ]).catch(() => {
       /* Still resolve so UI never waits forever if a CSS chunk fails. */
     });

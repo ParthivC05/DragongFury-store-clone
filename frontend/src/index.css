@@ -32,8 +32,8 @@
 
   body {
     @apply min-h-screen text-gray-100 antialiased;
-    background-color: #04060a;
-    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 215, 0, 0.06), transparent);
+    background-color: #0a0c0a;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(182, 255, 42, 0.10), transparent);
   }
   #root {
     @apply min-h-screen flex flex-col min-w-0 w-full max-w-full;
@@ -45,8 +45,8 @@
 
 @layer components {
   .btn-cta {
-    @apply inline-block w-full py-3 px-4 text-base font-semibold text-white rounded-lg
-           bg-gradient-to-r from-primary to-[#7c8662] hover:from-[#5a6348] hover:to-[#717b59]
+    @apply inline-block w-full py-3 px-4 text-base font-semibold text-[#111] rounded-lg
+           bg-gradient-to-r from-primary to-[#6FBF00] hover:from-[#9AE622] hover:to-[#5AA800]
            disabled:opacity-70 disabled:cursor-not-allowed transition;
   }
   .safe-area-pb {
@@ -65,8 +65,8 @@
 
   /* Landing page button */
   .landing-btn-primary {
-    @apply inline-flex items-center justify-center py-3 px-6 text-sm font-semibold text-white rounded-xl
-           bg-gradient-to-r from-primary to-[#7c8662] hover:from-[#5a6348] hover:to-[#717b59]
+    @apply inline-flex items-center justify-center py-3 px-6 text-sm font-semibold text-[#111] rounded-xl
+           bg-gradient-to-r from-primary to-[#6FBF00] hover:from-[#9AE622] hover:to-[#5AA800]
            transition-all duration-200;
   }
 
@@ -244,7 +244,7 @@
   .spinwheel-hero-glow {
     background:
       radial-gradient(ellipse 100% 70% at 50% 0%, rgba(155, 89, 255, 0.28) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 40% at 15% 80%, rgba(255, 215, 0, 0.14) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 40% at 15% 80%, rgba(182, 255, 42, 0.14) 0%, transparent 50%),
       radial-gradient(ellipse 50% 40% at 85% 70%, rgba(0, 255, 224, 0.1) 0%, transparent 50%);
     animation: dashboard-hero-bg-pulse 4s ease-in-out infinite;
   }
@@ -259,14 +259,14 @@
   @keyframes spinwheel-button-glow {
     0%, 100% {
       box-shadow:
-        0 0 28px rgba(255, 215, 0, 0.45),
+        0 0 28px rgba(182, 255, 42, 0.45),
         0 0 12px rgba(155, 89, 255, 0.25),
         0 4px 16px rgba(0, 0, 0, 0.4),
         inset 0 2px 6px rgba(255, 255, 255, 0.25);
     }
     50% {
       box-shadow:
-        0 0 44px rgba(255, 215, 0, 0.7),
+        0 0 44px rgba(182, 255, 42, 0.7),
         0 0 20px rgba(0, 255, 224, 0.35),
         0 6px 20px rgba(0, 0, 0, 0.45),
         inset 0 2px 8px rgba(255, 255, 255, 0.35);
@@ -277,8 +277,8 @@
     50% { transform: translateY(-8px) scale(1.02); }
   }
   @keyframes spinwheel-wheel-pulse {
-    0%, 100% { filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.25)); }
-    50% { filter: drop-shadow(0 0 36px rgba(255, 215, 0, 0.5)); }
+    0%, 100% { filter: drop-shadow(0 0 20px rgba(182, 255, 42, 0.25)); }
+    50% { filter: drop-shadow(0 0 36px rgba(182, 255, 42, 0.5)); }
   }
   @keyframes spinwheel-crown-bounce {
     0%, 100% { transform: translateY(0) scale(1) rotate(-5deg); }
@@ -297,8 +297,8 @@
   }
   .spinwheel-sparkle {
     animation: spinwheel-sparkle 2s ease-in-out infinite;
-    background: var(--dash-gold, #ffd700);
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    background: var(--dash-gold, #B6FF2A);
+    box-shadow: 0 0 8px rgba(182, 255, 42, 0.6);
   }
   .spinwheel-sparkle-delay-1 { animation-delay: 0.4s; }
   .spinwheel-sparkle-delay-2 { animation-delay: 1s; }
@@ -350,7 +350,7 @@
   }
   .spinwheel-crown-float {
     animation: spinwheel-crown-bounce 2.2s ease-in-out infinite;
-    filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.5));
+    filter: drop-shadow(0 0 16px rgba(182, 255, 42, 0.5));
   }
   .spinwheel-text-pulse {
     animation: spinwheel-text-pulse 1.5s ease-in-out infinite;
@@ -380,15 +380,15 @@
     overflow: hidden;
     padding: 1rem;
     border-radius: 1.25rem;
-    border: 1px solid rgba(255, 215, 0, 0.48);
+    border: 1px solid rgba(182, 255, 42, 0.48);
     background:
-      radial-gradient(circle at 15% 0%, rgba(255, 215, 0, 0.2), transparent 34%),
+      radial-gradient(circle at 15% 0%, rgba(182, 255, 42, 0.2), transparent 34%),
       radial-gradient(circle at 92% 72%, rgba(0, 255, 224, 0.16), transparent 36%),
       linear-gradient(145deg, rgba(13, 20, 36, 0.96), rgba(6, 11, 22, 0.94));
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05) inset,
       0 16px 36px rgba(0, 0, 0, 0.38),
-      0 0 28px rgba(255, 215, 0, 0.18);
+      0 0 28px rgba(182, 255, 42, 0.18);
   }
 
   .spinwheel-lock-card__shine {
@@ -421,11 +421,11 @@
   .spinwheel-lock-card__title {
     position: relative;
     margin: 0.65rem 0 0.25rem;
-    color: var(--dash-gold, #ffd700);
+    color: var(--dash-gold, #B6FF2A);
     font-size: 1rem;
     font-weight: 900;
     letter-spacing: 0.02em;
-    text-shadow: 0 0 16px rgba(255, 215, 0, 0.34);
+    text-shadow: 0 0 16px rgba(182, 255, 42, 0.34);
   }
 
   .spinwheel-lock-card__copy {
@@ -478,8 +478,8 @@
     height: 2rem;
     border-radius: 999px;
     color: #053818;
-    background: rgba(255, 215, 0, 0.95);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 14px rgba(255, 215, 0, 0.5);
+    background: rgba(182, 255, 42, 0.95);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.5), 0 0 14px rgba(182, 255, 42, 0.5);
     font-size: 1.1rem;
     font-weight: 900;
   }
@@ -518,9 +518,9 @@
   .spinwheel-limit-banner {
     padding: 0.85rem 1rem;
     border-radius: 1rem;
-    border: 1px solid rgba(255, 215, 0, 0.4);
+    border: 1px solid rgba(182, 255, 42, 0.4);
     background:
-      radial-gradient(circle at 12% 0%, rgba(255, 215, 0, 0.14), transparent 42%),
+      radial-gradient(circle at 12% 0%, rgba(182, 255, 42, 0.14), transparent 42%),
       linear-gradient(145deg, rgba(18, 22, 38, 0.96), rgba(10, 14, 26, 0.94));
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
     text-align: center;
@@ -528,7 +528,7 @@
 
   .spinwheel-limit-banner__title {
     margin: 0 0 0.3rem;
-    color: var(--dash-gold, #ffd700);
+    color: var(--dash-gold, #B6FF2A);
     font-size: 0.88rem;
     font-weight: 900;
     letter-spacing: 0.02em;
@@ -623,7 +623,7 @@
   }
   .spinwheel-segment-chip:hover {
     transform: translateY(-2px);
-    border-color: rgba(255, 215, 0, 0.35);
+    border-color: rgba(182, 255, 42, 0.35);
   }
   @media (prefers-reduced-motion: reduce) {
     .spinwheel-rays,
@@ -648,14 +648,14 @@
     --dash-deep: #0d1320;
     --dash-card: #0d1320;
     --dash-card2: #121a2a;
-    --dash-gold: #ffd700;
-    --dash-gold2: #ffa500;
-    --dash-gold3: #c07a00;
+    --dash-gold: #B6FF2A;
+    --dash-gold2: #8FE31A;
+    --dash-gold3: #4FA000;
     --dash-neon: #00e676;
     --dash-neon2: #00ffe0;
     --dash-purple: #9b59ff;
     --dash-red: #ff3355;
-    --dash-border: rgba(255, 215, 0, 0.13);
+    --dash-border: rgba(182, 255, 42, 0.13);
     --dash-text: #f0ebe0;
     --dash-muted: #5a6880;
   }

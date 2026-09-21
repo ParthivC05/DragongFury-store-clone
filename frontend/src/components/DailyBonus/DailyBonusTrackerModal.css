@@ -3,7 +3,7 @@
 .db-backdrop {
   --db-g: #c9a84c;
   --db-g2: #ffe566;
-  --db-g3: #ffd700;
+  --db-g3: #B6FF2A;
   --db-teal: #12b8a0;
   --db-teal2: #7cf5d6;
   --db-dk: #061418;
@@ -63,9 +63,9 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   background:
-    radial-gradient(ellipse 100% 55% at 50% 0%, rgba(255, 215, 0, 0.14), transparent 52%),
+    radial-gradient(ellipse 100% 55% at 50% 0%, rgba(182, 255, 42, 0.14), transparent 52%),
     linear-gradient(165deg, #0d2830 0%, #061418 48%, #0a1f24 100%);
-  border: 1px solid rgba(255, 215, 0, 0.4);
+  border: 1px solid rgba(182, 255, 42, 0.4);
   border-radius: 16px;
   overflow-x: hidden;
   position: relative;
@@ -73,9 +73,9 @@
   box-shadow:
     0 0 0 1px rgba(0, 255, 200, 0.1),
     0 24px 80px rgba(0, 0, 0, 0.65),
-    0 0 40px rgba(255, 215, 0, 0.15);
+    0 0 40px rgba(182, 255, 42, 0.15);
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 215, 0, 0.35) transparent;
+  scrollbar-color: rgba(182, 255, 42, 0.35) transparent;
 }
 
 .db-modal::-webkit-scrollbar {
@@ -89,7 +89,7 @@
 }
 
 .db-modal::-webkit-scrollbar-thumb {
-  background: rgba(255, 215, 0, 0.35);
+  background: rgba(182, 255, 42, 0.35);
   border-radius: 10px;
   border: 2px solid transparent;
 }
@@ -127,7 +127,7 @@
 
 .db-close:hover {
   background: rgba(18, 184, 160, 0.25);
-  border-color: rgba(255, 215, 0, 0.45);
+  border-color: rgba(182, 255, 42, 0.45);
   color: #fff;
 }
 
@@ -136,13 +136,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.15);
 }
 
 .db-header-star {
   color: var(--db-g3);
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.45));
+  filter: drop-shadow(0 0 8px rgba(182, 255, 42, 0.45));
 }
 
 .db-header-title {
@@ -163,7 +163,7 @@
 .db-left {
   padding: 18px 16px;
   background: rgba(0, 0, 0, 0.28);
-  border-right: 1px solid rgba(255, 215, 0, 0.12);
+  border-right: 1px solid rgba(182, 255, 42, 0.12);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -215,13 +215,13 @@
   width: 72px;
   height: 72px;
   object-fit: contain;
-  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.35));
+  filter: drop-shadow(0 4px 12px rgba(182, 255, 42, 0.35));
 }
 
 .db-reward-visual__emoji {
   font-size: 56px;
   line-height: 1;
-  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.25));
+  filter: drop-shadow(0 4px 12px rgba(182, 255, 42, 0.25));
 }
 
 .db-gc-amount {
@@ -230,7 +230,7 @@
   color: var(--db-g3);
   line-height: 1;
   letter-spacing: -1px;
-  text-shadow: 0 0 20px rgba(255, 215, 0, 0.25);
+  text-shadow: 0 0 20px rgba(182, 255, 42, 0.25);
 }
 
 .db-gc-amount span {
@@ -243,8 +243,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  background: rgba(182, 255, 42, 0.1);
+  border: 1px solid rgba(182, 255, 42, 0.35);
   border-radius: 20px;
   padding: 4px 12px;
   font-size: 0.8rem;
@@ -259,7 +259,7 @@
   border-radius: 50%;
   background: var(--db-g3);
   flex-shrink: 0;
-  box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 8px rgba(182, 255, 42, 0.6);
 }
 
 .db-claim-btn {
@@ -282,13 +282,13 @@
 .db-claim-btn.ready {
   background: linear-gradient(135deg, var(--db-g2), var(--db-g3), var(--db-g));
   color: #1a0f00;
-  box-shadow: 0 6px 22px rgba(255, 215, 0, 0.35);
+  box-shadow: 0 6px 22px rgba(182, 255, 42, 0.35);
 }
 
 .db-claim-btn.ready:hover:not(:disabled) {
   transform: translateY(-1px);
   filter: brightness(1.05);
-  box-shadow: 0 8px 28px rgba(255, 215, 0, 0.45);
+  box-shadow: 0 8px 28px rgba(182, 255, 42, 0.45);
 }
 
 .db-claim-btn.done {
@@ -339,9 +339,9 @@
 }
 
 .db-day.today {
-  border-color: rgba(255, 215, 0, 0.55);
-  background: rgba(255, 215, 0, 0.1);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.12);
+  border-color: rgba(182, 255, 42, 0.55);
+  background: rgba(182, 255, 42, 0.1);
+  box-shadow: 0 0 12px rgba(182, 255, 42, 0.12);
 }
 
 .db-day.done {
@@ -380,7 +380,7 @@
 }
 
 .db-day.today .db-day-ico {
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(182, 255, 42, 0.15);
   color: var(--db-g3);
 }
 
@@ -406,8 +406,8 @@
 
 .db-7banner {
   margin-top: 10px;
-  background: rgba(255, 215, 0, 0.07);
-  border: 1px solid rgba(255, 215, 0, 0.22);
+  background: rgba(182, 255, 42, 0.07);
+  border: 1px solid rgba(182, 255, 42, 0.22);
   border-radius: 10px;
   padding: 9px 12px;
   display: flex;
@@ -419,8 +419,8 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  background: rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: rgba(182, 255, 42, 0.15);
+  border: 1px solid rgba(182, 255, 42, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -602,7 +602,7 @@
 
   .db-left {
     border-right: none;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.12);
+    border-bottom: 1px solid rgba(182, 255, 42, 0.12);
     padding: 16px;
     gap: 12px;
   }

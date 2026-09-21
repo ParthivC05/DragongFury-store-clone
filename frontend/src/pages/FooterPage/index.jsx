@@ -41,7 +41,7 @@ function FooterPageEmpty({ title, message }) {
     <div className="pj-footer-empty" role="status">
       <div className="pj-footer-empty__card">
         <div className="pj-footer-empty__logo">
-          <img src="/logo-bg.png" alt={brand} decoding="async" />
+          <img src={site.logoUrl} alt={brand} decoding="async" />
         </div>
         <h1 className="pj-footer-empty__title">{title}</h1>
         <p className="pj-footer-empty__copy">{message}</p>

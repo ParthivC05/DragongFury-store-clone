@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import * as api from '../api/pushCampaigns'
+import { getStores } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
 import { useConfirm } from '../context/ConfirmContext'
+import { ROLES } from '../constants/roles'
 import { canShowPlayerEmailColumn } from '../utils/playerEmailVisibility'
 import './PushCampaigns.css'
 
@@ -83,7 +85,7 @@ function BrowserPreview({ draft }) {
           <div className="pc-toast-icon pc-toast-icon--empty" />
         )}
         <div className="pc-toast-copy">
-          <div className="pc-toast-site">dragonfury.com</div>
+          <div className="pc-toast-site">{typeof window !== 'undefined' ? window.location.host : 'your store'}</div>
           <div className="pc-toast-title">{draft.title || 'Notification title'}</div>
           <div className="pc-toast-body">{draft.body || 'Notification text'}</div>
         </div>
@@ -101,12 +103,16 @@ export default function PushCampaigns() {
   const { confirm } = useConfirm()
   const { user } = useAuth()
   const showPlayerEmail = canShowPlayerEmailColumn(user?.role)
+  const isMasterAdmin = user?.role === ROLES.MASTER_ADMIN
+  const [filterStore, setFilterStore] = useState('')
+  const [storeOptions, setStoreOptions] = useState([])
   const [loading, setLoading] = useState(true)
   const [campaigns, setCampaigns] = useState([])
   const [permissions, setPermissions] = useState({ granted: 0, denied: 0, default: 0, unsupported: 0, reachable: 0 })
   const [selectedId, setSelectedId] = useState(null)
   const [draft, setDraft] = useState(() => toDraft(null))
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [uploading, setUploading] = useState(null)
   const [sending, setSending] = useState(false)
   const [testUserEmail, setTestUserEmail] = useState('')
@@ -129,7 +135,9 @@ export default function PushCampaigns() {
 
   const load = useCallback(async () => {
     try {
-      const data = await api.listPushCampaigns()
+      const data = await api.listPushCampaigns(
+        isMasterAdmin && filterStore ? { storeCode: filterStore } : {}
+      )
       const list = Array.isArray(data?.campaigns) ? data.campaigns : []
       setCampaigns(list)
       if (data?.permissions) setPermissions(data.permissions)
@@ -138,11 +146,29 @@ export default function PushCampaigns() {
     } finally {
       setLoading(false)
     }
-  }, [toast])
+  }, [toast, isMasterAdmin, filterStore])
 
   useEffect(() => {
     load()
   }, [load])
+
+  useEffect(() => {
+    if (!isMasterAdmin) return undefined
+    let cancelled = false
+    getStores({ limit: 200 })
+      .then((data) => {
+        if (cancelled) return
+        const list = Array.isArray(data?.list) ? data.list : Array.isArray(data) ? data : []
+        const codes = [...new Set(list.map((s) => s.storeCode || s.store_code).filter(Boolean))].sort()
+        setStoreOptions(codes)
+      })
+      .catch(() => {
+        if (!cancelled) setStoreOptions([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isMasterAdmin])
 
   const loadSide = useCallback(
     async (id) => {
@@ -208,6 +234,10 @@ export default function PushCampaigns() {
     setSaving(true)
     try {
       const payload = payloadFromDraft(draft)
+      if (isMasterAdmin) {
+        if (!filterStore) throw new Error('Select a store first.')
+        payload.storeCode = filterStore
+      }
       if (selectedId) {
         const data = await api.updatePushCampaign(selectedId, payload)
         setDraft(toDraft(data?.campaign))
@@ -312,6 +342,30 @@ export default function PushCampaigns() {
     }
   }
 
+  async function deleteNotification() {
+    if (!selectedId || deleting) return
+    const name = draft.name || selected?.name || 'this notification'
+    const ok = await confirm({
+      title: 'Delete notification?',
+      message: `Remove "${name}"? Send history for it is also removed. This cannot be undone.`,
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+      variant: 'danger'
+    })
+    if (!ok) return
+    setDeleting(true)
+    try {
+      await api.deletePushCampaign(selectedId)
+      toast.success('Notification deleted.')
+      startNew()
+      await load()
+    } catch (err) {
+      toast.error(err.message || 'Delete failed.')
+    } finally {
+      setDeleting(false)
+    }
+  }
+
   async function sendAll() {
     if (!selectedId) return
     if (draft.testMode) {
@@ -321,7 +375,7 @@ export default function PushCampaigns() {
     const count = eligibleCount ?? permissions.reachable
     const ok = await confirm({
       title: 'Send to everyone who allowed?',
-      message: `This sends the browser notification to about ${count} DragonFury browsers that already allowed notifications. It does not send automatically later — only this click.`,
+      message: `This sends the browser notification to about ${count} browsers that already allowed notifications. It does not send automatically later — only this click.`,
       confirmLabel: 'Send now',
       cancelLabel: 'Cancel',
       variant: 'primary'
@@ -393,13 +447,28 @@ export default function PushCampaigns() {
         <div>
           <h1>Push notifications</h1>
           <p>
-            Browser notifications for DragonFury. Guests and logged-in players can receive them if they allowed once — even with the tab closed.
+            Browser notifications for this store. Guests and logged-in players can receive them if they allowed once — even with the tab closed.
           </p>
         </div>
         <button type="button" className="pc-btn pc-btn-primary" onClick={startNew}>
           + New notification
         </button>
       </div>
+
+      {isMasterAdmin ? (
+        <div className="pc-guide" style={{ marginBottom: 16 }}>
+          <label className="pc-field" style={{ margin: 0, maxWidth: 280 }}>
+            Store
+            <select value={filterStore} onChange={(e) => { setFilterStore(e.target.value); startNew() }}>
+              <option value="">All stores</option>
+              {storeOptions.map((code) => (
+                <option key={code} value={code}>{code}</option>
+              ))}
+            </select>
+            <span className="pc-field-hint">Pick a store to create or send notifications for that store only.</span>
+          </label>
+        </div>
+      ) : null}
 
       <div className="pc-guide">
         <div className="pc-guide-item">
@@ -463,6 +532,7 @@ export default function PushCampaigns() {
               >
                 <strong>{c.name || 'Untitled'}</strong>
                 <span className="pc-list-meta">
+                  {isMasterAdmin && c.storeCode ? <span>{c.storeCode}</span> : null}
                   <span className={`pc-pill ${c.testMode ? 'pc-pill--test' : 'pc-pill--live'}`}>
                     {c.testMode ? 'TEST' : 'LIVE'}
                   </span>
@@ -623,7 +693,7 @@ export default function PushCampaigns() {
                 <div>
                   <h3>Who gets a test send</h3>
                   <p className="pc-muted">
-                    Add a DragonFury account that already allowed notifications in their browser. Guests without a login cannot be added here.
+                    Add an account that already allowed notifications in their browser. Guests without a login cannot be added here.
                   </p>
                 </div>
                 <button
@@ -769,14 +839,24 @@ export default function PushCampaigns() {
           )}
 
           <div className="pc-actions">
-            <button type="button" className="pc-btn pc-btn-primary" onClick={save} disabled={saving}>
+            <button type="button" className="pc-btn pc-btn-primary" onClick={save} disabled={saving || deleting}>
               {saving ? 'Saving…' : selectedId ? 'Save' : 'Create notification'}
             </button>
-            <button type="button" className="pc-btn pc-btn-send" onClick={sendAll} disabled={sendDisabled}>
+            <button type="button" className="pc-btn pc-btn-send" onClick={sendAll} disabled={sendDisabled || deleting}>
               {sending ? 'Sending…' : sendLabel}
             </button>
             {draft.testMode && selectedId && !testUsers.length ? (
               <span className="pc-muted">Add a test user first, or switch to Live to send to everyone.</span>
+            ) : null}
+            {selectedId ? (
+              <button
+                type="button"
+                className="pc-btn pc-btn-danger"
+                onClick={deleteNotification}
+                disabled={deleting || sending || selected?.status === 'sending'}
+              >
+                {deleting ? 'Deleting…' : 'Delete'}
+              </button>
             ) : null}
           </div>
         </section>

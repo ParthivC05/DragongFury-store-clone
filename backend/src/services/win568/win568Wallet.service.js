@@ -13,7 +13,6 @@ const {
   applyBalanceDelta
 } = require('../gitslotpark/callbacks/gitslotparkCallbackWallet.service');
 const { formatBalance } = require('../gitslotpark/gitslotparkSign.helpers');
-const { resolvePlayCoin } = require('../playCoin/playCoinSession.service');
 
 function money(value) {
   return formatBalance(value);
@@ -40,8 +39,7 @@ async function lockPlayer(userId, username, transaction) {
 }
 
 async function getWin568Balance(userId, username, transaction) {
-  const coinType = await resolvePlayCoin({ userId, provider: 'win568' });
-  const playable = money(await getPlayableBalance(userId, transaction, coinType));
+  const playable = money(await getPlayableBalance(userId, transaction));
   const row = await lockPlayer(userId, username, transaction);
   if (!row) return playable;
 
@@ -81,8 +79,7 @@ async function applyWin568Delta(userId, delta, meta, transaction, options = {}) 
   const playableAfter = Math.max(0, after);
   const playableDelta = money(playableAfter - playable);
   if (Math.abs(playableDelta) >= 0.009) {
-    const coinType = await resolvePlayCoin({ userId, provider: 'win568' });
-    await applyBalanceDelta(userId, playableDelta, meta, transaction, { coinType });
+    await applyBalanceDelta(userId, playableDelta, meta, transaction);
   }
 
   if (row) {

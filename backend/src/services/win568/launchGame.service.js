@@ -6,8 +6,6 @@ const client = require('./win568.client');
 const { getGamesList } = require('./getGamesList.service');
 const { buildWin568Username, upsertWin568Player } = require('./win568User.helpers');
 const { createLogger } = require('../../libs/logger');
-const { parseCoinTypeFromReq } = require('../../lib/normalizePlayCoinType');
-const { rememberPlayCoin } = require('../playCoin/playCoinSession.service');
 
 const log = createLogger('win568');
 
@@ -305,12 +303,6 @@ async function launchGame(req) {
   const { lang, gameProviderUrl, currency } = resolveWin568Config();
   const device = deviceFromReq(req);
   const { gpid, gameid, portfolio } = await resolveLaunchIds(req.body || {}, device);
-  await rememberPlayCoin({
-    userId,
-    provider: 'win568',
-    gameId: gameid,
-    coinType: parseCoinTypeFromReq(req, 'win568')
-  });
   const loginPayload = await client.loginPlayer({
     username: win568Username,
     portfolio,

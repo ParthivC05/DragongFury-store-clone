@@ -11,3 +11,34 @@ export function extractBlogInnerHtml(raw) {
     .replace(/<\/?body[^>]*>/gi, '')
     .trim();
 }
+
+export function excerptFromHtml(raw, max = 140) {
+  const text = String(raw || '')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (text.length <= max) return text;
+  return `${text.slice(0, max).trim()}…`;
+}
+
+export function formatBlogDate(d, options = {}) {
+  if (!d) return '';
+  try {
+    return new Date(d).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: options.month || 'short',
+      day: 'numeric',
+    });
+  } catch {
+    return '';
+  }
+}
+
+export function readingMinutes(raw) {
+  const words = excerptFromHtml(raw, 20000).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200) || 1);
+}

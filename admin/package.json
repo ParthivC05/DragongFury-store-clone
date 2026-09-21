@@ -1,9 +1,9 @@
 {
-  "name": "partner-platform-admin",
+  "name": "dragonfury-admin",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Partner Platform Admin – frontend only, uses shared backend from partner-platform-",
+  "description": "Dragon Fury Admin",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

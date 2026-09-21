@@ -28,7 +28,6 @@ const {
   applyRollbackDelta
 } = require('./gitslotparkCallbackWallet.service');
 const { canUserPlayGames } = require('../../games/gamePlayEligibility.service');
-const { resolvePlayCoin } = require('../../playCoin/playCoinSession.service');
 
 function validateConfigured() {
   if (!isGitslotparkCallbackConfigured()) {
@@ -57,11 +56,6 @@ async function resolveUser(userID) {
     return { error: errorPayload(RESULT.USER_NOT_FOUND, 'Cannot find specified user id') };
   }
   return { userId };
-}
-
-async function coinOptions(userId, gameId, extra = {}) {
-  const coinType = await resolvePlayCoin({ userId, provider: 'gitslotpark', gameId });
-  return { ...extra, coinType };
 }
 
 async function findTransaction(transactionID) {
@@ -94,12 +88,7 @@ async function getBalanceCallback(body) {
   const userResult = await resolveUser(userID);
   if (userResult.error) return userResult.error;
 
-  const coinType = await resolvePlayCoin({
-    userId: userResult.userId,
-    provider: 'gitslotpark',
-    gameId: gameID
-  });
-  const balance = await getPlayableBalance(userResult.userId, undefined, coinType);
+  const balance = await getPlayableBalance(userResult.userId);
   return successPayload({ balance });
 }
 
@@ -138,11 +127,7 @@ async function processWalletMutation(body, options) {
 
   try {
     return await db.sequelize.transaction(async (t) => {
-      const applyOptions = await coinOptions(
-        userResult.userId,
-        parsed.gameID,
-        options.getApplyOptions ? options.getApplyOptions(parsed) : {}
-      );
+      const applyOptions = options.getApplyOptions ? options.getApplyOptions(parsed) : undefined;
       const balanceAfter = await applyBalanceDelta(
         userResult.userId,
         options.getDelta(parsed),
@@ -349,7 +334,6 @@ async function rollbackCallback(body) {
 
   try {
     return await db.sequelize.transaction(async (t) => {
-      const applyOptions = await coinOptions(userResult.userId, gameID);
       const balanceAfter = await applyRollbackDelta(
         userResult.userId,
         original.transactionId,
@@ -363,8 +347,7 @@ async function rollbackCallback(body) {
             gameId: gameID
           }
         },
-        t,
-        applyOptions
+        t
       );
 
       const platformTransactionId = newPlatformTransactionId();

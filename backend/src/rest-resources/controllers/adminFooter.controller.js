@@ -5,6 +5,7 @@ const { ROLES } = require('../../constants/roles');
 const { can, canAdmin } = require('../../utils/permissionHelpers');
 const { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const footer = require('../../services/footer/footer.service');
+const legalPages = require('../../services/legal/legalPages.service');
 const { uploadImageBuffer } = require('../../utils/s3Upload');
 
 function hasFooterAccess(req) {
@@ -156,6 +157,36 @@ async function updateSettings(req, res) {
   }
 }
 
+async function listLegalPages(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await legalPages.listAdmin(req, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Failed to list legal pages.', err.statusCode || 500);
+  }
+}
+
+async function getLegalPage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await legalPages.getAdmin(req, req.params.pageKey, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Failed to load legal page.', err.statusCode || 500);
+  }
+}
+
+async function updateLegalPage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await legalPages.upsertAdmin(req, req.params.pageKey, req.body || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Failed to save legal page.', err.statusCode || 500);
+  }
+}
+
 /** POST /admin/footer/upload-image — upload footer page layout images to S3 */
 async function uploadImage(req, res) {
   try {
@@ -187,5 +218,8 @@ module.exports = {
   removePage,
   getSettings,
   updateSettings,
+  listLegalPages,
+  getLegalPage,
+  updateLegalPage,
   uploadImage
 };

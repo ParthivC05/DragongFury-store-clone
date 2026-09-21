@@ -98,7 +98,6 @@ function normalizePackageMeta(raw) {
 
   const payAmount = raw.payAmount ?? raw.pay_amount ?? raw.final_price;
   const creditAmount = raw.creditAmount ?? raw.credit_amount ?? raw.credit_sc ?? raw.final_sc;
-  const creditGc = raw.creditGc ?? raw.credit_gc ?? raw.gc_coin ?? raw.gcCoin;
   const originalPayAmount =
     raw.originalPayAmount ??
     raw.original_pay_amount ??
@@ -131,8 +130,7 @@ function normalizePackageMeta(raw) {
     groupKey: raw.groupKey ?? raw.group_key ?? null,
     groupTitle: raw.groupTitle ?? raw.group_title ?? null,
     payAmount: payAmount != null ? Number(payAmount) : null,
-    creditAmount: creditAmount != null ? Number(creditAmount) : null,
-    creditGc: creditGc != null && Number.isFinite(Number(creditGc)) ? Number(creditGc) : 0
+    creditAmount: creditAmount != null ? Number(creditAmount) : null
   };
 
   if (originalPayAmount != null && Number.isFinite(Number(originalPayAmount))) {
@@ -169,8 +167,7 @@ async function resolvePackageDepositMeta(packageId, { payAmount, creditAmount } 
     groupKey: pkg.Group?.groupKey || null,
     groupTitle: pkg.Group?.title || null,
     payAmount: payAmount != null ? Number(payAmount) : Number(pkg.finalPrice),
-    creditAmount: creditAmount != null ? Number(creditAmount) : Number(pkg.finalSc),
-    creditGc: Number(pkg.gcCoin) || 0
+    creditAmount: creditAmount != null ? Number(creditAmount) : Number(pkg.finalSc)
   };
 }
 
@@ -181,12 +178,6 @@ function formatPackageDepositDescription(meta, currencyCode = 'USD') {
     : null;
   const sc = meta.creditAmount != null && Number.isFinite(Number(meta.creditAmount))
     ? Number(meta.creditAmount)
-    : null;
-  const gc = meta.creditGc != null && Number.isFinite(Number(meta.creditGc)) && Number(meta.creditGc) > 0
-    ? Number(meta.creditGc)
-    : null;
-  const coinsPart = sc != null
-    ? (gc != null ? `${sc} SC + ${gc} GC` : `${sc} SC`)
     : null;
   const titlePart = meta.packageTitle ? ` — ${meta.packageTitle}` : '';
   const hasDailyBonus =
@@ -216,9 +207,9 @@ function formatPackageDepositDescription(meta, currencyCode = 'USD') {
       const offerLabel =
         percent != null ? `${percent}% spin coupon ${code}` : `spin coupon ${code}`;
       if (original) {
-        return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${offerLabel} → ${coinsPart})`;
+        return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${offerLabel} → ${sc} SC)`;
       }
-      return `${label} package${titlePart} (${currencyCode} ${pay} with ${offerLabel} → ${coinsPart})`;
+      return `${label} package${titlePart} (${currencyCode} ${pay} with ${offerLabel} → ${sc} SC)`;
     }
     if (hasEmailCampaign) {
       const original =
@@ -235,15 +226,15 @@ function formatPackageDepositDescription(meta, currencyCode = 'USD') {
           ? `${val}% email offer ${code}`
           : `email offer ${code}`;
       if (original) {
-        return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${offerLabel} → ${coinsPart})`;
+        return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${offerLabel} → ${sc} SC)`;
       }
-      return `${label} package${titlePart} (${currencyCode} ${pay} with ${offerLabel} → ${coinsPart})`;
+      return `${label} package${titlePart} (${currencyCode} ${pay} with ${offerLabel} → ${sc} SC)`;
     }
     if (hasDailyBonus) {
       const original = Number(meta.originalPayAmount).toFixed(2).replace(/\.00$/, '');
-      return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${Number(meta.dailyBonusPercentOff)}% daily bonus voucher → ${coinsPart})`;
+      return `${label} package${titlePart} (${currencyCode} ${original} → ${pay} with ${Number(meta.dailyBonusPercentOff)}% daily bonus voucher → ${sc} SC)`;
     }
-    return `${label} package${titlePart} (${currencyCode} ${pay} → ${coinsPart})`;
+    return `${label} package${titlePart} (${currencyCode} ${pay} → ${sc} SC)`;
   }
   if (hasSpinCoupon && pay != null) {
     const code = meta.spinWheelCouponCode;
@@ -265,8 +256,7 @@ function packageMetaToTransactionMetadata(meta) {
     group_key: meta.groupKey || null,
     group_title: meta.groupTitle || (meta.groupKey ? groupKeyToLabel(meta.groupKey) : null),
     pay_amount: meta.payAmount != null ? Number(meta.payAmount) : null,
-    credit_sc: meta.creditAmount != null ? Number(meta.creditAmount) : null,
-    credit_gc: meta.creditGc != null ? Number(meta.creditGc) : 0
+    credit_sc: meta.creditAmount != null ? Number(meta.creditAmount) : null
   };
   if (meta.originalPayAmount != null && Number.isFinite(Number(meta.originalPayAmount))) {
     out.original_pay_amount = Number(meta.originalPayAmount);

@@ -122,15 +122,10 @@ function money(n) {
   return `$${formatSc(v)}`;
 }
 
-function formatGcAmount(n) {
+function formatScAmount(n) {
   const v = Number(n);
-  if (!Number.isFinite(v) || v <= 0) return '';
-  return v.toLocaleString(undefined, { maximumFractionDigits: 0 });
-}
-
-function packageGc(pkg) {
-  const n = Number(pkg?.gc_coin ?? pkg?.gcCoin);
-  return Number.isFinite(n) && n > 0 ? n : 0;
+  if (!Number.isFinite(v)) return '0.00';
+  return v.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 function historyStatus(st) {
@@ -161,12 +156,11 @@ function groupTheme(group) {
 
 function packEconomics(pkg) {
   const sc = Number(pkg?.final_sc);
-  const gc = packageGc(pkg);
   const price = Number(pkg?.final_price);
   const was = Number(pkg?.actual_price);
   const savePct = packSavePercent(pkg);
   const freeAmt = was > price ? was - price : (sc > price ? sc - price : 0);
-  return { sc, gc, price, was, savePct, freeAmt };
+  return { sc, price, was, savePct, freeAmt };
 }
 
 function RailBrand({ railKey, paymentKey, label, boxed }) {
@@ -235,7 +229,7 @@ function PackCountdown({ endsAt, variant = 'default' }) {
 }
 
 function PackCard({ pkg, index, selected, locked, rib, onSelect }) {
-  const { sc, gc, price, was, savePct, freeAmt } = packEconomics(pkg);
+  const { sc, price, was, savePct, freeAmt } = packEconomics(pkg);
   const badge = pkg.discount_label || null;
   const badgeCls = packBadgeClass(pkg);
 
@@ -252,9 +246,8 @@ function PackCard({ pkg, index, selected, locked, rib, onSelect }) {
       <span className="pj-ac-stage">
         <img {...getDepositPackageImageProps(index)} alt="" />
       </span>
-      <span className="pj-ac-coins">{formatSc(sc)}</span>
+      <span className="pj-ac-coins">{formatScAmount(sc)}</span>
       <span className="pj-ac-unit">SWEEPS COINS</span>
-      {gc > 0 ? <span className="pj-ac-gc">+ {formatGcAmount(gc)} GOLD COINS</span> : null}
       {sanitizePackTitle(pkg.title) ? <span className="pj-ac-title">{sanitizePackTitle(pkg.title)}</span> : null}
       <span className="pj-ac-price">{money(price)}</span>
       {was > price ? <span className="pj-ac-was">{money(was)}</span> : null}
@@ -265,7 +258,7 @@ function PackCard({ pkg, index, selected, locked, rib, onSelect }) {
 }
 
 function FlashCard({ pkg, index, selected, locked, onSelect }) {
-  const { sc, gc, price, was, freeAmt } = packEconomics(pkg);
+  const { sc, price, was, freeAmt } = packEconomics(pkg);
   return (
     <button
       type="button"
@@ -277,9 +270,8 @@ function FlashCard({ pkg, index, selected, locked, onSelect }) {
         <img {...getDepositPackageImageProps(index)} alt="" />
       </span>
       <span className="pj-ac-flash-info">
-        <span className="pj-ac-flash-coins">{formatSc(sc)}</span>
+        <span className="pj-ac-flash-coins">{formatScAmount(sc)}</span>
         <span className="pj-ac-unit">SWEEPS COINS</span>
-        {gc > 0 ? <span className="pj-ac-gc">+ {formatGcAmount(gc)} GOLD COINS</span> : null}
         {freeAmt > 0 ? (
           <span className="pj-ac-free">🎁 +{money(freeAmt)} free value included</span>
         ) : null}
@@ -508,7 +500,6 @@ export function AddCoinsDepositView({
   const histRows = purchases;
   const visibleHistRows = showAllHist ? histRows : histRows.slice(0, 4);
 
-  const chosenGc = selectedPackage && !customAmountMode ? packageGc(selectedPackage) : 0;
   const ctaDisabled = submitting || !(canSubmit || (cryptoStepPending && payableAmount));
   const ctaBig = !selectedRail
     ? 'Pick a payment method'
@@ -518,7 +509,7 @@ export function AddCoinsDepositView({
         ? 'Now pick coin & network'
         : submitting
           ? 'Processing…'
-          : `Pay ${money(payableAmount)} — get ${formatSc(creditSc)} SC${chosenGc > 0 ? ` + ${formatGcAmount(chosenGc)} GC` : ''}`;
+          : `Pay ${money(payableAmount)} — get ${formatScAmount(creditSc)} coins`;
   const dockLine = !selectedRail
     ? 'Step 1 of 3 — choose how you pay'
     : !payableAmount
@@ -647,7 +638,7 @@ export function AddCoinsDepositView({
             {missedPack ? (
               <p className="pj-ac-rail-note">
                 <span className="pj-ac-miss">
-                  {formatSc(missedPack.final_sc)} SC isn&apos;t available on {selectedRail.label}.
+                  {formatScAmount(missedPack.final_sc)} SC isn&apos;t available on {selectedRail.label}.
                 </span>
                 {note ? ` ${note}` : ''}
               </p>
@@ -818,7 +809,7 @@ export function AddCoinsDepositView({
             <div>
               <div className="pj-ac-chosen-lbl">YOUR PICK</div>
               <div className="pj-ac-chosen-big">
-                {formatSc(chosenEco.sc)} SC{chosenEco.gc > 0 ? ` + ${formatGcAmount(chosenEco.gc)} GC` : ''} for {money(chosenEco.price)}
+                {formatScAmount(chosenEco.sc)} coins for {money(chosenEco.price)}
               </div>
               <div className="pj-ac-chosen-sub">
                 {chosenEco.freeAmt > 0 ? (
@@ -975,7 +966,7 @@ export function AddCoinsDepositView({
                   <div className={`pj-ac-hs ${cls}`}>{sub}</div>
                 </div>
                 <div className="pj-ac-hend">
-                  <div className="pj-ac-hc">{cls === 'dead' ? '—' : `+${formatSc(scVal)} SC`}</div>
+                  <div className="pj-ac-hc">{cls === 'dead' ? '—' : `+${formatScAmount(scVal)} SC`}</div>
                 </div>
               </div>
             );

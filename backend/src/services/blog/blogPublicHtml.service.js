@@ -197,7 +197,11 @@ ${extraHead}
     .seo-wrap{max-width:760px;margin:0 auto;padding:32px 20px 64px}
     a{color:#1fd1d1}
     h1,h2,h3{line-height:1.25}
-    img{max-width:100%;height:auto}
+    img{max-width:100%;height:auto;border-radius:12px}
+    figure{margin:1.25rem 0}
+    figcaption{font-size:13px;color:#94a3b8;text-align:center;margin-top:6px}
+    figure[data-align="left"]{float:left;width:42%;margin:0 1rem 1rem 0}
+    figure[data-align="right"]{float:right;width:42%;margin:0 0 1rem 1rem}
     table{width:100%;border-collapse:collapse}
     td,th{border:1px solid #333;padding:8px;text-align:left}
   </style>

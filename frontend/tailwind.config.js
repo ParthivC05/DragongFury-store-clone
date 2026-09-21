@@ -11,11 +11,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        app: '#0d0d0f',
-        card: '#1a1a1f',
-        input: '#222228',
-        muted: '#6b6b72',
-        primary: '#666f50',
+        app: '#0a0c0a',
+        card: '#151815',
+        input: '#1b201b',
+        muted: '#8d9a88',
+        primary: '#B6FF2A',
       },
       maxWidth: {
         content: '1200px',

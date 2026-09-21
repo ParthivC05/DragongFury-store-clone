@@ -6,7 +6,7 @@ import { getGameLobbyCategoryLabel, resolveLaunchGameId } from '../../utils/gits
 import { useLaunchDashboardSlotGame } from '../../hooks/useLaunchDashboardSlotGame';
 import { DepositRequiredModal } from '../Games/DepositRequiredModal';
 
-const ONEGAMEHUB_CACHE_KEY = 'onegamehub-v6';
+const ONEGAMEHUB_CACHE_KEY = 'onegamehub-v7';
 const BONA_CACHE_KEY = 'bona';
 const MARQUEE_COUNT = 10;
 const MARQUEE_SPEED = 0.5;
@@ -257,7 +257,7 @@ export function CasinoCrossSellPanel() {
                   {badge ? <span className="dash-xsell-badge">{badge}</span> : null}
                   <span className="dash-xsell-art">
                     {src ? (
-                      <img src={src} alt="" loading="lazy" decoding="async" draggable={false} />
+                      <img src={src} alt="" loading="eager" decoding="async" draggable={false} />
                     ) : (
                       <span aria-hidden>🎰</span>
                     )}

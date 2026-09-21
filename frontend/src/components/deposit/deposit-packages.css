@@ -1031,14 +1031,6 @@
   letter-spacing: -0.02em;
 }
 
-.dash-pkg-gc {
-  margin: 0.15rem 0 0;
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #ffd700;
-  text-shadow: 0 0 12px rgba(255, 215, 0, 0.35);
-}
-
 .dash-pkg-card--flash .dash-pkg-sc {
   color: #69f0ae;
   text-shadow: 0 0 16px rgba(105, 240, 174, 0.35);

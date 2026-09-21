@@ -8,7 +8,6 @@ import * as bonaApi from '../api/bona';
 import { resolveLaunchGameId, isOneGameHubFishingPlayGame } from '../utils/gitslotparkLandingGames';
 import { useDepositRequiredGate } from './useDepositRequiredGate';
 import { isDepositRequiredError } from '../utils/depositRequired';
-import { useCoinLaunch } from '../context/CoinLaunchContext';
 
 /**
  * Launch a dashboard/catalog slot game (home cross-sell, lobby carousels, etc.).
@@ -25,7 +24,6 @@ export function useLaunchDashboardSlotGame() {
     closeDepositRequiredModal,
     activationBonusType,
   } = useDepositRequiredGate();
-  const { requestPlayCoin } = useCoinLaunch();
   const [launchingGameId, setLaunchingGameId] = useState(null);
   const launchLoadingRef = useRef(false);
 
@@ -50,19 +48,10 @@ export function useLaunchDashboardSlotGame() {
 
         try {
           const provider = game.provider || 'pragmatic';
-          let coinType = 'SC';
-          if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-            try {
-              coinType = await requestPlayCoin(game, provider);
-            } catch (err) {
-              if (String(err?.message || '') === 'cancelled') return;
-              throw err;
-            }
-          }
 
           if (provider === 'bona') {
             if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-              const res = await bonaApi.launchBonaGame(gameid, coinType);
+              const res = await bonaApi.launchBonaGame(gameid);
               const url = res?.url ? String(res.url).trim() : '';
               if (!url) throw new Error('Game launch URL not returned');
               window.open(url, '_blank', 'noopener,noreferrer');
@@ -90,7 +79,7 @@ export function useLaunchDashboardSlotGame() {
               gameid,
             });
             if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-              const res = await onegamehubApi.launchOneGameHubGame(gameid, coinType);
+              const res = await onegamehubApi.launchOneGameHubGame(gameid);
               const url = res?.url ? String(res.url).trim() : '';
               if (!url) throw new Error('Game launch URL not returned');
               window.open(url, '_blank', 'noopener,noreferrer');
@@ -115,7 +104,7 @@ export function useLaunchDashboardSlotGame() {
           }
 
           if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-            const res = await gitslotparkApi.launchSlotGame(gameid, provider, coinType);
+            const res = await gitslotparkApi.launchSlotGame(gameid, provider);
             const url = res?.url ? String(res.url).trim() : '';
             if (!url) throw new Error('Game launch URL not returned');
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -150,7 +139,6 @@ export function useLaunchDashboardSlotGame() {
       navigate,
       openDepositRequiredModal,
       requireDeposit,
-      requestPlayCoin,
       toast,
     ]
   );

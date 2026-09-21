@@ -3,6 +3,7 @@
 const { QueryTypes } = require('sequelize');
 const db = require('../../db/models');
 const { isBlockedBrand } = require('./onegamehub.constants');
+const { isHiddenBrokenProviderGame } = require('../../constants/hiddenBrokenGames');
 
 const DEFAULT_LIMIT = 12;
 const MAX_LIMIT = 24;
@@ -47,7 +48,7 @@ async function getRecentlyPlayed({ userId, limit = DEFAULT_LIMIT } = {}) {
       };
     })
     .filter(Boolean)
-    .filter((game) => !isBlockedBrand(game.gameId));
+    .filter((game) => !isBlockedBrand(game.gameId) && !isHiddenBrokenProviderGame(game.gameId));
 
   return { games };
 }

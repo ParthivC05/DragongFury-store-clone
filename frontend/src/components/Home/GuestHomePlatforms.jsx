@@ -5,7 +5,7 @@ import { GuestPlatformsGrid } from './GamesSection/GuestPlatformsGrid';
 import { scrollToSectionById } from '../../utils/scrollToGames';
 
 const GUEST_PLATFORMS = buildGuestPlatformGames([]);
-const INITIAL_VISIBLE = 9;
+const INITIAL_VISIBLE = 12;
 const COLLAPSE_MS = 320;
 
 /** Guest home platforms from the bundled list — no catalog or casino API. */

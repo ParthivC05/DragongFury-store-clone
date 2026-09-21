@@ -6,7 +6,6 @@ const {
   getPlayableBalance,
   applyBalanceDelta
 } = require('../gitslotpark/callbacks/gitslotparkCallbackWallet.service');
-const { resolvePlayCoin } = require('../playCoin/playCoinSession.service');
 
 function platformTxId() {
   return `bona_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
@@ -25,12 +24,8 @@ async function recordSlotsTransaction(row, transaction) {
   );
 }
 
-async function playCoinForUser(userId, gameId) {
-  return resolvePlayCoin({ userId, provider: 'bona', gameId });
-}
-
 /**
- * Debit platform playable SC/RSC or GC and return the amount transferred.
+ * Debit platform playable SC/RSC and return the amount transferred.
  */
 async function debitPlayableToBona(userId, amount, meta, transaction) {
   const need = formatBalance(amount);
@@ -40,14 +35,9 @@ async function debitPlayableToBona(userId, amount, meta, transaction) {
     throw err;
   }
 
-  const coinType = await playCoinForUser(userId, meta?.metadata?.gameId);
-  const playable = await getPlayableBalance(userId, transaction, coinType);
+  const playable = await getPlayableBalance(userId, transaction);
   if (playable + 0.0001 < need) {
-    const err = new Error(
-      coinType === 'GC'
-        ? 'Insufficient Gold Coin balance to launch this game'
-        : 'Insufficient SC balance to launch this game'
-    );
+    const err = new Error('Insufficient SC balance to launch this game');
     err.statusCode = 400;
     err.code = 'INSUFFICIENT_FUNDS';
     throw err;
@@ -61,8 +51,7 @@ async function debitPlayableToBona(userId, amount, meta, transaction) {
       description: meta?.description || 'Bona Games wallet deposit',
       metadata: meta?.metadata || {}
     },
-    transaction,
-    { coinType }
+    transaction
   );
 
   return { amount: need, balanceAfter };
@@ -73,9 +62,8 @@ async function debitPlayableToBona(userId, amount, meta, transaction) {
  */
 async function creditPlayableFromBona(userId, amount, meta, transaction) {
   const credit = formatBalance(amount);
-  const coinType = await playCoinForUser(userId, meta?.metadata?.gameId);
   if (credit <= 0) {
-    return getPlayableBalance(userId, transaction, coinType);
+    return getPlayableBalance(userId, transaction);
   }
 
   return applyBalanceDelta(
@@ -86,8 +74,7 @@ async function creditPlayableFromBona(userId, amount, meta, transaction) {
       description: meta?.description || 'Bona Games wallet withdraw',
       metadata: meta?.metadata || {}
     },
-    transaction,
-    { coinType }
+    transaction
   );
 }
 

@@ -13,9 +13,6 @@ const BONUS_CURRENCY_CODE = 'BSC';
 /** Redeemable SC — game wins / redemptions; withdrawals use this only. */
 const REDEEMABLE_CURRENCY_CODE = 'RSC';
 
-/** DragonFury Gold Coins — entertainment only, optional on packages. */
-const { GC_CURRENCY_CODE } = require('../../constants/gcCoins');
-
 /**
  * Get display currency code from settings (e.g. "SC"). Used in affiliate ref bonus,
  * wallet limits messages, and UI labels.
@@ -36,6 +33,5 @@ module.exports = {
   DEFAULT_CURRENCY,
   PURCHASED_CURRENCY_CODE,
   BONUS_CURRENCY_CODE,
-  REDEEMABLE_CURRENCY_CODE,
-  GC_CURRENCY_CODE
+  REDEEMABLE_CURRENCY_CODE
 };

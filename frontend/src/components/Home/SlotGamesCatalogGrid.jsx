@@ -15,10 +15,10 @@ export const SLOT_CATALOG_COLS = 6;
 export const SLOT_CATALOG_GAME_COUNT = SLOT_CATALOG_ROWS * SLOT_CATALOG_COLS;
 export const SLOT_CATALOG_MOBILE_GAME_COUNT = 6;
 
-const VISIBLE_PER_CATEGORY = 6;
+const VISIBLE_PER_CATEGORY = 12;
 const GUEST_SLOTS_SPIN_MODAL_KEY = 'guest_slots_spin_modal_shown';
 
-const HIDDEN_CHIP_IDS = new Set(['recently-played', 'top-fishing', 'top-games', 'popular', 'buffalo-blast']);
+const HIDDEN_CHIP_IDS = new Set(['recently-played', 'top-fishing', 'top-games']);
 
 const CHIP_LABELS = {
   all: 'All Games',
@@ -67,7 +67,7 @@ export function SlotGamesCatalogGrid({
   const signupTo = `/register${search || ''}`;
   const showGuestSpinModal = guestSpinModal && !isAuthenticated;
   const guestScrollCount = useGuestLandingScrollCount(showGuestSpinModal);
-  const platformName = site.platformName || 'Dragon Fury';
+  const platformName = site.platformName || 'Play Juwa';
 
   const chipCategories = useMemo(
     () =>
@@ -144,10 +144,10 @@ export function SlotGamesCatalogGrid({
   return (
     <div className="dash-guest-casino-block">
       <div className="dash-casino-bridge dash-animate-in" id="casino-bridge">
-        <span className="dash-casino-bridge-tag">⚡ NEW · INSTANT CASINO</span>
+        <span className="dash-casino-bridge-tag">FURY ARCADE</span>
         <div className="dash-casino-bridge-copy">
           <p className="dash-casino-bridge-title">
-            Love the platforms? <em>Skip the download</em> next time.
+            Instant casino. <em>Same SC wallet.</em>
           </p>
           <div className="dash-casino-bridge-pts">
             <span>One login — your {platformName} account</span>
@@ -163,12 +163,15 @@ export function SlotGamesCatalogGrid({
       <section
         ref={sectionRef}
         id="casino"
-        className="dash-slot-catalog-section dash-guest-casino dash-animate-in"
+        className="dash-slot-catalog-section dash-guest-casino dash-guest-casino--arcade dash-animate-in"
         aria-busy={loading || undefined}
       >
         <div className="dash-guest-casino-head">
-          <p className="dash-guest-casino-kick">No download · No separate password</p>
-          <h2 className="dash-guest-casino-title">Instant Casino — browse before you sign up</h2>
+          <p className="dash-guest-casino-kick">Instant casino</p>
+          <h2 className="dash-guest-casino-title">Tables. Slots. Live. Instant.</h2>
+          <p className="dash-guest-casino-lede">
+            Poster wall of instant casino — tap a title, play in the browser, same SC wallet.
+          </p>
         </div>
 
         {chipCategories.length > 0 ? (
@@ -209,7 +212,7 @@ export function SlotGamesCatalogGrid({
             onPlay={handleCardPlay}
             playingGameId={playingGameId}
             cardVariant="guest-inspo"
-            overlayCta="Sign Up to Play"
+            overlayCta="Enter table"
           />
         </div>
 
@@ -219,7 +222,7 @@ export function SlotGamesCatalogGrid({
             className="dash-platforms-toggle dash-guest-casino-toggle"
             onClick={goSignup}
           >
-            ▾ Show All Games
+            Open full arcade →
           </button>
         ) : null}
       </section>

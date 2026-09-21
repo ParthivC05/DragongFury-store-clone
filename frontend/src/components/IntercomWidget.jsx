@@ -244,7 +244,7 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
       <aside className="pj-support-panel" role="dialog" aria-label={`${site.platformName} support`}>
         <header className="pj-support-header">
           <div className="pj-support-brand">
-            <img src="/logo-bg.png" alt={site.platformName} className="pj-support-logo" />
+            <img src={site.logoUrl} alt={site.platformName} className="pj-support-logo" />
             <span>Support</span>
           </div>
           <button type="button" onClick={onClose} className="pj-support-close" aria-label="Close support panel">

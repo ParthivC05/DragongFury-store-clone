@@ -80,7 +80,7 @@
   border-radius: 12px;
   border: 1px solid var(--pj-b1, #503a10);
   background: rgba(11, 8, 3, 0.75);
-  color: var(--pj-gold, #f9d038);
+  color: var(--pj-gold, #C6FF4D);
   font-family: 'Nunito', sans-serif;
   font-size: 0.8125rem;
   font-weight: 800;
@@ -117,7 +117,7 @@
 }
 
 .phone-otp-code:focus {
-  border-color: var(--pj-gold2, #e8a010);
+  border-color: var(--pj-gold2, #7CCF14);
   box-shadow: 0 0 0 3px rgba(232, 160, 16, 0.14);
 }
 

@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/pwa/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
-    <meta name="theme-color" content="#04060a" />
+    <meta name="theme-color" content="#0a0c0a" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Dragon Fury" />
@@ -15,202 +15,19 @@
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content"
     />
-    <link rel="preconnect" href="https://partners-platforms.s3.us-east-1.amazonaws.com" crossorigin />
-    <link rel="dns-prefetch" href="https://partners-platforms.s3.us-east-1.amazonaws.com" />
-    <style>
-      html { --dash-nav-h: 56px; --pj-ticker-h: 40px; }
-      @media (max-width: 767px) { html { --dash-nav-h: 68px; } }
-      html.pj-lcp-takenover #pj-lcp-boot { display: none !important; }
-      body { margin: 0; background: #04060a; }
-      /* Hidden until an admin CMS image is ready to paint. Never a blank hole. */
-      #pj-lcp-boot {
-        display: none;
-        position: absolute;
-        left: 4px;
-        right: 4px;
-        top: calc(var(--dash-nav-h) + var(--pj-ticker-h));
-        z-index: 3;
-        pointer-events: none;
-      }
-      html.pj-lcp-has-src #pj-lcp-boot { display: block; }
-      #pj-lcp-boot img {
-        display: block;
-        width: 100%;
-        height: auto;
-        aspect-ratio: 1774 / 887;
-        object-fit: contain;
-        background: #080c12;
-      }
-      @media (min-width: 768px) {
-        #pj-lcp-boot { display: none !important; }
-      }
-    </style>
-    <!-- Classic script starts the CMS slideshow fetch during HTML parse. -->
-    <script>
-      (function () {
-        var store = 'dragonfury';
-        window.__DRAGONFURY_SLIDESHOW_PROMISE__ = fetch(
-          '/api/dashboard-slideshow/public?store_code=' + encodeURIComponent(store),
-          { credentials: 'include' }
-        ).then(function (res) {
-          if (!res.ok) throw new Error('slideshow');
-          return res.json();
-        });
-      })();
-    </script>
-    <title>DragonFury - Access 20+ Sweepstakes Game Systems Online</title>
+    <title>Dragon Fury | Instant sweepstakes games in black and green</title>
     <meta
       name="description"
-      content="Dragon Fury, Orion Stars, Golden Dragon, Fire Kirin &amp; more — all in one place. Explore our full games list and start playing today."
+      content="Dragon Fury is a black-and-green sweepstakes lobby for fish games, slots, and exclusive platforms. Join free and play in minutes."
     />
-    <link rel="canonical" href="https://dragonfury.com/" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "Organization",
-            "name": "Dragon Fury",
-            "url": "https://dragonfury.com",
-            "logo": "https://dragonfury.com/logo.png",
-            "description": "DragonFury is an online sweepstakes gaming platform offering social casino-style games for entertainment.",
-            "email": "support@dragonfury.com",
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "contactType": "customer support",
-              "email": "support@dragonfury.com",
-              "url": "https://dragonfury.com/contact"
-            }
-          },
-          {
-            "@type": "WebSite",
-            "name": "Dragon Fury",
-            "url": "https://dragonfury.com",
-            "description": "Dragon Fury, Orion Stars, Golden Dragon, Fire Kirin & more — all in one place. Explore our full games list and start playing today."
-          }
-        ]
-      }
-    </script>
-    <!-- Analytics after first tap/key — live dragonfury.com only (not staging). -->
-    <script>
-      (function () {
-        var host = (window.location.hostname || '').toLowerCase();
-        if (host !== 'dragonfury.com' && host !== 'www.dragonfury.com') return;
-
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-          dataLayer.push(arguments);
-        }
-        window.gtag = gtag;
-
-        var loaded = false;
-        function loadThirdParty() {
-          if (loaded) return;
-          loaded = true;
-          window.removeEventListener('pointerdown', loadThirdParty);
-          window.removeEventListener('keydown', loadThirdParty);
-          var s = document.createElement('script');
-          s.async = true;
-          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-1VKLTGGDZE';
-          document.head.appendChild(s);
-          gtag('js', new Date());
-          gtag('config', 'G-1VKLTGGDZE');
-
-          (function (c, l, a, r, i, t, y) {
-            c[a] =
-              c[a] ||
-              function () {
-                (c[a].q = c[a].q || []).push(arguments);
-              };
-            t = l.createElement(r);
-            t.async = 1;
-            t.src = 'https://www.clarity.ms/tag/' + i;
-            y = l.getElementsByTagName(r)[0];
-            y.parentNode.insertBefore(t, y);
-          })(window, document, 'clarity', 'script', 'xy19ljlq1i');
-        }
-        window.addEventListener('pointerdown', loadThirdParty, { passive: true });
-        window.addEventListener('keydown', loadThirdParty);
-      })();
-    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Orbitron:wght@600;700;800;900&family=Teko:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div id="pj-lcp-boot" aria-hidden="true">
-      <img
-        id="pj-lcp-hero"
-        alt=""
-        width="1774"
-        height="887"
-        decoding="sync"
-        fetchpriority="high"
-      />
-    </div>
-    <script>
-      (function () {
-        function isMobile() {
-          return window.matchMedia('(max-width: 767px)').matches;
-        }
-        function cacheKey() {
-          return isMobile() ? 'pj-lcp-slide-m' : 'pj-lcp-slide-d';
-        }
-        function isBundledFallback(url) {
-          return /\/lcp-slide-mobile\.webp(?:\?|$)|\/optimized\/m?[234]\.webp(?:\?|$)/i.test(String(url || ''));
-        }
-        function firstAdminUrl(slides) {
-          var list = Array.isArray(slides) ? slides : [];
-          var mobile = isMobile();
-          for (var i = 0; i < list.length; i++) {
-            var slide = list[i] || {};
-            var mobileSrc = String(slide.mobileSrc || slide.mobile_src || '').trim();
-            var url = mobile && mobileSrc ? mobileSrc : String(slide.src || '').trim();
-            if (url && !isBundledFallback(url)) return url;
-          }
-          return '';
-        }
-        function preloadHero(url) {
-          if (!url || document.getElementById('pj-lcp-preload')) return;
-          var link = document.createElement('link');
-          link.id = 'pj-lcp-preload';
-          link.rel = 'preload';
-          link.as = 'image';
-          link.href = url;
-          link.setAttribute('fetchpriority', 'high');
-          document.head.appendChild(link);
-        }
-        function revealHero() {
-          var img = document.getElementById('pj-lcp-hero');
-          if (!img || !img.naturalWidth) return;
-          if (document.documentElement.classList.contains('pj-lcp-takenover')) return;
-          document.documentElement.classList.add('pj-lcp-has-src');
-        }
-        function showHero(url) {
-          if (!url || isBundledFallback(url)) return;
-          if (document.documentElement.classList.contains('pj-lcp-takenover')) return;
-          preloadHero(url);
-          var img = document.getElementById('pj-lcp-hero');
-          if (!img) return;
-          img.setAttribute('fetchpriority', 'high');
-          img.onload = revealHero;
-          img.onerror = function () {
-            document.documentElement.classList.remove('pj-lcp-has-src');
-          };
-          if (img.getAttribute('src') !== url) img.src = url;
-          if (img.complete && img.naturalWidth) revealHero();
-          try { localStorage.setItem(cacheKey(), url); } catch (e) {}
-        }
-        try {
-          var cached = localStorage.getItem(cacheKey());
-          if (cached && !isBundledFallback(cached)) showHero(cached);
-        } catch (e) {}
-        if (window.__DRAGONFURY_SLIDESHOW_PROMISE__) {
-          window.__DRAGONFURY_SLIDESHOW_PROMISE__
-            .then(function (data) {
-              showHero(firstAdminUrl(data && data.slides));
-            })
-            .catch(function () {});
-        }
-      })();
-    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

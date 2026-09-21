@@ -4,15 +4,13 @@ const db = require('../../db/models');
 const { assertUserCanPlayGames } = require('../games/gamePlayEligibility.service');
 const { fetchRealPlay } = require('./onegamehub.client');
 const { isOneGameHubLaunchConfigured } = require('./onegamehub.config');
-const { isBlockedBrand } = require('./onegamehub.constants');
+const { HUB_CURRENCY, isBlockedBrand } = require('./onegamehub.constants');
+const { isHiddenBrokenProviderGame } = require('../../constants/hiddenBrokenGames');
 const { createSession } = require('./callbacks/session.service');
-const { parseCoinTypeFromReq, hubCurrencyForCoin } = require('../../lib/normalizePlayCoinType');
-const { rememberPlayCoin } = require('../playCoin/playCoinSession.service');
-const { isGcCoinsStore } = require('../../constants/gcCoins');
 
 /**
- * Launch a 1GameHub real-money game (SSC for SC, GOC for DragonFury GC).
- * Body: { gameid: string, coinType?: 'SC' | 'GC' }
+ * Launch a 1GameHub real-money game (SC / SSC only).
+ * Body: { gameid: string }i don't 
  */
 async function launchGame(req) {
   const userId = req.user && req.user.userId != null ? Number(req.user.userId) : null;
@@ -43,21 +41,17 @@ async function launchGame(req) {
     throw err;
   }
 
-  if (isBlockedBrand(gameId)) {
+  if (isBlockedBrand(gameId) || isHiddenBrokenProviderGame(gameId)) {
     const err = new Error('This game is not available');
     err.statusCode = 404;
     throw err;
   }
 
-  let coinType = parseCoinTypeFromReq(req, 'onegamehub');
-  if (coinType === 'GC' && !isGcCoinsStore(storeCode)) coinType = 'SC';
-  const hubCurrency = hubCurrencyForCoin(coinType);
-  const session = await createSession({ userId, storeCode, gameId, currency: hubCurrency });
-  await rememberPlayCoin({ userId, provider: 'onegamehub', gameId, coinType });
+  const session = await createSession({ userId, storeCode, gameId, currency: HUB_CURRENCY });
   const launched = await fetchRealPlay({
     gameId,
     playerId: session.playerId,
-    currency: hubCurrency,
+    currency: HUB_CURRENCY,
     storeCode
   });
 
@@ -67,7 +61,7 @@ async function launchGame(req) {
     provider: 'onegamehub',
     mode: 'seamless',
     gameId,
-    currency: coinType
+    currency: 'SC'
   };
 }
 

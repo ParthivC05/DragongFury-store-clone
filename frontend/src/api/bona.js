@@ -11,8 +11,8 @@ export function getBonaGames() {
   return getRequest(`${BONA_BASE}/games`);
 }
 
-export function launchBonaGame(gameid, coinType = 'SC') {
-  return postRequest(`${BONA_BASE}/launch`, { gameid: Number(gameid), coinType });
+export function launchBonaGame(gameid) {
+  return postRequest(`${BONA_BASE}/launch`, { gameid: Number(gameid) });
 }
 
 export function settleBonaSession(payload = {}) {

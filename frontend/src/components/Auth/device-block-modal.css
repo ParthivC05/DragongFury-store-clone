@@ -165,7 +165,7 @@
 
 .device-block-modal__email-icon {
   flex-shrink: 0;
-  color: #f9d038;
+  color: #C6FF4D;
 }
 
 .device-block-modal__email-value {
@@ -190,7 +190,7 @@
   border-radius: 8px;
   border: 1px solid rgba(249, 208, 56, 0.4);
   background: rgba(61, 220, 122, 0.16);
-  color: #f9d038;
+  color: #C6FF4D;
   cursor: pointer;
   padding: 0;
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;

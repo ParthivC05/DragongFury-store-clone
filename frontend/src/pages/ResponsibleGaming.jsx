@@ -1,0 +1,1 @@
+export { ResponsibleGaming } from './LegalDocument';

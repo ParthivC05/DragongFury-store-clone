@@ -12,6 +12,7 @@ import { SeoMetaFields } from '../components/SeoMetaFields'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { ROLES } from '../constants/roles'
+import { ADMIN_FEATURE_KEYS, filterStoreCodesByAdminScope } from '../constants/permissions'
 import './BlogPosts.css'
 
 const EMPTY = {
@@ -28,6 +29,15 @@ const EMPTY = {
   storeCode: ''
 }
 
+function slugify(title) {
+  return String(title || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80)
+}
+
 export default function BlogPostForm() {
   const { id } = useParams()
   const isEdit = Boolean(id)
@@ -38,8 +48,9 @@ export default function BlogPostForm() {
 
   const [form, setForm] = useState(() => ({
     ...EMPTY,
-    storeCode: isMaster ? 'dragonfury' : (user?.storeCode || '')
+    storeCode: isMaster ? 'playjuwa' : (user?.storeCode || '')
   }))
+  const [slugTouched, setSlugTouched] = useState(isEdit)
   const [loading, setLoading] = useState(isEdit)
   const [saving, setSaving] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
@@ -50,15 +61,24 @@ export default function BlogPostForm() {
     getStores({ limit: 200 })
       .then((res) => {
         const rows = res.list || res.stores || res.items || []
-        setStoreOptions(
+        const codes = [...new Set(
           rows
             .map((s) => s.storeCode || s.store_code)
             .filter(Boolean)
-            .sort((a, b) => String(a).localeCompare(String(b)))
-        )
+            .map((code) => String(code))
+        )].sort((a, b) => a.localeCompare(b))
+        const scoped = filterStoreCodesByAdminScope(codes, user?.adminPermissions, ADMIN_FEATURE_KEYS.BLOG_POSTS)
+        setStoreOptions(scoped)
+        setForm((prev) => {
+          if (prev.storeCode && scoped.some((c) => c.toLowerCase() === String(prev.storeCode).toLowerCase())) {
+            return prev
+          }
+          if (isEdit) return prev
+          return { ...prev, storeCode: scoped[0] || '' }
+        })
       })
       .catch(() => setStoreOptions([]))
-  }, [isMaster])
+  }, [isMaster, user, isEdit])
 
   useEffect(() => {
     if (!isEdit) return
@@ -79,16 +99,21 @@ export default function BlogPostForm() {
           isActive: post.isActive !== false,
           storeCode: post.storeCode || ''
         })
+        setSlugTouched(true)
       })
       .catch((err) => {
-        toast.error(err.message || 'Failed to load blog post.')
+        toast.error(err.message || 'Could not open this blog post.')
         navigate('/blog')
       })
       .finally(() => setLoading(false))
   }, [id, isEdit, navigate, toast])
 
   const setField = (key, value) => {
-    setForm((prev) => ({ ...prev, [key]: value }))
+    setForm((prev) => {
+      const next = { ...prev, [key]: value }
+      if (key === 'title' && !slugTouched) next.slug = slugify(value)
+      return next
+    })
   }
 
   const handleCoverUpload = async (e) => {
@@ -99,11 +124,11 @@ export default function BlogPostForm() {
     try {
       const res = await uploadAdminBlogImage(file)
       const url = res?.url
-      if (!url) throw new Error('Upload failed.')
+      if (!url) throw new Error('Could not add that picture.')
       setField('titleImage', url)
-      toast.success('Cover image uploaded.')
+      toast.success('Picture added.')
     } catch (err) {
-      toast.error(err.message || 'Cover image upload failed.')
+      toast.error(err.message || 'Could not add that picture. Try another one.')
     } finally {
       setUploadingCover(false)
     }
@@ -112,33 +137,34 @@ export default function BlogPostForm() {
   const handleContentImageUpload = async (file) => {
     const res = await uploadAdminBlogImage(file)
     const url = res?.url
-    if (!url) throw new Error('Upload failed.')
+    if (!url) throw new Error('Could not add that picture.')
     return url
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!form.title.trim()) {
-      toast.error('Title is required.')
+      toast.error('Type a title first.')
       return
     }
-    if (!form.slug.trim()) {
-      toast.error('Slug is required.')
+    const slug = form.slug.trim() || slugify(form.title)
+    if (!slug) {
+      toast.error('Type a title first.')
       return
     }
     if (!form.titleImage.trim()) {
-      toast.error('Cover image is required. Please upload an image.')
+      toast.error('Add a big picture at the top first.')
       return
     }
     if (isMaster && !form.storeCode.trim()) {
-      toast.error('Store code is required.')
+      toast.error('Pick which website this post is for.')
       return
     }
 
     setSaving(true)
     const body = {
       title: form.title.trim(),
-      slug: form.slug.trim(),
+      slug,
       category: form.category.trim() || null,
       titleImage: form.titleImage.trim(),
       content: form.content || '',
@@ -153,14 +179,14 @@ export default function BlogPostForm() {
     try {
       if (isEdit) {
         await updateAdminBlogPost(id, body)
-        toast.success('Blog post updated.')
+        toast.success('Saved!')
       } else {
         await createAdminBlogPost(body)
-        toast.success('Blog post created.')
+        toast.success('Your blog post is ready!')
       }
       navigate('/blog')
     } catch (err) {
-      toast.error(err.message || 'Save failed.')
+      toast.error(err.message || 'Could not save. Try again.')
     } finally {
       setSaving(false)
     }
@@ -171,135 +197,164 @@ export default function BlogPostForm() {
   }
 
   return (
-    <div className="blog-admin-page blog-admin-form-page">
-      <div className="blog-admin-header">
+    <div className="blog-admin-page blog-admin-form-page blog-easy">
+      <div className="blog-easy-top">
         <div>
-          <h2>{isEdit ? 'Edit blog post' : 'Create blog post'}</h2>
-          <p className="blog-admin-intro">
-            Use the visual editor or HTML / code palette for full custom markup (tables, embeds, styled blocks).
-          </p>
+          <h2>{isEdit ? 'Change this blog post' : 'Make a blog post'}</h2>
+          <p className="blog-admin-intro">Follow the steps. Tap Save when you are done.</p>
         </div>
-        <Link to="/blog" className="admin-btn admin-btn-secondary">Back to list</Link>
+        <Link to="/blog" className="admin-btn admin-btn-secondary">Go back</Link>
       </div>
 
-      <form className="blog-admin-form" onSubmit={handleSubmit}>
-        {isMaster && (
+      <form className="blog-easy-form" onSubmit={handleSubmit}>
+        <details className="blog-easy-extra">
+          <summary>Extra settings</summary>
           <label className="blog-admin-field">
-            <span>Store code</span>
-            <select
-              value={form.storeCode}
-              onChange={(e) => setField('storeCode', e.target.value)}
-              required
-            >
-              <option value="">Select store</option>
-              {storeOptions.map((code) => (
-                <option key={code} value={code}>{code}</option>
-              ))}
-              {!storeOptions.includes('dragonfury') && (
-                <option value="dragonfury">dragonfury</option>
-              )}
-            </select>
+            <span>Web address name</span>
+            <input
+              type="text"
+              value={form.slug}
+              onChange={(e) => {
+                setSlugTouched(true)
+                setField('slug', e.target.value)
+              }}
+              pattern="[a-zA-Z0-9\-]*"
+              placeholder="made-from-the-title"
+            />
+            <span className="blog-admin-hint">Leave this alone unless you know what it is.</span>
           </label>
+        </details>
+
+        {isMaster && (
+          <section className="blog-easy-step">
+            <p className="blog-easy-num">1</p>
+            <div className="blog-easy-step-body">
+              <label className="blog-admin-field">
+                <span>Which website?</span>
+                <select
+                  value={form.storeCode}
+                  onChange={(e) => setField('storeCode', e.target.value)}
+                  required
+                >
+                  <option value="">Pick one</option>
+                  {storeOptions.map((code) => (
+                    <option key={code} value={code}>{code}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </section>
         )}
 
-        <label className="blog-admin-field">
-          <span>Title</span>
-          <input
-            type="text"
-            value={form.title}
-            onChange={(e) => setField('title', e.target.value)}
-            required
-            maxLength={512}
-          />
-        </label>
-
-        <label className="blog-admin-field">
-          <span>Slug</span>
-          <input
-            type="text"
-            value={form.slug}
-            onChange={(e) => setField('slug', e.target.value)}
-            required
-            pattern="[a-zA-Z0-9\-]+"
-            title="Letters, numbers, and hyphens only"
-            placeholder="my-blog-post"
-          />
-        </label>
-
-        <label className="blog-admin-field">
-          <span>Category</span>
-          <input
-            type="text"
-            value={form.category}
-            onChange={(e) => setField('category', e.target.value)}
-            placeholder="Guides, News, Updates…"
-            maxLength={128}
-          />
-        </label>
-
-        <div className="blog-admin-field">
-          <span>Cover image <em className="blog-admin-required">(required)</em></span>
-          <div className="blog-admin-cover">
-            {form.titleImage ? (
-              <div className="blog-admin-cover-preview">
-                <img src={form.titleImage} alt="Cover preview" />
-              </div>
-            ) : (
-              <div className="blog-admin-cover-empty">No cover image yet</div>
-            )}
-            <div className="blog-admin-cover-actions">
-              <label className="admin-btn admin-btn-secondary blog-admin-upload-btn">
-                {uploadingCover ? 'Uploading…' : form.titleImage ? 'Replace image' : 'Upload image'}
-                <input
-                  type="file"
-                  accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
-                  hidden
-                  disabled={uploadingCover || saving}
-                  onChange={handleCoverUpload}
-                />
-              </label>
-              {form.titleImage && (
-                <button
-                  type="button"
-                  className="admin-btn admin-btn-danger admin-btn-sm"
-                  disabled={uploadingCover || saving}
-                  onClick={() => setField('titleImage', '')}
-                >
-                  Remove
-                </button>
-              )}
-            </div>
-            <p className="blog-admin-hint">PNG, JPG, WEBP, or GIF. Max 5MB.</p>
+        <section className="blog-easy-step">
+          <p className="blog-easy-num">{isMaster ? '2' : '1'}</p>
+          <div className="blog-easy-step-body">
+            <label className="blog-admin-field">
+              <span>Title</span>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setField('title', e.target.value)}
+                required
+                maxLength={512}
+                placeholder="Type the name of your post"
+              />
+            </label>
+            <label className="blog-admin-field">
+              <span>Topic <em>(optional)</em></span>
+              <input
+                type="text"
+                value={form.category}
+                onChange={(e) => setField('category', e.target.value)}
+                placeholder="News, Guides, Tips…"
+                maxLength={128}
+              />
+            </label>
           </div>
-        </div>
+        </section>
 
-        <label className="blog-admin-field blog-admin-field-toggle">
-          <input
-            type="checkbox"
-            checked={form.isActive}
-            onChange={(e) => setField('isActive', e.target.checked)}
-          />
-          <span>Active (visible on user site)</span>
-        </label>
+        <section className="blog-easy-step">
+          <p className="blog-easy-num">{isMaster ? '3' : '2'}</p>
+          <div className="blog-easy-step-body">
+            <SeoMetaFields form={form} setField={setField} showIndexControl indexNoun="post" indexControlName="blog-google-index" />
+          </div>
+        </section>
 
-        <SeoMetaFields form={form} setField={setField} showIndexControl indexNoun="post" indexControlName="blog-google-index" />
+        <section className="blog-easy-step">
+          <p className="blog-easy-num">{isMaster ? '4' : '3'}</p>
+          <div className="blog-easy-step-body">
+            <span className="blog-easy-label">Add a big picture</span>
+            <p className="blog-easy-help">This picture shows at the top of the post. Tap the box to pick one.</p>
+            <label className={`blog-easy-cover${form.titleImage ? ' has-pic' : ''}`}>
+              {form.titleImage ? (
+                <img src={form.titleImage} alt="Cover" />
+              ) : (
+                <span>{uploadingCover ? 'Adding picture…' : 'Tap here to pick a picture'}</span>
+              )}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                hidden
+                disabled={uploadingCover || saving}
+                onChange={handleCoverUpload}
+              />
+            </label>
+            {form.titleImage && (
+              <button
+                type="button"
+                className="admin-btn admin-btn-danger"
+                disabled={uploadingCover || saving}
+                onClick={() => setField('titleImage', '')}
+              >
+                Remove picture
+              </button>
+            )}
+          </div>
+        </section>
 
-        <div className="blog-admin-field">
-          <span>Content</span>
-          <BlogContentEditor
-            value={form.content}
-            onChange={(html) => setField('content', html)}
-            onUploadImage={handleContentImageUpload}
-            minHeight="320px"
-          />
-        </div>
+        <section className="blog-easy-step">
+          <p className="blog-easy-num">{isMaster ? '5' : '4'}</p>
+          <div className="blog-easy-step-body">
+            <span className="blog-easy-label">Write the post</span>
+            <p className="blog-easy-help">Easy uses boxes. Switch to Visual editor, HTML editor, or Preview anytime.</p>
+            <BlogContentEditor
+              value={form.content}
+              onChange={(html) => setField('content', html)}
+              onUploadImage={handleContentImageUpload}
+              minHeight="280px"
+            />
+          </div>
+        </section>
 
-        <div className="blog-admin-form-actions">
+        <section className="blog-easy-step">
+          <p className="blog-easy-num">{isMaster ? '6' : '5'}</p>
+          <div className="blog-easy-step-body">
+            <span className="blog-easy-label">Show it on the website?</span>
+            <div className="blog-easy-yesno">
+              <button
+                type="button"
+                className={`blog-easy-choice${form.isActive ? ' is-on' : ''}`}
+                onClick={() => setField('isActive', true)}
+              >
+                Yes, show it
+              </button>
+              <button
+                type="button"
+                className={`blog-easy-choice${!form.isActive ? ' is-on' : ''}`}
+                onClick={() => setField('isActive', false)}
+              >
+                No, hide it
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div className="blog-easy-save">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={() => navigate('/blog')}>
             Cancel
           </button>
-          <button type="submit" className="admin-btn admin-btn-primary" disabled={saving || uploadingCover}>
-            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Create post'}
+          <button type="submit" className="admin-btn admin-btn-primary blog-easy-save-btn" disabled={saving || uploadingCover}>
+            {saving ? 'Saving…' : 'Save'}
           </button>
         </div>
       </form>

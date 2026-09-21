@@ -47,8 +47,8 @@ export const PERMISSION_GROUPS = [
   { key: STORE_FEATURE_KEYS.DASHBOARD_SLIDESHOW, label: 'Homepage pictures', description: 'Upload homepage and casino page slideshow images (computer and phone)' },
   { key: STORE_FEATURE_KEYS.DASHBOARD_PROMO_MODALS, label: 'Dashboard promo modals', description: 'Post-login modal sequence, order, and delays on the player dashboard' },
   { key: STORE_FEATURE_KEYS.DAILY_BONUS, label: 'Daily bonus', description: 'Configure 7-day daily bonus (SC, bonus spin, package vouchers) and whether it repeats after 7 days' },
-  { key: STORE_FEATURE_KEYS.EMAIL_CAMPAIGNS, label: 'Email campaigns', description: 'DragonFury no-deposit email campaigns, test allowlist, and send status' },
-  { key: STORE_FEATURE_KEYS.PUSH_CAMPAIGNS, label: 'Push notifications', description: 'DragonFury browser push notifications, permission stats, and click tracking' },
+  { key: STORE_FEATURE_KEYS.EMAIL_CAMPAIGNS, label: 'Email campaigns', description: 'PlayJuwa no-deposit email campaigns, test allowlist, and send status' },
+  { key: STORE_FEATURE_KEYS.PUSH_CAMPAIGNS, label: 'Push notifications', description: 'Browser push notifications, permission stats, and click tracking' },
   { key: STORE_FEATURE_KEYS.DEPOSIT_PACKAGES, label: 'Deposit packages', description: 'Manage store deposit package tiers shown before payment' },
   { key: STORE_FEATURE_KEYS.STORE_ROLES_MANAGE, label: 'Store roles', description: 'Create and manage store roles from Role and staff management' },
   { key: STORE_FEATURE_KEYS.STORE_STAFF_MANAGE, label: 'Store staff', description: 'Add and manage store staff from Role and staff management' },
@@ -57,7 +57,7 @@ export const PERMISSION_GROUPS = [
   {
     key: STORE_FEATURE_KEYS.PAYMENT_TOTALS,
     label: 'Payment totals',
-    description: 'See live deposit and withdrawal totals on the Dashboard. Roles with User deposits or Payment providers may see this even when this box is off.'
+    description: 'See live deposit and withdrawal totals on the Dashboard. Store admin has this by default. Store staff only see it when this box is on.'
   },
   { key: STORE_FEATURE_KEYS.CHIME_CASHAPP_WITHDRAWALS, label: 'Chime / Cash App withdrawals', description: 'Review and approve Chime and Cash App manual withdrawal requests' },
   { key: STORE_FEATURE_KEYS.CHIME_DEPOSITS, label: 'Chime deposits', description: 'Review and approve Chime deposit requests' },
@@ -155,7 +155,7 @@ export const ADMIN_PERMISSION_GROUPS = [
   {
     key: ADMIN_FEATURE_KEYS.PAYMENT_TOTALS,
     label: 'Payment totals',
-    description: 'See live store deposit and withdrawal totals on the Dashboard (and store detail). Roles with User deposits or Payment providers may see this even when this box is off.'
+    description: 'See live store deposit and withdrawal totals on the Dashboard (and store detail). Super admin and technical staff have this by default. Other admin roles only see it when this box is on.'
   },
   { key: ADMIN_FEATURE_KEYS.GAMES, label: 'Games', description: 'Games management' },
   {
@@ -172,8 +172,8 @@ export const ADMIN_PERMISSION_GROUPS = [
   { key: ADMIN_FEATURE_KEYS.DASHBOARD_SLIDESHOW, label: 'Homepage pictures', description: 'View and edit homepage and casino slideshow pictures for any store' },
   { key: ADMIN_FEATURE_KEYS.DASHBOARD_PROMO_MODALS, label: 'Dashboard promo modals', description: 'Configure post-login modal order and delays for any store' },
   { key: ADMIN_FEATURE_KEYS.DAILY_BONUS, label: 'Daily bonus', description: 'Configure 7-day daily bonus for stores (SC, bonus spin, vouchers) and whether it repeats after 7 days' },
-  { key: ADMIN_FEATURE_KEYS.EMAIL_CAMPAIGNS, label: 'Email campaigns', description: 'DragonFury no-deposit email campaigns (isolated from other stores)' },
-  { key: ADMIN_FEATURE_KEYS.PUSH_CAMPAIGNS, label: 'Push notifications', description: 'DragonFury browser push notifications (isolated from other stores)' },
+  { key: ADMIN_FEATURE_KEYS.EMAIL_CAMPAIGNS, label: 'Email campaigns', description: 'PlayJuwa no-deposit email campaigns (isolated from other stores)' },
+  { key: ADMIN_FEATURE_KEYS.PUSH_CAMPAIGNS, label: 'Push notifications', description: 'Browser push notifications for each store' },
   { key: ADMIN_FEATURE_KEYS.DEPOSIT_PACKAGES, label: 'Deposit packages', description: 'Manage store deposit package tiers shown before payment' },
   {
     groupLabel: 'Manual Requests',
@@ -211,13 +211,20 @@ export const ADMIN_PERMISSION_GROUPS = [
   },
   { key: ADMIN_FEATURE_KEYS.HELP_CONTENT, label: 'Help content', description: 'Edit platform default help pages; store admins can use these or set their own' },
   { key: ADMIN_FEATURE_KEYS.SUPPORT_TICKETS, label: 'Support tickets', description: 'View and reply to player support tickets across stores' },
-  { key: ADMIN_FEATURE_KEYS.BLOG_POSTS, label: 'Blog posts', description: 'Create and manage blog posts for any store (store-scoped on the user site)' },
+  {
+    key: ADMIN_FEATURE_KEYS.BLOG_POSTS,
+    label: 'Blog posts',
+    description: 'Let this role manage blog posts. After Allow, choose All stores or one store.',
+    storeScope: true,
+    storeScopeNoun: 'blog posts'
+  },
   { key: ADMIN_FEATURE_KEYS.LINK2PLAY, label: 'Link2Play', description: 'Manage Link2Play landing catalog per store (name, image, platform links)' },
   {
     key: ADMIN_FEATURE_KEYS.FOOTER_PAGES,
     label: 'Footer pages',
     description: 'Let this role manage website footer links. After Allow, choose All stores or one store.',
-    storeScope: true
+    storeScope: true,
+    storeScopeNoun: 'footer links'
   },
   { key: ADMIN_FEATURE_KEYS.TECHNICAL_ERROR_EMAIL_NOTIFICATION, label: 'Technical error email notification', description: 'Receive technical error notifications via email' },
   { key: ADMIN_FEATURE_KEYS.BONUS_CODES, label: 'Bonus codes', description: 'Manage bonus codes across stores' },

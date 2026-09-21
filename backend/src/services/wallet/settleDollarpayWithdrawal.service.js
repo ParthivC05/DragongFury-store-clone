@@ -6,7 +6,11 @@ const { logger } = require('../../libs/logger');
 const { decryptPaymentPassword } = require('../../utils/paymentPasswordEncryption');
 const dollarpay = require('../paymentProviders/dollarpay/dollarpay.client');
 const { zeroRemainingWalletsAfterNeverDepositedWithdraw } = require('./neverDepositedWithdraw.service');
-const { redeemableForFrozenWithdrawal } = require('./walletBuckets.service');
+const {
+  reservedFrozenByOtherWithdrawals,
+  captureThisWithdrawalFreeze,
+  releaseThisWithdrawalFreeze
+} = require('./withdrawalFreeze.service');
 
 function payoutLabel(payoutType) {
   if (payoutType === 'chime') return 'Chime';
@@ -55,41 +59,35 @@ async function finalizeDollarpayWithdrawalSuccess(row, { transactionId, adminUse
       throw err;
     }
 
-    const balance = Number(wallet.balance) || 0;
-    const playBalance = Number(wallet.playBalance) || 0;
-    const frozenBalance = Number(wallet.frozenBalance) || 0;
-    if (amount > redeemableForFrozenWithdrawal(wallet) + 0.005) {
-      const err = new Error('Insufficient redeemable balance for this user. Cannot complete payout.');
-      err.statusCode = 400;
-      throw err;
-    }
-    if (amount > frozenBalance + 0.005) {
-      const err = new Error('Frozen balance does not match this request. Cannot complete payout.');
-      err.statusCode = 400;
-      throw err;
-    }
-
-    const newBalance = Math.round((balance - amount) * 100) / 100;
-    const newFrozen = Math.max(0, Math.round((frozenBalance - amount) * 100) / 100);
-    const newPlay = Math.min(playBalance, Math.max(0, newBalance - newFrozen));
-    await wallet.update({ balance: newBalance, frozenBalance: newFrozen, playBalance: newPlay }, { transaction: t });
-    const { recordWalletChange } = require('./scLedger.service');
-    await wallet.reload({ transaction: t });
-    await recordWalletChange({
-      userId,
-      currencyCode,
-      direction: 'DEBIT',
-      amount,
-      wallet,
-      ledger: {
-        eventType: 'WITHDRAWAL',
-        sourceType: 'WITHDRAWAL',
-        sourceId: locked.id,
-        paymentId: locked.id,
-        remarks: `${payoutLabel(locked.payoutType)} withdrawal`
-      },
+    const othersReserved = await reservedFrozenByOtherWithdrawals(userId, {
+      excludeChimeId: locked.id,
       transaction: t
     });
+    const captured = await captureThisWithdrawalFreeze(wallet, {
+      amount,
+      othersReserved,
+      transaction: t
+    });
+
+    if (captured.debit > 0.005) {
+      const { recordWalletChange } = require('./scLedger.service');
+      await wallet.reload({ transaction: t });
+      await recordWalletChange({
+        userId,
+        currencyCode,
+        direction: 'DEBIT',
+        amount: captured.debit,
+        wallet,
+        ledger: {
+          eventType: 'WITHDRAWAL',
+          sourceType: 'WITHDRAWAL',
+          sourceId: locked.id,
+          paymentId: locked.id,
+          remarks: `${payoutLabel(locked.payoutType)} withdrawal`
+        },
+        transaction: t
+      });
+    }
 
     const updates = {
       status: 'completed',
@@ -99,12 +97,12 @@ async function finalizeDollarpayWithdrawalSuccess(row, { transactionId, adminUse
     if (transactionId) updates.providerTransactionId = String(transactionId).slice(0, 128);
     await locked.update(updates, { transaction: t });
 
-    if (db.UserTransaction) {
+    if (db.UserTransaction && captured.debit > 0.005) {
       await db.UserTransaction.create(
         {
           userId,
           type: 'withdraw',
-          amount,
+          amount: captured.debit,
           currencyCode,
           description: `${payoutLabel(locked.payoutType)} withdrawal completed (request #${locked.id})`
         },
@@ -164,9 +162,15 @@ async function finalizeDollarpayWithdrawalFailure(row, { reason } = {}) {
       lock: t.LOCK.UPDATE
     });
     if (wallet && amount > 0) {
-      const frozen = Number(wallet.frozenBalance) || 0;
-      const newFrozen = Math.max(0, Math.round((frozen - amount) * 100) / 100);
-      await wallet.update({ frozenBalance: newFrozen }, { transaction: t });
+      const othersReserved = await reservedFrozenByOtherWithdrawals(locked.userId, {
+        excludeChimeId: locked.id,
+        transaction: t
+      });
+      await releaseThisWithdrawalFreeze(wallet, {
+        amount,
+        othersReserved,
+        transaction: t
+      });
     }
 
     await locked.update(

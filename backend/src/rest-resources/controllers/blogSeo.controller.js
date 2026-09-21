@@ -14,6 +14,7 @@ const {
   MARKETING_SEO_PATHS
 } = require('../../services/blog/blogPublicHtml.service');
 const footer = require('../../services/footer/footer.service');
+const legalPages = require('../../services/legal/legalPages.service');
 const { resolvePublicStoreContext } = require('../../services/store/publicHostStore.service');
 
 function storeLabelFromOrigin(origin, storeCode) {
@@ -109,6 +110,20 @@ async function blogPost(req, res) {
   }
 }
 
+async function tryLegalPage(storeCode, path) {
+  const pageKey = legalPages.normalizePageKey(path);
+  if (!storeCode || !pageKey) return null;
+  try {
+    const data = await legalPages.getPublic(storeCode, pageKey);
+    const page = data?.legal_page;
+    if (!page || !String(page.content || '').trim()) return null;
+    return page;
+  } catch (err) {
+    if (err.statusCode === 400 || err.statusCode === 404) return null;
+    throw err;
+  }
+}
+
 async function tryFooterPage(storeCode, path) {
   const slug = slugFromPath(path);
   if (!storeCode || !slug) return null;
@@ -140,6 +155,11 @@ async function marketingPage(req, res) {
     if (path === '/') {
       const posts = await listIndexablePosts(storeCode);
       return sendHtml(res, buildHomeHtml({ origin, storeLabel, posts }));
+    }
+
+    const legalPage = await tryLegalPage(storeCode, path);
+    if (legalPage) {
+      return sendHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
     }
 
     const footerPage = await tryFooterPage(storeCode, path);

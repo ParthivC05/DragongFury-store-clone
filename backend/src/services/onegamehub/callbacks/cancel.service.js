@@ -5,9 +5,9 @@ const { notifyUserBalanceChanged } = require('../../realtime/notifyBalance.servi
 const { getActiveSession } = require('./session.service');
 const {
   centsToSc,
-  getSessionPlayableBalance,
-  applySessionRollbackDelta,
-  isCurrencyMismatch,
+  getPlayableBalance,
+  applyRollbackDelta,
+  isUnsupportedCurrency,
   success
 } = require('./wallet.helpers');
 const { ERRORS, OPERATIONS, TX_STATUS } = require('../onegamehub.constants');
@@ -27,7 +27,7 @@ function cancelKey(transactionId) {
 async function cancel(args) {
   const session = await getActiveSession(args.player_id);
   if (!session) return ERRORS.sessionTimeout;
-  if (isCurrencyMismatch(session, args.currency)) return ERRORS.unsupportedCurrency;
+  if (isUnsupportedCurrency(args.currency)) return ERRORS.unsupportedCurrency;
 
   const transactionId = String(args.transaction_id || '').trim();
   const roundId = args.round_id != null ? String(args.round_id) : null;
@@ -53,10 +53,10 @@ async function cancel(args) {
         transaction: t
       });
 
-      let after = await getSessionPlayableBalance(session.userId, session, t);
+      let after = await getPlayableBalance(session.userId, t);
 
       if (bet && bet.status !== TX_STATUS.CANCELLED) {
-        after = await applySessionRollbackDelta(
+        after = await applyRollbackDelta(
           session.userId,
           betKey(transactionId),
           amountSc,
@@ -70,8 +70,7 @@ async function cancel(args) {
               roundId
             }
           },
-          t,
-          session
+          t
         );
         await bet.update({ status: TX_STATUS.CANCELLED }, { transaction: t });
       }

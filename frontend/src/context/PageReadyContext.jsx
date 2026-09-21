@@ -2,13 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 import { useLocation } from 'react-router-dom';
 import { AppLoader } from '../components/AppLoader';
 import { waitForContentPaint } from '../utils/waitForContentPaint';
-import { getBrowserPathname, getBrowserRouteKey, subscribeBrowserLocation } from '../utils/browserLocation';
+import {
+  getBrowserPathname,
+  getBrowserRouteKey,
+  isCasinoPath,
+  isLoaderGatedPath,
+  subscribeBrowserLocation,
+} from '../utils/browserLocation';
 
 const PageReadyContext = createContext(null);
-
-function isDepositPath(pathname) {
-  return pathname === '/deposit' || pathname.startsWith('/deposit/');
-}
 
 export function PageReadyProvider({ children }) {
   const location = useLocation();
@@ -19,8 +21,12 @@ export function PageReadyProvider({ children }) {
     () => reactRouteKey
   );
   const browserPath = getBrowserPathname(browserRouteKey);
-  const isLoaderGatedRoute = isDepositPath(browserPath) || isDepositPath(location.pathname);
-  const routeKey = isDepositPath(browserPath) ? browserRouteKey : reactRouteKey;
+  const isLoaderGatedRoute =
+    isLoaderGatedPath(browserPath) || isLoaderGatedPath(location.pathname);
+  const routeKey = isLoaderGatedPath(browserPath) ? browserRouteKey : reactRouteKey;
+  const loaderMessage = isCasinoPath(browserPath) || isCasinoPath(location.pathname)
+    ? 'Loading casino'
+    : 'Loading deposit';
   const routeKeyRef = useRef(routeKey);
   routeKeyRef.current = routeKey;
 
@@ -62,8 +68,21 @@ export function PageReadyProvider({ children }) {
     if (!showLoader) return undefined;
     const timer = window.setTimeout(() => {
       markPageReady(routeKeyRef.current);
-    }, 12000);
-    return () => window.clearTimeout(timer);
+    }, 8000);
+
+    const dropLoaderIfHidden = () => {
+      if (document.visibilityState === 'hidden') {
+        markPageReady(routeKeyRef.current);
+      }
+    };
+    document.addEventListener('visibilitychange', dropLoaderIfHidden);
+    window.addEventListener('pagehide', dropLoaderIfHidden);
+
+    return () => {
+      window.clearTimeout(timer);
+      document.removeEventListener('visibilitychange', dropLoaderIfHidden);
+      window.removeEventListener('pagehide', dropLoaderIfHidden);
+    };
   }, [showLoader, markPageReady]);
 
   useEffect(() => {
@@ -87,7 +106,7 @@ export function PageReadyProvider({ children }) {
   return (
     <PageReadyContext.Provider value={value}>
       {children}
-      {showLoader ? <AppLoader fullScreen message="Loading deposit" /> : null}
+      {showLoader ? <AppLoader fullScreen message={loaderMessage} /> : null}
     </PageReadyContext.Provider>
   );
 }

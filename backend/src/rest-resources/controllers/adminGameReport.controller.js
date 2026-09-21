@@ -56,7 +56,7 @@ function getGameReportParams(req) {
 
 /**
  * GET /api/admin/game-report
- * Aggregated SC wagered / won / GGR / payout by game or provider.
+ * Aggregated SC wagered / won / GGR / payout by game, provider, or category.
  */
 async function getReport(req, res) {
   try {

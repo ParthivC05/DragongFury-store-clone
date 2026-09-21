@@ -1,5 +1,3 @@
-import { useId } from 'react';
-
 /**
  * SVG icon components – add new icons here and export.
  */
@@ -213,8 +211,10 @@ export function CameraIcon(props) {
   );
 }
 
+/**
+ * SC (Sweeps Coins) coin icon – placeholder; replace with final asset later.
+ */
 export function SCCoinIcon(props) {
-  const uid = useId().replace(/:/g, '');
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -225,75 +225,10 @@ export function SCCoinIcon(props) {
       aria-hidden
       {...props}
     >
-      <defs>
-        <radialGradient id={`sc-coin-${uid}`} cx="38%" cy="32%" r="72%">
-          <stop offset="0%" stopColor="#9bffd4" />
-          <stop offset="42%" stopColor="#2ee59a" />
-          <stop offset="100%" stopColor="#0a8f62" />
-        </radialGradient>
-        <linearGradient id={`sc-ring-${uid}`} x1="8" y1="4" x2="24" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#d8ffe8" />
-          <stop offset="100%" stopColor="#067a52" />
-        </linearGradient>
-      </defs>
-      <circle cx="16" cy="16" r="15" fill={`url(#sc-coin-${uid})`} />
-      <circle cx="16" cy="16" r="15" fill="none" stroke={`url(#sc-ring-${uid})`} strokeWidth="1.6" />
-      <circle cx="16" cy="16" r="11.2" fill="none" stroke="rgba(255,255,255,0.38)" strokeWidth="1" />
-      <ellipse cx="12" cy="10" rx="7" ry="4.2" fill="rgba(255,255,255,0.28)" />
-      <text
-        x="16"
-        y="20.5"
-        textAnchor="middle"
-        fill="#fff"
-        fontSize="9.5"
-        fontWeight="800"
-        fontFamily="Rajdhani, system-ui, sans-serif"
-        letterSpacing="0.4"
-      >
+      <circle cx="16" cy="16" r="14" fill="#16a34a" stroke="#15803d" strokeWidth="1.5" />
+      <circle cx="16" cy="16" r="10" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+      <text x="16" y="20" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold" fontFamily="system-ui, sans-serif">
         SC
-      </text>
-    </svg>
-  );
-}
-
-export function GCCoinIcon(props) {
-  const uid = useId().replace(/:/g, '');
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 32 32"
-      fill="none"
-      aria-hidden
-      {...props}
-    >
-      <defs>
-        <radialGradient id={`gc-coin-${uid}`} cx="38%" cy="32%" r="72%">
-          <stop offset="0%" stopColor="#ffe9a0" />
-          <stop offset="45%" stopColor="#f5c518" />
-          <stop offset="100%" stopColor="#b8860b" />
-        </radialGradient>
-        <linearGradient id={`gc-ring-${uid}`} x1="8" y1="4" x2="24" y2="28" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#fff4c8" />
-          <stop offset="100%" stopColor="#8a6508" />
-        </linearGradient>
-      </defs>
-      <circle cx="16" cy="16" r="15" fill={`url(#gc-coin-${uid})`} />
-      <circle cx="16" cy="16" r="15" fill="none" stroke={`url(#gc-ring-${uid})`} strokeWidth="1.6" />
-      <circle cx="16" cy="16" r="11.2" fill="none" stroke="rgba(255,255,255,0.42)" strokeWidth="1" />
-      <ellipse cx="12" cy="10" rx="7" ry="4.2" fill="rgba(255,255,255,0.32)" />
-      <text
-        x="16"
-        y="20.5"
-        textAnchor="middle"
-        fill="#fff"
-        fontSize="9.5"
-        fontWeight="800"
-        fontFamily="Rajdhani, system-ui, sans-serif"
-        letterSpacing="0.4"
-      >
-        GC
       </text>
     </svg>
   );

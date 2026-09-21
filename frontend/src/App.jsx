@@ -1,8 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { CoinProvider } from './context/CoinContext';
-import { CoinLaunchProvider } from './context/CoinLaunchContext';
 import { ToastProvider } from './context/ToastContext';
 import { SpinWheelStatusProvider } from './context/SpinWheelStatusContext';
 import { VipStatusProvider } from './context/VipStatusContext';
@@ -54,6 +52,9 @@ const Terms = lazy(() =>
 );
 const Privacy = lazy(() =>
   import('./pages/Privacy').then((m) => ({ default: m.Privacy }))
+);
+const ResponsibleGaming = lazy(() =>
+  import('./pages/ResponsibleGaming').then((m) => ({ default: m.ResponsibleGaming }))
 );
 const GameDetail = lazy(() =>
   import('./pages/Games').then((m) => ({ default: m.GameDetail }))
@@ -136,6 +137,9 @@ const Install = lazy(() =>
 const AllSlotGames = lazy(() =>
   import('./pages/SlotGames/AllSlotGames').then((m) => ({ default: m.AllSlotGames }))
 );
+const FirekirinExclusiveGames = lazy(() =>
+  import('./pages/SlotGames/FirekirinExclusiveGames').then((m) => ({ default: m.FirekirinExclusiveGames }))
+);
 const PlatformGames = lazy(() =>
   import('./pages/Platform').then((m) => ({ default: m.PlatformGames }))
 );
@@ -157,9 +161,6 @@ const IntercomWidget = lazy(() =>
 const LiveWinPopup = lazy(() =>
   import('./components/Home/LiveWinPopup').then((m) => ({ default: m.LiveWinPopup }))
 );
-const AuthLiveWinnersBar = lazy(() =>
-  import('./components/Home/AuthLiveWinnersBar').then((m) => ({ default: m.AuthLiveWinnersBar }))
-);
 
 function RouteFallback() {
   return <AppLoader fillPage message="Loading page" />;
@@ -172,21 +173,6 @@ function AuthenticatedLiveWinPopup() {
   return (
     <Suspense fallback={null}>
       <LiveWinPopup />
-    </Suspense>
-  );
-}
-
-function AuthenticatedLiveWinnersBar() {
-  const { isAuthenticated, loading } = useAuth();
-  const { pathname } = useLocation();
-  const onHomeOrCasino =
-    pathname === '/' ||
-    pathname === '/casino' ||
-    pathname.startsWith('/casino/');
-  if (loading || !isAuthenticated || !onHomeOrCasino) return null;
-  return (
-    <Suspense fallback={null}>
-      <AuthLiveWinnersBar />
     </Suspense>
   );
 }
@@ -292,10 +278,12 @@ function RouteTitleManager() {
       ['/reset-password', 'Reset Password'],
       ['/terms', 'Terms & Conditions'],
       ['/privacy', 'Privacy Policy'],
+      ['/responsible-gaming', 'Responsible Gaming'],
       ['/help', 'Help Center'],
       ['/support/tickets', 'Support Tickets'],
       ['/blog', 'Blog'],
       ['/casino', 'Casino Games'],
+      ['/firekirin-exclusive', 'Firekirin Exclusive'],
       ['/platform', 'Platforms'],
       ['/link2play', 'Link2Play'],
       ['/install', 'How to Install'],
@@ -383,8 +371,6 @@ function App() {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <GeoWrapper>
       <AuthProvider>
-        <CoinProvider>
-        <CoinLaunchProvider>
         <BackendMaintenanceGate>
         <ScrollToTop />
         <RouteTitleManager />
@@ -425,6 +411,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
+                <Route path="/responsible-gaming" element={<ResponsibleGaming />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/faq" element={<FaqPage />} />
                 <Route path="/contact" element={<ContactPage />} />
@@ -450,6 +437,10 @@ function App() {
 
                 <Route path="/casino" element={<AllSlotGames />} />
                 <Route path="/casino/:categoryId" element={<AllSlotGames />} />
+                <Route
+                  path="/firekirin-exclusive"
+                  element={<ProtectedRoute><FirekirinExclusiveGames /></ProtectedRoute>}
+                />
                 <Route path="/slots" element={<Navigate to="/casino" replace />} />
                 <Route path="/slots/:categoryId" element={<LegacySlotsCategoryRedirect />} />
                 <Route path="/platform" element={<PlatformGames />} />
@@ -498,7 +489,6 @@ function App() {
                 <DeviceBlockModalHost />
                 <PushPermissionHost />
                 <AuthenticatedLiveWinPopup />
-                <AuthenticatedLiveWinnersBar />
                 <DeferredIntercom />
               </>
             </PageReadyProvider>
@@ -506,8 +496,6 @@ function App() {
           </SpinWheelStatusProvider>
         </ToastProvider>
         </BackendMaintenanceGate>
-        </CoinLaunchProvider>
-        </CoinProvider>
       </AuthProvider>
       </GeoWrapper>
     </BrowserRouter>

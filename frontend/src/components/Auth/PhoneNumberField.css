@@ -74,7 +74,7 @@
 
 .phone-cc-field--dragonfury .phone-cc-field__national:focus,
 .phone-cc-field--gate .phone-cc-field__national:focus {
-  border-color: var(--pj-gold2, #f9d038);
+  border-color: var(--pj-gold2, #C6FF4D);
   background: rgba(16, 11, 3, 0.9);
   box-shadow: 0 0 0 3px rgba(232, 160, 16, 0.14), 0 0 28px rgba(249, 208, 56, 0.07);
 }

@@ -6,8 +6,8 @@ const { notifyUserBalanceChanged } = require('../../realtime/notifyBalance.servi
 const { getActiveSession } = require('./session.service');
 const {
   centsToSc,
-  applySessionBalanceDelta,
-  isCurrencyMismatch,
+  applyBalanceDelta,
+  isUnsupportedCurrency,
   isInsufficientFundsError,
   success
 } = require('./wallet.helpers');
@@ -22,13 +22,13 @@ function cancelKey(transactionId) {
 }
 
 /**
- * GAP `bet` — debit SC or GC from the player wallet (withdraw).
+ * GAP `bet` — debit SC from the player wallet (withdraw).
  * Amounts arrive in cents. Freespin bets may be 0.
  */
 async function withdraw(args) {
   const session = await getActiveSession(args.player_id);
   if (!session) return ERRORS.sessionTimeout;
-  if (isCurrencyMismatch(session, args.currency)) return ERRORS.unsupportedCurrency;
+  if (isUnsupportedCurrency(args.currency)) return ERRORS.unsupportedCurrency;
 
   const transactionId = String(args.transaction_id || '').trim();
   const roundId = args.round_id != null ? String(args.round_id) : null;
@@ -67,7 +67,7 @@ async function withdraw(args) {
         return existingBet.balanceAfter;
       }
 
-      const after = await applySessionBalanceDelta(
+      const after = await applyBalanceDelta(
         session.userId,
         -amountSc,
         {
@@ -80,8 +80,7 @@ async function withdraw(args) {
             roundId
           }
         },
-        t,
-        session
+        t
       );
 
       await db.OneGameHubTransaction.create(

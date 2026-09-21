@@ -26,7 +26,7 @@ const STORE_FEATURE_KEYS = {
   USER_DEPOSITS: 'user_deposits',
   /**
    * Dashboard payment totals (live deposit & withdrawal amounts for this store).
-   * Store admin can grant to staff without full User deposits / Payment providers access.
+   * Full store admin has this by default. Store staff only if the role grants it.
    */
   PAYMENT_TOTALS: 'payment_totals',
   CHIME_CASHAPP_WITHDRAWALS: 'chime_cashapp_withdrawals',
@@ -36,7 +36,7 @@ const STORE_FEATURE_KEYS = {
   CHIME_DEPOSIT_ACCOUNT_TOTALS: 'chime_deposit_account_totals',
   HELP_CONTENT: 'help_content',
   BLOG_POSTS: 'blog_posts',
-  /** DragonFury Link2Play landing catalog (name, image, platform links). */
+  /** PlayJuwa Link2Play landing catalog (name, image, platform links). */
   LINK2PLAY: 'link2play',
   /** Store footer menus and CMS pages (custom slugs). */
   FOOTER_PAGES: 'footer_pages',
@@ -47,9 +47,9 @@ const STORE_FEATURE_KEYS = {
   DEPOSIT_PACKAGES: 'deposit_packages',
   WELCOME_SIGNUP_BONUS: 'welcome_signup_bonus',
   DAILY_BONUS: 'daily_bonus',
-  /** DragonFury no-deposit email campaigns (dragonfury store only). */
+  /** PlayJuwa no-deposit email campaigns (playjuwa store only). */
   EMAIL_CAMPAIGNS: 'email_campaigns',
-  /** DragonFury browser push campaigns (dragonfury store only). */
+  /** Browser push notifications (per store). */
   PUSH_CAMPAIGNS: 'push_campaigns',
   SOCIAL_LINKS: 'social_links',
   LANDING_PAYMENT_LINKS: 'landing_payment_links',
@@ -123,8 +123,9 @@ const ADMIN_FEATURE_KEYS = {
   ADMIN_ROLES_MANAGE: 'admin_roles_manage',
   ADMIN_STAFF_MANAGE: 'admin_staff_manage',
   HELP_CONTENT: 'help_content',
+  /** Store-scoped blog posts. Scope via blog_posts_store_scope / blog_posts_store_codes on admin roles. */
   BLOG_POSTS: 'blog_posts',
-  /** DragonFury Link2Play landing catalog. */
+  /** PlayJuwa Link2Play landing catalog. */
   LINK2PLAY: 'link2play',
   /** Store footer menus and CMS pages (custom slugs). Scope via footer_pages_store_scope / footer_pages_store_codes on admin roles. */
   FOOTER_PAGES: 'footer_pages',
@@ -132,9 +133,9 @@ const ADMIN_FEATURE_KEYS = {
   SUPPORT_TICKETS: 'support_tickets',
   TECHNICAL_ERROR_EMAIL_NOTIFICATION: 'technical_error_email_notification',
   BONUS_CODES: 'bonus_codes',
-  /** DragonFury no-deposit email campaigns. */
+  /** PlayJuwa no-deposit email campaigns. */
   EMAIL_CAMPAIGNS: 'email_campaigns',
-  /** DragonFury browser push campaigns. */
+  /** PlayJuwa browser push campaigns. */
   PUSH_CAMPAIGNS: 'push_campaigns',
   /** Read-only bonus activity report across stores (technical staff). */
   BONUS_REPORT: 'bonus_report',
@@ -158,7 +159,7 @@ const ADMIN_FEATURE_KEYS = {
   STORE_WALLET_SUMMARY: 'store_wallet_summary',
   /**
    * Dashboard / store payment totals (live deposit & withdrawal amounts).
-   * Grant to staff who need totals without full User deposits or Payment providers access.
+   * Super admin and technical staff have this by default. Other admin roles need it granted.
    */
   PAYMENT_TOTALS: 'payment_totals',
   /** Third-party bot API usage and error reporting (super admin + technical staff). */
@@ -177,7 +178,7 @@ const ADMIN_FEATURE_KEYS = {
   DIDIT_KYC: 'didit_kyc',
   /** Enable/disable Didit phone OTP verification per store (credentials via env). */
   PHONE_VERIFICATION: 'phone_verification',
-  /** Per-store payin/payout fee % (super admin + technical staff). */
+  /** Per-store payin/payout fee % (super admin + technical staff). Admin reporting only. */
   TRANSACTION_FEES: 'transaction_fees',
   /** Super-admin email list + mobile number list with CSV download tracking. */
   CONTACT_LISTS: 'contact_lists'

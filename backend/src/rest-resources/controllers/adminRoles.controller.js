@@ -33,23 +33,29 @@ function validatePermissions(permissions) {
     if (Object.prototype.hasOwnProperty.call(permissions, k)) out[k] = !!permissions[k];
   });
 
-  // Footer pages: optional store scope for technical staff (all stores vs particular store(s))
-  if (out[ADMIN_FEATURE_KEYS.FOOTER_PAGES]) {
-    const scope = permissions.footer_pages_store_scope === 'particular' ? 'particular' : 'all';
-    out.footer_pages_store_scope = scope;
-    if (scope === 'particular') {
-      const raw = permissions.footer_pages_store_codes;
-      const list = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw ? [raw] : []);
-      out.footer_pages_store_codes = [...new Set(list.map((c) => normalizeStoreCode(String(c || ''))).filter(Boolean))];
-    } else {
-      out.footer_pages_store_codes = [];
-    }
-  } else {
-    out.footer_pages_store_scope = 'all';
-    out.footer_pages_store_codes = [];
-  }
+  applyStoreScope(out, permissions, ADMIN_FEATURE_KEYS.FOOTER_PAGES, 'footer_pages');
+  applyStoreScope(out, permissions, ADMIN_FEATURE_KEYS.BLOG_POSTS, 'blog_posts');
 
   return out;
+}
+
+function applyStoreScope(out, permissions, featureKey, prefix) {
+  const scopeKey = `${prefix}_store_scope`;
+  const codesKey = `${prefix}_store_codes`;
+  if (out[featureKey]) {
+    const scope = permissions[scopeKey] === 'particular' ? 'particular' : 'all';
+    out[scopeKey] = scope;
+    if (scope === 'particular') {
+      const raw = permissions[codesKey];
+      const list = Array.isArray(raw) ? raw : (typeof raw === 'string' && raw ? [raw] : []);
+      out[codesKey] = [...new Set(list.map((c) => normalizeStoreCode(String(c || ''))).filter(Boolean))];
+    } else {
+      out[codesKey] = [];
+    }
+  } else {
+    out[scopeKey] = 'all';
+    out[codesKey] = [];
+  }
 }
 
 function slugFromString(s) {

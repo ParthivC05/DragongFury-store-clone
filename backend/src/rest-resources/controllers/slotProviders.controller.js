@@ -1,7 +1,6 @@
 'use strict';
 
 const slotProvidersService = require('../../services/slotProviders/slotProvidersSettings.service');
-const { getPopularSlotGames } = require('../../services/slotProviders/getPopularSlotGames.service');
 const { sendSuccess, sendError } = require('../../helpers/response.helpers');
 const { isMasterAdmin } = require('../../constants/roles');
 const { canAdmin } = require('../../utils/permissionHelpers');
@@ -9,19 +8,6 @@ const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 
 function assertMasterCanManage(req) {
   return isMasterAdmin(req.role) && canAdmin(req, ADMIN_FEATURE_KEYS.GAMES);
-}
-
-async function getPublicPopularGames(req, res) {
-  try {
-    const storeCode = slotProvidersService.resolveStoreCodeFromReq(req);
-    const data = await getPopularSlotGames({
-      storeCode,
-      limit: req.query?.limit
-    });
-    sendSuccess(res, data);
-  } catch (err) {
-    sendError(res, err.message || 'Unable to load popular games.', err.statusCode || 500);
-  }
 }
 
 async function getPublicConfig(req, res) {
@@ -98,7 +84,6 @@ async function updateStoreSettings(req, res) {
 
 module.exports = {
   getPublicConfig,
-  getPublicPopularGames,
   getSettingsAdmin,
   updateSettingsAdmin,
   getStoreSettings,

@@ -53,7 +53,6 @@ function serializePackage(row, { adminMode = false, purchasesUsed = null } = {})
     group_id: plain.groupId,
     title: plain.title || null,
     final_sc: toNumber(plain.finalSc),
-    gc_coin: toNumber(plain.gcCoin ?? plain.gc_coin),
     actual_price: toNumber(plain.actualPrice),
     final_price: toNumber(plain.finalPrice),
     discount_label: plain.discountLabel || null,

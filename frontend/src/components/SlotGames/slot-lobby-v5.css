@@ -221,8 +221,13 @@
   cursor: grab;
 }
 
-.slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll,
-.slot-lobby-v5 #slot-cat-live-casino .dash-slot-carousel-scroll {
+.slot-lobby-v5 .dash-slot-carousel-img-slot {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+.slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll {
   grid-template-rows: auto;
 }
 
@@ -241,8 +246,10 @@
   grid-template-rows: repeat(2, auto);
 }
 
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll {
   --fish-art-h: 168px;
+  --fish-art-min-w: 72px;
   --others-gap: 12px;
   display: grid;
   grid-auto-flow: column;
@@ -251,6 +258,10 @@
   gap: var(--others-gap);
   overflow-x: auto;
   align-items: start;
+}
+
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll {
+  grid-template-rows: auto;
 }
 
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
@@ -341,9 +352,7 @@
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card,
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
-.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
   width: 100%;
   min-width: 0;
   max-width: none;
@@ -356,9 +365,7 @@
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-art,
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-art,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
-.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 3;
@@ -371,59 +378,80 @@
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-img,
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-img,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
-.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+.slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
   object-fit: contain !important;
 }
 
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-play,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-play,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-play {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-play,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-card-play {
   display: none;
 }
 
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-meta,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-meta,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-meta {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-meta,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-card-meta {
   padding: 8px 2px 0;
 }
 
 .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-name,
 .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-name,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-name {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-name,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-card-name {
   font-size: 0.8rem;
   font-weight: 600;
 }
 
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
   width: max-content;
-  min-width: 0;
+  min-width: var(--fish-art-min-w, 72px);
   max-width: none;
   justify-self: start;
+  border: 0;
+  background: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
   width: max-content;
+  min-width: var(--fish-art-min-w, 72px);
   height: var(--fish-art-h, 168px);
   aspect-ratio: auto;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--lobby-line);
+  background: #0a0e16;
 }
 
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-img-slot {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-img-slot,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-img-slot {
   position: relative;
   inset: auto;
+  display: block;
   width: auto;
+  min-width: var(--fish-art-min-w, 72px);
   height: 100%;
 }
 
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
-.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+.slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
   position: relative !important;
   inset: auto !important;
   width: auto !important;
+  min-width: 0;
   height: var(--fish-art-h, 168px) !important;
   object-fit: contain !important;
 }
@@ -441,18 +469,6 @@
 .slot-lobby-v5 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
   height: auto;
   aspect-ratio: 3 / 4;
-}
-
-.slot-lobby-v5 .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact),
-.slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub {
-  width: 159px;
-}
-
-.slot-lobby-v5 .dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
-.slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-  width: 159px;
-  height: 187px;
-  aspect-ratio: 159 / 187;
 }
 
 .slot-lobby-v5 .dash-slot-carousel-card-meta {
@@ -542,16 +558,6 @@
   aspect-ratio: 3 / 4;
 }
 
-.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
-  width: 100%;
-}
-
-.slot-lobby-v5 .dash-slot-catalog-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 159 / 187;
-}
-
 .slot-lobby-v5 .dash-slot-others-grid {
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
@@ -577,6 +583,12 @@
   background: #0a0e16;
 }
 
+.slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-img-slot {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
 .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-img,
 .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
   object-fit: contain !important;
@@ -598,22 +610,72 @@
 
 @media (max-width: 767px) {
   .slot-lobby-v5 .dash-slot-others-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+    overflow: hidden;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-art,
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+    aspect-ratio: 1 / 1;
+  }
+
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-img,
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+    object-fit: cover !important;
+  }
+
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card-name {
+    font-size: 0.62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .slot-lobby-v5 .dash-slot-fishing-grid {
   --fish-art-h: 168px;
+  --fish-art-min-w: calc(var(--fish-art-h) * 4 / 3);
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   padding: 4px 12px 16px;
 }
 
+.slot-lobby-v5 :is(#slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid {
+  --fish-art-min-w: 72px;
+}
+
+@media (min-width: 768px) {
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid {
+    --fish-art-min-w: 72px;
+  }
+
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-img-slot {
+    min-width: 0;
+  }
+
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+    min-width: 0;
+  }
+}
+
 .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card,
 .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
   width: max-content;
+  min-width: var(--fish-art-min-w);
   border: 0;
   background: none;
   border-radius: 0;
@@ -623,6 +685,7 @@
 .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-art,
 .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
   width: max-content;
+  min-width: var(--fish-art-min-w);
   height: var(--fish-art-h);
   aspect-ratio: auto;
   border-radius: 12px;
@@ -637,6 +700,7 @@
   position: relative !important;
   inset: auto !important;
   width: auto !important;
+  min-width: var(--fish-art-min-w);
   height: var(--fish-art-h) !important;
   object-fit: contain !important;
 }
@@ -645,10 +709,69 @@
   display: none;
 }
 
+.slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-img-slot {
+  position: relative;
+  inset: auto;
+  display: block;
+  width: auto;
+  min-width: var(--fish-art-min-w);
+  height: 100%;
+}
+
 @media (max-width: 767px) {
   .slot-lobby-v5 .dash-slot-fishing-grid {
-    --fish-art-h: 132px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+    padding: 4px 8px 16px;
+  }
+
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-fishing-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid .dash-slot-carousel-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-art,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-fishing-grid .dash-slot-carousel-card-art,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid .dash-slot-carousel-card-art {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-img-slot,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-fishing-grid .dash-slot-carousel-img-slot,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid .dash-slot-carousel-img-slot {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card-img,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-fishing-grid .dash-slot-carousel-card-img,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid .dash-slot-carousel-card-img {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    font-size: 0.62rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -763,8 +886,7 @@
     touch-action: pan-x pan-y;
   }
 
-  .slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll,
-  .slot-lobby-v5 #slot-cat-live-casino .dash-slot-carousel-scroll {
+  .slot-lobby-v5 #slot-cat-lottery .dash-slot-carousel-scroll {
     grid-template-rows: auto !important;
   }
 
@@ -783,8 +905,10 @@
     grid-template-rows: repeat(2, auto) !important;
   }
 
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll {
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll {
     --fish-art-h: 132px;
+    --fish-art-min-w: 64px;
     --others-gap: 8px;
     display: grid !important;
     grid-auto-flow: column !important;
@@ -792,6 +916,10 @@
     grid-auto-columns: max-content !important;
     gap: var(--others-gap) !important;
     padding: 10px 12px 14px !important;
+  }
+
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll {
+    grid-template-rows: auto !important;
   }
 
   .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll {
@@ -828,7 +956,8 @@
 
   .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11),
   .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11),
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11) {
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11),
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll:not(.dash-slot-carousel-scroll--compact) > :nth-child(n + 11) {
     display: revert !important;
   }
 
@@ -841,19 +970,34 @@
     scroll-snap-align: start;
   }
 
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card,
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 .dash-slot-others-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 .dash-slot-fishing-grid .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-others-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-fishing-grid .dash-slot-carousel-card,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-fishing-grid .dash-slot-carousel-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden;
+  }
+
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
   }
 
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card,
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card.dash-slot-carousel-card--onegamehub {
     width: max-content !important;
-    min-width: 0 !important;
+    min-width: var(--fish-art-min-w, 64px) !important;
     max-width: none !important;
   }
 
@@ -894,46 +1038,42 @@
     overflow: hidden;
   }
 
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-art,
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-art,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
     aspect-ratio: 4 / 3;
   }
 
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card-img,
-  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card-img,
-  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-others .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-buffalo-blast .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img {
     object-fit: contain !important;
   }
 
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-art,
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card-art,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
     width: max-content;
+    min-width: var(--fish-art-min-w, 64px);
     height: var(--fish-art-h, 132px);
     aspect-ratio: auto;
   }
 
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card-img,
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
-  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 #slot-cat-fishing .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card-img,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--cover .dash-slot-carousel-card-img,
+  .slot-lobby-v5 :is(#slot-cat-live-casino, #slot-cat-zesus, #slot-cat-olympus, #slot-cat-candy, #slot-cat-animal) .dash-slot-carousel-scroll .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-img {
     position: relative !important;
     inset: auto !important;
     width: auto !important;
+    min-width: 0;
     height: var(--fish-art-h, 132px) !important;
     object-fit: contain !important;
-  }
-
-  .slot-lobby-v5 .dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
-  .slot-lobby-v5 .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 159 / 187;
-  }
-
-  .slot-lobby-v5 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
-    aspect-ratio: 3 / 4;
   }
 
   .slot-lobby-v5 .dash-slot-carousel-card--compact .dash-slot-carousel-card-art {

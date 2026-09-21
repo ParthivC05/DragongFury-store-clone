@@ -48,7 +48,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.1);
   box-sizing: border-box;
 }
 
@@ -70,7 +70,7 @@
   width: 100%;
   min-height: 44px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 215, 0, 0.16);
+  border: 1px solid rgba(182, 255, 42, 0.16);
   background: linear-gradient(145deg, rgba(13, 19, 32, 0.98), rgba(18, 26, 42, 0.96));
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -78,9 +78,9 @@
 
 .dash-slot-search--active .dash-slot-search-field,
 .dash-slot-search-field:focus-within {
-  border-color: rgba(255, 215, 0, 0.45);
+  border-color: rgba(182, 255, 42, 0.45);
   box-shadow:
-    0 0 0 2px rgba(255, 215, 0, 0.1),
+    0 0 0 2px rgba(182, 255, 42, 0.1),
     0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
@@ -100,7 +100,7 @@
 }
 
 .dash-slot-search-field:focus-within .dash-slot-search-icon {
-  color: var(--dash-gold, #ffd700);
+  color: var(--dash-gold, #B6FF2A);
 }
 
 .dash-slot-search-input {
@@ -151,8 +151,8 @@
 }
 
 .dash-slot-search-clear:hover {
-  background: rgba(255, 215, 0, 0.12);
-  color: var(--dash-gold, #ffd700);
+  background: rgba(182, 255, 42, 0.12);
+  color: var(--dash-gold, #B6FF2A);
 }
 
 .dash-slot-search-clear:active {
@@ -173,7 +173,7 @@
 }
 
 .dash-slot-search--active .dash-slot-search-meta {
-  color: rgba(255, 215, 0, 0.78);
+  color: rgba(182, 255, 42, 0.78);
 }
 
 .dash-slot-search-results {
@@ -253,8 +253,8 @@
 .dash-games-tabs--standalone {
   margin: 0 0 10px;
   padding: 4px 4px 0;
-  border: 1px solid var(--dash-border, rgba(255, 215, 0, 0.13));
+  border: 1px solid var(--dash-border, rgba(182, 255, 42, 0.13));
   border-radius: 14px 14px 0 0;
   background: linear-gradient(180deg, rgba(13, 19, 32, 0.6), rgba(8, 12, 18, 0.75));
-  border-bottom: 1px solid var(--dash-border, rgba(255, 215, 0, 0.13));
+  border-bottom: 1px solid var(--dash-border, rgba(182, 255, 42, 0.13));
 }

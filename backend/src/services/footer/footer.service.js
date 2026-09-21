@@ -357,7 +357,8 @@ async function assertUniqueSlug(storeCode, slug, excludeId = null) {
 /** App routes that must not be claimed as footer page slugs (root /{slug}). */
 const RESERVED_FOOTER_SLUGS = new Set([
   'login', 'signin', 'register', 'signup', 'verify-email', 'check-email',
-  'forgot-password', 'reset-password', 'terms', 'privacy', 'help', 'support',
+  'forgot-password', 'reset-password', 'terms', 'privacy', 'responsible-gaming',
+  'help', 'support',
   'blog', 'pages', 'link2play', 'install', 'download', 'games', 'casino', 'slots',
   'platform', 'platforms', 'testbona', 'deposit', 'withdraw', 'kyc', 'promotions',
   'spinwheel', 'daily-bonus', 'account', 'settings', 'play', 'auth', 'cashapp',

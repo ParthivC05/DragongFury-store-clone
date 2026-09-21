@@ -3,32 +3,32 @@
 }
 
 .pj-auth-root {
-  --pj-bg: #060400;
-  --pj-bg2: #0d0900;
-  --pj-card: #131008;
-  --pj-card2: #1a1509;
-  --pj-inp: #0b0803;
-  --pj-b0: #2a1e08;
-  --pj-b1: #503a10;
-  --pj-b2: #7a5c1a;
-  --pj-gold: #f9d038;
-  --pj-gold2: #e8a010;
-  --pj-gold3: #c07a00;
-  --pj-gG: rgba(249, 208, 56, 0.3);
-  --pj-amber: #ffaa00;
-  --pj-orange: #ff6d00;
-  --pj-ember: #ff4500;
+  --pj-bg: #060806;
+  --pj-bg2: #0c100c;
+  --pj-card: #121612;
+  --pj-card2: #181c18;
+  --pj-inp: #0b0e0b;
+  --pj-b0: #1e2a14;
+  --pj-b1: #3a5c18;
+  --pj-b2: #5a8a20;
+  --pj-gold: #B6FF2A;
+  --pj-gold2: #8FE31A;
+  --pj-gold3: #4FA000;
+  --pj-gG: rgba(182, 255, 42, 0.3);
+  --pj-amber: #b6ff2a;
+  --pj-orange: #8fe31a;
+  --pj-ember: #6fbf00;
   --pj-red: #e53935;
   --pj-crimson: #c62828;
-  --pj-green: #3ddc7a;
-  --pj-green2: #00c853;
-  --pj-gGr: rgba(61, 220, 122, 0.28);
-  --pj-neon-g: #39ff78;
-  --pj-neon-a: #ffb300;
-  --pj-white: #fff6dc;
-  --pj-off: #d4a845;
-  --pj-mute: #6b5020;
-  --pj-dim: #3a2808;
+  --pj-green: #B6FF2A;
+  --pj-green2: #8FE31A;
+  --pj-gGr: rgba(182, 255, 42, 0.28);
+  --pj-neon-g: #b6ff2a;
+  --pj-neon-a: #c6ff4d;
+  --pj-white: #f3f7f0;
+  --pj-off: #9ae622;
+  --pj-mute: #7a8a74;
+  --pj-dim: #24301c;
 
   position: fixed;
   inset: 0;
@@ -1698,8 +1698,8 @@
   --pj-b0: #2a1e08;
   --pj-b1: #503a10;
   --pj-b2: #7a5c1a;
-  --pj-gold: #f9d038;
-  --pj-gold2: #e8a010;
+  --pj-gold: #C6FF4D;
+  --pj-gold2: #7CCF14;
   --pj-amber: #ffaa00;
   --pj-green: #3ddc7a;
   --pj-gGr: rgba(61, 220, 122, 0.28);
@@ -1936,7 +1936,7 @@
   letter-spacing: 0.02em;
   cursor: pointer;
   color: #1a1200;
-  background: linear-gradient(135deg, #ffd700, #ffa500);
+  background: linear-gradient(135deg, #B6FF2A, #8FE31A);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -1954,8 +1954,8 @@
 
 .pj-phone-verify-btn--edit {
   background: rgba(255, 255, 255, 0.12);
-  color: #ffd700;
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  color: #B6FF2A;
+  border: 1px solid rgba(182, 255, 42, 0.35);
 }
 
 .pj-phone-verified-pill {
@@ -1982,7 +1982,7 @@
   min-width: 0;
   padding: 0.7rem 0.85rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 215, 0, 0.35);
+  border: 1px solid rgba(182, 255, 42, 0.35);
   background: rgba(0, 0, 0, 0.25);
   color: #fff;
   font-size: 1rem;
@@ -1990,7 +1990,7 @@
 
 .pj-phone-otp-input:focus {
   outline: none;
-  border-color: #ffd700;
+  border-color: #B6FF2A;
 }
 
 @media (max-width: 480px) {

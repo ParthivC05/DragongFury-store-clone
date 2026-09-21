@@ -1,5 +1,9 @@
 const db = require('../../db/models');
 const { getCurrencySetting, REDEEMABLE_CURRENCY_CODE } = require('./getCurrencySetting.service');
+const {
+  reservedFrozenByOtherWithdrawals,
+  releaseThisWithdrawalFreeze
+} = require('./withdrawalFreeze.service');
 
 /**
  * Reject a pending withdrawal request. Releases frozen amount back to available; no balance change.
@@ -26,19 +30,37 @@ async function rejectWithdrawalRequest(requestId, adminUserId, isAdmin, rejectio
 
   const amount = Number(request.amount) || 0;
   const displayCurrencyCode = await getCurrencySetting().catch(() => 'SC');
-  const wallet = await db.Wallet.findOne({ where: { userId: request.userId, currencyCode: REDEEMABLE_CURRENCY_CODE } });
-
   const reason = (rejectionReason ?? '').toString().trim().slice(0, 2000) || null;
   const userId = request.userId;
   await db.sequelize.transaction(async (t) => {
-    await request.update(
+    const locked = await db.WithdrawalRequest.findByPk(requestId, {
+      transaction: t,
+      lock: t.LOCK.UPDATE
+    });
+    if (!locked || locked.status !== 'pending') {
+      const err = new Error('Only pending withdrawal requests can be rejected.');
+      err.statusCode = 400;
+      throw err;
+    }
+    await locked.update(
       { status: 'rejected', rejectionReason: reason, approvedByUserId: adminUserId },
       { transaction: t }
     );
+    const wallet = await db.Wallet.findOne({
+      where: { userId, currencyCode: REDEEMABLE_CURRENCY_CODE },
+      transaction: t,
+      lock: t.LOCK.UPDATE
+    });
     if (wallet && amount > 0) {
-      const frozen = Number(wallet.frozenBalance) || 0;
-      const newFrozen = Math.max(0, Math.round((frozen - amount) * 100) / 100);
-      await wallet.update({ frozenBalance: newFrozen }, { transaction: t });
+      const othersReserved = await reservedFrozenByOtherWithdrawals(userId, {
+        excludeLegacyId: locked.id,
+        transaction: t
+      });
+      await releaseThisWithdrawalFreeze(wallet, {
+        amount,
+        othersReserved,
+        transaction: t
+      });
     }
     if (db.Notification) {
       const amountStr = Number(amount) === amount && amount % 1 === 0 ? `${amount}` : Number(amount).toFixed(2);

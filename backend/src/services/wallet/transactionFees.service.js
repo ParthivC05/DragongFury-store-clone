@@ -1,5 +1,11 @@
 'use strict';
 
+/**
+ * Admin-only payin/payout fee % (platform default + per-store override).
+ * Applies to completed deposits/withdrawals in admin reporting only.
+ * Does not change player deposit/withdraw amounts.
+ */
+
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { Op } = require('sequelize');

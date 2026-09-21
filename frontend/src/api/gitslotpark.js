@@ -25,11 +25,11 @@ export function getRecentlyPlayedSlotGames(params = {}) {
 }
 
 /** Launch a slot game and return the provider play URL. */
-export function launchSlotGame(gameid, provider = 'pragmatic', coinType = 'SC') {
+export function launchSlotGame(gameid, provider = 'pragmatic') {
   const normalized = normalizeGitslotparkProvider(provider);
   return postRequest(
     `${GIT_SLOTPARK_BASE}/launch`,
-    { gameid: Number(gameid), provider: normalized, coinType },
+    { gameid: Number(gameid), provider: normalized },
     { headers: getGitslotparkRequestHeaders(normalized) }
   );
 }

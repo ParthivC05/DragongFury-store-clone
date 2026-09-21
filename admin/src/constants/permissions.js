@@ -31,7 +31,7 @@ export const STORE_FEATURE_KEYS = {
   CHIME_DEPOSIT_ACCOUNT_TOTALS: 'chime_deposit_account_totals',
   HELP_CONTENT: 'help_content',
   BLOG_POSTS: 'blog_posts',
-  /** DragonFury Link2Play landing catalog. */
+  /** PlayJuwa Link2Play landing catalog. */
   LINK2PLAY: 'link2play',
   FOOTER_PAGES: 'footer_pages',
   SUPPORT_TICKETS: 'support_tickets',
@@ -40,9 +40,9 @@ export const STORE_FEATURE_KEYS = {
   DEPOSIT_PACKAGES: 'deposit_packages',
   WELCOME_SIGNUP_BONUS: 'welcome_signup_bonus',
   DAILY_BONUS: 'daily_bonus',
-  /** DragonFury no-deposit email campaigns. */
+  /** PlayJuwa no-deposit email campaigns. */
   EMAIL_CAMPAIGNS: 'email_campaigns',
-  /** DragonFury browser push campaigns. */
+  /** PlayJuwa browser push campaigns. */
   PUSH_CAMPAIGNS: 'push_campaigns',
   SOCIAL_LINKS: 'social_links',
   LANDING_PAYMENT_LINKS: 'landing_payment_links',
@@ -93,16 +93,17 @@ export const ADMIN_FEATURE_KEYS = {
   ADMIN_ROLES_MANAGE: 'admin_roles_manage',
   ADMIN_STAFF_MANAGE: 'admin_staff_manage',
   HELP_CONTENT: 'help_content',
+  /** Store-scoped blog posts. Admin roles may also set blog_posts_store_scope / blog_posts_store_codes. */
   BLOG_POSTS: 'blog_posts',
-  /** DragonFury Link2Play landing catalog. */
+  /** PlayJuwa Link2Play landing catalog. */
   LINK2PLAY: 'link2play',
   FOOTER_PAGES: 'footer_pages',
   SUPPORT_TICKETS: 'support_tickets',
   TECHNICAL_ERROR_EMAIL_NOTIFICATION: 'technical_error_email_notification',
   BONUS_CODES: 'bonus_codes',
-  /** DragonFury no-deposit email campaigns. */
+  /** PlayJuwa no-deposit email campaigns. */
   EMAIL_CAMPAIGNS: 'email_campaigns',
-  /** DragonFury browser push campaigns. */
+  /** PlayJuwa browser push campaigns. */
   PUSH_CAMPAIGNS: 'push_campaigns',
   /** Read-only bonus activity report across stores (technical staff). */
   BONUS_REPORT: 'bonus_report',
@@ -218,10 +219,7 @@ export function canAccessFeature(user, featureKey) {
         perms[STORE_FEATURE_KEYS.PAYMENT_PROVIDERS] === true
     }
     if (featureKey === STORE_FEATURE_KEYS.PAYMENT_TOTALS) {
-      const perms = user.permissions || {}
-      return perms[STORE_FEATURE_KEYS.PAYMENT_TOTALS] === true ||
-        perms[STORE_FEATURE_KEYS.USER_DEPOSITS] === true ||
-        perms[STORE_FEATURE_KEYS.PAYMENT_PROVIDERS] === true
+      return user.permissions[STORE_FEATURE_KEYS.PAYMENT_TOTALS] === true
     }
     // Legacy: before wallet_adjust existed, Users access included add/remove SC
     if (featureKey === STORE_FEATURE_KEYS.WALLET_ADJUST) {
@@ -265,6 +263,14 @@ export function canAccessAdminFeature(user, featureKey) {
     }
     return true
   }
+  // Payment totals: super admin + technical staff by default; honour explicit role flag.
+  if (featureKey === ADMIN_FEATURE_KEYS.PAYMENT_TOTALS) {
+    if (!perms || typeof perms !== 'object') return true
+    if (Object.prototype.hasOwnProperty.call(perms, ADMIN_FEATURE_KEYS.PAYMENT_TOTALS)) {
+      return perms[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] === true
+    }
+    return true
+  }
   if (!perms || typeof perms !== 'object') return true
   if (featureKey === ADMIN_FEATURE_KEYS.GAME_MANUAL_REQUESTS) {
     return perms[ADMIN_FEATURE_KEYS.GAME_MANUAL_REQUESTS] === true ||
@@ -294,11 +300,6 @@ export function canAccessAdminFeature(user, featureKey) {
       perms[ADMIN_FEATURE_KEYS.REPORTS] === true ||
       perms[ADMIN_FEATURE_KEYS.PAYMENT_PROVIDERS] === true ||
       perms[ADMIN_FEATURE_KEYS.GAMES] === true
-  }
-  if (featureKey === ADMIN_FEATURE_KEYS.PAYMENT_TOTALS) {
-    return perms[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] === true ||
-      perms[ADMIN_FEATURE_KEYS.USER_DEPOSITS] === true ||
-      perms[ADMIN_FEATURE_KEYS.PAYMENT_PROVIDERS] === true
   }
   if (featureKey === ADMIN_FEATURE_KEYS.TRANSACTION_FEES) {
     return perms[ADMIN_FEATURE_KEYS.TRANSACTION_FEES] === true ||
@@ -435,4 +436,19 @@ export function canAccessAdminFeature(user, featureKey) {
     return perms[ADMIN_FEATURE_KEYS.USERS] === true
   }
   return perms[featureKey] === true
+}
+
+/**
+ * Limit a store-code list by an admin role's All stores / One store scope
+ * (e.g. blog_posts or footer_pages).
+ */
+export function filterStoreCodesByAdminScope(codes, adminPermissions, featureKey) {
+  const list = [...new Set((Array.isArray(codes) ? codes : []).filter(Boolean).map((c) => String(c)))]
+  const scope = adminPermissions?.[`${featureKey}_store_scope`]
+  const limited = adminPermissions?.[`${featureKey}_store_codes`]
+  if (scope === 'particular' && Array.isArray(limited) && limited.length > 0) {
+    const allow = new Set(limited.map((c) => String(c).toLowerCase()))
+    return list.filter((c) => allow.has(String(c).toLowerCase()))
+  }
+  return list
 }

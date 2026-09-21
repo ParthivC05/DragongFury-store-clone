@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { getFirebaseMessaging } = require('../../libs/firebaseAdmin');
 const { createLogger } = require('../../libs/logger');
-const { PUSH_CAMPAIGN_STORE_CODE } = require('./constants');
+const { normalizeStoreCode } = require('./constants');
 
 const log = createLogger('push-campaigns');
 const BATCH_SIZE = 80;
@@ -26,41 +26,44 @@ function isPublicHttpsUrl(url) {
   return /^https:\/\//i.test(str(url)) && !isLocalHostUrl(url);
 }
 
-function pushPublicOrigin() {
-  const dragonfury = str(process.env.DRAGONFURY_FRONTEND_URL).split(',')[0].trim().replace(/\/+$/, '');
+function pushPublicOrigin(storeCode) {
+  const code = normalizeStoreCode(storeCode);
+  const fromStoreEnv = code
+    ? str(process.env[`${code.toUpperCase()}_FRONTEND_URL`]).split(',')[0].trim().replace(/\/+$/, '')
+    : '';
   const user = str(process.env.USER_FRONTEND_URL).split(',')[0].trim().replace(/\/+$/, '');
-  if (dragonfury && !isLocalHostUrl(dragonfury)) return dragonfury;
+  if (fromStoreEnv && !isLocalHostUrl(fromStoreEnv)) return fromStoreEnv;
   if (user && !isLocalHostUrl(user)) return user;
-  return dragonfury || user || '';
+  return fromStoreEnv || user || '';
 }
 
-function frontendOrigin() {
-  return pushPublicOrigin();
+function frontendOrigin(storeCode) {
+  return pushPublicOrigin(storeCode);
 }
 
-function absoluteAssetUrl(url, fallbackPath) {
+function absoluteAssetUrl(url, fallbackPath, storeCode) {
   const value = str(url).trim() || str(fallbackPath).trim();
   if (!value) return '';
   if (/^https?:\/\//i.test(value)) return value;
-  const origin = frontendOrigin();
+  const origin = frontendOrigin(storeCode);
   const path = value.charAt(0) === '/' ? value : `/${value}`;
   return origin ? `${origin}${path}` : path;
 }
 
-function resolveActionUrl(actionUrl) {
+function resolveActionUrl(actionUrl, storeCode) {
   const raw = str(actionUrl).trim() || '/';
   if (/^https?:\/\//i.test(raw)) return raw;
-  const origin = frontendOrigin();
+  const origin = frontendOrigin(storeCode);
   const path = raw.charAt(0) === '/' ? raw : `/${raw}`;
   return origin ? `${origin}${path}` : path;
 }
 
-function withClickQuery(url, clickToken) {
+function withClickQuery(url, clickToken, storeCode) {
   const raw = str(url).trim() || '/';
   const token = str(clickToken).trim();
   if (!token) return raw;
   try {
-    const origin = frontendOrigin();
+    const origin = frontendOrigin(storeCode);
     const u = origin ? new URL(raw, `${origin.replace(/\/+$/, '')}/`) : new URL(raw);
     u.searchParams.set('pj_click', token);
     return u.toString();
@@ -97,11 +100,12 @@ function isInvalidTokenError(code = '') {
 }
 
 function buildMessage(campaign, device, clickToken) {
-  const title = campaign.title || 'DragonFury';
+  const storeCode = campaign.storeCode;
+  const title = campaign.title || 'Notification';
   const body = campaign.body || '';
-  const imageUrl = absoluteAssetUrl(campaign.imageUrl);
-  const iconUrl = absoluteAssetUrl(campaign.iconUrl, '/favicon.ico');
-  const actionUrl = withClickQuery(resolveActionUrl(campaign.actionUrl), clickToken);
+  const imageUrl = absoluteAssetUrl(campaign.imageUrl, '', storeCode);
+  const iconUrl = absoluteAssetUrl(campaign.iconUrl, '/favicon.ico', storeCode);
+  const actionUrl = withClickQuery(resolveActionUrl(campaign.actionUrl, storeCode), clickToken, storeCode);
   const publicImage = isPublicHttpsUrl(imageUrl) ? imageUrl : '';
   const publicIcon = isPublicHttpsUrl(iconUrl) ? iconUrl : '';
   const publicAction = isPublicHttpsUrl(actionUrl) ? actionUrl : '';
@@ -157,13 +161,14 @@ function buildMessage(campaign, device, clickToken) {
   return message;
 }
 
-async function loadEligibleDevices({ userIds = null } = {}) {
+async function loadEligibleDevices({ userIds = null, storeCode } = {}) {
+  const store = normalizeStoreCode(storeCode);
   const where = {
-    storeCode: PUSH_CAMPAIGN_STORE_CODE,
     permissionStatus: 'granted',
     client: { [Op.in]: ['user', 'web'] },
     token: { [Op.ne]: null }
   };
+  if (store) where.storeCode = store;
   if (Array.isArray(userIds)) {
     if (!userIds.length) return [];
     where.userId = { [Op.in]: userIds };
@@ -270,7 +275,7 @@ async function runCampaignSend(campaignId, { testUsersOnly = false, userIds = nu
     let devices;
     let extraNoToken = 0;
     if (Array.isArray(userIds) && userIds.length) {
-      devices = await loadEligibleDevices({ userIds });
+      devices = await loadEligibleDevices({ userIds, storeCode: campaign.storeCode });
       const found = new Set(devices.map((d) => d.userId).filter(Boolean));
       const missing = userIds.filter((id) => !found.has(id));
       extraNoToken = await recordNoTokenForUsers(campaign, missing);
@@ -280,14 +285,14 @@ async function runCampaignSend(campaignId, { testUsersOnly = false, userIds = nu
         attributes: ['userId']
       });
       const ids = testers.map((t) => t.userId);
-      devices = await loadEligibleDevices({ userIds: ids });
+      devices = await loadEligibleDevices({ userIds: ids, storeCode: campaign.storeCode });
       const found = new Set(devices.map((d) => d.userId).filter(Boolean));
       extraNoToken = await recordNoTokenForUsers(
         campaign,
         ids.filter((id) => !found.has(id))
       );
     } else {
-      devices = await loadEligibleDevices();
+      devices = await loadEligibleDevices({ storeCode: campaign.storeCode });
     }
 
     const result = await sendToDevices(campaign, devices);

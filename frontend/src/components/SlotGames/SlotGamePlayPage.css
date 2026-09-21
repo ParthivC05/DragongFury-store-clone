@@ -87,52 +87,21 @@
   justify-self: start;
 }
 
-.spm-play-logo-ring {
+.spm-play-logo .spm-play-logo-img {
+  height: 36px;
+  max-width: min(180px, 42vw);
+}
+
+.spm-play-wallet {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-  border-radius: 11px;
-  background: linear-gradient(145deg, #ffd700, #ff8c00 60%, #ff3d00);
-  box-shadow: 0 3px 12px rgba(255, 140, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.spm-play-logo-inner {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 27px;
-  height: 27px;
-  border-radius: 8px;
-  background: rgba(6, 9, 16, 0.82);
-  font-size: 15px;
-}
-
-.spm-play-logo-text {
-  font-family: 'Bebas Neue', Rajdhani, sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  line-height: 1;
-  background: linear-gradient(92deg, #ffe89a 0%, #ffd700 45%, #ff8c00 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.spm-play-wallet--toggle {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  width: min(100%, 280px);
-  max-width: 100%;
+  gap: 7px;
+  justify-self: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(13, 19, 32, 0.92);
+  border: 1px solid rgba(255, 215, 0, 0.28);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 .spm-play-wallet-coin {
@@ -178,8 +147,9 @@
     justify-self: start;
   }
 
-  .spm-play-logo-text {
-    display: none;
+  .spm-play-logo .spm-play-logo-img {
+    height: 28px;
+    max-width: min(120px, 34vw);
   }
 
   .spm-play-wallet {
@@ -190,11 +160,6 @@
     padding: 5px 11px;
     gap: 5px;
     overflow: hidden;
-  }
-
-  .spm-play-wallet--toggle {
-    padding: 0;
-    overflow: visible;
   }
 
   .spm-play-wallet-amount {

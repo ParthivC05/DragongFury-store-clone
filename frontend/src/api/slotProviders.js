@@ -40,11 +40,3 @@ export function getSlotProvidersConfig(storeCode = STORE_CODE) {
     return normalizeSlotProviders(payload);
   });
 }
-
-/** Most-played casino games for this store's players. Public. */
-export function getPopularSlotGames(storeCode = STORE_CODE, params = {}) {
-  const query = {};
-  if (storeCode) query.store_code = storeCode;
-  if (params.limit != null) query.limit = params.limit;
-  return getRequest(`${SLOT_PROVIDERS_BASE}/popular-games`, query);
-}

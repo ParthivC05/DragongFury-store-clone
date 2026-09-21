@@ -5,8 +5,8 @@
   width: 100%;
   background: rgba(8, 12, 18, 0.98);
   backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 215, 0, 0.08);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.12);
+  border-top: 1px solid rgba(182, 255, 42, 0.08);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.12);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
   flex-shrink: 0;
   overflow: visible;
@@ -197,16 +197,16 @@ body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
 }
 
 .lp-pay-btn--link2play {
-  color: var(--lp-gold, #ffd700);
-  background: rgba(255, 215, 0, 0.1);
-  border-color: rgba(255, 215, 0, 0.45);
+  color: var(--lp-gold, #B6FF2A);
+  background: rgba(182, 255, 42, 0.1);
+  border-color: rgba(182, 255, 42, 0.45);
   text-decoration: none;
-  box-shadow: 0 3px 14px rgba(255, 215, 0, 0.2);
+  box-shadow: 0 3px 14px rgba(182, 255, 42, 0.2);
 }
 
 .lp-pay-btn--link2play:hover {
-  background: rgba(255, 215, 0, 0.2);
-  box-shadow: 0 4px 18px rgba(255, 215, 0, 0.35);
+  background: rgba(182, 255, 42, 0.2);
+  box-shadow: 0 4px 18px rgba(182, 255, 42, 0.35);
 }
 
 .lp-pay-chevron {
@@ -231,7 +231,7 @@ body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
   padding: 6px;
   list-style: none;
   background: rgba(13, 19, 32, 0.98);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  border: 1px solid rgba(182, 255, 42, 0.2);
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
   max-height: 240px;
@@ -259,8 +259,8 @@ body.guest-landing-active .lp-pay-bar--highlight .lp-pay-btn--withdrawal {
 }
 
 .lp-pay-menu-item:hover {
-  background: rgba(255, 215, 0, 0.1);
-  color: var(--lp-gold, #ffd700);
+  background: rgba(182, 255, 42, 0.1);
+  color: var(--lp-gold, #B6FF2A);
 }
 
 .lp-pay-menu-empty {

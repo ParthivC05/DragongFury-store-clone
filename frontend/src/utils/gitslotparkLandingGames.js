@@ -7,8 +7,8 @@ import {
   TOP_FISHING_GAMES_COUNT,
 } from '../config/onegamehubTopFishingGames';
 import {
-  GITSLOTPARK_TOP_GAMES,
-  ONEGAMEHUB_TOP_GAMES,
+  TOP_GAMES_LEAD_NAMES,
+  TOP_GAMES_BUFFALO_NAMES,
   TOP_GAMES_COUNT,
 } from '../config/topLobbyGames';
 import { ONEGAMEHUB_TABLE_GAMES } from '../config/onegamehubTableGames';
@@ -20,6 +20,27 @@ import { getSlotLocalIcon } from '../config/slotLocalIcons';
 const GAME_PLACEHOLDER = '/logo.webp';
 const IMAGE_SHAPE_TOLERANCE = 0.12;
 const BLOCKED_ONEGAMEHUB_BRANDS = ['mrslotty', 'netgame', '7777gaming', 'spinoro'];
+const HIDDEN_BROKEN_GAME_KEYS = new Set([
+  'europeanroulette',
+  'caribbeanstudpoker',
+  'baccarat',
+  'videopoker',
+  'blackjacksidebets',
+  'blackjack',
+  'yellowdiver',
+  '10hvideopoker',
+  'prettydiamondsscratch',
+  'mummifiedmysteriesscratch',
+  'bowwowscratch',
+  'wildjokerscratch',
+  'darkpotionsscratch',
+  'camcarterandthewheelofwonderscratch',
+  'vulcanoroulette',
+  'plinko',
+  'onehandblackjack',
+  'blackjackgold',
+  'electricpowerplay',
+]);
 
 export function isGenericGameImage(url) {
   const value = String(url || '').trim().toLowerCase();
@@ -283,7 +304,39 @@ function normalizeOneGameHubBrand(value) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+export function isHiddenBrokenProviderGame(gameOrId) {
+  const values =
+    typeof gameOrId === 'string' || typeof gameOrId === 'number'
+      ? [gameOrId]
+      : [
+          gameOrId?.title,
+          gameOrId?.name,
+          gameOrId?.alias,
+          gameOrId?.gameName,
+          gameOrId?.id,
+          gameOrId?.gameid,
+          gameOrId?.gameId,
+          gameOrId?.game_id,
+        ];
+
+  for (const value of values) {
+    if (value == null || String(value).trim() === '') continue;
+    const raw = String(value).trim();
+    const compact = String(raw)
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '');
+    const tail = String(raw.split(/[-_/]/).pop() || '')
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '');
+    if (HIDDEN_BROKEN_GAME_KEYS.has(compact) || HIDDEN_BROKEN_GAME_KEYS.has(tail)) return true;
+  }
+  return false;
+}
+
 export function isBlockedOneGameHubBrand(game) {
+  if (isHiddenBrokenProviderGame(game)) return true;
   const haystacks = [game?.brand, game?.brandId, game?.brand_id, game?.provider, game?.id, game?.gameid, game?.alias]
     .map(normalizeOneGameHubBrand)
     .filter(Boolean);
@@ -352,16 +405,46 @@ export const ORIONSTAR_CATEGORY_ORDER = [
   { id: 'casual-games', label: 'Casual Games' },
 ];
 
+const CASINO_LOBBY_CATEGORY_ORDER = [
+  'top-games',
+  'slots',
+  'live-casino',
+  'top-fishing',
+  'fishing',
+  'others',
+  'zesus',
+  'shooting',
+  'crash-game',
+  'olympus',
+  'table-games',
+  'instant-win',
+  'candy',
+  'keno',
+  'animal',
+  'lottery',
+];
+
+function orderCasinoLobbyCategories(categories = []) {
+  const rank = new Map(CASINO_LOBBY_CATEGORY_ORDER.map((id, index) => [id, index]));
+  const fallback = CASINO_LOBBY_CATEGORY_ORDER.length;
+  return [...categories].sort((a, b) => {
+    const aRank = rank.has(a.id) ? rank.get(a.id) : fallback;
+    const bRank = rank.has(b.id) ? rank.get(b.id) : fallback;
+    return aRank - bRank;
+  });
+}
+
 export const HIDDEN_SLOT_CATEGORY_IDS = new Set([
   'bingo',
   'virtual',
   'virtual-game',
   'virtual-games',
   'virtualgames',
-  'popular',
-  'popular-games',
   'buffalo-blast',
   'buffalo',
+  'olympus',
+  'candy',
+  'animal',
 ]);
 
 export function isHiddenSlotCategoryId(categoryId) {
@@ -441,8 +524,21 @@ function isScorpioProvider(provider) {
   return isScorpioPlayProvider(provider);
 }
 
+function isScorpioPgSoftStudio(game = {}) {
+  const hay = [
+    game.providerName,
+    game.brand,
+    game.studio,
+    game.provider
+  ]
+    .map((value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ''))
+    .join(' ');
+  return hay.includes('pgsoft') || hay.includes('pocketgames');
+}
+
 export function isScorpioSlotLobbyGame(game = {}) {
   if (!isScorpioProvider(game.provider)) return false;
+  if (isScorpioPgSoftStudio(game)) return false;
   const type = Number(game.gameType);
   if (Number.isFinite(type)) return type === 0;
   const label = String(game.gameTypeLabel || '').trim().toLowerCase();
@@ -453,6 +549,80 @@ export function isScorpioLobbyGame(game = {}) {
   return isScorpioProvider(game.provider) && Boolean(game.gameid || game.gameCode);
 }
 
+export function isScorpioLiveCasinoGame(game = {}) {
+  if (!isScorpioProvider(game.provider)) return false;
+  const type = Number(game.gameType);
+  if (Number.isFinite(type)) return type === 1;
+  const label = String(game.gameTypeLabel || '').trim().toLowerCase();
+  return label === 'live casino' || label === 'live-casino' || label === 'live';
+}
+
+export function isScorpioBuffaloNamedGame(game = {}) {
+  if (!isScorpioProvider(game.provider)) return false;
+  if (isScorpioPgSoftStudio(game)) return false;
+  const hay = `${game.title || ''} ${game.name || ''} ${game.gameName || ''}`;
+  return /\bbuffalo\b/i.test(hay);
+}
+
+export function buildBuffaloBlastCategory(allGames) {
+  const games = dedupeCarouselGames((allGames || []).filter(isScorpioBuffaloNamedGame));
+  if (!games.length) return null;
+  return { id: 'buffalo-blast', label: 'Buffalo Blast', games, ranked: false };
+}
+
+export function isScorpioZesusNamedGame(game = {}) {
+  const hay = `${game.title || ''} ${game.name || ''} ${game.gameName || ''} ${game.symbol || ''}`;
+  if (!/zesus|zeus|\bseus\b/i.test(hay)) return false;
+  const image = String(game.image || (Array.isArray(game.iconUrls) ? game.iconUrls[0] : '') || '').trim();
+  return Boolean(image) && image !== GAME_PLACEHOLDER && !isGenericGameImage(image);
+}
+
+export function buildZesusCategory(allGames) {
+  const games = dedupeCarouselGames(
+    (allGames || []).filter((game) => {
+      if (!isScorpioZesusNamedGame(game)) return false;
+      if (isScorpioLiveCasinoGame(game)) return false;
+      if (isOneGameHubProvider(game.provider)) {
+        const { id } = resolveOrionstarCategory(game);
+        return id === 'slots' || id === 'others' || id === 'other';
+      }
+      return true;
+    })
+  );
+  if (!games.length) return null;
+  return { id: 'zesus', label: 'Zeus Kingdom', games, ranked: false };
+}
+
+export function isScorpioOlympusNamedGame(game = {}) {
+  if (!isScorpioProvider(game.provider)) return false;
+  if (isScorpioLiveCasinoGame(game)) return false;
+  const hay = `${game.title || ''} ${game.name || ''} ${game.gameName || ''} ${game.symbol || ''}`;
+  if (!/olympus/i.test(hay)) return false;
+  const image = String(game.image || (Array.isArray(game.iconUrls) ? game.iconUrls[0] : '') || '').trim();
+  return Boolean(image) && image !== GAME_PLACEHOLDER && !isGenericGameImage(image);
+}
+
+export function buildOlympusCategory(allGames) {
+  const games = dedupeCarouselGames((allGames || []).filter(isScorpioOlympusNamedGame));
+  if (!games.length) return null;
+  return { id: 'olympus', label: 'Olympus World', games, ranked: false };
+}
+
+export function isScorpioCandyNamedGame(game = {}) {
+  if (!isScorpioProvider(game.provider)) return false;
+  if (isScorpioPgSoftStudio(game)) return false;
+  const hay = `${game.title || ''} ${game.name || ''} ${game.gameName || ''} ${game.symbol || ''}`;
+  if (!/candy/i.test(hay)) return false;
+  const image = String(game.image || (Array.isArray(game.iconUrls) ? game.iconUrls[0] : '') || '').trim();
+  return Boolean(image) && image !== GAME_PLACEHOLDER && !isGenericGameImage(image);
+}
+
+export function buildCandyCategory(allGames) {
+  const games = dedupeCarouselGames((allGames || []).filter(isScorpioCandyNamedGame));
+  if (!games.length) return null;
+  return { id: 'candy', label: 'Candy Land', games, ranked: false };
+}
+
 function compactSlotTitle(value) {
   return String(value || '')
     .toLowerCase()
@@ -460,19 +630,62 @@ function compactSlotTitle(value) {
     .replace(/[^a-z0-9]+/g, '');
 }
 
-function scorpioTitleMatches(game, title) {
-  const needle = compactSlotTitle(title);
-  const candidate = compactSlotTitle(game?.title || game?.name);
-  if (!needle || !candidate) return false;
-  if (candidate === needle) return true;
-  const shortest = Math.min(candidate.length, needle.length);
-  if (shortest < 10) return false;
-  return candidate.startsWith(needle) || needle.startsWith(candidate);
+const ANIMAL_CREATURE_GAME_NAMES = [
+  'Wolf Gold',
+  'The Dog House Megaways',
+  'The Dog House',
+  'Great Rhino Megaways',
+  'Buffalo King Megaways',
+  '5 Lions Megaways',
+  'Mustang Gold',
+  'The Dog House Multihold',
+  'Buffalo King',
+  'Great Rhino',
+  'Jungle Gorilla',
+  'Wolf Gold Ultimate',
+  'The Big Dawgs',
+  'Release the Bison',
+  'Panda\'s Fortune',
+  'Chicken Drop',
+  'Hot Safari',
+  '5 Rabbits Megaways',
+  'The Dog House - Dog or Alive',
+  '5 Lions Gold',
+  'Gorilla Mayhem',
+  'Wild Bison Charge',
+  'Raging Bull',
+  'Panda Fortune 2',
+  'Mustang Gold Megaways',
+];
+
+const ANIMAL_CREATURE_TITLE_KEYS = new Set(
+  ANIMAL_CREATURE_GAME_NAMES.map((name) => compactSlotTitle(name)).filter(Boolean)
+);
+
+export function isAnimalCreatureNamedGame(game = {}) {
+  if (String(game.provider || '').toLowerCase() === 'pgsoft') return false;
+  if (isScorpioPgSoftStudio(game)) return false;
+  const title = compactSlotTitle(game.title || game.name || game.gameName);
+  if (!title || !ANIMAL_CREATURE_TITLE_KEYS.has(title)) return false;
+  const image = String(game.image || (Array.isArray(game.iconUrls) ? game.iconUrls[0] : '') || '').trim();
+  return Boolean(image) && image !== GAME_PLACEHOLDER && !isGenericGameImage(image);
 }
 
-function findScorpioSlotByTitle(slots, title) {
-  if (!Array.isArray(slots) || !title) return null;
-  return slots.find((game) => scorpioTitleMatches(game, title)) || null;
+export function buildAnimalCreatureCategory(allGames) {
+  const pool = (allGames || []).filter(isAnimalCreatureNamedGame);
+  const byTitle = new Map();
+  for (const game of pool) {
+    const title = compactSlotTitle(game.title || game.name || game.gameName);
+    if (title && !byTitle.has(title)) byTitle.set(title, game);
+  }
+  const ordered = [];
+  for (const name of ANIMAL_CREATURE_GAME_NAMES) {
+    const found = byTitle.get(compactSlotTitle(name));
+    if (found) ordered.push(found);
+  }
+  const games = dedupeCarouselGames(ordered);
+  if (!games.length) return null;
+  return { id: 'animal', label: 'Animal Creature', games, ranked: false };
 }
 
 function pickScorpioIconUrl(icon) {
@@ -527,31 +740,6 @@ export function mapScorpioToCarouselGame(game) {
   };
 }
 
-function isScorpioPgSoftStudio(game = {}) {
-  const hay = [
-    game.providerName,
-    game.brand,
-    game.studio,
-    game.provider,
-  ]
-    .map((value) => String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, ''))
-    .join(' ');
-  return hay.includes('pgsoft') || hay.includes('pocketgames');
-}
-
-export function isScorpioBuffaloNamedGame(game = {}) {
-  if (!isScorpioProvider(game.provider)) return false;
-  if (isScorpioPgSoftStudio(game)) return false;
-  const hay = `${game.title || ''} ${game.name || ''} ${game.gameName || ''}`;
-  return /\bbuffalo\b/i.test(hay);
-}
-
-export function buildBuffaloBlastCategory(allGames) {
-  const games = dedupeCarouselGames((allGames || []).filter(isScorpioBuffaloNamedGame));
-  if (!games.length) return null;
-  return { id: 'buffalo-blast', label: 'Buffalo Blast', games, ranked: false };
-}
-
 export function pickScorpioLobbySlotGames(allGames) {
   const slots = (allGames || []).filter(isScorpioSlotLobbyGame);
   if (!slots.length) return [];
@@ -583,6 +771,60 @@ export function pickScorpioLobbySlotGames(allGames) {
 }
 
 const OTHER_CATEGORY_LIMIT = 70;
+const OTHER_LOBBY_CHICKEN_COUNT = 2;
+const OTHER_CHICKEN_ROAD_GAMES = [
+  { slug: 'chicken-road-two', title: 'Chicken Road 2' },
+  { slug: 'chicken-road-gold', title: 'Chicken Road Gold' },
+  { slug: 'chicken-road-new-year', title: 'Chicken Road Ice' },
+  { slug: 'chicken-road-race', title: 'Chicken Road Race' },
+  { slug: 'chicken-vs-zombies', title: 'Chicken vs Zombies' },
+];
+
+function chickenRoadMatchKey(game = {}) {
+  return `${game.gameid || ''} ${game.gameCode || ''} ${game.id || ''} ${game.symbol || ''} ${game.alias || ''}`
+    .trim()
+    .toLowerCase();
+}
+
+export function isOtherChickenRoadGame(game = {}) {
+  const hay = chickenRoadMatchKey(game);
+  const title = compactSlotTitle(game.title || game.name);
+  return OTHER_CHICKEN_ROAD_GAMES.some(
+    (spec) => hay.includes(spec.slug) || (title && title === compactSlotTitle(spec.title))
+  );
+}
+
+function pickOtherChickenRoadGames(allGames) {
+  const unmatched = [...(allGames || [])];
+  const games = [];
+  for (const spec of OTHER_CHICKEN_ROAD_GAMES) {
+    const needle = compactSlotTitle(spec.title);
+    const index = unmatched.findIndex((game) => {
+      const hay = chickenRoadMatchKey(game);
+      const title = compactSlotTitle(game.title || game.name);
+      return hay.includes(spec.slug) || (title && title === needle);
+    });
+    if (index < 0) continue;
+    games.push(unmatched.splice(index, 1)[0]);
+  }
+  return games;
+}
+
+export function gamesForCasinoLobbyRow(category, lobbyLimit) {
+  const games = category?.games || [];
+  if (category?.id !== 'others' && category?.id !== 'other') {
+    return games.slice(0, lobbyLimit);
+  }
+  const chicken = [];
+  const rest = [];
+  for (const game of games) {
+    if (isOtherChickenRoadGame(game)) chicken.push(game);
+    else rest.push(game);
+  }
+  const lobbyChicken = chicken.slice(0, OTHER_LOBBY_CHICKEN_COUNT);
+  const remaining = Math.max(0, lobbyLimit - lobbyChicken.length);
+  return [...lobbyChicken, ...rest.slice(0, remaining)];
+}
 
 function uniqueLobbyKey(game) {
   const provider = String(game?.provider || '').trim().toLowerCase();
@@ -614,6 +856,12 @@ export function buildOtherLobbyCategory(allGames, occupiedGames = []) {
     if (id) occupiedIds.add(id);
   }
 
+  const chickenGames = pickOtherChickenRoadGames(allGames);
+  for (const game of chickenGames) {
+    const id = uniqueLobbyKey(game);
+    if (id) occupiedIds.add(id);
+  }
+
   const pushUnique = (pool, limit = Infinity) => {
     const games = [];
     const seen = new Set();
@@ -638,15 +886,13 @@ export function buildOtherLobbyCategory(allGames, occupiedGames = []) {
     scorpioGames.length >= OTHER_CATEGORY_LIMIT
       ? []
       : pushUnique([...gspSlots, ...hubSlots], OTHER_CATEGORY_LIMIT - scorpioGames.length);
-  const games = [...scorpioGames, ...filler];
+  const games = [...chickenGames, ...scorpioGames, ...filler];
   if (!games.length) return null;
   return { id: 'others', label: 'Other', games, ranked: false };
 }
 
 export function buildCuratedSlotsCategory(allGames) {
   const gspById = indexGitslotparkGames(allGames);
-  const oghById = indexOneGameHubGames(allGames);
-  const scorpioSlots = (allGames || []).filter(isScorpioSlotLobbyGame);
   const games = [];
   const seen = new Set();
   const seenTitles = new Set();
@@ -659,17 +905,10 @@ export function buildCuratedSlotsCategory(allGames) {
   };
 
   for (const spec of SLOTS_CATEGORY_GAMES) {
-    const scorpio = findScorpioSlotByTitle(scorpioSlots, spec.title);
-    if (scorpio) {
-      pushGame(scorpio, spec.title);
-      continue;
-    }
+    if (String(spec.provider || '').toLowerCase() === 'onegamehub') continue;
     const key = String(spec.gameid || '').trim();
     if (!key) continue;
-    const found =
-      String(spec.provider || '').toLowerCase() === 'onegamehub'
-        ? oghById.get(key.toLowerCase())
-        : gspById.get(key) || gspById.get(key.toLowerCase());
+    const found = gspById.get(key) || gspById.get(key.toLowerCase());
     if (found) pushGame(found, spec.title);
   }
 
@@ -804,19 +1043,15 @@ function collectExcludeIds(values) {
 }
 
 /**
- * Ranked Top 10 games row.
- * GitSlotPark when that provider is enabled in admin; otherwise 1GameHub.
- * Never includes titles already used in Top 10 fishing.
+ * Ranked Top 10 games row: 5 named hits, then 5 buffalo titles.
  */
-export function buildTopGamesCategory(allGames, options = {}, excludeIds = new Set()) {
+export function buildTopGamesCategory(allGames, _, excludeIds = new Set()) {
   const exclude = collectExcludeIds([
     ...excludeIds,
     ...ONEGAMEHUB_TOP_FISHING_GAMES.map((spec) => spec.gameid),
   ]);
   const games = [];
   const seen = new Set();
-  const useGitslotpark = options.gitslotpark === true;
-  const useOnegamehub = options.onegamehub === true;
 
   const pushGame = (game, title) => {
     const id = gameCatalogId(game);
@@ -825,32 +1060,36 @@ export function buildTopGamesCategory(allGames, options = {}, excludeIds = new S
     return pushUniqueLobbyGame(games, seen, game, title);
   };
 
-  if (useGitslotpark) {
-    const byId = indexGitslotparkGames(allGames);
-    for (const spec of GITSLOTPARK_TOP_GAMES) {
-      if (games.length >= TOP_GAMES_COUNT) break;
-      const key = String(spec.gameid || '').trim();
-      const found = byId.get(key) || byId.get(key.toLowerCase());
-      if (found) pushGame(found, spec.title || found.title);
-    }
-    for (const game of allGames || []) {
-      if (games.length >= TOP_GAMES_COUNT) break;
-      if (!isGitslotparkProvider(game?.provider)) continue;
-      pushGame(game);
-    }
-  } else if (useOnegamehub) {
-    const byId = indexOneGameHubGames(allGames);
-    for (const spec of ONEGAMEHUB_TOP_GAMES) {
-      if (games.length >= TOP_GAMES_COUNT) break;
-      const found = byId.get(String(spec.gameid).trim().toLowerCase());
-      if (found) pushGame(found, spec.title);
-    }
-    for (const game of allGames || []) {
-      if (games.length >= TOP_GAMES_COUNT) break;
-      if (!isOneGameHubProvider(game?.provider) || isBlockedOneGameHubBrand(game)) continue;
-      if (isOneGameHubFishingTitle(game)) continue;
-      pushGame(game);
-    }
+  const findExactTitle = (name) => {
+    const needle = compactSlotTitle(name);
+    if (!needle) return null;
+    return (allGames || []).find((game) => {
+      if (isScorpioPgSoftStudio(game)) return false;
+      if (String(game.provider || '').toLowerCase() === 'pgsoft') return false;
+      const id = gameCatalogId(game);
+      if (!id || seen.has(id) || exclude.has(id)) return false;
+      return compactSlotTitle(game.title || game.name) === needle;
+    }) || null;
+  };
+
+  for (const name of TOP_GAMES_LEAD_NAMES) {
+    const found = findExactTitle(name);
+    if (found) pushGame(found, name);
+  }
+
+  for (const name of TOP_GAMES_BUFFALO_NAMES) {
+    if (games.length >= TOP_GAMES_COUNT) break;
+    const found = findExactTitle(name);
+    if (found) pushGame(found, name);
+  }
+
+  for (const game of allGames || []) {
+    if (games.length >= TOP_GAMES_COUNT) break;
+    if (isScorpioPgSoftStudio(game)) continue;
+    if (String(game.provider || '').toLowerCase() === 'pgsoft') continue;
+    const hay = `${game.title || ''} ${game.name || ''}`;
+    if (!/\bbuffalo\b/i.test(hay)) continue;
+    pushGame(game);
   }
 
   if (!games.length) return null;
@@ -892,12 +1131,9 @@ export function buildOneGameHubInstantWinCategory(allGames) {
 export function buildOneGameHubLiveCasinoCategory(allGames) {
   const games = [];
   const seen = new Set();
-  for (const game of allGames || []) {
-    if (!isOneGameHubProvider(game?.provider)) continue;
-    if (isBlockedOneGameHubBrand(game)) continue;
-    if (!isGrazGameBrand(game)) continue;
+  const pushLive = (game) => {
     const id = String(game.gameid || game.id || '').trim().toLowerCase();
-    if (!id || seen.has(id)) continue;
+    if (!id || seen.has(id)) return;
     seen.add(id);
     games.push({
       ...game,
@@ -907,7 +1143,21 @@ export function buildOneGameHubLiveCasinoCategory(allGames) {
           ? game.iconUrls
           : [game.image || GAME_PLACEHOLDER],
     });
+  };
+
+  for (const game of allGames || []) {
+    if (!isOneGameHubProvider(game?.provider)) continue;
+    if (isBlockedOneGameHubBrand(game)) continue;
+    if (!isGrazGameBrand(game)) continue;
+    pushLive(game);
   }
+
+  for (const game of allGames || []) {
+    if (!isScorpioLiveCasinoGame(game)) continue;
+    if (isScorpioCandyNamedGame(game)) continue;
+    pushLive(game);
+  }
+
   if (!games.length) return null;
   return { id: 'live-casino', label: 'Live Casino', games, ranked: false };
 }
@@ -976,18 +1226,24 @@ function titleCaseSlug(slug) {
 export function normalizeSlotCategoryId(categoryId) {
   const raw = String(categoryId || '').trim();
   if (!raw) return '';
+  let id = raw;
   try {
-    return decodeURIComponent(raw).toLowerCase();
+    id = decodeURIComponent(raw).toLowerCase();
   } catch {
-    return raw.toLowerCase();
+    id = raw.toLowerCase();
   }
+  if (id === 'zeus') return 'zesus';
+  return id;
 }
 
 export function getSlotCategoryLabel(categoryId) {
   const id = normalizeSlotCategoryId(categoryId);
   if (id === 'recently-played') return 'Recently Played';
-  if (id === 'popular' || id === 'popular-games') return 'Popular Games';
   if (id === 'buffalo-blast' || id === 'buffalo') return 'Buffalo Blast';
+  if (id === 'zesus' || id === 'zeus') return 'Zeus Kingdom';
+  if (id === 'olympus') return 'Olympus World';
+  if (id === 'candy') return 'Candy Land';
+  if (id === 'animal') return 'Animal Creature';
   if (id === 'top-fishing') return 'Top 10 fishing games';
   if (id === 'top-games') return 'Top 10 games';
   const known = ORIONSTAR_CATEGORY_ORDER.find((item) => item.id === id);
@@ -1062,6 +1318,13 @@ export function buildOrionstarSlotCategories(allGames, options = {}) {
   const curatedScratch = buildOneGameHubScratchCardsCategory(allGames);
   const curatedLiveCasino = buildOneGameHubLiveCasinoCategory(allGames);
   const curatedSlots = buildCuratedSlotsCategory(allGames);
+  const topGameKeys = new Set();
+  for (const game of curatedTopGames?.games || []) {
+    const id = gameCatalogId(game);
+    const title = compactSlotTitle(game.title || game.name);
+    if (id) topGameKeys.add(id);
+    if (title) topGameKeys.add(title);
+  }
 
   const pushCuratedOrBucket = (defId, curated) => {
     const bucket = buckets.get(defId);
@@ -1093,12 +1356,22 @@ export function buildOrionstarSlotCategories(allGames, options = {}) {
       continue;
     }
     if (def.id === 'slots') {
-      if (curatedSlots?.games?.length) {
-        categories.push(curatedSlots);
+      const slotsGames = (curatedSlots?.games || []).filter((game) => {
+        const id = gameCatalogId(game);
+        const title = compactSlotTitle(game.title || game.name);
+        if (id && topGameKeys.has(id)) return false;
+        if (title && topGameKeys.has(title)) return false;
+        if (isScorpioZesusNamedGame(game)) return false;
+        if (isScorpioOlympusNamedGame(game)) return false;
+        if (isScorpioCandyNamedGame(game)) return false;
+        if (isAnimalCreatureNamedGame(game)) return false;
+        if (isOtherChickenRoadGame(game)) return false;
+        return true;
+      });
+      if (slotsGames.length) {
+        categories.push({ ...curatedSlots, games: slotsGames });
       }
       buckets.delete('slots');
-      const buffaloBlast = buildBuffaloBlastCategory(allGames);
-      if (buffaloBlast?.games?.length) categories.push(buffaloBlast);
       continue;
     }
     if (def.id === 'others') {
@@ -1125,28 +1398,28 @@ export function buildOrionstarSlotCategories(allGames, options = {}) {
   }
 
 
-  if (curatedTopFishing?.games?.length) {
-    const liveCasinoIndex = categories.findIndex((category) => category.id === 'live-casino');
-    if (liveCasinoIndex >= 0) {
-      categories.splice(liveCasinoIndex + 1, 0, curatedTopFishing);
-    } else {
-      categories.unshift(curatedTopFishing);
-    }
-  }
+  if (curatedTopFishing?.games?.length) categories.push(curatedTopFishing);
+  if (curatedTopGames?.games?.length) categories.push(curatedTopGames);
 
-  if (curatedTopGames?.games?.length) {
-    categories.unshift(curatedTopGames);
-  }
-
-  const occupied = categories.flatMap((category) => category.games || []);
+  const zesus = buildZesusCategory(allGames);
+  const olympus = buildOlympusCategory(allGames);
+  const candy = buildCandyCategory(allGames);
+  const animal = buildAnimalCreatureCategory(allGames);
+  const occupied = [
+    ...categories.flatMap((category) => category.games || []),
+    ...(zesus?.games || []),
+    ...(olympus?.games || []),
+    ...(candy?.games || []),
+    ...(animal?.games || []),
+  ];
   const otherCategory = buildOtherLobbyCategory(allGames, occupied);
-  if (otherCategory?.games?.length) {
-    const slotsIndex = categories.findIndex((category) => category.id === 'slots');
-    if (slotsIndex >= 0) categories.splice(slotsIndex + 1, 0, otherCategory);
-    else categories.push(otherCategory);
-  }
+  if (otherCategory?.games?.length) categories.push(otherCategory);
+  if (zesus?.games?.length) categories.push(zesus);
+  if (olympus?.games?.length) categories.push(olympus);
+  if (candy?.games?.length) categories.push(candy);
+  if (animal?.games?.length) categories.push(animal);
 
-  return categories;
+  return orderCasinoLobbyCategories(categories);
 }
 
 export function resolveLaunchGameId(game) {
@@ -1178,6 +1451,7 @@ function getCarouselImage(game) {
 }
 
 export function isEligibleDashboardSlotGame(game) {
+  if (isHiddenBrokenProviderGame(game)) return false;
   const provider = String(game?.provider || '').trim().toLowerCase();
   if (provider === 'onegamehub' || provider === '1gamehub') {
     return Boolean(game.gameid || game.gameId) && !isBlockedOneGameHubBrand(game);

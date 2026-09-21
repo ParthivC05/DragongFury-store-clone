@@ -39,8 +39,9 @@ function PayingWithMark({ methodKey, label }) {
   };
   const Icon = icons[key];
   if (!Icon) return label || '—';
+  const isDark = key === 'apple_pay';
   return (
-    <span className="spm-pj-paywith" aria-label={label || undefined}>
+    <span className={`spm-pj-paywith${isDark ? ' is-dark' : ''}`} aria-label={label || undefined}>
       <Icon />
     </span>
   );

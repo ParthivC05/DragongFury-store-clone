@@ -9,8 +9,6 @@ const {
   upsertBonaUserMapping
 } = require('./bonaUser.helpers');
 const { getPlayableBalance } = require('./bonaWallet.helpers');
-const { parseCoinTypeFromReq } = require('../../lib/normalizePlayCoinType');
-const { rememberPlayCoin } = require('../playCoin/playCoinSession.service');
 
 /**
  * Launch a Bona game in Seamless Wallet mode:
@@ -39,15 +37,9 @@ async function launchGame(req) {
     throw err;
   }
 
-  const coinType = parseCoinTypeFromReq(req, 'bona');
-  await rememberPlayCoin({ userId, provider: 'bona', gameId, coinType });
-  const playable = await getPlayableBalance(userId, undefined, coinType);
+  const playable = await getPlayableBalance(userId);
   if (!(playable > 0)) {
-    const err = new Error(
-      coinType === 'GC'
-        ? 'Insufficient Gold Coin balance to launch this game'
-        : 'Insufficient SC balance to launch this game'
-    );
+    const err = new Error('Insufficient SC balance to launch this game');
     err.statusCode = 400;
     err.code = 'INSUFFICIENT_FUNDS';
     throw err;

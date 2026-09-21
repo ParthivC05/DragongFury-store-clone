@@ -1,8 +1,6 @@
 'use strict';
 
 const RECENT_CATEGORY_LIMIT = 12;
-const POPULAR_CATEGORY_LIMIT = 20;
-const POPULAR_CATEGORY_ID = 'popular';
 
 function normalizeProvider(provider) {
   return String(provider || '').trim().toLowerCase();
@@ -10,18 +8,6 @@ function normalizeProvider(provider) {
 
 function sameGameId(a, b) {
   return String(a ?? '') === String(b ?? '');
-}
-
-function isGitslotparkLikeProvider(provider) {
-  const value = normalizeProvider(provider);
-  return (
-    value &&
-    value !== 'bona' &&
-    value !== 'onegamehub' &&
-    value !== '1gamehub' &&
-    value !== 'scorpio' &&
-    value !== 'scorpioplay'
-  );
 }
 
 /**
@@ -47,7 +33,7 @@ export function matchCatalogGameForRecentPlay(allGames, recent) {
       catalog.find(
         (game) =>
           sameGameId(game.gameid ?? game.gameId, gameId) &&
-          isGitslotparkLikeProvider(game.provider)
+          normalizeProvider(game.provider) !== 'bona'
       ) || null
     );
   }
@@ -88,37 +74,4 @@ export function buildRecentlyPlayedSlotCategoryFromTransactions(
   };
 }
 
-/**
- * Build Popular category from store-wide play counts + live catalog.
- * @param {object[]} allGames
- * @param {Array<{ gameId: string|number, provider: string }>} popularRows
- */
-export function buildPopularSlotCategoryFromPlays(
-  allGames,
-  popularRows,
-  limit = POPULAR_CATEGORY_LIMIT
-) {
-  const rows = Array.isArray(popularRows) ? popularRows : [];
-  const games = [];
-  const seen = new Set();
-
-  for (const row of rows) {
-    if (games.length >= limit) break;
-    const matched = matchCatalogGameForRecentPlay(allGames, row);
-    if (!matched) continue;
-    const key = `${normalizeProvider(matched.provider)}:${String(matched.gameid ?? matched.gameId)}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    games.push(matched);
-  }
-
-  if (!games.length) return null;
-  return {
-    id: POPULAR_CATEGORY_ID,
-    label: 'Popular Games',
-    games,
-    ranked: false,
-  };
-}
-
-export { RECENT_CATEGORY_LIMIT, POPULAR_CATEGORY_LIMIT, POPULAR_CATEGORY_ID };
+export { RECENT_CATEGORY_LIMIT };

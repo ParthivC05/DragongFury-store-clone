@@ -27,7 +27,7 @@ function copyCountFor(baseCount, visible) {
   return perSide * 2 + 1;
 }
 
-export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categoryId = null }) {
+export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label }) {
   const viewportRef = useRef(null);
   const trackRef = useRef(null);
   const indexRef = useRef(0);
@@ -37,7 +37,6 @@ export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categ
   const resumeTimerRef = useRef(0);
   const coverRef = useRef(null);
   const layoutRef = useRef({ slideW: 120, visible: 7, mobile: false, copies: 5, mid: 0 });
-  const liveAspectRef = useRef(3 / 4);
   const dragRef = useRef({
     active: false,
     startX: 0,
@@ -97,25 +96,15 @@ export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categ
     const mobile = width < 768;
     const visible = mobile ? 3 : 13;
     const slideW = width / visible;
-    const liveCasino = String(categoryId || '') === 'live-casino';
-    const cardW = liveCasino
-      ? mobile
-        ? slideW * 1.72
-        : slideW * 2.2
-      : mobile
-        ? slideW * 1.28
-        : slideW * 1.65;
+    const cardW = mobile ? slideW * 1.28 : slideW * 1.65;
     const overlap = (cardW - slideW) / -2;
-    const cardH = liveCasino
-      ? Math.round(cardW * liveAspectRef.current)
-      : Math.round(cardW * (mobile ? 1.12 : 1.18));
     viewport.style.setProperty('--cover-slide', `${slideW}px`);
     viewport.style.setProperty('--cover-card-w', `${cardW}px`);
     viewport.style.setProperty('--cover-overlap', `${overlap}px`);
-    viewport.style.setProperty('--cover-card-h', `${cardH}px`);
+    viewport.style.setProperty('--cover-card-h', `${Math.round(cardW * (mobile ? 1.12 : 1.18))}px`);
     layoutRef.current = { slideW, visible, mobile, copies, mid: midStart };
     return layoutRef.current;
-  }, [categoryId, copies, midStart]);
+  }, [copies, midStart]);
 
   const applyTransforms = useCallback(() => {
     const viewport = viewportRef.current;
@@ -184,26 +173,6 @@ export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categ
     setTrackAnimating(false);
     applyTransforms();
   }, [applyTransforms, measure, midStart, setTrackAnimating, snapToMiddle, looped.length]);
-
-  useEffect(() => {
-    if (String(categoryId || '') !== 'live-casino') return undefined;
-    const src = previewSrc(list[0]);
-    if (!src) return undefined;
-
-    let cancelled = false;
-    const img = new Image();
-    img.onload = () => {
-      if (cancelled || !img.naturalWidth || !img.naturalHeight) return;
-      liveAspectRef.current = img.naturalHeight / img.naturalWidth;
-      measure();
-      applyTransforms();
-    };
-    img.src = src;
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyTransforms, categoryId, list, measure]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -379,10 +348,7 @@ export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categ
   if (!baseCount) return null;
 
   return (
-    <div
-      ref={coverRef}
-      className={`dash-home-cover${String(categoryId || '') === 'live-casino' ? ' dash-home-cover--live' : ''}`}
-    >
+    <div ref={coverRef} className="dash-home-cover">
       <div ref={viewportRef} className="dash-home-cover-viewport" aria-label={label}>
         <div ref={trackRef} className="dash-home-cover-track">
           {looped.map(({ game, copy, index }, loopIndex) => {
@@ -403,7 +369,7 @@ export function HomeCasinoCoverflow({ games, onPlay, playingGameId, label, categ
                     alt=""
                     className="dash-home-cover-img"
                     draggable={false}
-                    loading="lazy"
+                    loading="eager"
                     onError={(event) => {
                       if (event.currentTarget.src.includes(GAME_PLACEHOLDER)) return;
                       event.currentTarget.src = GAME_PLACEHOLDER;

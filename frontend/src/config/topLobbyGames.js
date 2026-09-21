@@ -1,4 +1,22 @@
-/** Curated GitSlotPark Top 10 games (lobby rank order, highest GGR first). */
+/** Curated Top 10 lead titles (exact name match, lobby rank order). */
+export const TOP_GAMES_LEAD_NAMES = [
+  'Sweet Bonanza',
+  'Gates of Olympus',
+  'Big Bass Bonanza',
+  'Wolf Gold',
+  'The Dog House',
+];
+
+/** Remaining Top 10 slots: buffalo titles first, then any other buffalo-named game. */
+export const TOP_GAMES_BUFFALO_NAMES = [
+  'Buffalo King',
+  'Buffalo King Megaways',
+  'Buffalo Win',
+  'Blazing Buffalo',
+  'Buffalo King Untamed Megaways',
+];
+
+/** @deprecated Prefer TOP_GAMES_LEAD_NAMES. Kept for older imports. */
 export const GITSLOTPARK_TOP_GAMES = [
   { gameid: '33' },
   { gameid: '104' },
@@ -12,10 +30,7 @@ export const GITSLOTPARK_TOP_GAMES = [
   { gameid: '1473388' },
 ];
 
-/**
- * Curated 1GameHub Top 10 games (highest GGR first).
- * Must not overlap Top 10 fishing. Extra rows fill if a catalog title is missing.
- */
+/** @deprecated Prefer TOP_GAMES_LEAD_NAMES. Kept for older imports. */
 export const ONEGAMEHUB_TOP_GAMES = [
   { gameid: 'kagaming2-BonusManiaPlinko', title: 'Bonus Mania Plinko' },
   { gameid: 'kagaming2-HotCoin', title: 'Hot Coin' },

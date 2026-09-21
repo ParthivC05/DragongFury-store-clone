@@ -343,7 +343,7 @@
   margin-top: 0.5rem;
 }
 
-/* —— DollarPay / XXPay round-trip handoff (DragonFury prototype) —— */
+/* —— DollarPay / XXPay round-trip handoff (PlayJuwa prototype) —— */
 .secure-payment-modal--dollarpay {
   --pj-bg: #0a0e18;
   --pj-s1: #111726;
@@ -672,6 +672,10 @@
   justify-content: center;
   background: #fff;
   overflow: visible;
+}
+
+.spm-pj-plogo:has(.spm-pj-paywith.is-dark) {
+  background: #111;
 }
 
 .spm-pj-paywith {

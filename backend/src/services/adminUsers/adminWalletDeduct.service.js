@@ -15,7 +15,6 @@ const {
 } = require('../wallet/walletBuckets.service');
 const { invalidateBalanceCache } = require('../wallet/balanceCache');
 const { notifyUserBalanceChanged } = require('../realtime/notifyBalance.service');
-const { applyGcDelta, isGcCoinsUser } = require('../wallet/gcWallet.service');
 
 const JAR_LABELS = {
   [PURCHASED_CURRENCY_CODE]: 'Purchased SC',
@@ -134,23 +133,6 @@ async function applyWalletCredit({ transaction, userId, currencyCode, amount, cr
   }
 }
 
-function mapGcAdjustError(err) {
-  if (err?.code === 6 || String(err?.message || '').toLowerCase().includes('insufficient')) {
-    const mapped = new Error('Not enough ready Gold Coins.');
-    mapped.statusCode = 400;
-    throw mapped;
-  }
-  throw err;
-}
-
-async function applyAdminGcDelta(userId, amount, meta, transaction) {
-  try {
-    await applyGcDelta(userId, amount, meta, transaction);
-  } catch (err) {
-    mapGcAdjustError(err);
-  }
-}
-
 function positiveAmount(value) {
   if (value == null || value === '') return 0;
   const n = roundMoney(Number(value));
@@ -226,23 +208,15 @@ async function adminDeductWallets({
   bscAmount,
   rscAmount,
   scAmount,
-  gcAmount,
   reason
 }) {
   const psc = positiveAmount(pscAmount);
   const bsc = positiveAmount(bscAmount);
   const rsc = positiveAmount(rscAmount);
   const sc = positiveAmount(scAmount);
-  const gc = positiveAmount(gcAmount);
 
-  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0) && !(sc > 0) && !(gc > 0)) {
+  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0) && !(sc > 0)) {
     const err = new Error('Enter how much to take from at least one wallet.');
-    err.statusCode = 400;
-    throw err;
-  }
-
-  if (gc > 0 && !(await isGcCoinsUser(targetUserId))) {
-    const err = new Error('Gold Coins can only be adjusted for DragonFury users.');
     err.statusCode = 400;
     throw err;
   }
@@ -336,18 +310,6 @@ async function adminDeductWallets({
         { transaction }
       );
     }
-    if (gc > 0) {
-      await applyAdminGcDelta(
-        targetUserId,
-        -gc,
-        {
-          type: 'admin_deduct',
-          description: metaBase.reason || 'Admin took Gold Coins',
-          metadata: { ...metaBase, wallet: 'GC', jar: 'Gold Coins' }
-        },
-        transaction
-      );
-    }
   });
 
   invalidateBalanceCache(targetUserId);
@@ -365,35 +327,27 @@ async function adminAddSc({
   bscAmount,
   rscAmount,
   scAmount,
-  gcAmount,
   description
 }) {
   let psc = positiveAmount(pscAmount);
   let bsc = positiveAmount(bscAmount);
   let rsc = positiveAmount(rscAmount);
   const sc = positiveAmount(scAmount);
-  const gc = positiveAmount(gcAmount);
 
   // Legacy clients sent only `sc` → Free jar
-  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0) && !(gc > 0) && sc > 0) {
+  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0) && sc > 0) {
     bsc = sc;
   }
 
-  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0) && !(gc > 0)) {
+  if (!(psc > 0) && !(bsc > 0) && !(rsc > 0)) {
     const err = new Error('Enter how much to give in at least one wallet.');
-    err.statusCode = 400;
-    throw err;
-  }
-
-  if (gc > 0 && !(await isGcCoinsUser(targetUserId))) {
-    const err = new Error('Gold Coins can only be adjusted for DragonFury users.');
     err.statusCode = 400;
     throw err;
   }
 
   const details = description != null ? String(description).trim().slice(0, 500) : '';
   if (!details) {
-    const err = new Error('Write why you are giving coins.');
+    const err = new Error('Write why you are giving SC.');
     err.statusCode = 400;
     throw err;
   }
@@ -429,23 +383,6 @@ async function adminAddSc({
           }
         },
         { transaction }
-      );
-    }
-    if (gc > 0) {
-      await applyAdminGcDelta(
-        targetUserId,
-        gc,
-        {
-          type: 'admin_add',
-          description: details,
-          metadata: {
-            adminUserId,
-            wallet: 'GC',
-            jar: 'Gold Coins',
-            description: details
-          }
-        },
-        transaction
       );
     }
   });

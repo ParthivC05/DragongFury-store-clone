@@ -419,6 +419,57 @@
   font-weight: 600;
 }
 
+.footer-legal-card {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid #dbeafe;
+  background: linear-gradient(180deg, #eff6ff 0%, #fff 100%);
+}
+
+.footer-legal-card strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+}
+
+.footer-legal-card > div > p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  max-width: 40rem;
+}
+
+.footer-legal-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.footer-legal-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  background: #fff;
+}
+
+.footer-legal-row-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
 .footer-defaults-card {
   display: flex;
   flex-wrap: wrap;

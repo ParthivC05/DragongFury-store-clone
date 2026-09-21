@@ -141,14 +141,14 @@ async function getById(req, res) {
   }
   const balance = await getBalance(user.userId);
 
-  // DragonFury email-campaign offer status (claimed / applied / redeemed), if any.
+  // PlayJuwa email-campaign offer status (claimed / applied / redeemed), if any.
   let emailCampaignOffer = null;
   try {
     if (
       db.EmailCampaignSend &&
       String(plain.storeCode || '')
         .toLowerCase()
-        .replace(/[^a-z0-9]/g, '') === 'dragonfury'
+        .replace(/[^a-z0-9]/g, '') === 'playjuwa'
     ) {
       const send = await db.EmailCampaignSend.findOne({
         where: { userId: user.userId, claimStatus: 'claimed' },
@@ -215,7 +215,6 @@ async function walletDeduct(req, res) {
   const bsc = body.bsc != null ? Number(body.bsc) : null;
   const rsc = body.rsc != null ? Number(body.rsc) : null;
   const sc = body.sc != null ? Number(body.sc) : null;
-  const gc = body.gc != null ? Number(body.gc) : null;
   const reason = body.reason != null ? String(body.reason) : '';
 
   try {
@@ -226,7 +225,6 @@ async function walletDeduct(req, res) {
       bscAmount: bsc,
       rscAmount: rsc,
       scAmount: sc,
-      gcAmount: gc,
       reason
     });
     const balance = await getBalance(scoped.user.userId, { skipCache: true });
@@ -248,7 +246,6 @@ async function walletAddSc(req, res) {
   const bsc = body.bsc != null ? Number(body.bsc) : null;
   const rsc = body.rsc != null ? Number(body.rsc) : null;
   const sc = body.sc != null ? Number(body.sc) : null;
-  const gc = body.gc != null ? Number(body.gc) : null;
   const description = body.description != null ? String(body.description) : '';
 
   try {
@@ -259,7 +256,6 @@ async function walletAddSc(req, res) {
       bscAmount: bsc,
       rscAmount: rsc,
       scAmount: sc,
-      gcAmount: gc,
       description
     });
     const balance = await getBalance(scoped.user.userId, { skipCache: true });

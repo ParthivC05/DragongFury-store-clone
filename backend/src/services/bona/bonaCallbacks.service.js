@@ -18,13 +18,8 @@ const {
 } = require('./bonaXSign.helpers');
 const { platformTxId } = require('./bonaWallet.helpers');
 const { createLogger } = require('../../libs/logger');
-const { resolvePlayCoin } = require('../playCoin/playCoinSession.service');
 
 const log = createLogger('bonaCallback');
-
-function bonaCoin(userId, gameId) {
-  return resolvePlayCoin({ userId, provider: 'bona', gameId });
-}
 
 function headerXSign(req) {
   return (
@@ -121,8 +116,7 @@ async function queryCallback(req) {
   if (!resolved) return seamlessError(SEAMLESS_CODE.USER_NOT_FOUND);
 
   try {
-    const coinType = await bonaCoin(resolved.userId, body.gameId);
-    const balance = await getPlayableBalance(resolved.userId, undefined, coinType);
+    const balance = await getPlayableBalance(resolved.userId);
     return seamlessOk(balance, body.currency || resolveBonaConfig().currency);
   } catch (_) {
     return seamlessError(SEAMLESS_CODE.SYSTEM_ERROR);
@@ -161,7 +155,6 @@ async function betCallback(req) {
 
   try {
     const balanceAfter = await db.sequelize.transaction(async (t) => {
-      const coinType = await bonaCoin(resolved.userId, gameId);
       const after = await applyBalanceDelta(
         resolved.userId,
         -betAmount,
@@ -176,8 +169,7 @@ async function betCallback(req) {
             token: body.token
           }
         },
-        t,
-        { coinType }
+        t
       );
 
       await recordTx(
@@ -269,7 +261,6 @@ async function settlementCallback(req, { fishing = false, activity = false } = {
 
   try {
     const balanceAfter = await db.sequelize.transaction(async (t) => {
-      const coinType = await bonaCoin(resolved.userId, gameId);
       let after;
       if (isRefund && !fishing) {
         // Prefer stored impact rollback when a prior bet exists for same round
@@ -296,8 +287,7 @@ async function settlementCallback(req, { fishing = false, activity = false } = {
               description: `Bona refund ${transactionId}`,
               metadata: { transactionId, ref: priorBet.transactionId }
             },
-            t,
-            { coinType }
+            t
           );
           await priorBet.update({ status: 'rolled_back' }, { transaction: t });
         } else {
@@ -309,8 +299,7 @@ async function settlementCallback(req, { fishing = false, activity = false } = {
               description: `Bona refund ${transactionId}`,
               metadata: { transactionId, gameId }
             },
-            t,
-            { coinType }
+            t
           );
         }
       } else if (fishing && betAmount != null && winAmount != null) {
@@ -323,7 +312,7 @@ async function settlementCallback(req, { fishing = false, activity = false } = {
             metadata: { transactionId, gameId, bet: betAmount, win: winAmount }
           },
           t,
-          { betAmount, winAmount, coinType }
+          { betAmount, winAmount }
         );
       } else {
         after = await applyBalanceDelta(
@@ -340,8 +329,7 @@ async function settlementCallback(req, { fishing = false, activity = false } = {
               fishing
             }
           },
-          t,
-          { coinType }
+          t
         );
       }
 

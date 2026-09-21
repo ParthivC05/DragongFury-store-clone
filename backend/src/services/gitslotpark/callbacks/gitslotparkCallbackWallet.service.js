@@ -18,8 +18,6 @@ const { resolveLockedBonusSc } = require('../../wallet/bonusScLock.service');
 const { formatBalance } = require('../gitslotparkSign.helpers');
 const { RESULT } = require('./gitslotparkCallback.helpers');
 const { createLogger } = require('../../../libs/logger');
-const { isGcCoin } = require('../../../lib/normalizePlayCoinType');
-const { getGcBalance, applyGcDelta } = require('../../wallet/gcWallet.service');
 
 const log = createLogger('slotsCallbackWallet');
 
@@ -44,12 +42,8 @@ function insufficientFundsError() {
 
 /**
  * Slots playable = usable PSC + BSC + RSC (+ leftover legacy SC).
- * Gold Coins (DragonFury) use a separate entertainment wallet.
  */
-async function getPlayableBalance(userId, transaction, coinType = 'SC') {
-  if (isGcCoin(coinType)) {
-    return getGcBalance(userId, transaction);
-  }
+async function getPlayableBalance(userId, transaction) {
   const [pscWallet, bscWallet, rscWallet, legacyWallet] = await Promise.all([
     ensureWallet(userId, PURCHASED_CURRENCY_CODE, transaction),
     ensureWallet(userId, BONUS_CURRENCY_CODE, transaction),
@@ -394,12 +388,8 @@ function buildSlotsWalletImpact({ delta, betAmount, winAmount, pscUsable, bscUsa
 
 /**
  * Apply a GitSlotPark balance delta under PSC→BSC→RSC slots rules.
- * Gold Coins stay on the GC wallet (wins are not redeemable).
  */
 async function applyBalanceDelta(userId, delta, meta, transaction, options = {}) {
-  if (isGcCoin(options.coinType)) {
-    return applyGcDelta(userId, delta, meta, transaction);
-  }
   const [pscWallet, bscWallet, rscWallet, legacyWallet] = await Promise.all([
     ensureWallet(userId, PURCHASED_CURRENCY_CODE, transaction),
     ensureWallet(userId, BONUS_CURRENCY_CODE, transaction),
@@ -422,10 +412,7 @@ async function applyBalanceDelta(userId, delta, meta, transaction, options = {})
 /**
  * Reverse a prior mutation using stored walletImpact when available.
  */
-async function applyRollbackDelta(userId, originalTransactionId, reverseDelta, meta, transaction, options = {}) {
-  if (isGcCoin(options.coinType)) {
-    return applyGcDelta(userId, reverseDelta, meta, transaction);
-  }
+async function applyRollbackDelta(userId, originalTransactionId, reverseDelta, meta, transaction) {
   let storedImpact = null;
 
   if (db.UserTransaction && originalTransactionId) {

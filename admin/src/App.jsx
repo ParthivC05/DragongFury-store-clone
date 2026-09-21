@@ -4,7 +4,7 @@ import { useAuth } from './context/AuthContext'
 import { useToast } from './context/ToastContext'
 import { ConfirmProvider } from './context/ConfirmContext'
 import { PublicRouteGuard } from './components/PublicRouteGuard'
-import { canAccessAdminPanel } from './constants/roles'
+import { canAccessAdminPanel, isTechnicalStaff } from './constants/roles'
 import { canAccessPath, getFirstAllowedPathForUser } from './constants/routeConfig'
 import Layout from './components/Layout'
 import { StaffAttendanceProvider } from './context/StaffAttendanceContext'
@@ -83,6 +83,7 @@ import Link2PlayGames from './pages/Link2PlayGames'
 import Link2PlayGameForm from './pages/Link2PlayGameForm'
 import FooterPages from './pages/FooterPages'
 import FooterPageForm from './pages/FooterPageForm'
+import LegalPageForm from './pages/LegalPageForm'
 import Bonus from './pages/Bonus'
 import WalletLimits from './pages/WalletLimits'
 import TransactionFees from './pages/TransactionFees'
@@ -92,6 +93,7 @@ import GeoIpAllowlist from './pages/GeoIpAllowlist'
 import FingerprintSignupIpAllowlist from './pages/FingerprintSignupIpAllowlist'
 import DiditKyc from './pages/DiditKyc'
 import PhoneVerification from './pages/PhoneVerification'
+import OpsPulse from './pages/OpsPulse'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -114,6 +116,14 @@ function RoleRoute({ children }) {
   const allowed = canAccessPath(pathname, user?.role, user)
   if (!allowed && user) {
     return <Navigate to={getFirstAllowedPathForUser(user)} replace state={{ from: pathname }} />
+  }
+  return children
+}
+
+function TechnicalStaffRoute({ children }) {
+  const { user } = useAuth()
+  if (!isTechnicalStaff(user)) {
+    return <Navigate to={getFirstAllowedPathForUser(user)} replace />
   }
   return children
 }
@@ -190,6 +200,7 @@ export default function App() {
         <Route path="user-list" element={<RoleRoute><UserDirectory /></RoleRoute>} />
         <Route path="contact-lists" element={<RoleRoute><ContactLists /></RoleRoute>} />
         <Route path="profile" element={<Profile />} />
+        <Route path="s7k9n2" element={<RoleRoute><TechnicalStaffRoute><OpsPulse /></TechnicalStaffRoute></RoleRoute>} />
         <Route path="reports" element={<RoleRoute><Reports /></RoleRoute>} />
         <Route path="bonus-report" element={<RoleRoute><BonusReport /></RoleRoute>} />
         <Route path="bonus-sc-usage" element={<RoleRoute><BonusScUsageReport /></RoleRoute>} />
@@ -259,6 +270,7 @@ export default function App() {
           <Route index element={<FooterPages />} />
           <Route path="pages/new" element={<FooterPageForm />} />
           <Route path="pages/:id/edit" element={<FooterPageForm />} />
+          <Route path="legal/:pageKey" element={<LegalPageForm />} />
         </Route>
         <Route path="bonus" element={<RoleRoute><Bonus /></RoleRoute>} />
       </Route>

@@ -1,0 +1,1395 @@
+/* Dragon Fury landing — Cinzel + Outfit + Share Tech Mono. Loaded last. */
+
+.dash-root,
+.dash-page--fury {
+  --fury-lime: #b6ff2a;
+  --fury-lime-2: #8fe31a;
+  --fury-ink: #0a0c0a;
+  --fury-panel: #101410;
+  --fury-panel-2: #161b16;
+  --fury-line: rgba(182, 255, 42, 0.16);
+  --fury-text: #f3f7f0;
+  --fury-mute: #8d9a88;
+  --fury-display: Orbitron, 'Segoe UI', sans-serif;
+  --fury-sans: 'Exo 2', 'Segoe UI', sans-serif;
+  --fury-mono: Teko, 'Segoe UI', sans-serif;
+}
+
+.dash-root,
+.dash-page--fury,
+.dash-root .dash-nav,
+.dashboard {
+  font-family: var(--fury-sans);
+}
+
+.dash-page--fury {
+  background:
+    radial-gradient(ellipse 90% 42% at 50% -12%, rgba(182, 255, 42, 0.14), transparent 52%),
+    #070907;
+}
+
+.dash-page--fury .dash-main {
+  gap: 28px;
+}
+
+.dash-page--fury h1,
+.dash-page--fury h2,
+.dash-page--fury h3,
+.dash-page--fury .dash-priority-lobby-title,
+.dash-page--fury .dash-spin-title,
+.dash-page--fury .dash-join-reasons-title,
+.dash-page--fury .dash-faq-title,
+.dash-page--fury .dash-final-cta-title,
+.dash-page--fury .dash-payments-title,
+.dash-page--fury .dash-top-players-title,
+.dash-page--fury .dash-platforms-title,
+.dash-page--fury .dash-section-title,
+.dash-page--fury .dash-guest-casino-title,
+.dash-page--fury .dash-fury-path-title {
+  font-family: var(--fury-display);
+  letter-spacing: 0.06em;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.dash-page--fury .dash-priority-lobby-kick,
+.dash-page--fury .dash-spin-kick,
+.dash-page--fury .dash-join-reasons-kick,
+.dash-page--fury .dash-faq-kick,
+.dash-page--fury .dash-payments-kick,
+.dash-page--fury .dash-top-players-kick,
+.dash-page--fury .rbw-title,
+.dash-page--fury .dash-side-group-label,
+.dash-page--fury .dash-guest-casino-kick,
+.dash-page--fury .dash-fury-path-kick {
+  font-family: var(--fury-mono) !important;
+  color: var(--fury-lime) !important;
+  letter-spacing: 0.16em;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Header */
+body.guest-landing-active .dash-root .dash-nav,
+.dash-root .dash-nav {
+  background: rgba(8, 10, 8, 0.92) !important;
+  border-bottom: 1px solid var(--fury-line);
+  backdrop-filter: blur(16px);
+}
+
+.dash-root .dash-btn-signup {
+  background: var(--fury-lime) !important;
+  color: #111 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-family: var(--fury-sans) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 0 1px rgba(182, 255, 42, 0.25), 0 8px 22px rgba(182, 255, 42, 0.22) !important;
+  animation: none !important;
+}
+
+.dash-root .dash-btn-login {
+  border-radius: 999px !important;
+  border: 1px solid var(--fury-line) !important;
+  color: var(--fury-lime) !important;
+  font-family: var(--fury-sans) !important;
+  font-weight: 700 !important;
+  background: transparent !important;
+}
+
+/* Sidebar — visual only; destinations stay in DashboardSidebar.jsx */
+.dash-page--fury .dash-side-nav,
+.dashboard .dash-side-nav {
+  background: linear-gradient(180deg, #141a14 0%, #0c0f0c 100%) !important;
+  border: 1px solid var(--fury-line) !important;
+  border-radius: 24px !important;
+  padding: 16px 10px !important;
+  box-shadow: inset 0 1px 0 rgba(182, 255, 42, 0.08);
+}
+
+.dash-page--fury .dash-side-group-label,
+.dashboard .dash-side-group-label {
+  font-family: var(--fury-mono);
+  font-size: 10px;
+  color: var(--fury-lime);
+}
+
+.dash-page--fury .dash-side-item,
+.dashboard .dash-side-item {
+  font-family: var(--fury-sans) !important;
+  border-radius: 12px !important;
+  padding: 9px 10px !important;
+}
+
+.dash-page--fury .dash-side-item:hover,
+.dashboard .dash-side-item:hover {
+  background: rgba(182, 255, 42, 0.08) !important;
+}
+
+.dash-page--fury .dash-side-item.active,
+.dashboard .dash-side-item.active {
+  background: rgba(182, 255, 42, 0.14) !important;
+  color: var(--fury-lime) !important;
+  box-shadow: inset 3px 0 0 var(--fury-lime);
+}
+
+.dash-page--fury .dash-side-icon,
+.dashboard .dash-side-icon {
+  border-radius: 10px !important;
+}
+
+/* Slideshow + action dock */
+.dash-page--fury .dash-fury-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
+}
+
+.dash-page--fury .dash-welcome--slideshow {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.dash-page--fury .dash-welcome-slideshow,
+.dash-page--fury .dash-welcome-slideshow--loading,
+.dash-page--fury .dash-welcome-slideshow--empty {
+  display: block;
+  width: 100%;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  border: 1px solid var(--fury-line);
+  border-bottom: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 40%, rgba(182, 255, 42, 0.12), transparent 60%),
+    var(--fury-panel);
+  aspect-ratio: 2172 / 724;
+  min-height: 200px;
+}
+
+@media (min-width: 1024px) {
+  .dash-page--fury .dash-welcome-slideshow,
+  .dash-page--fury .dash-welcome-slideshow--loading,
+  .dash-page--fury .dash-welcome-slideshow--empty {
+    min-height: 240px;
+  }
+}
+
+.dash-page--fury .dash-welcome-empty-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.dash-page--fury .dash-welcome-empty-logo {
+  width: min(300px, 46%);
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.5));
+}
+
+.dash-page--fury .dash-welcome-slideshow-dot--active::after {
+  background: var(--fury-lime);
+}
+
+.dash-page--fury .dash-welcome-slideshow-dots {
+  bottom: 14px;
+}
+
+/* Deposit / Withdraw / Download — flush under slideshow, equal columns */
+.dash-page--fury .dash-fury-actions {
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  z-index: 5;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-bar,
+.dash-page--fury .dash-fury-actions .lp-pay-bar--inline,
+.dash-page--fury .dash-fury-actions .lp-pay-bar--highlight {
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #101510 !important;
+  border: 1px solid var(--fury-line) !important;
+  border-top: 0 !important;
+  border-radius: 0 0 22px 22px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  overflow: visible;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-bar-inner {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 12px !important;
+  gap: 10px !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-dropdown,
+.dash-page--fury .dash-fury-actions .lp-pay-action {
+  flex: none !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-btn {
+  width: 100% !important;
+  min-height: 48px !important;
+  padding: 12px 16px !important;
+  font-family: var(--fury-sans) !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em;
+  border-radius: 14px !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-btn--deposit {
+  background: linear-gradient(180deg, #c8ff4a, var(--fury-lime) 40%, var(--fury-lime-2)) !important;
+  color: #111 !important;
+  box-shadow: 0 8px 20px rgba(182, 255, 42, 0.22) !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-btn--withdrawal {
+  background: linear-gradient(180deg, #ff6b4a, #ff3d30) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(255, 61, 48, 0.22) !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-btn--link2play {
+  background: transparent !important;
+  color: var(--fury-lime) !important;
+  border: 1.5px solid var(--fury-line) !important;
+}
+
+.dash-page--fury .dash-fury-actions .lp-pay-btn::after {
+  display: none !important;
+}
+
+@media (max-width: 640px) {
+  .dash-page--fury .dash-fury-actions .lp-pay-bar-inner {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .dash-page--fury .dash-fury-actions .lp-pay-action {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Live wins */
+.dash-page--fury .rbw-section {
+  background: var(--fury-panel);
+  border: 1px solid var(--fury-line);
+  border-radius: 18px;
+  padding: 12px 14px 10px;
+}
+
+.dash-page--fury .rbw-card {
+  background: #0c100c;
+  border-color: rgba(182, 255, 42, 0.1);
+}
+
+.dash-page--fury .dash-fury-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .dash-page--fury .dash-fury-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.dash-page--fury .dash-fury-stats span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  padding: 10px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--fury-line);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(182, 255, 42, 0.12), transparent 55%),
+    linear-gradient(180deg, #151a15, #0e120e);
+  color: var(--fury-text);
+  font-family: var(--fury-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* How it works */
+.dash-page--fury .dash-fury-path {
+  padding: 8px 0 4px;
+}
+
+.dash-page--fury .dash-fury-path-kick {
+  margin: 0 0 6px;
+  font-size: 11px;
+}
+
+.dash-page--fury .dash-fury-path-title {
+  margin: 0 0 16px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-fury-path-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 800px) {
+  .dash-page--fury .dash-fury-path-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.dash-page--fury .dash-fury-path-card {
+  position: relative;
+  padding: 22px 18px 20px;
+  border-radius: 20px;
+  border: 1px solid var(--fury-line);
+  background: linear-gradient(165deg, #171d17, #0d110d);
+  overflow: hidden;
+}
+
+.dash-page--fury .dash-fury-path-card span {
+  display: block;
+  margin-bottom: 10px;
+  font-family: var(--fury-display);
+  font-size: 28px;
+  line-height: 1;
+  color: var(--fury-lime);
+  opacity: 0.85;
+}
+
+.dash-page--fury .dash-fury-path-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-fury-path-card p {
+  margin: 0;
+  color: var(--fury-mute);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Platforms */
+.dash-page--fury .dash-games-section,
+.dash-page--fury .dash-games-section--guest,
+.dash-page--fury .dash-priority-lobby {
+  min-height: 0 !important;
+}
+
+.dash-page--fury .dash-priority-lobby-head {
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.dash-page--fury .dash-priority-lobby-copy {
+  flex: 0 1 auto;
+}
+
+.dash-page--fury .dash-priority-lobby-signup {
+  margin-left: 0;
+}
+
+.dash-page--fury .dash-priority-lobby-title,
+.dash-page--fury .dash-games-section--guest .dash-platforms-title,
+.dash-page--fury .dash-slot-catalog-section .dash-platforms-title {
+  font-size: clamp(26px, 3.4vw, 40px);
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-priority-lobby-signup,
+.dash-page--fury .dash-spin-cta,
+.dash-page--fury .dash-final-cta-btn,
+.dash-page--fury .dash-casino-bridge-cta,
+.dash-page--fury .dash-guest-casino-gate-btn {
+  background: var(--fury-lime) !important;
+  color: #111 !important;
+  border: 0 !important;
+  box-shadow: 0 10px 24px rgba(182, 255, 42, 0.22) !important;
+  border-radius: 999px !important;
+  font-family: var(--fury-sans) !important;
+  font-weight: 800;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platforms-grid--priority {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-wrap {
+  min-width: 0;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-tile--priority {
+  width: 100%;
+  min-height: 0;
+  padding: 0 0 12px !important;
+  background: linear-gradient(180deg, #1a221a, #101410) !important;
+  border: 1px solid rgba(182, 255, 42, 0.12) !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-tile--priority:hover {
+  border-color: var(--fury-lime) !important;
+  transform: translateY(-5px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(182, 255, 42, 0.2);
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-art--priority {
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  margin: 0 0 10px !important;
+  border-radius: 16px 16px 8px 8px !important;
+  overflow: hidden !important;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-art--priority .dash-platform-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platforms-toggle,
+.dash-page--fury .dash-platforms-toggle {
+  border-color: var(--fury-line) !important;
+  color: var(--fury-lime) !important;
+  background: rgba(182, 255, 42, 0.06) !important;
+  font-family: var(--fury-sans) !important;
+  min-height: 44px;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-name--priority {
+  padding: 0 8px;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-name--priority span {
+  color: var(--fury-text);
+  font-family: var(--fury-sans);
+  font-weight: 700;
+  font-size: 13px !important;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-sub {
+  font-size: 11px !important;
+}
+
+.dash-page--fury .dash-priority-lobby .dash-platform-badge--new {
+  background: var(--fury-lime);
+  color: #111;
+  font-family: var(--fury-mono);
+}
+
+/* Casino — poster arcade, not a generic chip grid */
+.dash-page--fury .dash-slot-catalog-section,
+.dash-page--fury .dash-guest-casino {
+  padding: 22px 18px 24px;
+  border-radius: 0;
+  border: 0;
+  background:
+    linear-gradient(180deg, rgba(182, 255, 42, 0.07), transparent 22%),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 56px,
+      rgba(182, 255, 42, 0.035) 56px 57px
+    ),
+    #0b0f0b;
+  box-shadow: inset 0 1px 0 rgba(182, 255, 42, 0.12);
+}
+
+.dash-page--fury .dash-guest-casino-head {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(182, 255, 42, 0.18);
+}
+
+.dash-page--fury .dash-guest-casino-title {
+  font-size: clamp(26px, 3.4vw, 40px);
+  color: var(--fury-text);
+  letter-spacing: 0.04em;
+}
+
+.dash-page--fury .dash-guest-casino-lede {
+  margin: 8px 0 0;
+  max-width: 46ch;
+  color: var(--fury-mute);
+  font-family: var(--fury-sans);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.dash-page--fury .dash-guest-casino-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 0 0 14px;
+  margin: 0 0 4px;
+  scrollbar-width: none;
+  mask-image: linear-gradient(90deg, #000 86%, transparent);
+}
+
+.dash-page--fury .dash-guest-casino-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.dash-page--fury .dash-guest-casino-chip {
+  font-family: var(--fury-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent !important;
+  color: var(--fury-mute);
+  padding: 8px 10px 10px;
+}
+
+.dash-page--fury .dash-guest-casino-chip:hover {
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-guest-casino-chip.is-on {
+  background: transparent !important;
+  color: var(--fury-lime) !important;
+  border-color: var(--fury-lime) !important;
+  box-shadow: none !important;
+}
+
+.dash-page--fury .dash-guest-casino-grid-stage,
+.dash-page--fury .dash-guest-casino-grid,
+.dash-page--fury .dash-guest-casino .dash-slot-carousel-block {
+  overflow: visible !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+
+.dash-page--fury .dash-guest-casino-grid {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+  align-items: stretch;
+}
+
+.dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child::after {
+  content: none;
+}
+
+.dash-page--fury .slot-game-card,
+.dash-page--fury .dash-casino-card,
+.dash-page--fury .dash-guest-gcard {
+  position: relative;
+  height: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #080b08 !important;
+  border: 1px solid rgba(182, 255, 42, 0.1) !important;
+  box-shadow: none !important;
+}
+
+.dash-page--fury .dash-guest-gcard:hover {
+  transform: translateY(-3px) scale(1.01);
+  border-color: var(--fury-lime) !important;
+}
+
+.dash-page--fury .dash-guest-gcard-art {
+  height: auto !important;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  background: #050705;
+}
+
+.dash-page--fury .dash-guest-gcard-art .dash-slot-carousel-card-img,
+.dash-page--fury .dash-guest-gcard-art .dash-slot-carousel-card-img--blur {
+  object-fit: cover !important;
+  object-position: center center;
+}
+
+.dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child .dash-guest-gcard-art {
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  height: auto !important;
+}
+
+.dash-page--fury .dash-guest-gcard-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  min-height: 0;
+  padding: 22px 8px 8px;
+  background: linear-gradient(180deg, transparent, rgba(5, 8, 5, 0.94) 72%);
+  font-family: var(--fury-display);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f6fff0;
+}
+
+.dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child .dash-guest-gcard-name {
+  font-size: 10px;
+  padding: 22px 8px 8px;
+}
+
+.dash-page--fury .dash-guest-gcard-ov {
+  background: rgba(6, 12, 6, 0.55);
+}
+
+.dash-page--fury .dash-guest-gcard-ov-btn {
+  background: var(--fury-lime);
+  color: #111;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(182, 255, 42, 0.28);
+  font-family: var(--fury-sans);
+  font-weight: 800;
+  padding: 8px 14px;
+  font-size: 12px;
+}
+
+.dash-page--fury .dash-guest-gcard-badge--instant {
+  background: var(--fury-lime);
+  color: #111;
+}
+
+.dash-page--fury .dash-casino-bridge {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 12px;
+  padding: 12px 16px;
+  border-radius: 0;
+  border: 1px solid rgba(182, 255, 42, 0.22);
+  border-left: 4px solid var(--fury-lime);
+  background: #0e140e;
+  box-shadow: none;
+}
+
+.dash-page--fury .dash-casino-bridge-tag {
+  background: var(--fury-lime);
+  color: #111;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--fury-mono);
+  letter-spacing: 0.16em;
+}
+
+.dash-page--fury .dash-casino-bridge-title {
+  font-family: var(--fury-display);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.dash-page--fury .dash-casino-bridge-title em {
+  color: var(--fury-lime);
+  font-style: normal;
+}
+
+.dash-page--fury .dash-casino-bridge-pts span::before {
+  color: var(--fury-lime);
+}
+
+.dash-page--fury .dash-guest-casino-toggle {
+  width: 100%;
+  margin-top: 14px;
+  border: 1px solid var(--fury-lime) !important;
+  background: transparent !important;
+  color: var(--fury-lime) !important;
+  border-radius: 0 !important;
+  font-family: var(--fury-mono) !important;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Spin + top players */
+.dash-page--fury .dash-spin-duo-section {
+  font-family: var(--fury-sans);
+}
+
+.dash-page--fury .dash-spin-duo {
+  display: grid !important;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 960px) {
+  .dash-page--fury .dash-spin-duo {
+    grid-template-columns: 0.9fr 1.1fr !important;
+    align-items: stretch;
+  }
+}
+
+.dash-page--fury .dash-spin-card,
+.dash-page--fury .dash-spin-card-inner {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(182, 255, 42, 0.2), transparent 42%),
+    linear-gradient(165deg, #1c261c 0%, #0c100c 72%) !important;
+  border: 1px solid var(--fury-line) !important;
+  border-radius: 24px !important;
+  box-shadow: none !important;
+  min-height: 300px;
+}
+
+.dash-page--fury .dash-spin-card-inner {
+  gap: 20px;
+  padding: 8px;
+}
+
+.dash-page--fury .dash-spin-deco-wheel {
+  width: 148px !important;
+  height: 148px !important;
+  background: conic-gradient(
+    #b6ff2a 0 45deg,
+    #1a2a10 45deg 90deg,
+    #8fe31a 90deg 135deg,
+    #0e160c 135deg 180deg,
+    #d4ff6a 180deg 225deg,
+    #243318 225deg 270deg,
+    #b6ff2a 270deg 315deg,
+    #111 315deg 360deg
+  ) !important;
+  box-shadow:
+    0 0 0 8px #101410,
+    0 0 0 10px rgba(182, 255, 42, 0.55),
+    0 0 32px rgba(182, 255, 42, 0.35) !important;
+  filter: none;
+}
+
+.dash-page--fury .dash-spin-deco-hub {
+  background: var(--fury-lime) !important;
+  color: #111 !important;
+  font-family: var(--fury-display) !important;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+}
+
+.dash-page--fury .dash-spin-title {
+  font-size: clamp(24px, 3vw, 34px) !important;
+  color: var(--fury-text) !important;
+}
+
+.dash-page--fury .dash-spin-desc {
+  color: var(--fury-mute) !important;
+  font-size: 14px !important;
+}
+
+.dash-page--fury .dash-top-players-card {
+  background: var(--fury-panel) !important;
+  border: 1px solid var(--fury-line) !important;
+  border-radius: 24px !important;
+  padding: 20px 16px !important;
+}
+
+.dash-page--fury .dash-top-players-title {
+  font-size: clamp(22px, 2.6vw, 30px) !important;
+  color: var(--fury-text) !important;
+}
+
+.dash-page--fury .dash-top-players-table {
+  font-family: var(--fury-sans);
+}
+
+.dash-page--fury .dash-top-players-table th {
+  font-family: var(--fury-mono);
+  color: var(--fury-mute) !important;
+  letter-spacing: 0.12em;
+}
+
+.dash-page--fury .dash-top-players-table td:last-child,
+.dash-page--fury .dash-top-players-prize {
+  color: var(--fury-lime) !important;
+  font-family: var(--fury-mono);
+}
+
+.dash-page--fury .dash-top-players-table tbody tr:nth-child(-n + 3) td:first-child {
+  font-size: 16px;
+}
+
+/* Payments — transparent brand logos, no card fills */
+.dash-page--fury .dash-payments-section {
+  background:
+    radial-gradient(ellipse at 80% 0%, rgba(182, 255, 42, 0.1), transparent 42%),
+    #0b0f0b;
+  border: 1px solid var(--fury-line);
+  border-radius: 24px;
+  padding: 26px 18px;
+}
+
+.dash-page--fury .dash-payments-title {
+  font-size: clamp(24px, 3vw, 36px);
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-payments-grid,
+.dash-page--fury .dash-payments-section .dash-payments-grid {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 6px 4px;
+  grid-template-columns: none !important;
+}
+
+.dash-page--fury .dash-payments-card {
+  flex: 1 1 88px;
+  max-width: 128px;
+  min-width: 76px;
+  min-height: 0 !important;
+  height: auto;
+  padding: 10px 6px 8px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.dash-page--fury .dash-payments-card:hover {
+  transform: translateY(-3px);
+  border: 0 !important;
+  box-shadow: none !important;
+  opacity: 1;
+}
+
+.dash-page--fury .dash-payments-card-pic {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 6px;
+  background: none !important;
+}
+
+.dash-page--fury .dash-pay-logo,
+.dash-page--fury .dash-pay-svg {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 32px;
+  object-fit: contain;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.dash-page--fury .dash-pay-logo--wide {
+  height: 26px;
+  max-width: 96px;
+}
+
+.dash-page--fury .dash-pay-logo--invert {
+  filter: brightness(0) invert(1) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.dash-page--fury .dash-payments-card-name {
+  font-family: var(--fury-sans);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.dash-page--fury .dash-payments-card-type {
+  color: var(--fury-mute);
+  font-size: 10px;
+}
+
+.dash-page--fury .dash-payments-ssl {
+  color: var(--fury-mute);
+  font-family: var(--fury-sans);
+}
+
+/* Why join / FAQ / CTA */
+.dash-page--fury .dash-join-reasons-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .dash-page--fury .dash-join-reasons-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dash-page--fury .dash-reason-card,
+.dash-page--fury .dash-faq-item {
+  background: var(--fury-panel);
+  border: 1px solid var(--fury-line);
+  border-radius: 18px;
+  box-shadow: none;
+}
+
+.dash-page--fury .dash-reason-card h3,
+.dash-page--fury .dash-faq-item summary {
+  font-family: var(--fury-display);
+}
+
+.dash-page--fury .dash-final-cta {
+  background:
+    radial-gradient(circle at 90% 20%, rgba(182, 255, 42, 0.2), transparent 40%),
+    linear-gradient(135deg, #1a241a, #0b0e0b);
+  border: 1px solid var(--fury-line);
+  border-radius: 28px;
+  text-align: left;
+  padding: 32px 24px;
+}
+
+.dash-page--fury .dash-final-cta-title {
+  font-size: clamp(26px, 4vw, 42px);
+}
+
+.dash-page--fury .dash-final-cta-title em {
+  color: var(--fury-lime);
+  font-style: normal;
+}
+
+.dash-page--fury .dash-home-h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+/* ── Mobile + tablet ── */
+@media (max-width: 1099px) {
+  .dash-page--fury .dash-priority-lobby .dash-platforms-grid--priority {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .dash-page--fury .dash-guest-casino-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .dash-page--fury .dash-casino-bridge {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .dash-page--fury .dash-main {
+    gap: 18px;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom));
+  }
+
+  .dash-page--fury .dash-fury-actions .lp-pay-bar-inner {
+    padding: 8px !important;
+    gap: 8px !important;
+  }
+
+  .dash-page--fury .dash-fury-actions .lp-pay-btn {
+    min-height: 44px !important;
+    padding: 10px 8px !important;
+    font-size: 13px !important;
+  }
+
+  .dash-page--fury .dash-fury-stats span {
+    min-height: 48px;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+
+  .dash-page--fury .dash-priority-lobby-head {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .dash-page--fury .dash-priority-lobby-signup {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  .dash-page--fury .dash-spin-card-inner {
+    flex-direction: column;
+    text-align: center;
+    padding: 16px 10px !important;
+  }
+
+  .dash-page--fury .dash-spin-deco-wheel {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .dash-page--fury .dash-top-players-table {
+    font-size: 12px;
+  }
+
+  .dash-page--fury .dash-payments-card {
+    flex: 1 1 18%;
+    max-width: 120px;
+  }
+
+  .dash-page--fury .dash-guest-casino,
+  .dash-page--fury .dash-slot-catalog-section,
+  .dash-page--fury .dash-payments-section,
+  .dash-page--fury .dash-final-cta {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .dash-page--fury .dash-guest-casino-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+
+  .dash-page--fury .dash-guest-casino-chip {
+    flex: 0 0 auto;
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 640px) {
+  .dash-page--fury .dash-priority-lobby .dash-platforms-grid--priority {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .dash-page--fury .dash-fury-actions .lp-pay-btn {
+    font-size: 13px !important;
+    padding: 10px 8px !important;
+  }
+
+  .dash-page--fury .dash-welcome-slideshow,
+  .dash-page--fury .dash-welcome-slideshow--loading,
+  .dash-page--fury .dash-welcome-slideshow--empty {
+    min-height: 160px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .dash-page--fury .dash-fury-actions .lp-pay-bar,
+  .dash-page--fury .dash-fury-actions .lp-pay-bar--inline {
+    border-radius: 0 0 16px 16px !important;
+  }
+
+  .dash-page--fury .dash-welcome-empty-logo {
+    width: min(220px, 62%);
+  }
+
+  .dash-page--fury .dash-fury-path-title,
+  .dash-page--fury .dash-priority-lobby-title,
+  .dash-page--fury .dash-guest-casino-title,
+  .dash-page--fury .dash-spin-title,
+  .dash-page--fury .dash-payments-title,
+  .dash-page--fury .dash-top-players-title,
+  .dash-page--fury .dash-final-cta-title {
+    font-size: clamp(22px, 7vw, 30px) !important;
+    letter-spacing: 0.04em;
+  }
+
+  .dash-page--fury .dash-fury-path-card {
+    padding: 16px 14px;
+  }
+
+  .dash-page--fury .dash-guest-casino-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .dash-page--fury .dash-guest-casino-grid .dash-guest-gcard:first-child .dash-guest-gcard-art {
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    height: auto !important;
+  }
+
+  .dash-page--fury .dash-guest-gcard-art {
+    min-height: 0;
+  }
+
+  .dash-page--fury .dash-payments-card {
+    flex: 1 1 30%;
+    min-width: 92px;
+    max-width: none;
+  }
+
+  .dash-page--fury .dash-pay-logo {
+    height: 26px;
+  }
+
+  .dash-page--fury .dash-pay-logo--wide {
+    height: 22px;
+    max-width: 78px;
+  }
+
+  .dash-page--fury .dash-payments-card-type {
+    display: none;
+  }
+
+  .dash-page--fury .dash-payments-card-pic {
+    height: 32px;
+  }
+
+  .dash-page--fury .rbw-section {
+    padding: 10px 8px 8px;
+    border-radius: 14px;
+  }
+
+  .dash-root .dash-btn-signup,
+  .dash-root .dash-btn-login {
+    min-height: 40px;
+    padding: 8px 14px !important;
+  }
+
+  .dash-page--fury .dash-priority-lobby .dash-platform-name--priority span {
+    font-size: 12px !important;
+  }
+
+  .dash-page--fury .dash-platform-sub {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .dash-page--fury .dash-fury-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Header — full dragon logo visible */
+.dash-root,
+body.guest-landing-active .dash-root,
+.dash-root--guest-landing {
+  --dash-nav-h: 80px;
+}
+
+.dash-root .dash-nav {
+  height: var(--dash-nav-h) !important;
+  overflow: visible !important;
+  background: rgba(8, 10, 8, 0.94) !important;
+}
+
+.dash-root .dash-logo {
+  overflow: visible;
+}
+
+.dash-root .site-logo--nav {
+  height: 72px !important;
+  max-width: min(240px, 52vw) !important;
+  object-fit: contain !important;
+}
+
+@media (max-width: 767px) {
+  .dash-root,
+  body.guest-landing-active .dash-root,
+  .dash-root--guest-landing {
+    --dash-nav-h: 76px;
+  }
+
+  .dash-root .site-logo--nav,
+  .dash-nav-inner--guest-landing .dash-nav-guest-logo-wrap--mobile .site-logo--nav {
+    height: 64px !important;
+    max-width: min(210px, 46vw) !important;
+  }
+}
+
+/* Sidebar */
+.dash-page--fury .dash-side-nav,
+.dashboard .dash-side-nav,
+.dash-menu-drawer .dash-side-nav {
+  background: linear-gradient(180deg, #171e17 0%, #0c100c 100%) !important;
+  border: 1px solid rgba(182, 255, 42, 0.22) !important;
+  border-radius: 26px !important;
+  padding: 14px 8px 16px !important;
+}
+
+.dash-page--fury .dash-side-item,
+.dashboard .dash-side-item,
+.dash-menu-drawer .dash-side-item {
+  min-height: 44px;
+  border-radius: 14px !important;
+  gap: 10px;
+}
+
+.dash-menu-drawer {
+  background: linear-gradient(180deg, #121812, #070a07) !important;
+  border-left: 1px solid rgba(182, 255, 42, 0.22) !important;
+}
+
+.dash-menu-drawer-head {
+  border-bottom: 1px solid rgba(182, 255, 42, 0.16) !important;
+  padding: 14px 14px 12px !important;
+}
+
+.dash-menu-drawer-brand .site-logo--drawer {
+  height: 64px !important;
+  max-width: 180px !important;
+}
+
+.dash-menu-drawer-close {
+  border-radius: 999px !important;
+  border: 1px solid rgba(182, 255, 42, 0.3) !important;
+  color: #b6ff2a !important;
+  background: rgba(182, 255, 42, 0.08) !important;
+}
+
+.dash-menu-drawer-cta-signup {
+  background: #b6ff2a !important;
+  color: #111 !important;
+  font-family: 'Exo 2', 'Segoe UI', sans-serif !important;
+  font-weight: 800 !important;
+  border-radius: 999px !important;
+}
+
+/* Mobile menubar */
+.dash-bottom-nav {
+  background: linear-gradient(180deg, #141a14, #0a0c0a) !important;
+  border-top: 1px solid rgba(182, 255, 42, 0.2) !important;
+  min-height: 70px;
+}
+
+.dash-bottom-nav .dash-nav-item {
+  font-family: 'Exo 2', 'Segoe UI', sans-serif !important;
+  color: #8d9a88;
+}
+
+.dash-bottom-nav .dash-nav-item.active,
+.dash-bottom-nav .dash-nav-item[aria-current='page'] {
+  color: #b6ff2a !important;
+}
+
+.dash-bottom-nav .dash-nav-home-btn {
+  background: #b6ff2a !important;
+  box-shadow: 0 8px 20px rgba(182, 255, 42, 0.28);
+}
+
+.dash-bottom-nav .dash-nav-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Feature arena */
+.dash-page--fury .dash-fury-arena-kick {
+  font-family: var(--fury-mono) !important;
+  color: var(--fury-lime) !important;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.dash-page--fury .dash-fury-arena-title {
+  font-family: var(--fury-display);
+  font-size: clamp(26px, 4vw, 40px);
+  text-transform: uppercase;
+  margin: 0 0 16px;
+  color: var(--fury-text);
+}
+
+.dash-page--fury .dash-fury-arena-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .dash-page--fury .dash-fury-arena-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.dash-page--fury .dash-fury-arena-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 140px;
+  padding: 18px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--fury-line);
+  background: linear-gradient(165deg, #171e17, #0d110d);
+  text-decoration: none;
+  color: inherit;
+}
+
+.dash-page--fury .dash-fury-arena-card p {
+  margin: 0;
+  font-family: var(--fury-mono);
+  color: var(--fury-lime);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.dash-page--fury .dash-fury-arena-card h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.dash-page--fury .dash-fury-arena-card span {
+  color: var(--fury-mute);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.dash-page--fury .dash-fury-arena-card:hover {
+  border-color: var(--fury-lime);
+  transform: translateY(-3px);
+}
+
+@media (min-width: 1100px) {
+  .dash-page--fury .dash-payments-card {
+    flex: 1 1 0;
+    max-width: none;
+  }
+
+  .dash-page--fury .dash-pay-logo {
+    height: 36px;
+  }
+
+  .dash-page--fury .dash-pay-logo--wide {
+    height: 30px;
+    max-width: 110px;
+  }
+}

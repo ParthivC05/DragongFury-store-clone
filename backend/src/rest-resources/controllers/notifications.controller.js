@@ -90,7 +90,7 @@ async function upsertPushDevice(req, res) {
       req.body?.storeCode ||
       req.headers['x-store-code'] ||
       req.user?.storeCode ||
-      'dragonfury';
+      '';
     const data = await notificationsService.upsertPushDevice({
       userId: req.user?.userId || null,
       deviceId: req.body?.deviceId,

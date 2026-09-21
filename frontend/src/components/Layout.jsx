@@ -9,7 +9,14 @@ import { useToast } from '../context/ToastContext';
 import '../styles/dashboard-critical.css';
 import { loadDashboardStyles, scheduleDashboardStyles } from '../styles/loadDashboardStyles';
 import { warmupDeposit } from '../utils/preloadDeposit';
-import { getBrowserPathname, getBrowserRouteKey, subscribeBrowserLocation } from '../utils/browserLocation';
+import { warmupCasino } from '../utils/preloadCasino';
+import {
+  getBrowserPathname,
+  getBrowserRouteKey,
+  isCasinoPath,
+  isDepositPath,
+  subscribeBrowserLocation,
+} from '../utils/browserLocation';
 
 const DashboardBackground = lazy(() =>
   import('./Dashboard/DashboardBackground').then((m) => ({ default: m.DashboardBackground }))
@@ -39,10 +46,9 @@ export function Layout({ children }) {
   );
   const browserPath = getBrowserPathname(browserRouteKey);
   const depositPending =
-    (browserPath === '/deposit' || browserPath.startsWith('/deposit/')) &&
-    pathname !== '/deposit' &&
-    !pathname.startsWith('/deposit/');
-  const layoutPath = depositPending ? browserPath : pathname;
+    isDepositPath(browserPath) && !isDepositPath(pathname);
+  const casinoPending = isCasinoPath(browserPath) && !isCasinoPath(pathname);
+  const layoutPath = depositPending || casinoPending ? browserPath : pathname;
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
@@ -55,8 +61,10 @@ export function Layout({ children }) {
       try {
         const url = new URL(a.href, window.location.origin);
         if (url.origin !== window.location.origin) return;
-        if (url.pathname === '/deposit' || url.pathname.startsWith('/deposit/')) {
+        if (isDepositPath(url.pathname)) {
           warmupDeposit();
+        } else if (isCasinoPath(url.pathname)) {
+          warmupCasino();
         }
       } catch {
         /* ignore */
@@ -66,8 +74,14 @@ export function Layout({ children }) {
 
     const useIdle = typeof window.requestIdleCallback === 'function';
     const idleId = useIdle
-      ? window.requestIdleCallback(() => warmupDeposit(), { timeout: 1800 })
-      : window.setTimeout(() => warmupDeposit(), 400);
+      ? window.requestIdleCallback(() => {
+          warmupDeposit();
+          warmupCasino();
+        }, { timeout: 1800 })
+      : window.setTimeout(() => {
+          warmupDeposit();
+          warmupCasino();
+        }, 400);
 
     return () => {
       document.removeEventListener('pointerover', onPointerOver, true);
@@ -80,8 +94,8 @@ export function Layout({ children }) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    const onCasino = pathname === '/casino' || pathname.startsWith('/casino/');
-    const onHome = pathname === '/';
+    const onCasino = isCasinoPath(layoutPath);
+    const onHome = layoutPath === '/';
     if (!onCasino && !onHome) return undefined;
 
     let cancelled = false;
@@ -110,10 +124,10 @@ export function Layout({ children }) {
         window.clearTimeout(idleId);
       }
     };
-  }, [pathname]);
+  }, [layoutPath]);
 
   const isAuthPage = AUTH_PATHS.includes(layoutPath);
-  const isDragonFuryAuth =
+  const isPlayJuwaAuth =
     layoutPath === '/login' ||
     layoutPath === '/register' ||
     layoutPath === '/check-email' ||
@@ -123,6 +137,7 @@ export function Layout({ children }) {
     layoutPath === '/link2play' ||
     layoutPath === '/casino' ||
     layoutPath.startsWith('/casino/') ||
+    layoutPath === '/firekirin-exclusive' ||
     layoutPath === '/platform' ||
     layoutPath === '/bonus';
   const isGuestLanding =
@@ -140,6 +155,7 @@ export function Layout({ children }) {
     layoutPath === '/withdraw' ||
     layoutPath.startsWith('/support/tickets');
   const isSupportChat = layoutPath.startsWith('/support/tickets');
+  const isBlogPage = layoutPath === '/blog' || layoutPath.startsWith('/blog/');
   const useNavOnlyBottomPad = isBottomNavOnly || hideGuestBuyWithdraw;
 
   useEffect(() => {
@@ -184,7 +200,7 @@ export function Layout({ children }) {
     return () => document.body.classList.remove('guest-hide-buy-withdraw');
   }, [hideGuestBuyWithdraw]);
 
-  if (isDragonFuryAuth) {
+  if (isPlayJuwaAuth) {
     return <>{children}</>;
   }
 
@@ -211,6 +227,10 @@ export function Layout({ children }) {
               : `flex flex-col flex-1 min-w-0 w-full ${
                   isSupportChat
                     ? 'py-3 md:py-6 px-2 sm:px-5 md:px-8 lg:px-10 pb-[calc(4.75rem+env(safe-area-inset-bottom,0px))] md:pb-8'
+                    : isBlogPage
+                      ? `py-4 md:py-6 px-3 sm:px-4 md:px-5 ${
+                          useNavOnlyBottomPad ? 'pb-20 md:pb-8' : 'pb-28 md:pb-8'
+                        }`
                     : `py-4 md:py-6 px-3 sm:px-5 md:px-8 lg:px-10 ${
                         useNavOnlyBottomPad ? 'pb-20 md:pb-8' : 'pb-28 md:pb-8'
                       }`
@@ -222,7 +242,7 @@ export function Layout({ children }) {
         ) : (
           <div
             className={`dash-shell-inner flex flex-col flex-1 w-full min-w-0 mx-auto ${
-              isDashboardLayout || isSupportChat ? 'max-w-none' : 'max-w-content'
+              isDashboardLayout || isSupportChat || isBlogPage ? 'max-w-none' : 'max-w-content'
             }`}
           >
             {children}

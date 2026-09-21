@@ -366,6 +366,37 @@ async function ensureGamesDepositDiscountColumn(sequelize) {
   `);
 }
 
+async function ensurePushCampaignsSchema(sequelize) {
+  if (!(await tableExists(sequelize, 'user_device_tokens'))) return;
+  if (await tableExists(sequelize, 'push_campaigns')) return;
+  const mig = require('./migrations/20260915223000-push-campaigns-playjuwa');
+  await mig.up(sequelize.getQueryInterface(), sequelize.Sequelize);
+  logger.info('Push campaigns schema ensured');
+}
+
+async function ensureLegalPagesSchema(sequelize) {
+  await sequelize.query(`
+    CREATE TABLE IF NOT EXISTS legal_pages (
+      id SERIAL PRIMARY KEY,
+      store_code VARCHAR(64) NOT NULL,
+      page_key VARCHAR(64) NOT NULL,
+      title VARCHAR(512) NOT NULL,
+      content TEXT NOT NULL DEFAULT '',
+      meta_title VARCHAR(512) NULL,
+      meta_description TEXT NULL,
+      meta_tags VARCHAR(1024) NULL,
+      allow_index BOOLEAN NOT NULL DEFAULT TRUE,
+      is_active BOOLEAN NOT NULL DEFAULT TRUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+  await sequelize.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS legal_pages_store_code_page_key_uq
+    ON legal_pages (store_code, page_key)
+  `);
+}
+
 async function runMigrations(sequelize) {
   await ensureSettingsTable(sequelize);
   await seedSettingsDefaults(sequelize);
@@ -435,6 +466,8 @@ async function runMigrations(sequelize) {
   } finally {
     // Always heal missing schema (even when history bootstrap/repair skips ups).
     await ensureFooterMenusPagesSchema(sequelize);
+    await ensurePushCampaignsSchema(sequelize);
+    await ensureLegalPagesSchema(sequelize);
     await ensureStoreStaffAttendanceSchema(sequelize);
     await ensureGamesDepositDiscountColumn(sequelize);
     await ensureMafiaAgentTemplate(sequelize);

@@ -1,4 +1,4 @@
-/* DragonFury add-coins deposit — prototype layout */
+/* PlayJuwa add-coins deposit — prototype layout */
 
 .dash-deposit-page.lw-ac-page,
 .lw-ac-bar {
@@ -793,16 +793,6 @@
   margin-top: 1px;
 }
 
-.pj-ac-gc {
-  display: block;
-  margin-top: 4px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: #ffd700;
-  text-shadow: 0 0 10px rgba(255, 215, 0, 0.35);
-}
-
 .pj-ac-title {
   display: block;
   font-size: 11px;
@@ -900,10 +890,6 @@
     font-size: 10px;
   }
 
-  .pj-ac-gc {
-    font-size: 11px;
-  }
-
   .pj-ac-title {
     display: none;
   }
@@ -938,12 +924,6 @@
 .pj-ac-pk.lk .pj-ac-coins,
 .pj-ac-flash.lk .pj-ac-flash-coins {
   color: #96a0b5;
-}
-
-.pj-ac-pk.lk .pj-ac-gc,
-.pj-ac-flash.lk .pj-ac-gc {
-  color: #b59a3a;
-  text-shadow: none;
 }
 
 .pj-ac-pk.lk .pj-ac-price,

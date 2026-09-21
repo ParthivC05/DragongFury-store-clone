@@ -1,7 +1,7 @@
 {
-  "name": "partner-platform-backend",
+  "name": "dragonfury-backend",
   "version": "1.0.0",
-  "description": "Partner Platform Backend",
+  "description": "Dragon Fury Backend",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

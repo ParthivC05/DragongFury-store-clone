@@ -12,12 +12,25 @@ function isOneGameHubProvider(provider) {
 
 function isPosterLobbyCategory(categoryId) {
   const id = String(categoryId || '').trim().toLowerCase();
-  return id === 'others' || id === 'other' || id === 'buffalo-blast' || id === 'buffalo' || id === 'fishing';
+  return (
+    id === 'others' ||
+    id === 'other' ||
+    id === 'buffalo-blast' ||
+    id === 'buffalo' ||
+    id === 'zesus' ||
+    id === 'zeus' ||
+    id === 'olympus' ||
+    id === 'candy' ||
+    id === 'animal' ||
+    id === 'fishing' ||
+    id === 'live-casino' ||
+    id === 'live'
+  );
 }
 
 const CAROUSEL_SKELETON_COUNT = 8;
 const TOP_GAMES_COUNT = 10;
-const EAGER_IMAGE_COUNT = 12;
+const EAGER_IMAGE_COUNT = 16;
 
 function getCarouselIconCandidates(src, iconUrls) {
   const ordered = [...(Array.isArray(iconUrls) ? iconUrls : []), src]
@@ -27,53 +40,117 @@ function getCarouselIconCandidates(src, iconUrls) {
   return [...new Set(ordered)];
 }
 
+function withImageRetryToken(url, token) {
+  if (!url || token <= 0 || url.startsWith('/') || url.startsWith('data:')) return url;
+  try {
+    const parsed = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'https://local.invalid');
+    parsed.searchParams.set('_r', String(token));
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 function CarouselGameImage({ src, iconUrls, alt, className, priority = false, blurFill = false }) {
   const candidates = getCarouselIconCandidates(src, iconUrls);
   const [candidateIndex, setCandidateIndex] = useState(0);
   const [failed, setFailed] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [retryToken, setRetryToken] = useState(0);
+  const hostRef = useRef(null);
+  const imgRef = useRef(null);
+  const wasHiddenRef = useRef(false);
+  const sameUrlRetriesRef = useRef(0);
 
-  const imgSrc = (!failed && candidates[candidateIndex]) || GAME_PLACEHOLDER;
-  const isLogo = imgSrc === GAME_PLACEHOLDER;
+  const rawSrc = (!failed && candidates[candidateIndex]) || GAME_PLACEHOLDER;
+  const imgSrc = rawSrc === GAME_PLACEHOLDER ? rawSrc : withImageRetryToken(rawSrc, retryToken);
+  const isLogo = rawSrc === GAME_PLACEHOLDER;
 
   useEffect(() => {
     setCandidateIndex(0);
     setFailed(false);
+    setLoaded(false);
+    sameUrlRetriesRef.current = 0;
   }, [src, iconUrls]);
 
+  useEffect(() => {
+    const reviveIfBroken = () => {
+      const node = imgRef.current;
+      const broken = failed || isLogo || (node && node.complete && node.naturalWidth === 0);
+      if (!broken) return;
+      sameUrlRetriesRef.current = 0;
+      setFailed(false);
+      setLoaded(false);
+      setCandidateIndex(0);
+      setRetryToken((token) => token + 1);
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        wasHiddenRef.current = true;
+        return;
+      }
+      if (!wasHiddenRef.current) return;
+      wasHiddenRef.current = false;
+      reviveIfBroken();
+    };
+
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pj:tab-resume', reviveIfBroken);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('pj:tab-resume', reviveIfBroken);
+    };
+  }, [failed, isLogo]);
+
   const handleError = () => {
+    setLoaded(false);
+    if (sameUrlRetriesRef.current < 1) {
+      sameUrlRetriesRef.current += 1;
+      setRetryToken((token) => token + 1);
+      return;
+    }
+    sameUrlRetriesRef.current = 0;
     if (candidateIndex + 1 < candidates.length) {
       setCandidateIndex((index) => index + 1);
       return;
     }
     setFailed(true);
+    setLoaded(true);
   };
 
   return (
-    <>
+    <span ref={hostRef} className="dash-slot-carousel-img-slot">
+      {loaded ? null : <span className="dash-slot-carousel-card-skeleton" aria-hidden />}
       {isLogo || !blurFill ? null : (
         <img
           src={imgSrc}
           alt=""
           aria-hidden
-          className={`${className} dash-slot-carousel-card-img--blur is-loaded`}
-          loading={priority ? 'eager' : 'lazy'}
+          className={`${className} dash-slot-carousel-card-img--blur${loaded ? ' is-loaded' : ''}`}
+          loading="eager"
           fetchPriority={priority ? 'high' : 'auto'}
           decoding="async"
           draggable={false}
-          onError={handleError}
         />
       )}
       <img
+        key={`${rawSrc}-${retryToken}`}
         src={imgSrc}
         alt={alt}
-        className={`${className} is-loaded${isLogo ? ' dash-slot-carousel-card-img--logo' : ''}`}
-        loading={priority ? 'eager' : 'lazy'}
+        className={`${className}${loaded ? ' is-loaded' : ''}${isLogo ? ' dash-slot-carousel-card-img--logo' : ''}`}
+        loading="eager"
         fetchPriority={priority ? 'high' : 'auto'}
         decoding="async"
         draggable={false}
+        ref={(node) => {
+          imgRef.current = node;
+          if (node && node.complete && node.naturalWidth > 0) setLoaded(true);
+        }}
+        onLoad={() => setLoaded(true)}
         onError={handleError}
       />
-    </>
+    </span>
   );
 }
 
@@ -146,7 +223,7 @@ function CarouselGameCard({
   const isScorpio = isScorpioPlayProvider(game.provider);
   const isOthers = isPosterLobbyCategory(categoryId);
   const sizeClass = isOneGameHub ? ' dash-slot-carousel-card--onegamehub' : '';
-  const useBlurFill = isScorpio && !isOthers && !isGuestInspo;
+  const useBlurFill = isScorpio && !isOthers && !isGuestInspo && !isRanked;
   const cardFillClass = useBlurFill ? ' dash-slot-carousel-card--blur-fill' : ' dash-slot-carousel-card--cover';
 
   const art = (
@@ -459,7 +536,7 @@ export function SlotGamesCarousel({
                   game={game}
                   onPlay={onPlay}
                   playing={playingGameId != null && String(playingGameId) === String(game.gameid)}
-                  priority={index < EAGER_IMAGE_COUNT}
+                  priority={index < (isPosterLobbyCategory(categoryId) ? 32 : EAGER_IMAGE_COUNT)}
                   cardVariant={cardVariant}
                   overlayCta={overlayCta}
                   rank={guestInspo ? index : undefined}

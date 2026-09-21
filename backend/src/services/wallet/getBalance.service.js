@@ -10,7 +10,6 @@ const { ensureWallet, usableOf, roundMoney } = require('./walletBuckets.service'
 const { getSpinWheelWithdrawalSummary } = require('./validateSpinWheelWithdrawal.service');
 const { getCachedBalance, setCachedBalance } = require('./balanceCache');
 const { resolveLockedBonusSc } = require('./bonusScLock.service');
-const { getGcBalance, isGcCoinsUser } = require('./gcWallet.service');
 
 async function getBalance(userId, { skipCache = false } = {}) {
   if (!skipCache) {
@@ -52,8 +51,6 @@ async function getBalance(userId, { skipCache = false } = {}) {
   const usableRsc = usableOf(rscWallet);
   const availableToWithdrawRsc = usableRsc;
   const spinWheelWithdrawal = await getSpinWheelWithdrawalSummary(userId, availableToWithdrawRsc);
-  const showGc = await isGcCoinsUser(userId);
-  const balanceGc = showGc ? await getGcBalance(userId) : 0;
 
   // Compatibility: balance_sc / usable_balance_sc = PSC + BSC (non-redeemable playable).
   const balanceSc = roundMoney(pscBalTotal + bscBal);
@@ -94,8 +91,6 @@ async function getBalance(userId, { skipCache = false } = {}) {
     frozen_balance_rsc: rscFrozen,
     /** Withdrawals use RSC only */
     available_to_withdraw_sc: availableToWithdrawRsc,
-    balance_gc: balanceGc,
-    usable_balance_gc: balanceGc,
     ...spinWheelWithdrawal
   };
 

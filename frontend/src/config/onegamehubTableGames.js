@@ -5,7 +5,6 @@ export const ONEGAMEHUB_TABLE_GAMES = [
   { gameid: 'kagaming2-LuckyVideoPoker', title: 'Lucky Video Poker' },
   { gameid: 'kagaming2-super-video-poker', title: 'Super Video Poker' },
   { gameid: 'kagaming2-AcesAndEights', title: 'Aces and Eights' },
-  { gameid: 'kagaming2-baccarat', title: 'Baccarat' },
   { gameid: 'kagaming2-HiLo', title: 'HiLo' },
   { gameid: 'kagaming2-DragonGatePoker', title: 'Dragon Gate Poker' },
   { gameid: 'kagaming2-TeenPatti2020', title: 'Teen Patti 20-20' },
@@ -21,6 +20,5 @@ export const ONEGAMEHUB_TABLE_GAMES = [
   { gameid: 'kagaming2-AndarBahar', title: 'Andar Bahar' },
   { gameid: 'kagaming2-PokDeng', title: 'Pok Deng' },
   { gameid: 'kagaming2-blazingheatroulette', title: 'Blazing Heat Roulette' },
-  { gameid: 'kagaming2-EuropeanRoulette', title: 'European Roulette' },
   { gameid: 'kagaming2-PhilosopherRoulette', title: "Philosopher's Roulette" },
 ];

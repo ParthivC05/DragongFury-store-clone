@@ -8,8 +8,10 @@ import {
   deleteAdminFooterPage,
   getAdminFooterSettings,
   updateAdminFooterSettings,
+  getAdminLegalPages,
   getStores
 } from '../api/admin'
+import { LEGAL_PAGE_OPTIONS } from '../constants/legalPages'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useConfirm } from '../context/ConfirmContext'
@@ -41,6 +43,7 @@ export default function FooterPages() {
   const [savingMenu, setSavingMenu] = useState(false)
   const [showDefaultMenus, setShowDefaultMenus] = useState(true)
   const [savingDefaults, setSavingDefaults] = useState(false)
+  const [legalPages, setLegalPages] = useState(LEGAL_PAGE_OPTIONS)
   const menuFormRef = useRef(null)
   const menuNameRef = useRef(null)
 
@@ -81,6 +84,29 @@ export default function FooterPages() {
   useEffect(() => {
     loadSettings()
   }, [loadSettings])
+
+  const loadLegalPages = useCallback(() => {
+    if (!settingsStoreCode) {
+      setLegalPages(LEGAL_PAGE_OPTIONS)
+      return
+    }
+    getAdminLegalPages({ storeCode: settingsStoreCode })
+      .then((res) => {
+        const rows = res.legal_pages || []
+        const byKey = new Map(rows.map((row) => [row.pageKey, row]))
+        setLegalPages(
+          LEGAL_PAGE_OPTIONS.map((page) => ({
+            ...page,
+            ...(byKey.get(page.pageKey) || {})
+          }))
+        )
+      })
+      .catch(() => setLegalPages(LEGAL_PAGE_OPTIONS))
+  }, [settingsStoreCode])
+
+  useEffect(() => {
+    loadLegalPages()
+  }, [loadLegalPages])
 
   const saveDefaultMenus = async (next) => {
     if (!settingsStoreCode) {
@@ -333,6 +359,46 @@ export default function FooterPages() {
           <button type="submit" className="admin-btn admin-btn-secondary">Show</button>
         </form>
       )}
+
+      <div className="footer-legal-card">
+        <div>
+          <strong>Legal pages</strong>
+          <p>Privacy Policy, Terms &amp; Conditions, and Responsible Gaming. Edit with the visual editor or HTML palette.</p>
+          {isMaster && !settingsStoreCode && (
+            <p className="footer-defaults-hint">Select a store above to edit these pages.</p>
+          )}
+        </div>
+        <div className="footer-legal-list">
+          {legalPages.map((page) => {
+            const canEdit = Boolean(settingsStoreCode)
+            const editTo = `/footer/legal/${page.pageKey}?storeCode=${encodeURIComponent(settingsStoreCode)}`
+            return (
+              <div key={page.pageKey} className="footer-legal-row">
+                <div>
+                  <strong>{page.title || LEGAL_PAGE_OPTIONS.find((p) => p.pageKey === page.pageKey)?.title}</strong>
+                  <div className="footer-legal-row-meta">
+                    <code>{page.path}</code>
+                    <span className={`blog-admin-badge${page.hasContent && page.isActive !== false ? ' is-active' : ''}`}>
+                      {page.hasContent
+                        ? (page.isActive !== false ? 'Live' : 'Hidden')
+                        : 'Empty'}
+                    </span>
+                  </div>
+                </div>
+                {canEdit ? (
+                  <Link to={editTo} className="admin-btn admin-btn-primary">
+                    Edit
+                  </Link>
+                ) : (
+                  <button type="button" className="admin-btn admin-btn-secondary" disabled>
+                    Edit
+                  </button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
       <div className="footer-defaults-card">
         <div>

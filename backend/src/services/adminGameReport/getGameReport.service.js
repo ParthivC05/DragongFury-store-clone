@@ -5,6 +5,8 @@ const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { toDateRangeStart, toDateRangeEnd } = require('../../utils/dateRangeFilters');
 const { getGamesList: getGitslotparkGamesList } = require('../gitslotpark/getGamesList.service');
+const { GIT_SLOTPARK_PROVIDERS } = require('../gitslotpark/gitslotpark.config');
+const { SLOTS_CATEGORY_GAMES } = require('../../constants/slotsCategoryGames');
 
 const DEFAULT_LIMIT = 25;
 const MAX_LIMIT = 100;
@@ -13,12 +15,66 @@ const ORDER_BY_WHITELIST = new Set([
   'game_id',
   'game_name',
   'provider',
-  'currency',
+  'category',
   'sc_wagered',
   'sc_won',
   'ggr',
   'payout'
 ]);
+
+const CATEGORY_LABELS = {
+  'live-casino': 'Live Casino',
+  casino: 'Casino',
+  fishing: 'Fishing',
+  slots: 'Slots',
+  shooting: 'Shooting',
+  'crash-game': 'Crash Game',
+  'table-games': 'Table Games',
+  'instant-win': 'Instant Win',
+  keno: 'Keno',
+  'scratch-cards': 'Scratch Cards',
+  lottery: 'Lottery',
+  plinko: 'Plinko',
+  'video-poker': 'Video Poker',
+  'casual-games': 'Casual Games',
+  sports: 'Sports',
+  bingo: 'Bingo',
+  others: 'Others'
+};
+
+const CATEGORY_ALIASES = {
+  table: 'table-games',
+  'table-games': 'table-games',
+  fishing: 'fishing',
+  fish: 'fishing',
+  'fish-game': 'fishing',
+  'fish-games': 'fishing',
+  crash: 'crash-game',
+  'crash-game': 'crash-game',
+  instant: 'instant-win',
+  'instant-win': 'instant-win',
+  keno: 'keno',
+  shooting: 'shooting',
+  live: 'live-casino',
+  'live-casino': 'live-casino',
+  casino: 'casino',
+  scratch: 'scratch-cards',
+  'scratch-cards': 'scratch-cards',
+  bingo: 'bingo',
+  lottery: 'lottery',
+  plinko: 'plinko',
+  poker: 'video-poker',
+  'video-poker': 'video-poker',
+  casual: 'casual-games',
+  'casual-games': 'casual-games',
+  slot: 'slots',
+  slots: 'slots',
+  sport: 'sports',
+  sports: 'sports',
+  sportsbook: 'sports',
+  other: 'others',
+  others: 'others'
+};
 
 function num(v) {
   const n = Number(v);
@@ -41,6 +97,80 @@ function providerLabelFor(provider) {
   if (provider === 'win568') return 'Win568';
   if (provider === 'scorpio') return 'Scorpio Play';
   return 'GitSlotPark';
+}
+
+function titleCaseSlug(slug) {
+  return String(slug || '')
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+function normalizeCategoryId(raw) {
+  const slug = String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_/]+/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]+/g, '');
+  if (!slug) return 'slots';
+  return CATEGORY_ALIASES[slug] || slug;
+}
+
+function categoryLabelFor(categoryId) {
+  const id = normalizeCategoryId(categoryId);
+  return CATEGORY_LABELS[id] || titleCaseSlug(id) || 'Slots';
+}
+
+function categoryFromCatalogGame(game, provider) {
+  if (provider === 'onegamehub') {
+    const raw = Array.isArray(game?.categories) && game.categories[0]
+      ? game.categories[0]
+      : (game?.category || game?.type);
+    return normalizeCategoryId(raw || 'slots');
+  }
+  if (provider === 'bona') {
+    const type = String(game?.type || game?.gameType || game?.category || '').toLowerCase();
+    if (type.includes('fish')) return 'fishing';
+    return 'slots';
+  }
+  if (provider === 'win568') {
+    const portfolio = String(game?.portfolio || '').toLowerCase();
+    const type = String(game?.gameType || game?.type || '').toLowerCase();
+    if (portfolio.includes('sport') || type.includes('sport')) return 'sports';
+    if (portfolio.includes('casino') || type.includes('casino')) return 'live-casino';
+    if (portfolio.includes('virtual')) return 'others';
+    return 'slots';
+  }
+  const type = String(game?.type || game?.category || game?.gameType || '').toLowerCase();
+  if (type.includes('fish')) return 'fishing';
+  if (type) return normalizeCategoryId(type);
+  return 'slots';
+}
+
+function categoryFromName(name) {
+  const hay = String(name || '').toLowerCase();
+  if (hay.includes('fishing') || /\bfish\b/.test(hay)) return 'fishing';
+  if (hay.includes('roulette') || hay.includes('blackjack') || hay.includes('baccarat')) return 'table-games';
+  if (hay.includes('crash')) return 'crash-game';
+  if (hay.includes('keno')) return 'keno';
+  if (hay.includes('plinko')) return 'plinko';
+  if (hay.includes('poker')) return 'video-poker';
+  if (hay.includes('scratch')) return 'scratch-cards';
+  if (hay.includes('bingo')) return 'bingo';
+  if (hay.includes('live casino') || hay.includes('live-casino')) return 'live-casino';
+  return null;
+}
+
+function setGameMeta(gamesMap, provider, gameId, name, categoryId) {
+  if (gameId == null || String(gameId).trim() === '') return;
+  const key = `${provider}:${String(gameId)}`;
+  const existing = gamesMap[key] && typeof gamesMap[key] === 'object' ? gamesMap[key] : {};
+  gamesMap[key] = {
+    name: name || existing.name || null,
+    categoryId: categoryId || existing.categoryId || 'slots'
+  };
 }
 
 function normalizeProviderKey(provider) {
@@ -120,20 +250,57 @@ function gspProviderSql(providerKey) {
   return `AND LOWER(COALESCE(gt.provider, '')) NOT IN ('win568', '568win')`;
 }
 
+function catalogGameId(game) {
+  const raw = game?.gameid ?? game?.gameId ?? game?.id;
+  if (raw == null || String(raw).trim() === '') return null;
+  return String(raw).trim();
+}
+
+function gitslotparkListReq(req, provider) {
+  return {
+    user: req?.user,
+    headers: {
+      ...(req?.headers || {}),
+      'x-gitslotpark-provider': provider
+    },
+    query: {
+      store_code: req?.query?.store_code || req?.query?.storeCode || req?.storeCode,
+      storeCode: req?.query?.storeCode || req?.query?.store_code || req?.storeCode
+    },
+    body: {}
+  };
+}
+
+function addGitslotparkGamesToMap(gamesMap, games) {
+  if (!Array.isArray(games)) return;
+  for (const g of games) {
+    const gId = catalogGameId(g);
+    const gName = g?.name || g?.title || g?.gameName;
+    if (gId != null) {
+      setGameMeta(gamesMap, 'gitslotpark', gId, gName, categoryFromCatalogGame(g, 'gitslotpark'));
+    }
+  }
+}
+
+async function loadGitslotparkCatalogs(req, gamesMap) {
+  await Promise.all(GIT_SLOTPARK_PROVIDERS.map(async (provider) => {
+    try {
+      const { games } = await getGitslotparkGamesList(gitslotparkListReq(req, provider));
+      addGitslotparkGamesToMap(gamesMap, games);
+    } catch (_) {
+      /* catalog is optional enrichment */
+    }
+  }));
+
+  for (const g of SLOTS_CATEGORY_GAMES) {
+    if (g.provider !== 'gitslotpark' || !g.gameid || !g.title) continue;
+    setGameMeta(gamesMap, 'gitslotpark', g.gameid, g.title, 'slots');
+  }
+}
+
 async function buildGamesMap(req) {
   const gamesMap = {};
-  try {
-    const { games } = await getGitslotparkGamesList(req || {});
-    if (Array.isArray(games)) {
-      for (const g of games) {
-        const gId = g.id ?? g.gameId ?? g.gameid;
-        const gName = g.name || g.title || g.gameName;
-        if (gId != null && gName) gamesMap[`gitslotpark:${String(gId)}`] = String(gName);
-      }
-    }
-  } catch (_) {
-    /* catalog is optional enrichment */
-  }
+  await loadGitslotparkCatalogs(req, gamesMap);
 
   try {
     const bona = require('../bona');
@@ -143,7 +310,9 @@ async function buildGamesMap(req) {
         for (const g of games) {
           const gId = g.id ?? g.gameId ?? g.gameid;
           const gName = g.name || g.nameLang || g.nameCn || g.title || g.gameName;
-          if (gId != null && gName) gamesMap[`bona:${String(gId)}`] = String(gName);
+          if (gId != null) {
+            setGameMeta(gamesMap, 'bona', gId, gName, categoryFromCatalogGame(g, 'bona'));
+          }
         }
       }
     }
@@ -159,7 +328,25 @@ async function buildGamesMap(req) {
       for (const g of games) {
         const gId = g.id ?? g.gameId ?? g.gameid;
         const gName = g.name || g.title || g.gameName;
-        if (gId != null && gName) gamesMap[`onegamehub:${String(gId)}`] = String(gName);
+        if (gId != null) {
+          setGameMeta(gamesMap, 'onegamehub', gId, gName, categoryFromCatalogGame(g, 'onegamehub'));
+        }
+      }
+    }
+  } catch (_) {
+    /* optional */
+  }
+
+  try {
+    const win568 = require('../win568/getGamesList.service');
+    const { games } = await win568.getGamesList();
+    if (Array.isArray(games)) {
+      for (const g of games) {
+        const gId = g.gameId ?? g.gameid ?? g.id;
+        const gName = g.name || g.gameName || g.title;
+        if (gId != null) {
+          setGameMeta(gamesMap, 'win568', gId, gName, categoryFromCatalogGame(g, 'win568'));
+        }
       }
     }
   } catch (_) {
@@ -183,10 +370,24 @@ async function buildGamesMap(req) {
   return gamesMap;
 }
 
+function gameMeta(gamesMap, provider, gameId) {
+  if (gameId == null || gameId === '') return null;
+  const meta = gamesMap[`${provider}:${gameId}`];
+  if (meta && typeof meta === 'object') return meta;
+  if (typeof meta === 'string') return { name: meta, categoryId: 'slots' };
+  return null;
+}
+
 function resolveGameName(gamesMap, provider, gameId) {
   if (gameId == null || gameId === '') return providerLabelFor(provider);
-  const key = `${provider}:${gameId}`;
-  return gamesMap[key] || `Game ${gameId}`;
+  const meta = gameMeta(gamesMap, provider, gameId);
+  return meta?.name || `Game ${gameId}`;
+}
+
+function resolveGameCategory(gamesMap, provider, gameId, gameName) {
+  const meta = gameMeta(gamesMap, provider, gameId);
+  if (meta?.categoryId) return normalizeCategoryId(meta.categoryId);
+  return categoryFromName(gameName) || 'slots';
 }
 
 async function queryGspRows({ from, to, scope, providerKey }) {
@@ -200,7 +401,6 @@ async function queryGspRows({ from, to, scope, providerKey }) {
         WHEN LOWER(COALESCE(gt.provider, '')) = 'bona' THEN 'bona'
         ELSE 'gitslotpark'
       END AS provider,
-      'SC' AS currency,
       COALESCE(SUM(CASE
         WHEN LOWER(gt.operation) = 'withdraw' THEN gt.amount
         WHEN LOWER(gt.operation) = 'betwin' THEN COALESCE(gt.bet_amount, 0)
@@ -222,7 +422,7 @@ async function queryGspRows({ from, to, scope, providerKey }) {
       AND gt.created_at <= :to
       ${scopeSql(scope, replacements)}
       ${gspProviderSql(providerKey)}
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2
   `;
   try {
     return await db.sequelize.query(sql, { replacements, type: QueryTypes.SELECT });
@@ -238,10 +438,6 @@ async function queryOghRows({ from, to, scope }) {
     SELECT
       CAST(ogh.game_id AS TEXT) AS game_id,
       'onegamehub' AS provider,
-      CASE
-        WHEN UPPER(COALESCE(ogh.metadata->>'currency', 'SSC')) IN ('GOC', 'GC') THEN 'GC'
-        ELSE 'SC'
-      END AS currency,
       COALESCE(SUM(CASE WHEN LOWER(ogh.operation) = 'bet' THEN ogh.amount ELSE 0 END), 0)::float AS sc_wagered,
       COALESCE(SUM(CASE WHEN LOWER(ogh.operation) = 'win' THEN ogh.amount ELSE 0 END), 0)::float AS sc_won,
       COUNT(*) FILTER (WHERE LOWER(ogh.operation) = 'bet')::int AS bet_count,
@@ -254,7 +450,7 @@ async function queryOghRows({ from, to, scope }) {
       AND ogh.created_at >= :from
       AND ogh.created_at <= :to
       ${scopeSql(scope, replacements)}
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2
   `;
   try {
     return await db.sequelize.query(sql, { replacements, type: QueryTypes.SELECT });
@@ -270,7 +466,6 @@ async function queryWin568Rows({ from, to, scope }) {
     SELECT
       CAST(COALESCE(wb.game_type, wb.product_type, 0) AS TEXT) AS game_id,
       'win568' AS provider,
-      'SC' AS currency,
       COALESCE(SUM(CASE WHEN LOWER(COALESCE(wb.status, '')) <> 'void' THEN wb.stake ELSE 0 END), 0)::float AS sc_wagered,
       COALESCE(SUM(CASE WHEN LOWER(COALESCE(wb.status, '')) = 'settled' THEN GREATEST(COALESCE(wb.winloss, 0), 0) ELSE 0 END), 0)::float AS sc_won,
       COUNT(*) FILTER (WHERE LOWER(COALESCE(wb.status, '')) <> 'void')::int AS bet_count,
@@ -281,7 +476,7 @@ async function queryWin568Rows({ from, to, scope }) {
       AND wb.created_at >= :from
       AND wb.created_at <= :to
       ${scopeSql(scope, replacements)}
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2
   `;
   try {
     return await db.sequelize.query(sql, { replacements, type: QueryTypes.SELECT });
@@ -320,17 +515,19 @@ async function queryScorpioRows({ from, to, scope }) {
 
 function mapGameRow(row, gamesMap) {
   const provider = String(row.provider || 'gitslotpark').toLowerCase();
-  const currency = String(row.currency || 'SC').trim().toUpperCase() === 'GC' ? 'GC' : 'SC';
   const gameId = row.game_id != null && String(row.game_id).trim() !== '' ? String(row.game_id) : null;
   const scWagered = round2(row.sc_wagered);
   const scWon = round2(row.sc_won);
   const ggr = round2(scWagered - scWon);
+  const gameName = resolveGameName(gamesMap, provider, gameId);
+  const categoryId = resolveGameCategory(gamesMap, provider, gameId, gameName);
   return {
     gameId,
-    gameName: resolveGameName(gamesMap, provider, gameId),
+    gameName,
     provider,
     providerLabel: providerLabelFor(provider),
-    currency,
+    categoryId,
+    categoryLabel: categoryLabelFor(categoryId),
     scWagered,
     scWon,
     ggr,
@@ -343,14 +540,12 @@ function mapGameRow(row, gamesMap) {
 function aggregateByProvider(gameRows) {
   const byProvider = new Map();
   for (const row of gameRows) {
-    const currency = row.currency === 'GC' ? 'GC' : 'SC';
-    const key = `${row.provider || 'gitslotpark'}:${currency}`;
+    const key = row.provider || 'gitslotpark';
     const current = byProvider.get(key) || {
       gameId: key,
-      gameName: providerLabelFor(row.provider || 'gitslotpark'),
-      provider: row.provider || 'gitslotpark',
-      providerLabel: providerLabelFor(row.provider || 'gitslotpark'),
-      currency,
+      gameName: providerLabelFor(key),
+      provider: key,
+      providerLabel: providerLabelFor(key),
       scWagered: 0,
       scWon: 0,
       ggr: 0,
@@ -371,6 +566,39 @@ function aggregateByProvider(gameRows) {
   }));
 }
 
+function aggregateByCategory(gameRows) {
+  const byCategory = new Map();
+  for (const row of gameRows) {
+    const key = row.categoryId || 'slots';
+    const current = byCategory.get(key) || {
+      gameId: key,
+      gameName: categoryLabelFor(key),
+      provider: key,
+      providerLabel: categoryLabelFor(key),
+      categoryId: key,
+      categoryLabel: categoryLabelFor(key),
+      scWagered: 0,
+      scWon: 0,
+      ggr: 0,
+      payout: null,
+      betCount: 0,
+      userCount: 0,
+      gameCount: 0
+    };
+    current.scWagered = round2(current.scWagered + row.scWagered);
+    current.scWon = round2(current.scWon + row.scWon);
+    current.betCount += row.betCount;
+    current.userCount += row.userCount;
+    current.gameCount += 1;
+    byCategory.set(key, current);
+  }
+  return [...byCategory.values()].map((row) => ({
+    ...row,
+    ggr: round2(row.scWagered - row.scWon),
+    payout: payoutPct(row.scWagered, row.scWon)
+  }));
+}
+
 function matchesSearch(row, search) {
   const q = String(search || '').trim().toLowerCase();
   if (!q) return true;
@@ -378,7 +606,9 @@ function matchesSearch(row, search) {
     String(row.gameId || '').toLowerCase().includes(q) ||
     String(row.gameName || '').toLowerCase().includes(q) ||
     String(row.providerLabel || '').toLowerCase().includes(q) ||
-    String(row.provider || '').toLowerCase().includes(q)
+    String(row.provider || '').toLowerCase().includes(q) ||
+    String(row.categoryLabel || '').toLowerCase().includes(q) ||
+    String(row.categoryId || '').toLowerCase().includes(q)
   );
 }
 
@@ -389,7 +619,7 @@ function compareRows(a, b, orderBy, direction) {
     if (key === 'game_id') return String(row.gameId || '');
     if (key === 'game_name') return String(row.gameName || '');
     if (key === 'provider') return String(row.providerLabel || row.provider || '');
-    if (key === 'currency') return String(row.currency || 'SC');
+    if (key === 'category') return String(row.categoryLabel || row.categoryId || '');
     if (key === 'sc_wagered') return num(row.scWagered);
     if (key === 'sc_won') return num(row.scWon);
     if (key === 'ggr') return num(row.ggr);
@@ -408,29 +638,21 @@ function compareRows(a, b, orderBy, direction) {
 }
 
 function buildSummary(rows) {
-  const scRows = rows.filter((row) => row.currency !== 'GC');
-  const gcRows = rows.filter((row) => row.currency === 'GC');
-  const scWagered = round2(scRows.reduce((sum, row) => sum + num(row.scWagered), 0));
-  const scWon = round2(scRows.reduce((sum, row) => sum + num(row.scWon), 0));
-  const gcWagered = round2(gcRows.reduce((sum, row) => sum + num(row.scWagered), 0));
-  const gcWon = round2(gcRows.reduce((sum, row) => sum + num(row.scWon), 0));
+  const scWagered = round2(rows.reduce((sum, row) => sum + num(row.scWagered), 0));
+  const scWon = round2(rows.reduce((sum, row) => sum + num(row.scWon), 0));
   return {
     gameCount: rows.length,
     scWagered,
     scWon,
     ggr: round2(scWagered - scWon),
     payout: payoutPct(scWagered, scWon),
-    gcWagered,
-    gcWon,
-    gcGgr: round2(gcWagered - gcWon),
-    gcPayout: payoutPct(gcWagered, gcWon),
     betCount: rows.reduce((sum, row) => sum + num(row.betCount), 0)
   };
 }
 
 /**
- * Per-game (or per-provider) wagered / won report.
- * 1GameHub Gold Coin play is a separate GC currency row so it is never mixed with SC.
+ * Per-game, per-provider, or per-category SC wagered / won report.
+ * GC is intentionally omitted — partner-platform slots settle in SC only.
  */
 async function getGameReport({
   req = null,
@@ -449,7 +671,8 @@ async function getGameReport({
   const pageNum = Math.max(1, parseInt(page, 10) || 1);
   const limitNum = Math.min(MAX_LIMIT, Math.max(1, parseInt(limit, 10) || DEFAULT_LIMIT));
   const offset = (pageNum - 1) * limitNum;
-  const tabKey = String(tab || 'game').toLowerCase() === 'provider' ? 'provider' : 'game';
+  const rawTab = String(tab || 'game').toLowerCase();
+  const tabKey = rawTab === 'provider' || rawTab === 'category' ? rawTab : 'game';
   const providerKey = normalizeProviderKey(provider);
   const sortKey = ORDER_BY_WHITELIST.has(String(orderBy || '').toLowerCase())
     ? String(orderBy).toLowerCase()
@@ -488,6 +711,7 @@ async function getGameReport({
     .map((row) => mapGameRow(row, gamesMap))
     .filter((row) => num(row.scWagered) !== 0 || num(row.scWon) !== 0);
   if (tabKey === 'provider') rows = aggregateByProvider(rows);
+  if (tabKey === 'category') rows = aggregateByCategory(rows);
   rows = rows.filter((row) => matchesSearch(row, search));
   rows.sort((a, b) => compareRows(a, b, sortKey, sortDir));
 

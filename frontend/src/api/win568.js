@@ -10,8 +10,8 @@ export function getWin568Games() {
   return getRequest(`${WIN568_BASE}/games`);
 }
 
-export function launchWin568Game({ gameid, gpid, portfolio, coinType = 'SC' } = {}) {
-  const body = { coinType };
+export function launchWin568Game({ gameid, gpid, portfolio } = {}) {
+  const body = {};
   const gp = Number(gpid);
   const gid = Number(gameid);
   if (Number.isFinite(gp) && gp >= 0) body.gpid = gp;

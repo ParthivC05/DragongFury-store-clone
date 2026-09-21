@@ -17,9 +17,29 @@ function initialPermissions() {
   p[ADMIN_FEATURE_KEYS.DASHBOARD_SLIDESHOW] = true
   p[ADMIN_FEATURE_KEYS.TRANSACTION_FEES] = true
   p[ADMIN_FEATURE_KEYS.CHIME_DEPOSIT_ACCOUNT_TOTALS] = true
+  p[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] = true
   p.footer_pages_store_scope = 'all'
   p.footer_pages_store_codes = []
+  p.blog_posts_store_scope = 'all'
+  p.blog_posts_store_codes = []
   return p
+}
+
+function scopeKey(featureKey) {
+  return `${featureKey}_store_scope`
+}
+
+function codesKey(featureKey) {
+  return `${featureKey}_store_codes`
+}
+
+function readScope(perms, featureKey) {
+  return perms?.[scopeKey(featureKey)] === 'particular' ? 'particular' : 'all'
+}
+
+function readStoreCode(perms, featureKey) {
+  const codes = perms?.[codesKey(featureKey)]
+  return Array.isArray(codes) ? (codes[0] || '') : ''
 }
 
 export default function AdminRoleForm() {
@@ -41,10 +61,11 @@ export default function AdminRoleForm() {
       .then((res) => {
         const rows = res.list || res.stores || res.items || []
         setStoreOptions(
-          rows
-            .map((s) => s.storeCode || s.store_code)
-            .filter(Boolean)
-            .sort((a, b) => String(a).localeCompare(String(b)))
+          [...new Set(
+            rows
+              .map((s) => s.storeCode || s.store_code)
+              .filter(Boolean)
+          )].sort((a, b) => String(a).localeCompare(String(b)))
         )
       })
       .catch(() => setStoreOptions([]))
@@ -70,6 +91,9 @@ export default function AdminRoleForm() {
         if (role.permissions?.[ADMIN_FEATURE_KEYS.CHIME_DEPOSIT_ACCOUNT_TOTALS] === undefined) {
           perms[ADMIN_FEATURE_KEYS.CHIME_DEPOSIT_ACCOUNT_TOTALS] = true
         }
+        if (role.permissions?.[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] === undefined) {
+          perms[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] = true
+        }
         // Roles that already manage help content should get blog access when the key is new
         if (
           role.permissions?.[ADMIN_FEATURE_KEYS.BLOG_POSTS] === undefined &&
@@ -94,10 +118,13 @@ export default function AdminRoleForm() {
         getAllAdminRolePermissionKeys().forEach((k) => {
           if (perms[k] === undefined) perms[k] = false
         })
-        perms.footer_pages_store_scope =
-          role.permissions?.footer_pages_store_scope === 'particular' ? 'particular' : 'all'
+        perms.footer_pages_store_scope = readScope(role.permissions, ADMIN_FEATURE_KEYS.FOOTER_PAGES)
         perms.footer_pages_store_codes = Array.isArray(role.permissions?.footer_pages_store_codes)
           ? role.permissions.footer_pages_store_codes
+          : []
+        perms.blog_posts_store_scope = readScope(role.permissions, ADMIN_FEATURE_KEYS.BLOG_POSTS)
+        perms.blog_posts_store_codes = Array.isArray(role.permissions?.blog_posts_store_codes)
+          ? role.permissions.blog_posts_store_codes
           : []
         setForm({
           name: role.name || '',
@@ -113,25 +140,25 @@ export default function AdminRoleForm() {
     setForm((f) => ({ ...f, permissions: { ...f.permissions, [key]: !!value } }))
   }
 
-  const setFooterScope = (scope) => {
+  const setFeatureScope = (featureKey, scope) => {
     setForm((f) => ({
       ...f,
       permissions: {
         ...f.permissions,
-        footer_pages_store_scope: scope === 'particular' ? 'particular' : 'all',
-        footer_pages_store_codes:
-          scope === 'particular' ? (f.permissions.footer_pages_store_codes || []) : []
+        [scopeKey(featureKey)]: scope === 'particular' ? 'particular' : 'all',
+        [codesKey(featureKey)]:
+          scope === 'particular' ? (f.permissions[codesKey(featureKey)] || []) : []
       }
     }))
   }
 
-  const setFooterStoreCode = (code) => {
+  const setFeatureStoreCode = (featureKey, code) => {
     setForm((f) => ({
       ...f,
       permissions: {
         ...f.permissions,
-        footer_pages_store_scope: 'particular',
-        footer_pages_store_codes: code ? [code] : []
+        [scopeKey(featureKey)]: 'particular',
+        [codesKey(featureKey)]: code ? [code] : []
       }
     }))
   }
@@ -146,24 +173,30 @@ export default function AdminRoleForm() {
     }
 
     const permissions = { ...form.permissions }
-    if (permissions[ADMIN_FEATURE_KEYS.FOOTER_PAGES]) {
-      permissions.footer_pages_store_scope =
-        permissions.footer_pages_store_scope === 'particular' ? 'particular' : 'all'
-      if (permissions.footer_pages_store_scope === 'particular') {
-        const codes = Array.isArray(permissions.footer_pages_store_codes)
-          ? permissions.footer_pages_store_codes.filter(Boolean)
-          : []
-        if (codes.length === 0) {
-          toast.error('Select a store for Footer pages, or choose All stores.')
-          return
+    const scopedFeatures = [
+      { key: ADMIN_FEATURE_KEYS.FOOTER_PAGES, label: 'Footer pages' },
+      { key: ADMIN_FEATURE_KEYS.BLOG_POSTS, label: 'Blog posts' }
+    ]
+    for (const feature of scopedFeatures) {
+      if (permissions[feature.key]) {
+        permissions[scopeKey(feature.key)] =
+          permissions[scopeKey(feature.key)] === 'particular' ? 'particular' : 'all'
+        if (permissions[scopeKey(feature.key)] === 'particular') {
+          const codes = Array.isArray(permissions[codesKey(feature.key)])
+            ? permissions[codesKey(feature.key)].filter(Boolean)
+            : []
+          if (codes.length === 0) {
+            toast.error(`Select a store for ${feature.label}, or choose All stores.`)
+            return
+          }
+          permissions[codesKey(feature.key)] = codes
+        } else {
+          permissions[codesKey(feature.key)] = []
         }
-        permissions.footer_pages_store_codes = codes
       } else {
-        permissions.footer_pages_store_codes = []
+        permissions[scopeKey(feature.key)] = 'all'
+        permissions[codesKey(feature.key)] = []
       }
-    } else {
-      permissions.footer_pages_store_scope = 'all'
-      permissions.footer_pages_store_codes = []
     }
 
     setSaving(true)
@@ -189,12 +222,6 @@ export default function AdminRoleForm() {
       </div>
     )
   }
-
-  const footerEnabled = !!form.permissions[ADMIN_FEATURE_KEYS.FOOTER_PAGES]
-  const footerScope = form.permissions.footer_pages_store_scope === 'particular' ? 'particular' : 'all'
-  const footerStoreCode = Array.isArray(form.permissions.footer_pages_store_codes)
-    ? (form.permissions.footer_pages_store_codes[0] || '')
-    : ''
 
   return (
     <div className="role-form-page">
@@ -252,55 +279,60 @@ export default function AdminRoleForm() {
                       </label>
                     </div>
                     {item.description && <p className="permission-card-desc">{item.description}</p>}
-                    {item.storeScope && item.key === ADMIN_FEATURE_KEYS.FOOTER_PAGES && footerEnabled && (
-                      <div className="permission-store-scope">
-                        <p className="permission-store-scope-title">Which stores can they edit?</p>
-                        <p className="permission-store-scope-desc">
-                          Pick one. Staff with this role will only manage footer links for what you choose here.
-                        </p>
-                        <div className="permission-scope-choices">
-                          <label className={`permission-scope-choice${footerScope === 'all' ? ' is-active' : ''}`}>
-                            <input
-                              type="radio"
-                              name="footer-store-scope"
-                              checked={footerScope === 'all'}
-                              onChange={() => setFooterScope('all')}
-                            />
-                            <span>
-                              <strong>All stores</strong>
-                              <span>They can add/edit footer links for every store.</span>
-                            </span>
-                          </label>
-                          <label className={`permission-scope-choice${footerScope === 'particular' ? ' is-active' : ''}`}>
-                            <input
-                              type="radio"
-                              name="footer-store-scope"
-                              checked={footerScope === 'particular'}
-                              onChange={() => setFooterScope('particular')}
-                            />
-                            <span>
-                              <strong>One store only</strong>
-                              <span>They can manage footer links for just one store you pick.</span>
-                            </span>
-                          </label>
+                    {item.storeScope && !!form.permissions[item.key] && (() => {
+                      const scope = readScope(form.permissions, item.key)
+                      const storeCode = readStoreCode(form.permissions, item.key)
+                      const noun = item.storeScopeNoun || item.label.toLowerCase()
+                      return (
+                        <div className="permission-store-scope">
+                          <p className="permission-store-scope-title">Which stores can they edit?</p>
+                          <p className="permission-store-scope-desc">
+                            Pick one. Staff with this role will only manage {noun} for what you choose here.
+                          </p>
+                          <div className="permission-scope-choices">
+                            <label className={`permission-scope-choice${scope === 'all' ? ' is-active' : ''}`}>
+                              <input
+                                type="radio"
+                                name={`${item.key}-store-scope`}
+                                checked={scope === 'all'}
+                                onChange={() => setFeatureScope(item.key, 'all')}
+                              />
+                              <span>
+                                <strong>All stores</strong>
+                                <span>They can add/edit {noun} for every store.</span>
+                              </span>
+                            </label>
+                            <label className={`permission-scope-choice${scope === 'particular' ? ' is-active' : ''}`}>
+                              <input
+                                type="radio"
+                                name={`${item.key}-store-scope`}
+                                checked={scope === 'particular'}
+                                onChange={() => setFeatureScope(item.key, 'particular')}
+                              />
+                              <span>
+                                <strong>One store only</strong>
+                                <span>They can manage {noun} for just one store you pick.</span>
+                              </span>
+                            </label>
+                          </div>
+                          {scope === 'particular' && (
+                            <label>
+                              Which store?
+                              <select
+                                value={storeCode}
+                                onChange={(e) => setFeatureStoreCode(item.key, e.target.value)}
+                                required
+                              >
+                                <option value="">Pick a store…</option>
+                                {storeOptions.map((code) => (
+                                  <option key={code} value={code}>{code}</option>
+                                ))}
+                              </select>
+                            </label>
+                          )}
                         </div>
-                        {footerScope === 'particular' && (
-                          <label>
-                            Which store?
-                            <select
-                              value={footerStoreCode}
-                              onChange={(e) => setFooterStoreCode(e.target.value)}
-                              required
-                            >
-                              <option value="">Pick a store…</option>
-                              {storeOptions.map((code) => (
-                                <option key={code} value={code}>{code}</option>
-                              ))}
-                            </select>
-                          </label>
-                        )}
-                      </div>
-                    )}
+                      )
+                    })()}
                   </div>
                 )
               }

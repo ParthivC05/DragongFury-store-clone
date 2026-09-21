@@ -18,7 +18,7 @@ router.get('/play-eligibility', authMiddlewareWithBodyToken, gamesController.pla
 
 // Static routes must be registered before /:id
 router.get('/activities', authMiddlewareWithBodyToken, gamesController.activities);
-router.get('/firekirin/exclusive', authMiddlewareWithBodyToken, gamesController.firekirinExclusiveList);
+router.get('/firekirin/exclusive', authMiddlewareOptional, gamesController.firekirinExclusiveList);
 router.post('/firekirin/enter', authMiddlewareWithBodyToken, gamesController.firekirinEnter);
 router.get('/milkyway/exclusive', authMiddlewareWithBodyToken, gamesController.milkywayExclusiveList);
 router.post('/milkyway/enter', authMiddlewareWithBodyToken, gamesController.milkywayEnter);

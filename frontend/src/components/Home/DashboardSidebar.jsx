@@ -20,6 +20,7 @@ import { openSupportWidget } from '../intercomApi';
 import { startOnboardingTutorial } from '../../utils/onboardingTutorial';
 import * as dailyBonusApi from '../../api/dailyBonus';
 import { useEnabledSlotProviders } from '../../hooks/useEnabledSlotProviders';
+import { warmupCasino } from '../../utils/preloadCasino';
 import {
   ORIONSTAR_CATEGORY_ORDER,
   getSlotCategoryPath,
@@ -125,7 +126,10 @@ export function DashboardSidebar({
               title: 'Casino',
               accent: 'purple',
               Icon: SlotIcon,
-              onClick: () => navigate('/casino'),
+              onClick: () => {
+                warmupCasino();
+                navigate('/casino');
+              },
               active: onCasinoPage,
               badge: { text: 'HOT', variant: 'hot' },
             }
@@ -272,6 +276,7 @@ export function DashboardSidebar({
   ];
 
   const goCasinoCategory = (to) => {
+    warmupCasino();
     navigate(to);
     onNavigate?.();
   };

@@ -6,15 +6,24 @@ import { getShuffledStoreWinnerNames, getStoreToastProfiles } from '../utils/sto
 const TOAST_PROFILES = getStoreToastProfiles(STORE_CODE);
 
 const ENTER_MS = 380;
-const VISIBLE_MS = 4200;
+const VISIBLE_MS = 4800;
 const EXIT_MS = 380;
+const INITIAL_DELAY_MS = 4500;
+const GAP_MIN_MS = 10000;
+const GAP_MAX_MS = 16000;
+const WIN_AMOUNT_MIN = 300;
+const WIN_AMOUNT_MAX = 1500;
 
-function parseWinnerPrize(prize) {
-  return Number.parseInt(String(prize).replace(/[^\d]/g, ''), 10) || 0;
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomWinAmount() {
+  return randomBetween(WIN_AMOUNT_MIN, WIN_AMOUNT_MAX);
 }
 
 function formatWinAmount(amount) {
-  return `$${Math.max(1, amount).toLocaleString('en-US')}`;
+  return `$${Math.max(WIN_AMOUNT_MIN, amount).toLocaleString('en-US')}`;
 }
 
 function formatTimeAgo(minutes) {
@@ -45,7 +54,7 @@ function buildToastItems(rows, pools) {
     const name = isFemale
       ? pickNameForGender('female', femaleSlot++, namePools)
       : pickNameForGender('male', maleSlot++, namePools);
-    const amount = parseWinnerPrize(row.prize);
+    const amount = randomWinAmount();
     const minutesAgo = Math.max(1, 2 + index * 2 + (amount % 5));
 
     return {
@@ -105,10 +114,14 @@ export function LandingWinnerToasts({ rows }) {
   const [toastIndex, setToastIndex] = useState(0);
   const [phase, setPhase] = useState('hidden');
   const [mounted, setMounted] = useState(false);
+  const [displayAmount, setDisplayAmount] = useState(() => formatWinAmount(randomWinAmount()));
+  const [displayTime, setDisplayTime] = useState('');
+  const [displayGame, setDisplayGame] = useState('');
   const cycleRef = useRef(null);
   const itemsRef = useRef([]);
   const identitiesRef = useRef(null);
   const namePoolsRef = useRef(null);
+  const toastIndexRef = useRef(0);
   const bottomOffset = useAboveBottomNavOffset();
 
   if (!namePoolsRef.current) {
@@ -130,6 +143,7 @@ export function LandingWinnerToasts({ rows }) {
     const next = Array.from({ length: rowCount }, (_, index) => {
       const profile = TOAST_PROFILES[index % TOAST_PROFILES.length];
       const isFemale = profile.gender === 'female';
+      const minutesAgo = Math.max(1, 2 + index * 2 + randomBetween(0, 4));
       return {
         id: `winner-toast-${index}-${profile.avatar}`,
         name: isFemale
@@ -137,6 +151,7 @@ export function LandingWinnerToasts({ rows }) {
           : pickNameForGender('male', maleSlot++, namePoolsRef.current),
         avatar: profile.avatar,
         gender: profile.gender,
+        time: formatTimeAgo(minutesAgo),
       };
     });
     identitiesRef.current = next;
@@ -147,18 +162,15 @@ export function LandingWinnerToasts({ rows }) {
     const source = (rows || []).slice(0, 8);
     return identities.map((identity, index) => {
       const row = source[index] || {};
-      const amount = parseWinnerPrize(row.prize);
-      const minutesAgo = Math.max(1, 2 + index * 2 + (amount % 5));
       return {
         ...identity,
-        amount: formatWinAmount(amount),
-        time: formatTimeAgo(minutesAgo),
         game: row.game || 'Platform game',
       };
     });
   }, [identities, rows]);
 
   itemsRef.current = items;
+  toastIndexRef.current = toastIndex;
 
   const activeItem = items.length ? items[toastIndex % items.length] : null;
 
@@ -189,20 +201,29 @@ export function LandingWinnerToasts({ rows }) {
       const count = itemsRef.current.length;
       if (!count) return;
 
+      const nextItem = itemsRef.current[toastIndexRef.current % count] || itemsRef.current[0];
+      setDisplayAmount(formatWinAmount(randomWinAmount()));
+      setDisplayTime(nextItem?.time || '');
+      setDisplayGame(nextItem?.game || 'Platform game');
       setPhase('enter');
       schedule(() => {
         setPhase('show');
         schedule(() => {
           setPhase('exit');
           schedule(() => {
-            setToastIndex((i) => (i + 1) % count);
-            runCycle();
+            setPhase('hidden');
+            setToastIndex((i) => {
+              const next = (i + 1) % count;
+              toastIndexRef.current = next;
+              return next;
+            });
+            schedule(runCycle, randomBetween(GAP_MIN_MS, GAP_MAX_MS));
           }, EXIT_MS);
         }, VISIBLE_MS);
       }, ENTER_MS);
     };
 
-    runCycle();
+    schedule(runCycle, INITIAL_DELAY_MS);
 
     return () => {
       cancelled = true;
@@ -245,11 +266,11 @@ export function LandingWinnerToasts({ rows }) {
         <span className="lp-winner-toast-win-badge" aria-hidden>🏆</span>
         <div className="lp-winner-toast-body">
           <p className="lp-winner-toast-name">{activeItem.name}</p>
-          <p className="lp-winner-toast-amount">Won {activeItem.amount}</p>
+          <p className="lp-winner-toast-amount">Won {displayAmount}</p>
           <p className="lp-winner-toast-meta">
-            <span>{activeItem.game}</span>
+            <span>{displayGame || activeItem.game}</span>
             <span className="lp-winner-toast-dot" aria-hidden>·</span>
-            <span>{activeItem.time}</span>
+            <span>{displayTime || activeItem.time}</span>
           </p>
         </div>
       </article>

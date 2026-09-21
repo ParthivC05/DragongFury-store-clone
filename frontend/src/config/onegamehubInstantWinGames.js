@@ -11,7 +11,6 @@ export const ONEGAMEHUB_INSTANT_WIN_GAMES = [
   { gameid: 'bgaming-FortuneSpin', title: 'Fortune Spin' },
   { gameid: 'bgaming-FishingClub', title: 'Fishing Club' },
   { gameid: 'bgaming-AviamastersXmas', title: 'Aviamasters X-mas' },
-  { gameid: 'bgaming-Plinko', title: 'Plinko' },
   { gameid: 'bgaming-GoldenPinataHoldAndWin', title: 'Golden Pinata' },
   { gameid: 'bgaming-FootballPlinko', title: 'Football Plinko' },
   { gameid: 'bgaming-WinterFishingClub', title: 'Winter Fishing' },

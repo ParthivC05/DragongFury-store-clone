@@ -6,7 +6,7 @@ import './deposit-bonus-promo-carousel.css';
 const SLIDE_INTERVAL_MS = 5500;
 const SWIPE_THRESHOLD_PX = 48;
 
-const TIER_ACCENTS = ['#ffd54f', '#c084fc', '#34d399'];
+const TIER_ACCENTS = ['#B6FF2A', '#8FE31A', '#6FBF00'];
 
 function tierAccent(index) {
   return TIER_ACCENTS[index] ?? TIER_ACCENTS[0];

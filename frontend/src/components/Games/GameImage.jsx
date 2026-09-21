@@ -9,7 +9,7 @@ import { getGameImageUrl } from '../../utils/gameImage';
 export function GameImage({
   game,
   className = 'w-16 h-16 rounded-lg object-cover flex-shrink-0',
-  loading = 'lazy',
+  loading = 'eager',
   fetchPriority = 'auto',
   decoding = 'async',
   width = 88,

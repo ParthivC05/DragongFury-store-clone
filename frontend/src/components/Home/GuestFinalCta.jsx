@@ -9,13 +9,13 @@ export function GuestFinalCta() {
   return (
     <section className="dash-final-cta dash-animate-in" aria-label="Create account">
       <h2 className="dash-final-cta-title">
-        One account. <em>20+ platforms + instant casino.</em>
+        Ready to play? <em>Create a free account.</em>
       </h2>
       <p className="dash-final-cta-copy">
-        Get 2 SC free on signup — no purchase necessary, free to join, instant access.
+        2 SC on signup. Spin, platforms, and instant casino — one login.
       </p>
       <Link to={SIGNUP_TO} className="dash-final-cta-btn">
-        🎁 Create Free Account
+        Join Dragon Fury
       </Link>
     </section>
   );

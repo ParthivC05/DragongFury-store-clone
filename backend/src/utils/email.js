@@ -754,13 +754,24 @@ async function sendSubscriptionExpiresTomorrowEmail(to, { planName, endsAt }) {
 
 /**
  * Build HTML for game bot balance alert (insufficient/low balance on game).
- * @param {{ gameName: string, operation: string, amount: number, botMessage: string, siteName: string, logoUrl?: string }} opts
+ * @param {{ gameName: string, operation: string, amount: number, botMessage: string, storeCode?: string, siteName: string, logoUrl?: string }} opts
  * @returns {string} HTML
  */
 function getGameBotBalanceAlertHtml(opts) {
-  const { gameName, operation, amount, botMessage, siteName, logoUrl } = opts;
+  const { gameName, operation, amount, botMessage, storeCode, siteName, logoUrl } = opts;
   const year = new Date().getFullYear();
   const initials = (siteName || 'PP').replace(/\s+/g, '').slice(0, 2).toUpperCase();
+  const storeCodeTrim = storeCode && String(storeCode).trim();
+  const storeDisplayName = storeCodeTrim ? storeCodeToDisplayName(storeCodeTrim) : null;
+  const storeBlock =
+    storeDisplayName
+      ? `<p style="margin:0 0 16px; font-size: 14px; line-height: 1.5; color: ${TEXT_MUTED};">
+                <strong style="color: ${TEXT_PRIMARY};">Store:</strong> ${storeDisplayName}
+              </p>`
+      : '';
+  const storePhrase = storeDisplayName
+    ? ` in the <strong>${storeDisplayName}</strong> store`
+    : ' in your store account';
 
   return `
 <!DOCTYPE html>
@@ -786,8 +797,9 @@ function getGameBotBalanceAlertHtml(opts) {
           </tr>
           <tr>
             <td style="background-color: ${HEADER_BG}; padding: 20px 24px;">
+              ${storeBlock}
               <p style="margin:0 0 16px; font-size: 15px; line-height: 1.5; color: ${TEXT_PRIMARY};">
-                For the game <strong>${gameName || 'Unknown Game'}</strong>, you do not have sufficient balance in your store account. The automation tools returned a balance-related error. Please check and top up the balance for this game so that user deposits and redemptions can be processed.
+                For the game <strong>${gameName || 'Unknown Game'}</strong>${storePhrase}, you do not have sufficient balance. The automation tools returned a balance-related error. Please check and top up the balance for this game so that user deposits and redemptions can be processed.
               </p>
               <p style="margin: 0; font-size: 13px; color: ${TEXT_MUTED};">
                 You will receive at most one such alert per game per day to avoid duplicate emails. Please top up the game balance so future deposits and redemptions can succeed.
@@ -810,17 +822,30 @@ function getGameBotBalanceAlertHtml(opts) {
 /**
  * Send game bot balance alert to store partner or admin when bot returns insufficient/low balance error.
  * @param {string} to - Recipient email
- * @param {{ gameName: string, operation: 'Deposit'|'Redeem', amount: number, botMessage: string }} opts
+ * @param {{ gameName: string, operation: 'Deposit'|'Redeem', amount: number, botMessage: string, storeCode?: string }} opts
  */
 async function sendGameBotBalanceAlertEmail(to, opts) {
-  const { gameName, operation, amount, botMessage } = opts;
+  const { gameName, operation, amount, botMessage, storeCode } = opts;
   const siteName = config.get('email.siteDisplayName') || config.get('email.senderName') || 'Partner Platform';
   const logoUrl = config.get('email.logoUrl') || '';
-  const subject = `Game account balance alert – ${gameName || 'Game'} (${operation}) – ${siteName}`;
+  const displayGameName = gameName || 'Game';
+  const storeCodeTrim = storeCode && String(storeCode).trim();
+  const storeDisplayName = storeCodeTrim ? storeCodeToDisplayName(storeCodeTrim) : null;
+  const operationLabel = operation ? ` (${operation})` : '';
+  const subject = storeDisplayName
+    ? `Store "${storeDisplayName}" – Game "${displayGameName}" account balance alert${operationLabel} – ${siteName}`
+    : `Game account balance alert – ${displayGameName}${operationLabel} – ${siteName}`;
+  const storeTextLine = storeDisplayName
+    ? `Store: ${storeDisplayName}`
+    : null;
+  const storePhrase = storeDisplayName
+    ? ` in the "${storeDisplayName}" store`
+    : ' in your store account';
   const textPart = [
     `${siteName} – Game account balance alert`,
     '',
-    `For the game "${gameName || 'Unknown Game'}", you do not have sufficient balance in your store account. The automation tools returned a balance-related error. Please check and top up the balance for this game.`,
+    ...(storeTextLine ? [storeTextLine, ''] : []),
+    `For the game "${gameName || 'Unknown Game'}"${storePhrase}, you do not have sufficient balance. The automation tools returned a balance-related error. Please check and top up the balance for this game.`,
     'You will receive at most one such alert per game per day. Please top up the game balance so future deposits and redemptions can succeed.',
     '',
     `© ${new Date().getFullYear()} ${siteName}`
@@ -830,6 +855,7 @@ async function sendGameBotBalanceAlertEmail(to, opts) {
     operation,
     amount,
     botMessage,
+    storeCode: storeCodeTrim || undefined,
     siteName,
     logoUrl: logoUrl || undefined
   });

@@ -6,11 +6,11 @@ import './SiteLogo.css';
  * Same asset on landing, auth, and post-login chrome.
  */
 const LOGO_SIZE = {
-  nav: { width: 180, height: 44 },
-  auth: { width: 240, height: 72 },
-  drawer: { width: 160, height: 36 },
-  footer: { width: 240, height: 80 },
-  loader: { width: 160, height: 48 },
+  nav: { width: 220, height: 80 },
+  auth: { width: 280, height: 96 },
+  drawer: { width: 180, height: 68 },
+  footer: { width: 240, height: 90 },
+  loader: { width: 180, height: 68 },
 };
 
 export function SiteLogo({ variant = 'nav', className = '' }) {

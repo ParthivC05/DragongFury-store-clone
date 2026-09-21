@@ -18,6 +18,7 @@ import {
   mapScorpioToCarouselGame,
   getSlotCategoryLabel,
   getSlotCategoryPath,
+  gamesForCasinoLobbyRow,
   normalizeSlotCategoryId,
   prepareDashboardSlotGames,
   resolveLaunchGameId,
@@ -25,6 +26,7 @@ import {
 } from '../../utils/gitslotparkLandingGames';
 import {
   getCachedProviderSlotGames,
+  getAllCachedProviderSlotGames,
   setCachedProviderSlotGames,
   clearCachedProviderSlotGames,
 } from '../../utils/dashboardSlotGamesCache';
@@ -34,10 +36,7 @@ import {
 } from '../../utils/preloadSlotGameImages';
 import {
   buildRecentlyPlayedSlotCategoryFromTransactions,
-  buildPopularSlotCategoryFromPlays,
 } from '../../utils/recentlyPlayedSlotGames';
-import { getPopularSlotGames } from '../../api/slotProviders';
-import { STORE_CODE } from '../../config/site';
 import { getSlotLobbyCategoryMeta, SlotLobbyIcon } from '../SlotGames/slotLobbyMeta';
 import { SlotGamesCarousel } from '../SlotGames/SlotGamesCarousel';
 import { SlotGamesSearchBar } from '../SlotGames/SlotGamesSearchBar';
@@ -48,14 +47,13 @@ import { usePageContentReady } from '../../context/PageReadyContext';
 import { DepositRequiredModal } from '../Games/DepositRequiredModal';
 import { useDepositRequiredGate } from '../../hooks/useDepositRequiredGate';
 import { isDepositRequiredError } from '../../utils/depositRequired';
-import { useCoinLaunch } from '../../context/CoinLaunchContext';
 import { useEnabledSlotProviders, fetchEnabledSlotProviders } from '../../hooks/useEnabledSlotProviders';
 import { TOP_FISHING_GAMES_COUNT } from '../../config/onegamehubTopFishingGames';
 import { SCORPIO_GAMES_SLUG, isScorpioPlayProvider } from '../../config/scorpio';
 
 const PROVIDER_FETCH_TIMEOUT_MS = 12000;
 const FIRST_PAINT_TIMEOUT_MS = 6000;
-const ONEGAMEHUB_CACHE_KEY = 'onegamehub-v7';
+const ONEGAMEHUB_CACHE_KEY = 'onegamehub-v8';
 const BONA_CACHE_KEY = 'bona';
 const SCORPIO_CACHE_KEY = 'scorpio-v5';
 const SEARCH_RESULTS_LIMIT = 36;
@@ -118,48 +116,6 @@ function withRecentlyPlayedCategory(allGames, categories, recentRows) {
   return [recent, ...withoutRecent];
 }
 
-function withPopularGamesCategory(allGames, categories, popularRows) {
-  const withoutPopular = (categories || []).filter((c) => c.id !== 'popular');
-  let popular = buildPopularSlotCategoryFromPlays(allGames, popularRows);
-  if (!popular) {
-    const games = [];
-    const seen = new Set();
-    const pools = [
-      withoutPopular.find((category) => category.id === 'slots'),
-      ...withoutPopular.filter((category) => category.id !== 'slots' && category.id !== 'recently-played'),
-    ].filter(Boolean);
-    for (const category of pools) {
-      for (const game of category.games || []) {
-        const key = `${String(game.provider || '')}:${String(game.gameid ?? game.gameId ?? '')}`;
-        if (!game || seen.has(key)) continue;
-        seen.add(key);
-        games.push(game);
-        if (games.length >= 20) break;
-      }
-      if (games.length >= 20) break;
-    }
-    if (games.length) {
-      popular = { id: 'popular', label: 'Popular Games', games, ranked: false };
-    }
-  }
-  if (!popular) return withoutPopular;
-  const next = [...withoutPopular];
-  const slotsIndex = next.findIndex((category) => category.id === 'slots');
-  let fishingIndex = -1;
-  next.forEach((category, index) => {
-    if (category.id === 'fishing' || category.id === 'top-fishing') fishingIndex = index;
-  });
-  let insertAt = 0;
-  if (slotsIndex >= 0) insertAt = slotsIndex;
-  else if (fishingIndex >= 0) insertAt = fishingIndex + 1;
-  else {
-    const recentIndex = next.findIndex((category) => category.id === 'recently-played');
-    insertAt = recentIndex >= 0 ? recentIndex + 1 : 0;
-  }
-  next.splice(insertAt, 0, popular);
-  return next;
-}
-
 function fetchProviderSlotGames(provider) {
   const cached = getCachedProviderSlotGames(provider);
 
@@ -195,8 +151,7 @@ function applyLobbyGamesToState(
   const shownGames = dedupeCarouselGames(
     loadedCategories.flatMap((category) => category.games || []),
   );
-  const fullCatalog = dedupeCarouselGames(nextGames || []);
-  applyCategories(shownGames, loadedCategories, recentRowsRef.current, undefined, fullCatalog);
+  applyCategories(shownGames, loadedCategories, recentRowsRef.current);
   setCatalogGames(prepareDashboardSlotGames(shownGames));
   setHasAnySlotsProvider(shownGames.length > 0 || hasSlotProviders);
   if (shownGames.length > 0) setLoading(false);
@@ -286,10 +241,9 @@ async function fetchScorpioSlotGames() {
       .filter((g) => g.gameid);
     if (mapped.length) {
       setCachedProviderSlotGames(SCORPIO_CACHE_KEY, mapped);
-    } else {
-      clearCachedProviderSlotGames(SCORPIO_CACHE_KEY);
+      return mapped;
     }
-    return mapped;
+    return cached || [];
   } catch {
     return cached || [];
   }
@@ -350,7 +304,6 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
     openDepositRequiredModal,
     activationBonusType,
   } = useDepositRequiredGate({ enabled: isAuthenticated });
-  const { requestPlayCoin } = useCoinLaunch();
   const [categories, setCategories] = useState([]);
   const [catalogGames, setCatalogGames] = useState([]);
   const [allGames, setAllGames] = useState([]);
@@ -366,9 +319,7 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
   const [activeChip, setActiveChip] = useState('');
   const launchLoadingRef = useRef(false);
   const allGamesRef = useRef([]);
-  const matchCatalogRef = useRef([]);
   const recentRowsRef = useRef([]);
-  const popularRowsRef = useRef([]);
   const baseCategoriesRef = useRef([]);
 
   const pageCanReveal = !loading || categories.length > 0;
@@ -400,33 +351,20 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
     setVisibleCount(CATEGORY_PAGE_SIZE);
   }, [resolvedCategoryId, deferredSearch]);
 
-  const applyCategories = useCallback((nextGames, baseCategories, recentRows, popularRows, matchCatalog) => {
+  const applyCategories = useCallback((nextGames, baseCategories, recentRows) => {
     const games = Array.isArray(nextGames) ? nextGames : [];
     allGamesRef.current = games;
     baseCategoriesRef.current = baseCategories || [];
     recentRowsRef.current = Array.isArray(recentRows) ? recentRows : [];
-    if (popularRows !== undefined) {
-      popularRowsRef.current = Array.isArray(popularRows) ? popularRows : [];
-    }
-    if (matchCatalog !== undefined) {
-      matchCatalogRef.current = Array.isArray(matchCatalog) ? matchCatalog : [];
-    }
     setAllGames(games);
-    let next = withRecentlyPlayedCategory(
-      allGamesRef.current,
-      baseCategoriesRef.current,
-      recentRowsRef.current
+    setCategories(
+      withRecentlyPlayedCategory(
+        allGamesRef.current,
+        baseCategoriesRef.current,
+        recentRowsRef.current
+      )
     );
-    if (!catalogOnly) {
-      const popularPool = matchCatalogRef.current.length ? matchCatalogRef.current : allGamesRef.current;
-      next = withPopularGamesCategory(
-        popularPool,
-        next,
-        popularRowsRef.current
-      );
-    }
-    setCategories(next);
-  }, [catalogOnly]);
+  }, []);
 
   useEffect(() => {
     if (!providersLoaded) return undefined;
@@ -566,14 +504,45 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
   ]);
 
   useEffect(() => {
+    if (!providersLoaded || !enabledProviders.scorpio) return undefined;
+    let cancelled = false;
+    const refetchScorpio = () => {
+      if (document.visibilityState === 'hidden') return;
+      void fetchScorpioSlotGames().then((games) => {
+        if (cancelled || !games?.length) return;
+        applyLobbyGamesToState(
+          getAllCachedProviderSlotGames(),
+          applyCategories,
+          recentRowsRef,
+          setCatalogGames,
+          setHasAnySlotsProvider,
+          hasSlotProviders,
+          setLoading,
+          enabledProviders,
+        );
+      });
+    };
+    window.addEventListener('pj:tab-resume', refetchScorpio);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('pj:tab-resume', refetchScorpio);
+    };
+  }, [
+    applyCategories,
+    enabledProviders,
+    hasSlotProviders,
+    providersLoaded,
+  ]);
+
+  useEffect(() => {
     if (!categories.length) return undefined;
     const urls = resolvedCategoryId
       ? collectSlotPreviewImageUrls(
           categories.filter((category) => category.id === resolvedCategoryId),
-          24
+          visibleCount
         )
-      : collectSlotPreviewImageUrls(categories, LOBBY_DESKTOP_GAMES_PER_ROW);
-    warmSlotGameImages(urls, { highCount: resolvedCategoryId ? 24 : 16 });
+      : collectSlotPreviewImageUrls(categories, Infinity);
+    warmSlotGameImages(urls, { highCount: resolvedCategoryId ? 48 : 64 });
     return undefined;
   }, [categories, resolvedCategoryId, visibleCount]);
 
@@ -629,40 +598,6 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
     };
   }, [authLoading, isAuthenticated, userId, applyCategories, location.pathname, enabledProviders.gitslotpark, enabledProviders.onegamehub, providersLoaded]);
 
-  useEffect(() => {
-    if (catalogOnly || !providersLoaded) return undefined;
-    let cancelled = false;
-
-    async function loadPopularGames() {
-      try {
-        const res = await getPopularSlotGames(STORE_CODE, { limit: 24 });
-        if (cancelled) return;
-        const rows = Array.isArray(res?.games)
-          ? res.games
-          : Array.isArray(res?.data?.games)
-            ? res.data.games
-            : [];
-        popularRowsRef.current = rows;
-        if (allGamesRef.current.length) {
-          applyCategories(
-            allGamesRef.current,
-            baseCategoriesRef.current,
-            recentRowsRef.current,
-            rows
-          );
-        }
-      } catch {
-        if (cancelled) return;
-        popularRowsRef.current = [];
-      }
-    }
-
-    loadPopularGames();
-    return () => {
-      cancelled = true;
-    };
-  }, [catalogOnly, providersLoaded, applyCategories]);
-
   const handlePlayGame = useCallback(
     async (game) => {
       if (!isAuthenticated) {
@@ -684,19 +619,10 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
 
         try {
           const provider = game.provider || 'pragmatic';
-          let coinType = 'SC';
-          if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-            try {
-              coinType = await requestPlayCoin(game, provider);
-            } catch (err) {
-              if (String(err?.message || '') === 'cancelled') return;
-              throw err;
-            }
-          }
 
           if (provider === 'bona') {
             if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-              const res = await bonaApi.launchBonaGame(gameid, coinType);
+              const res = await bonaApi.launchBonaGame(gameid);
               const url = res?.url ? String(res.url).trim() : '';
               if (!url) throw new Error('Game launch URL not returned');
               window.open(url, '_blank', 'noopener,noreferrer');
@@ -724,7 +650,7 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
               throw new Error('This game cannot be launched right now. Please try another title.');
             }
             if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-              const res = await scorpioApi.launchScorpioGame({ gameCode, providerId, coinType });
+              const res = await scorpioApi.launchScorpioGame({ gameCode, providerId });
               const url = res?.url ? String(res.url).trim() : '';
               if (!url) throw new Error('Game launch URL not returned');
               window.open(url, '_blank', 'noopener,noreferrer');
@@ -755,7 +681,7 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
               lobbyCategoryId: resolvedCategoryId,
             });
             if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-              const res = await onegamehubApi.launchOneGameHubGame(gameid, coinType);
+              const res = await onegamehubApi.launchOneGameHubGame(gameid);
               const url = res?.url ? String(res.url).trim() : '';
               if (!url) throw new Error('Game launch URL not returned');
               window.open(url, '_blank', 'noopener,noreferrer');
@@ -781,7 +707,7 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
           }
 
           if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-            const res = await gitslotparkApi.launchSlotGame(gameid, provider, coinType);
+            const res = await gitslotparkApi.launchSlotGame(gameid, provider);
             const url = res?.url ? String(res.url).trim() : '';
             if (!url) throw new Error('Game launch URL not returned');
             window.open(url, '_blank', 'noopener,noreferrer');
@@ -817,7 +743,6 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
       openDepositRequiredModal,
       requireDeposit,
       resolvedCategoryId,
-      requestPlayCoin,
       toast,
     ]
   );
@@ -959,7 +884,12 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
                   gridClassName={`dash-slot-catalog-grid dash-slot-search-grid${
                     resolvedCategoryId === 'others'
                       ? ' dash-slot-others-grid'
-                      : resolvedCategoryId === 'fishing'
+                      : resolvedCategoryId === 'fishing' ||
+                          resolvedCategoryId === 'live-casino' ||
+                          resolvedCategoryId === 'zesus' ||
+                          resolvedCategoryId === 'olympus' ||
+                          resolvedCategoryId === 'candy' ||
+                          resolvedCategoryId === 'animal'
                         ? ' dash-slot-fishing-grid'
                         : ''
                   }`}
@@ -1060,7 +990,7 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
                       onClick={() => jumpToCategory(category.id)}
                     >
                       <SlotLobbyIcon name={meta.icon} />
-                      {category.id === 'recently-played' ? 'Play again' : category.id === 'popular' ? 'Popular' : category.id === 'buffalo-blast' ? 'Buffalo Blast' : category.label}
+                      {category.id === 'recently-played' ? 'Play again' : category.id === 'buffalo-blast' ? 'Buffalo Blast' : category.label}
                     </button>
                   );
                 })}
@@ -1070,14 +1000,16 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
             <div className="dash-slot-carousel-panel dash-slot-carousel-root">
               {categories.map((category) => {
                 const isRecent = category.id === 'recently-played';
-                const isPopular = category.id === 'popular';
-                const isBuffaloBlast = category.id === 'buffalo-blast';
                 const isRankedRow = Boolean(category.ranked);
+                const isBuffaloBlast = category.id === 'buffalo-blast';
+                const isOlympus = category.id === 'olympus';
+                const isCandy = category.id === 'candy';
+                const isAnimal = category.id === 'animal';
                 const lobbyLimit = isRecent
                   ? LOBBY_DESKTOP_GAMES_PER_ROW
                   : isRankedRow
                     ? TOP_FISHING_GAMES_COUNT
-                    : isBuffaloBlast
+                    : isBuffaloBlast || isOlympus || isCandy || isAnimal
                       ? Number.POSITIVE_INFINITY
                       : LOBBY_DESKTOP_GAMES_PER_ROW * LOBBY_DESKTOP_ROWS;
                 return (
@@ -1085,14 +1017,14 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
                     <SlotGamesCarousel
                       categoryId={category.id}
                       label={isRecent ? 'Play again' : category.label}
-                      games={(category.games || []).slice(0, lobbyLimit)}
+                      games={gamesForCasinoLobbyRow(category, lobbyLimit)}
                       ranked={isRankedRow}
                       compact={isRecent}
                       hideNav
                       ariaLabel={`${category.label} casino games`}
                       onPlay={handlePlayGame}
                       playingGameId={launchingGameId}
-                      showAllHref={isRecent || isRankedRow || isPopular || isBuffaloBlast ? null : getSlotCategoryPath(category.id)}
+                      showAllHref={isRecent || isRankedRow || isBuffaloBlast || isOlympus || isCandy || isAnimal ? null : getSlotCategoryPath(category.id)}
                     />
                   </div>
                 );

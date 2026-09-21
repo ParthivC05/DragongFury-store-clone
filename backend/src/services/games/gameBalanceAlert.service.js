@@ -152,11 +152,11 @@ async function trySendGameBalanceAlert(opts) {
     if (!gameForRecipients) return;
     const displayGameName = gameName || gameForRecipients.name || 'Unknown Game';
     const displayReason = botMessage || 'Low balance with game provider.';
+    const storeCode = gameForRecipients.addedByStoreCode && String(gameForRecipients.addedByStoreCode).trim();
+    const hasStorePartner = !!storeCode;
 
     // In-app notifications: every time, role-specific content
     if (db.Notification) {
-      const storeCode = gameForRecipients.addedByStoreCode && String(gameForRecipients.addedByStoreCode).trim();
-      const hasStorePartner = !!storeCode;
       const { masterAdminIds, storeAdminIds } = await getRecipientUserIdsByRole(gameForRecipients);
       const titleForMaster = hasStorePartner
         ? `Store "${storeCode}" – Game "${displayGameName}" low balance`
@@ -192,7 +192,13 @@ async function trySendGameBalanceAlert(opts) {
       );
       return;
     }
-    const payload = { gameName: displayGameName, operation, amount, botMessage };
+    const payload = {
+      gameName: displayGameName,
+      operation,
+      amount,
+      botMessage,
+      ...(storeCode ? { storeCode } : {})
+    };
     await Promise.all(recipients.map((to) => sendGameBotBalanceAlertEmail(to, payload)));
     await recordBalanceAlertSent(gameId);
   } catch (err) {

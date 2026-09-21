@@ -1116,6 +1116,28 @@ export function updateAdminFooterSettings(body) {
   })
 }
 
+/** Legal pages (privacy, terms, responsible-gaming) — store-scoped. Query: storeCode? */
+export function getAdminLegalPages(params = {}) {
+  const q = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString()
+  return request(`${ADMIN}/footer/legal${q ? `?${q}` : ''}`)
+}
+
+export function getAdminLegalPage(pageKey, params = {}) {
+  const q = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString()
+  return request(`${ADMIN}/footer/legal/${encodeURIComponent(pageKey)}${q ? `?${q}` : ''}`)
+}
+
+export function updateAdminLegalPage(pageKey, body) {
+  return request(`${ADMIN}/footer/legal/${encodeURIComponent(pageKey)}`, {
+    method: 'PUT',
+    body: JSON.stringify(body || {})
+  })
+}
+
 const MAX_BLOG_IMAGE_BYTES = 5 * 1024 * 1024
 
 /** Upload blog cover/content image to S3. Returns { url }. */
@@ -1152,7 +1174,7 @@ export function uploadAdminBlogImage(file) {
   })
 }
 
-/** Link2Play games — DragonFury only. Query: page?, limit?, search?, isActive?, category? */
+/** Link2Play games — PlayJuwa only. Query: page?, limit?, search?, isActive?, category? */
 export function getAdminLink2PlayGames(params = {}) {
   const q = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))

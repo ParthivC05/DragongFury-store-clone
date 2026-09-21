@@ -59,11 +59,10 @@ function GuestPlatformTile({ game, index, onSelect, priorityLobby = false }) {
         <GameImage
           game={game}
           className="dash-platform-img"
-          loading="lazy"
-          fetchPriority="low"
-          width={176}
-          height={156}
-          deferUntilVisible={index >= 6}
+          loading="eager"
+          fetchPriority={index < 8 ? 'high' : 'auto'}
+          width={320}
+          height={280}
         />
       </div>
       <div className={`dash-platform-name${priorityLobby ? ' dash-platform-name--priority' : ''}`}>

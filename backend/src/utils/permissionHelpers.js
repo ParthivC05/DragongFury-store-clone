@@ -78,9 +78,7 @@ function can(req, featureKey) {
         perms[STORE_FEATURE_KEYS.PAYMENT_PROVIDERS] === true;
     }
     if (featureKey === STORE_FEATURE_KEYS.PAYMENT_TOTALS) {
-      return perms[STORE_FEATURE_KEYS.PAYMENT_TOTALS] === true ||
-        perms[STORE_FEATURE_KEYS.USER_DEPOSITS] === true ||
-        perms[STORE_FEATURE_KEYS.PAYMENT_PROVIDERS] === true;
+      return perms[STORE_FEATURE_KEYS.PAYMENT_TOTALS] === true;
     }
     // Legacy: before wallet_adjust existed, Users access included add/remove SC
     if (featureKey === STORE_FEATURE_KEYS.WALLET_ADJUST) {
@@ -152,9 +150,11 @@ function canAdmin(req, featureKey) {
       perms[ADMIN_FEATURE_KEYS.GAMES] === true;
   }
   if (featureKey === ADMIN_FEATURE_KEYS.PAYMENT_TOTALS) {
-    return perms[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] === true ||
-      perms[ADMIN_FEATURE_KEYS.USER_DEPOSITS] === true ||
-      perms[ADMIN_FEATURE_KEYS.PAYMENT_PROVIDERS] === true;
+    if (!req.adminRoleId) return true;
+    if (Object.prototype.hasOwnProperty.call(perms, ADMIN_FEATURE_KEYS.PAYMENT_TOTALS)) {
+      return perms[ADMIN_FEATURE_KEYS.PAYMENT_TOTALS] === true;
+    }
+    return true;
   }
   if (featureKey === ADMIN_FEATURE_KEYS.TRANSACTION_FEES) {
     return perms[ADMIN_FEATURE_KEYS.TRANSACTION_FEES] === true ||

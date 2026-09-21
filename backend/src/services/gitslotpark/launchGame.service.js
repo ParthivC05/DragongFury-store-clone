@@ -5,8 +5,6 @@ const { isGitslotparkLaunchConfigured, resolveGitslotparkConfig } = require('./g
 const { buildGitslotparkUserId } = require('./gitslotparkUserId.helpers');
 const { upsertGitslotparkUserMapping } = require('./callbacks/resolveGitslotparkUser.service');
 const { assertUserCanPlayGames } = require('../games/gamePlayEligibility.service');
-const { parseCoinTypeFromReq } = require('../../lib/normalizePlayCoinType');
-const { rememberPlayCoin } = require('../playCoin/playCoinSession.service');
 
 /**
  * Launch a GitSlotPark game session and return the playable URL.
@@ -81,12 +79,6 @@ async function launchGame(req) {
   }
 
   await upsertGitslotparkUserMapping(userId, gitslotparkUserId);
-  await rememberPlayCoin({
-    userId,
-    provider: 'gitslotpark',
-    gameId: gameid,
-    coinType: parseCoinTypeFromReq(req, 'gitslotpark')
-  });
 
   return { url, message };
 }

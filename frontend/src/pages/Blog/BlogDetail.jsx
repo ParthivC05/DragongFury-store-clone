@@ -1,20 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getBlogPost } from '../../api/blog';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { site } from '../../config/site';
 import { usePageSeo } from '../../utils/pageSeo';
-import { extractBlogInnerHtml } from '../../utils/blogHtml';
+import { extractBlogInnerHtml, formatBlogDate, readingMinutes } from '../../utils/blogHtml';
 import './Blog.css';
-
-function formatDate(d) {
-  if (!d) return '';
-  try {
-    return new Date(d).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-  } catch {
-    return '';
-  }
-}
 
 function wrapTablesForScroll(root) {
   if (!root) return;
@@ -32,6 +23,7 @@ export function BlogDetail() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const contentRef = useRef(null);
 
   usePageContentReady(!loading);
 
@@ -72,13 +64,12 @@ export function BlogDetail() {
 
   useEffect(() => {
     if (!post?.content) return;
-    const root = document.querySelector('.pj-blog-content');
-    wrapTablesForScroll(root);
+    wrapTablesForScroll(contentRef.current);
   }, [post?.content]);
 
   if (loading) {
     return (
-      <div className="pj-blog-page pj-blog-detail">
+      <div className="pj-blog-page pj-journal pj-blog-detail">
         <p className="pj-blog-status">Loading…</p>
       </div>
     );
@@ -86,34 +77,36 @@ export function BlogDetail() {
 
   if (error || !post) {
     return (
-      <div className="pj-blog-page pj-blog-detail">
+      <div className="pj-blog-page pj-journal pj-blog-detail">
         <p className="pj-blog-status pj-blog-status--error">{error || 'Blog post not found'}</p>
-        <Link to="/blog" className="pj-blog-back">← Back to blog</Link>
+        <Link to="/blog" className="pj-journal-back">← Back to blog</Link>
       </div>
     );
   }
 
   return (
-    <article className="pj-blog-page pj-blog-detail">
-      <Link to="/blog" className="pj-blog-back">← Back to blog</Link>
-      <header className="pj-blog-detail-head">
-        {post.category && (
-          <span className="dash-slot-games-vendor-chip pj-blog-card-cat">{post.category}</span>
+    <article className="pj-blog-page pj-journal pj-blog-detail">
+        <Link to="/blog" className="pj-journal-back">← Back to blog</Link>
+      <header className="pj-journal-hero">
+        {post.titleImage && (
+          <div className="pj-journal-hero-media">
+            <img src={post.titleImage} alt="" />
+          </div>
         )}
-        <h1 className="pj-blog-detail-title">{post.title}</h1>
-        {post.createdAt && (
-          <time className="pj-blog-card-date" dateTime={post.createdAt}>
-            {formatDate(post.createdAt)}
-          </time>
-        )}
-      </header>
-      {post.titleImage && (
-        <div className="pj-blog-detail-hero">
-          <img src={post.titleImage} alt="" />
+        <div className="pj-journal-hero-copy">
+          {post.category && <span className="pj-journal-chip is-active">{post.category}</span>}
+          <h1 className="pj-journal-story-title">{post.title}</h1>
+          <div className="pj-journal-meta">
+            {post.createdAt && (
+              <time dateTime={post.createdAt}>{formatBlogDate(post.createdAt, { month: 'long' })}</time>
+            )}
+            <span>{readingMinutes(post.content)} min read</span>
+          </div>
         </div>
-      )}
+      </header>
       <div
-        className="pj-blog-content"
+        ref={contentRef}
+        className="pj-blog-content pj-journal-prose"
         dangerouslySetInnerHTML={{ __html: extractBlogInnerHtml(post.content) }}
       />
     </article>

@@ -15,7 +15,6 @@ const {
   updateDepositPackageSettings,
   normalizeScope
 } = require('./getDepositPackageSettings.service');
-const { isGcCoinsStore } = require('../../constants/gcCoins');
 
 function assertAdminScope(req, scope) {
   const normalized = normalizeScope(scope);
@@ -85,12 +84,6 @@ function parseMoney(value, fieldName) {
     throw err;
   }
   return Math.round(n * 100) / 100;
-}
-
-function parseOptionalGc(value, storeCode) {
-  if (!isGcCoinsStore(storeCode)) return 0;
-  if (value == null || value === '') return 0;
-  return parseMoney(value, 'gc_coin');
 }
 
 function parseMaxPurchasesPerUser(value, groupKey) {
@@ -177,7 +170,6 @@ async function createPackage(req, scope, body) {
   const { group, scope: normalized } = await assertGroupScope(req, groupId, scope);
 
   const finalSc = parseMoney(body.final_sc ?? body.finalSc, 'final_sc');
-  const gcCoin = parseOptionalGc(body.gc_coin ?? body.gcCoin, normalized.storeCode);
   const actualPrice = parseMoney(body.actual_price ?? body.actualPrice, 'actual_price');
   const finalPrice = parseMoney(body.final_price ?? body.finalPrice, 'final_price');
 
@@ -195,7 +187,6 @@ async function createPackage(req, scope, body) {
     storeCode: normalized.storeCode,
     title: body.title != null ? String(body.title).trim().slice(0, 128) || null : null,
     finalSc,
-    gcCoin,
     actualPrice,
     finalPrice,
     discountLabel: body.discount_label ?? body.discountLabel
@@ -217,9 +208,6 @@ async function updatePackage(req, scope, packageId, body) {
   const updates = {};
   if (body.title !== undefined) updates.title = body.title ? String(body.title).trim().slice(0, 128) : null;
   if (body.final_sc != null || body.finalSc != null) updates.finalSc = parseMoney(body.final_sc ?? body.finalSc, 'final_sc');
-  if (body.gc_coin !== undefined || body.gcCoin !== undefined) {
-    updates.gcCoin = parseOptionalGc(body.gc_coin ?? body.gcCoin, pkg.storeCode);
-  }
   if (body.actual_price != null || body.actualPrice != null) {
     updates.actualPrice = parseMoney(body.actual_price ?? body.actualPrice, 'actual_price');
   }

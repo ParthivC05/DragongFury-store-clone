@@ -140,11 +140,6 @@
   background: #f5f3ff;
 }
 
-.ud-mini-stat--gc {
-  border-color: #fcd34d;
-  background: #fffbeb;
-}
-
 .ud-mini-stat--wd-amount {
   border-color: #fcd34d;
   background: #fffbeb;
@@ -501,15 +496,6 @@
 .ud-wallet-card--rsc {
   border-color: #c4b5fd;
   background: linear-gradient(180deg, #f5f3ff 0%, #fff 48%);
-}
-
-.ud-wallet-card--gc {
-  border-color: #fcd34d;
-  background: linear-gradient(180deg, #fffbeb 0%, #fff 48%);
-}
-
-.ud-wallet-card--gc h4 {
-  color: #b45309;
 }
 
 .ud-wallet-card h4 {

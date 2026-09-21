@@ -5,6 +5,7 @@ import {
   useSlideshowImagePreload,
 } from '../../hooks/useSlideshowImagePreload';
 import { useDashboardSlideshow } from '../../hooks/useDashboardSlideshow';
+import { site } from '../../config/site';
 
 export { DASHBOARD_SLIDES, DASHBOARD_SLIDES_DEFAULT } from '../../constants/dashboardSlides';
 
@@ -222,6 +223,7 @@ export function DashboardWelcome({ isAuthenticated, placement = 'home' }) {
 
   const activeSlideLink = getSlideLink(slides[activeSlide]);
   const isSlideClickable = !isAuthenticated || Boolean(activeSlideLink);
+  const hasSlides = slides.length > 0;
 
   return (
     <section
@@ -232,8 +234,8 @@ export function DashboardWelcome({ isAuthenticated, placement = 'home' }) {
       <div
         ref={slideshowRef}
         className={`dash-welcome-slideshow${isDragging ? ' dash-welcome-slideshow--dragging' : ''}${
-          showPlaceholder ? ' dash-welcome-slideshow--loading' : ''
-        }`}
+          showPlaceholder || !hasSlides ? ' dash-welcome-slideshow--loading' : ''
+        }${!hasSlides ? ' dash-welcome-slideshow--empty' : ''}`}
         style={isSlideClickable ? { cursor: 'pointer' } : undefined}
         role={isSlideClickable ? 'button' : undefined}
         aria-label={
@@ -253,7 +255,14 @@ export function DashboardWelcome({ isAuthenticated, placement = 'home' }) {
           }
         }}
       >
-        {showPlaceholder ? <span className="dash-welcome-slide-placeholder" aria-hidden /> : null}
+        {showPlaceholder || !hasSlides ? (
+          <span className="dash-welcome-slide-placeholder" aria-hidden />
+        ) : null}
+        {!hasSlides ? (
+          <div className="dash-welcome-empty-hero" aria-hidden>
+            <img src={site.logoUrl} alt="" className="dash-welcome-empty-logo" />
+          </div>
+        ) : null}
         <div className="dash-welcome-slideshow-track" style={trackStyle}>
           {slides.map((slide, index) => {
             const imageSrc = getSlideshowImageSrc(slide, isMobile);

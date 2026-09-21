@@ -10,12 +10,12 @@ import {
 } from '../../utils/gitslotparkLandingGames';
 import { fetchEnabledSlotProviders } from '../../hooks/useEnabledSlotProviders';
 
-export const IS_DRAGONFURY_STORE =
+export const IS_PLAYJUWA_STORE =
   String(STORE_CODE || '')
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, '') === 'dragonfury';
+    .replace(/[^a-z0-9]/g, '') === 'playjuwa';
 
-const SKIP_CATEGORY_IDS = new Set(['recently-played', 'top-fishing', 'buffalo-blast']);
+const SKIP_CATEGORY_IDS = new Set(['recently-played', 'top-fishing']);
 const MOBILE_GAMES_PER_GROUP = 2;
 const DESKTOP_GAMES_PER_GROUP = 3;
 const DESKTOP_MQ = '(min-width: 768px)';
@@ -66,13 +66,13 @@ export function useLobbyPlatformChunkSize() {
   return size;
 }
 
-export function useDragonFuryHomeCasinoCategories({ enabled = false } = {}) {
+export function usePlayJuwaHomeCasinoCategories({ enabled = false } = {}) {
   const [categories, setCategories] = useState(() =>
-    enabled && IS_DRAGONFURY_STORE ? collectHomeCasinoCategories() : []
+    enabled && IS_PLAYJUWA_STORE ? collectHomeCasinoCategories() : []
   );
 
   useEffect(() => {
-    if (!enabled || !IS_DRAGONFURY_STORE) {
+    if (!enabled || !IS_PLAYJUWA_STORE) {
       setCategories([]);
       return undefined;
     }
@@ -167,14 +167,14 @@ export function buildLobbyMixRows(games, categories, gamesPerGroup = MOBILE_GAME
 }
 
 export function shouldMixHomeCasinoCategories({
-  isDragonFury = IS_DRAGONFURY_STORE,
+  isPlayJuwa = IS_PLAYJUWA_STORE,
   isAuthenticated,
   filter,
   isSearchActive,
   categories,
 } = {}) {
   return Boolean(
-    isDragonFury &&
+    isPlayJuwa &&
       isAuthenticated &&
       filter === 'all' &&
       !isSearchActive &&

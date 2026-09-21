@@ -1,7 +1,5 @@
 'use strict';
 
-const PUSH_CAMPAIGN_STORE_CODE = 'dragonfury';
-
 function normalizeStoreCode(storeCode) {
   return String(storeCode || '')
     .trim()
@@ -10,11 +8,10 @@ function normalizeStoreCode(storeCode) {
 }
 
 function isPushCampaignStoreAllowed(storeCode) {
-  return normalizeStoreCode(storeCode) === PUSH_CAMPAIGN_STORE_CODE;
+  return Boolean(normalizeStoreCode(storeCode));
 }
 
 module.exports = {
-  PUSH_CAMPAIGN_STORE_CODE,
   normalizeStoreCode,
   isPushCampaignStoreAllowed
 };

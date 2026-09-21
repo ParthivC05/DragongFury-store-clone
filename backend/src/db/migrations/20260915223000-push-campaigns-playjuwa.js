@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * DragonFury browser push campaigns: guest-capable device registry,
+ * PlayJuwa browser push campaigns: guest-capable device registry,
  * multiple admin campaigns, send/click tracking.
  */
 module.exports = {
@@ -123,11 +123,8 @@ module.exports = {
       UPDATE store_roles
       SET permissions = permissions || '{"push_campaigns": true}'::jsonb,
           updated_at = NOW()
-      WHERE LOWER(REGEXP_REPLACE(COALESCE(store_code, ''), '[^a-z0-9]', '', 'g')) = 'dragonfury'
-        AND (
-          COALESCE((permissions->>'email_campaigns')::boolean, false) = true
-          OR COALESCE((permissions->>'bonus_codes')::boolean, false) = true
-        )
+      WHERE COALESCE((permissions->>'email_campaigns')::boolean, false) = true
+         OR COALESCE((permissions->>'bonus_codes')::boolean, false) = true
     `);
 
     await q(`

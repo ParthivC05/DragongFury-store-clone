@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useSpinWheelStatus } from '../../context/SpinWheelStatusContext';
 import * as spinwheelApi from '../../api/spinwheel';
+import { AppLoader } from '../../components/AppLoader';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import {
   SpinWheelParticles,

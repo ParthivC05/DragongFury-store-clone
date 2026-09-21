@@ -3,6 +3,7 @@
 const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
+const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const { seoFromBody, seoToPlain } = require('../cms/seoFields');
 
 function normalizeStoreCode(str) {
@@ -20,8 +21,47 @@ function normalizeSlug(str) {
     .replace(/-{2,}/g, '-');
 }
 
+function adminHasBlogPosts(perms) {
+  if (!perms || typeof perms !== 'object') return false;
+  return perms[ADMIN_FEATURE_KEYS.BLOG_POSTS] === true;
+}
+
+/**
+ * Resolve which store codes a master_admin (with admin role) may manage for blog posts.
+ * Returns null = all stores; string[] = limited; [] = none.
+ * Super admin (no adminRoleId) and scope "all" → all stores.
+ */
+function getAdminBlogStoreCodes(req) {
+  if (req.role !== ROLES.MASTER_ADMIN) return null;
+  if (!req.adminRoleId) return null;
+  const perms = req.adminPermissions || {};
+  if (!adminHasBlogPosts(perms)) return [];
+  const scope = perms.blog_posts_store_scope === 'particular' ? 'particular' : 'all';
+  if (scope !== 'particular') return null;
+  const codes = Array.isArray(perms.blog_posts_store_codes)
+    ? perms.blog_posts_store_codes.map((c) => normalizeStoreCode(String(c || ''))).filter(Boolean)
+    : [];
+  if (codes.length === 0) return null;
+  return codes;
+}
+
+function assertAdminCanAccessStore(req, storeCode) {
+  if (req.role !== ROLES.MASTER_ADMIN) return;
+  const allowed = getAdminBlogStoreCodes(req);
+  if (allowed == null) return;
+  const sc = normalizeStoreCode(storeCode);
+  if (!sc || !allowed.includes(sc)) {
+    const err = new Error('You do not have blog access for this store.');
+    err.statusCode = 403;
+    throw err;
+  }
+}
+
 function assertScope(req, row) {
-  if (req.role === ROLES.MASTER_ADMIN) return;
+  if (req.role === ROLES.MASTER_ADMIN) {
+    assertAdminCanAccessStore(req, row.storeCode);
+    return;
+  }
   if (req.role === ROLES.STORE_ADMIN) {
     const sc = normalizeStoreCode(req.storeCode);
     if (!sc || normalizeStoreCode(row.storeCode) !== sc) {
@@ -38,9 +78,18 @@ function assertScope(req, row) {
 
 function listScopeWhere(req, query = {}) {
   if (req.role === ROLES.MASTER_ADMIN) {
+    const allowed = getAdminBlogStoreCodes(req);
     const storeCode = query.storeCode && typeof query.storeCode === 'string'
       ? normalizeStoreCode(query.storeCode)
       : null;
+    if (allowed != null) {
+      if (allowed.length === 0) return { id: -1 };
+      if (storeCode) {
+        if (!allowed.includes(storeCode)) return { id: -1 };
+        return { storeCode };
+      }
+      return { storeCode: { [Op.in]: allowed } };
+    }
     if (storeCode) return { storeCode };
     return {};
   }
@@ -157,6 +206,7 @@ async function resolveCreateStoreCode(req, body) {
       err.statusCode = 400;
       throw err;
     }
+    assertAdminCanAccessStore(req, storeCode);
     return storeCode;
   }
   const err = new Error('Forbidden.');
@@ -287,6 +337,7 @@ async function updateAdmin(req, id, body = {}) {
       err.statusCode = 400;
       throw err;
     }
+    assertAdminCanAccessStore(req, storeCode);
     const nextSlug = patch.slug || row.slug;
     await assertUniqueSlug(storeCode, nextSlug, row.id);
     patch.storeCode = storeCode;
@@ -338,7 +389,7 @@ async function listPublic(storeCodeRaw, query = {}) {
   const rows = await db.BlogPost.findAll({
     where,
     order: [['created_at', 'DESC']],
-    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'allowIndex', 'created_at', 'updated_at']
+    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'metaDescription', 'allowIndex', 'created_at', 'updated_at']
   });
 
   return { blog_posts: rows.map(toPlain) };

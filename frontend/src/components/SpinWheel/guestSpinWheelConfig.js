@@ -1,16 +1,16 @@
 /**
- * Fallback guest wheel — 8 segments, cream + orange only (matches `/spinwheel` UI).
+ * Fallback guest wheel — 8 lime / ink segments for Dragon Fury.
  * Used only when public config cannot be loaded.
  */
 export const GUEST_SPIN_WHEEL_SEGMENTS = [
-  { type: 'no_win', value: 0, label: 'No Win', color: '#F5E6C8' },
-  { type: 'sc_coins', value: 2, label: '2 SC', color: '#FF8C00' },
-  { type: 'sc_coins', value: 5, label: '5 SC', color: '#F5E6C8' },
-  { type: 'free_spin', value: 1, label: '1 Free Spin', color: '#FF8C00' },
-  { type: 'sc_coins', value: 1, label: '1 SC', color: '#F5E6C8' },
-  { type: 'no_win', value: 0, label: 'No Win', color: '#FF8C00' },
-  { type: 'free_spin', value: 10, label: '10 Free Spins', color: '#F5E6C8' },
-  { type: 'sc_coins', value: 3, label: '3 SC', color: '#FF8C00' },
+  { type: 'no_win', value: 0, label: 'No Win', color: '#152015' },
+  { type: 'sc_coins', value: 2, label: '2 SC', color: '#B6FF2A' },
+  { type: 'sc_coins', value: 5, label: '5 SC', color: '#1C2A14' },
+  { type: 'free_spin', value: 1, label: '1 Free Spin', color: '#8FE31A' },
+  { type: 'sc_coins', value: 1, label: '1 SC', color: '#0E160C' },
+  { type: 'no_win', value: 0, label: 'No Win', color: '#6FBF00' },
+  { type: 'free_spin', value: 10, label: '10 Free Spins', color: '#243318' },
+  { type: 'sc_coins', value: 3, label: '3 SC', color: '#D4FF6A' },
 ];
 
 /** Guest landing wheels always award this SC amount. */

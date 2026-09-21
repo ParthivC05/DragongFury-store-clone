@@ -3,13 +3,10 @@
 const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { REDEEMABLE_CURRENCY_CODE } = require('./getCurrencySetting.service');
+const { reservedFrozenByOtherWithdrawals, roundMoney } = require('./withdrawalFreeze.service');
 
 /** Per-request withdraw cap for players who have never completed a cash deposit. */
 const NEVER_DEPOSITED_WITHDRAW_MAX = 30;
-
-function roundMoney(n) {
-  return Math.round(Number(n) * 100) / 100;
-}
 
 /**
  * True when the user has completed a real cash deposit (not bonus / courtesy).
@@ -143,7 +140,10 @@ async function zeroRemainingWalletsAfterNeverDepositedWithdraw(userId, options =
   const neverDeposited = !(await hasCompletedCashDeposit(uid, options));
   if (!neverDeposited) return { zeroed: false };
 
-  const keepFrozenRsc = Math.max(0, roundMoney(options.keepFrozenRsc || 0));
+  const remainingHolds = await reservedFrozenByOtherWithdrawals(uid, {
+    transaction: options.transaction
+  });
+  const keepFrozenRsc = Math.max(0, roundMoney(options.keepFrozenRsc || 0), remainingHolds);
   const txOpts = options.transaction
     ? { transaction: options.transaction, lock: options.transaction.LOCK.UPDATE }
     : {};

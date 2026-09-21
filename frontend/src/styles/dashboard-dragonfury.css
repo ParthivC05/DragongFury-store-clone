@@ -1,29 +1,29 @@
-/* Dragon Fury dashboard â€” matches landing (lp) + auth (pj) aesthetic */
+/* Dragon Fury dashboard — lime on black */
 
 .dash-root {
-  --dash-gold: #ffd700;
-  --dash-gold2: #ffa500;
-  --dash-gold-glow: rgba(255, 215, 0, 0.55);
+  --dash-gold: #B6FF2A;
+  --dash-gold2: #8FE31A;
+  --dash-gold-glow: rgba(182, 255, 42, 0.55);
   --dash-fire: #ff3d00;
   --dash-ember: #ff8c00;
-  --dash-teal: #00ffe0;
-  --dash-teal2: #00b4d8;
-  --dash-purple: #9b59ff;
+  --dash-teal: #8fe31a;
+  --dash-teal2: #6FBF00;
+  --dash-purple: #6FBF00;
   --dash-green: #00e676;
-  --dash-pj-gold: #f9d038;
+  --dash-pj-gold: #C6FF4D;
   --dash-pj-green: #3ddc7a;
-  --dash-bg: #04060a;
-  --dash-bg2: #080c12;
-  --dash-deep: #0d1320;
-  --dash-card: #0d1320;
-  --dash-card2: #121a2a;
-  --dash-surface: #0d1320;
-  --dash-border: rgba(255, 215, 0, 0.13);
-  --dash-border-strong: rgba(255, 215, 0, 0.28);
-  --dash-text: #f0ebe0;
-  --dash-muted: #93a4be;
+  --dash-bg: #0a0c0a;
+  --dash-bg2: #101410;
+  --dash-deep: #141814;
+  --dash-card: #151815;
+  --dash-card2: #1a1f18;
+  --dash-surface: #151815;
+  --dash-border: rgba(182, 255, 42, 0.13);
+  --dash-border-strong: rgba(182, 255, 42, 0.28);
+  --dash-text: #f3f7f0;
+  --dash-muted: #8d9a88;
   --dash-neon: #00e676;
-  --dash-neon2: #00ffe0;
+  --dash-neon2: #B6FF2A;
   --dash-red: #ff3355;
   --dash-nav-h: 56px;
   position: relative;
@@ -48,9 +48,9 @@ body.guest-landing-active {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(155, 89, 255, 0.12) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(255, 215, 0, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(0, 255, 224, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(182, 255, 42, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(182, 255, 42, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(143, 227, 26, 0.05) 0%, transparent 50%),
     var(--dash-bg);
 }
 
@@ -417,15 +417,6 @@ body.guest-landing-active {
     padding: 3px 5px 3px 6px;
   }
 
-  .dash-wallet-pill--toggle {
-    gap: 4px;
-    padding: 0;
-  }
-
-  .dash-wallet-pill--toggle .dash-wallet-pill-divider {
-    display: none;
-  }
-
   .dash-wallet-pill-balance {
     gap: 6px;
   }
@@ -485,61 +476,6 @@ body.guest-landing-active {
 .dash-wallet-pill:hover {
   border-color: rgba(255, 215, 0, 0.45);
   box-shadow: 0 0 16px rgba(255, 215, 0, 0.12);
-}
-
-.dash-wallet-pill--dual {
-  gap: 0.35rem;
-}
-
-.dash-wallet-pill--toggle {
-  gap: 0.35rem;
-  padding: 3px 4px 3px 3px;
-  border-color: transparent;
-  background: transparent;
-  box-shadow: none;
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.dash-wallet-pill--toggle:hover {
-  border-color: transparent;
-  box-shadow: none;
-}
-
-.dash-wallet-wrap {
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
-}
-
-.dash-wallet-pill--toggle .pj-coin-toggle {
-  flex: 1;
-  min-width: 0;
-}
-
-@media (min-width: 768px) {
-  .dash-wallet-pill--toggle {
-    width: auto;
-  }
-
-  .dash-wallet-pill--toggle .pj-coin-toggle {
-    min-width: 220px;
-  }
-}
-
-.dash-wallet-gc-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 2px 6px 2px 2px;
-  color: #ffd700;
-  font-weight: 700;
-  font-size: 0.82rem;
-}
-
-.dash-wallet-breakdown-gc {
-  color: #d4a017;
 }
 
 .dash-wallet-pill-balance {
@@ -2916,7 +2852,7 @@ body.guest-landing-active {
   }
 }
 
-/* â”€â”€â”€ Sidebar (Reelhouse rows + Dragon Fury theme) â”€â”€â”€ */
+/* â”€â”€â”€ Sidebar (Reelhouse rows + Play Juwa theme) â”€â”€â”€ */
 .dash-side-nav {
   --rh-panel: transparent;
   --rh-raise: rgba(255, 215, 0, 0.06);
@@ -3642,146 +3578,6 @@ body.guest-landing-active {
 .rbw-card-amount-unit {
   font-size: 0.92em;
   font-weight: 700;
-}
-
-/* ─── Auth live winners bar (fixed bottom, inspo platform→casino mock) ─── */
-.auth-winbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 38;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: rgba(9, 13, 22, 0.97);
-  backdrop-filter: blur(14px);
-  border-top: 1px solid rgba(245, 182, 37, 0.28);
-  padding: 8px 16px calc(8px + env(safe-area-inset-bottom, 0px));
-  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.45);
-  pointer-events: none;
-}
-
-.auth-winbar-label {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 900;
-  color: #ffd75e;
-  padding-right: 12px;
-  border-right: 1px solid rgba(120, 150, 190, 0.16);
-  white-space: nowrap;
-}
-
-.auth-winbar-marquee {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-}
-
-.auth-winbar-track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-  animation: authWinbarScroll 36s linear infinite;
-}
-
-.auth-winbar-marquee:hover .auth-winbar-track {
-  animation-play-state: paused;
-}
-
-@keyframes authWinbarScroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-.auth-winbar-card {
-  flex: none;
-  width: 180px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: linear-gradient(170deg, rgba(255, 255, 255, 0.05), rgba(16, 22, 34, 0.5) 60%);
-  border: 1.5px solid rgba(120, 150, 190, 0.14);
-  border-radius: 13px;
-  padding: 6px 10px;
-}
-
-.auth-winbar-av {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  flex: none;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-}
-
-.auth-winbar-copy {
-  min-width: 0;
-}
-
-.auth-winbar-copy b {
-  display: block;
-  font-size: 11px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 800;
-  color: #eaf1f8;
-}
-
-.auth-winbar-won {
-  display: block;
-  font-size: 10px;
-  margin-top: 1px;
-  color: #93a4b8;
-}
-
-.auth-winbar-won em {
-  font-style: normal;
-  color: #22c55e;
-  font-weight: 900;
-}
-
-.auth-winbar-plat {
-  display: block;
-  font-size: 8.5px;
-  color: #93a4b8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 1px;
-}
-
-body.auth-winbar-active .dash-bottom-wrap {
-  bottom: calc(52px + env(safe-area-inset-bottom, 0px));
-}
-
-body.auth-winbar-active .lwp-host {
-  bottom: calc(52px + 24px + env(safe-area-inset-bottom, 0px));
-}
-
-@media (min-width: 768px) {
-  body.auth-winbar-active .dash-shell-main {
-    padding-bottom: calc(3rem + 52px + env(safe-area-inset-bottom, 0px)) !important;
-  }
-}
-
-@media (max-width: 767px) {
-  .auth-winbar {
-    display: none !important;
-  }
 }
 
 /* ─── Live win popup (authenticated app pages) ─── */
@@ -5253,6 +5049,12 @@ body.auth-winbar-active .lwp-host {
   justify-content: center;
   overflow: hidden;
   background: #0a0e16;
+}
+
+.dash-guest-gcard-art .dash-slot-carousel-img-slot {
+  position: absolute;
+  inset: 0;
+  display: block;
 }
 
 .dash-guest-gcard-art .dash-slot-carousel-card-img,
@@ -15738,7 +15540,7 @@ body.auth-winbar-active .lwp-host {
   color: var(--dash-muted);
 }
 
-/* â€”â€”â€” Transactions page (Dragon Fury gamified) â€”â€”â€” */
+/* â€”â€”â€” Transactions page (Play Juwa gamified) â€”â€”â€” */
 .dash-tx-page {
   position: relative;
   display: flex;
@@ -17264,7 +17066,7 @@ body::-webkit-scrollbar,
   }
 }
 
-/* ─── Home lobby: one category game slider after platform game groups (DragonFury) ─── */
+/* ─── Home lobby: one category game slider after platform game groups (PlayJuwa) ─── */
 .dash-lobby-mix {
   display: flex;
   flex-direction: column;
@@ -17470,16 +17272,6 @@ body::-webkit-scrollbar,
   pointer-events: none;
 }
 
-.dash-home-cover--live .dash-home-cover-card {
-  background: transparent;
-  padding: 0;
-}
-
-.dash-home-cover--live .dash-home-cover-img {
-  object-fit: cover;
-  object-position: center;
-}
-
 @media (max-width: 767px) {
   .dash-home-cover,
   .dash-home-cover-card {
@@ -17676,7 +17468,7 @@ body::-webkit-scrollbar,
 
 @media (min-width: 768px) {
   .dash-lobby-mix-games {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .dash-home-cat-rail {

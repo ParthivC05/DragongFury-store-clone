@@ -2,7 +2,7 @@
 
 const { Op } = require('sequelize');
 const db = require('../../db/models');
-const { PUSH_CAMPAIGN_STORE_CODE, normalizeStoreCode } = require('./constants');
+const { normalizeStoreCode } = require('./constants');
 
 const ALLOWED_CLIENTS = new Set(['web', 'admin', 'user']);
 const ALLOWED_PERMISSIONS = new Set(['granted', 'denied', 'default', 'unsupported']);
@@ -49,7 +49,7 @@ async function resolveLinkedUserId(userId) {
 }
 
 /**
- * Upsert a browser/device for DragonFury web push.
+ * Upsert a browser/device for PlayJuwa web push.
  * Guests (no userId) are allowed. Login attaches userId; logout should unlink, not delete.
  */
 async function upsertPushDevice({
@@ -61,7 +61,8 @@ async function upsertPushDevice({
   storeCode,
   userAgent
 } = {}) {
-  const store = normalizeStoreCode(storeCode) || PUSH_CAMPAIGN_STORE_CODE;
+  const store = normalizeStoreCode(storeCode);
+  if (!store) throw err('storeCode is required.');
   const device = normalizeDeviceId(deviceId);
   const trimmedToken = typeof token === 'string' ? token.trim() : '';
   const permissionStatus = normalizePermission(permission);

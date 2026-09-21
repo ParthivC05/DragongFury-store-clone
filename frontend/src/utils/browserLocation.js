@@ -1,8 +1,20 @@
 /**
  * Browser URL as it exists after history.pushState — not deferred by
- * React startTransition. Needed so /deposit can show a loader while the
- * previous page (home) is still painted.
+ * React startTransition. Needed so /deposit and /casino can show a loader
+ * while the previous page (home) is still painted.
  */
+
+export function isDepositPath(pathname) {
+  return pathname === '/deposit' || String(pathname || '').startsWith('/deposit/');
+}
+
+export function isCasinoPath(pathname) {
+  return pathname === '/casino' || String(pathname || '').startsWith('/casino/');
+}
+
+export function isLoaderGatedPath(pathname) {
+  return isDepositPath(pathname) || isCasinoPath(pathname);
+}
 
 function readRouteKey() {
   if (typeof window === 'undefined') return '/';

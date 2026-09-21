@@ -8,7 +8,10 @@ import {
 
 const SCRIPT_PREFIX = 'pj-schema-';
 
-export const SITE_ORIGIN = 'https://dragonfury.com';
+export const SITE_ORIGIN =
+  (typeof window !== 'undefined' && window.location?.origin) ||
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SITE_ORIGIN) ||
+  '';
 
 function absoluteUrl(pathOrUrl) {
   if (!pathOrUrl) return SITE_ORIGIN;
@@ -49,7 +52,7 @@ export function buildOrganizationSchema() {
     url: SITE_ORIGIN,
     logo: absoluteUrl('/logo.png'),
     description:
-      'DragonFury is an online sweepstakes gaming platform offering social casino-style games for entertainment.',
+      'Dragon Fury is an online sweepstakes lobby with fish games, slots, and exclusive platforms.',
     email: site.supportEmail,
     contactPoint: {
       '@type': 'ContactPoint',

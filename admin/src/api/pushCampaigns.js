@@ -4,8 +4,13 @@ const ADMIN = '/api/admin'
 const BASE = `${ADMIN}/push-campaigns`
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
-export function listPushCampaigns() {
-  return request(BASE)
+export function listPushCampaigns(params = {}) {
+  const qs = new URLSearchParams()
+  Object.entries(params).forEach(([k, v]) => {
+    if (v != null && v !== '') qs.set(k, String(v))
+  })
+  const q = qs.toString()
+  return request(`${BASE}${q ? `?${q}` : ''}`)
 }
 
 export function createPushCampaign(body) {
@@ -17,6 +22,10 @@ export function updatePushCampaign(id, body) {
     method: 'PATCH',
     body: JSON.stringify(body)
   })
+}
+
+export function deletePushCampaign(id) {
+  return request(`${BASE}/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
 export function listPushCampaignTestUsers(id) {

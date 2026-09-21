@@ -6,8 +6,6 @@ const { isScorpioConfigured, resolveScorpioConfig, buildPlayerExternalId } = req
 const client = require('./scorpio.client');
 const { upsertScorpioPlayer } = require('./scorpioUser.helpers');
 const { createLogger } = require('../../libs/logger');
-const { parseCoinTypeFromReq } = require('../../lib/normalizePlayCoinType');
-const { rememberPlayCoin } = require('../playCoin/playCoinSession.service');
 
 const log = createLogger('scorpio');
 
@@ -118,12 +116,6 @@ async function launchGame(req) {
   }
 
   const { playerExternalId } = await ensurePlayer(userId);
-  await rememberPlayCoin({
-    userId,
-    provider: 'scorpio',
-    gameId: gameCode,
-    coinType: parseCoinTypeFromReq(req, 'scorpio')
-  });
   const { lang, currency, rtp } = resolveScorpioConfig();
   const returnUrl = String(body.returnUrl || frontendReturnUrl(req) || '').trim();
 

@@ -8,7 +8,6 @@ const { adminMiddleware } = require('../middlewares/admin.middleware');
 const router = express.Router();
 
 router.get('/config', slotProvidersController.getPublicConfig);
-router.get('/popular-games', slotProvidersController.getPublicPopularGames);
 router.get('/admin/settings', authMiddleware, adminMiddleware, slotProvidersController.getSettingsAdmin);
 router.put('/admin/settings', authMiddleware, adminMiddleware, slotProvidersController.updateSettingsAdmin);
 

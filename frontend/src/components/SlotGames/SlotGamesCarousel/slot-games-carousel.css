@@ -413,13 +413,6 @@
     flex: 0 0 auto !important;
   }
 
-  .dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
-  .dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 159 / 187;
-  }
-
   .dash-slot-carousel-ranked-unit {
     width: auto !important;
     flex: 0 0 auto !important;
@@ -462,12 +455,6 @@
 
 .dash-slot-catalog-grid .dash-slot-carousel-card {
   width: 100%;
-}
-
-.dash-slot-catalog-grid .dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 159 / 187;
 }
 
 @media (max-width: 1279px) {
@@ -514,6 +501,13 @@
   padding: 0;
   background: #0a0e16;
   overflow: hidden;
+}
+
+.dash-slot-carousel-img-slot {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 1;
 }
 
 .dash-slot-carousel-card-img,
@@ -668,18 +662,6 @@
 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-art {
   aspect-ratio: 3 / 4;
   background: #0a0e16;
-}
-
-.dash-slot-carousel-card.dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact),
-.dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub {
-  width: 159px;
-}
-
-.dash-slot-carousel-card--onegamehub:not(.dash-slot-carousel-card--compact) .dash-slot-carousel-card-art,
-.dash-slot-carousel-card--ranked.dash-slot-carousel-card--onegamehub .dash-slot-carousel-card-art {
-  width: 159px;
-  height: 187px;
-  aspect-ratio: 159 / 187;
 }
 
 .dash-slot-carousel-card--ranked .dash-slot-carousel-card-skeleton {

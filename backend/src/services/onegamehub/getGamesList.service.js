@@ -6,6 +6,7 @@ const path = require('path');
 const { fetchAvailableGames } = require('./onegamehub.client');
 const { isOneGameHubConfigured } = require('./onegamehub.config');
 const { isBlockedBrand } = require('./onegamehub.constants');
+const { isHiddenBrokenProviderGame } = require('../../constants/hiddenBrokenGames');
 
 const CACHE_TTL_MS = 15 * 60 * 1000;
 const cacheByStore = new Map();
@@ -54,7 +55,7 @@ function cacheKey(storeCode) {
 }
 
 function diskCachePath(storeCode) {
-  return path.join(os.tmpdir(), `partner-ogh-games-v2-${cacheKey(storeCode)}.json`);
+  return path.join(os.tmpdir(), `partner-ogh-games-v3-${cacheKey(storeCode)}.json`);
 }
 
 function readDiskCache(storeCode) {
@@ -85,10 +86,10 @@ function hydrateFromDisk(storeCode) {
 
 function mapCatalog(rawGames) {
   return (rawGames || [])
-    .filter((game) => !isBlockedBrand(game))
+    .filter((game) => !isBlockedBrand(game) && !isHiddenBrokenProviderGame(game))
     .map(mapProviderGame)
     .filter(Boolean)
-    .filter((game) => !isBlockedBrand(game));
+    .filter((game) => !isBlockedBrand(game) && !isHiddenBrokenProviderGame(game));
 }
 
 async function loadGamesList(storeCode) {

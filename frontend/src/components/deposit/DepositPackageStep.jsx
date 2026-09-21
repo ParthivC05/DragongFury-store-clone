@@ -153,7 +153,7 @@ function PackageCard({ pkg, theme, selected, onSelect, index }) {
   const cardCountdown = usePackageCountdown(endsAt);
   const staggerStyle = { animationDelay: `${Math.min(index, 6) * 0.07}s` };
   const imageAlt = pkg.title
-    ? `${pkg.title} — ${formatSc(pkg.final_sc)} SC${Number(pkg.gc_coin) > 0 ? ` + ${formatSc(pkg.gc_coin)} GC` : ''}`
+    ? `${pkg.title} — ${formatSc(pkg.final_sc)} SC`
     : `${formatSc(pkg.final_sc)} SC package`;
 
   return (
@@ -182,9 +182,6 @@ function PackageCard({ pkg, theme, selected, onSelect, index }) {
         <div className="dash-pkg-sc-block">
           <span className="dash-pkg-sc-label">You get</span>
           <p className="dash-pkg-sc">{formatSc(pkg.final_sc)} SC</p>
-          {Number(pkg.gc_coin) > 0 ? (
-            <p className="dash-pkg-gc">+ {formatSc(pkg.gc_coin)} GC</p>
-          ) : null}
         </div>
         {pkg.title && <p className="dash-pkg-title">{pkg.title}</p>}
       </div>

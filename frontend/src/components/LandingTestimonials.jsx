@@ -59,7 +59,7 @@ const TESTIMONIALS = [
 
 const STATS = [
   { value: '4.9', label: 'AVG. RATING' },
-  { value: '50K+', label: 'ACTIVE PLAYERS' },
+  { value: '10K+', label: 'ACTIVE PLAYERS' },
   { value: '24/7', label: 'LIVE SUPPORT' },
   { value: '20+', label: 'GAME PROVIDERS' },
 ];

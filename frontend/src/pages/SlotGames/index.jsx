@@ -8,7 +8,6 @@ import { SlotGameCardSkeleton } from '../../components/SlotGames/SlotGameCardSke
 import { DepositRequiredModal } from '../../components/Games/DepositRequiredModal';
 import { useDepositRequiredGate } from '../../hooks/useDepositRequiredGate';
 import { isDepositRequiredError } from '../../utils/depositRequired';
-import { useCoinLaunch } from '../../context/CoinLaunchContext';
 
 const SKELETON_COUNT = 12;
 
@@ -77,7 +76,6 @@ export function SlotGames({ fixedProvider } = {}) {
     openDepositRequiredModal,
     activationBonusType,
   } = useDepositRequiredGate({ enabled: isAuthenticated });
-  const { requestPlayCoin } = useCoinLaunch();
   const navigate = useNavigate();
   const location = useLocation();
   const providerOptions = useMemo(() => gitslotparkApi.GIT_SLOTPARK_PROVIDERS, []);
@@ -163,14 +161,7 @@ export function SlotGames({ fixedProvider } = {}) {
 
       try {
         if (gitslotparkApi.getGitslotparkLaunchMode() === 'tab') {
-          let coinType = 'SC';
-          try {
-            coinType = await requestPlayCoin(game, activeProvider);
-          } catch (err) {
-            if (String(err?.message || '') === 'cancelled') return;
-            throw err;
-          }
-          const res = await gitslotparkApi.launchSlotGame(game.gameid, activeProvider, coinType);
+          const res = await gitslotparkApi.launchSlotGame(game.gameid, activeProvider);
           const url = res?.url ? String(res.url).trim() : '';
           if (!url) {
             throw new Error('Game launch URL not returned');
@@ -208,7 +199,6 @@ export function SlotGames({ fixedProvider } = {}) {
     navigate,
     openDepositRequiredModal,
     requireDeposit,
-    requestPlayCoin,
     toast,
   ]);
 

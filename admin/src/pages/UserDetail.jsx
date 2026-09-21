@@ -71,7 +71,7 @@ const TX_TYPE_LABELS = {
   vip_bonus: 'VIP bonus',
   game_deposit: 'To game',
   game_withdraw: 'From game',
-  admin_add: 'Admin credit',
+  admin_add: 'Admin SC credit',
   admin_deduct: 'Admin deduction',
   deposit_courtesy: 'Deposit courtesy'
 }
@@ -470,10 +470,6 @@ function formatMoney(n, suffix = '') {
   return `${v.toFixed(2)}${suffix}`
 }
 
-function isPlayjuwaStore(storeCode) {
-  return String(storeCode || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '') === 'dragonfury'
-}
-
 function formatGameActivityDetails(row) {
   if (row?.activityType !== 'topup') return '—'
   const meta = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : null
@@ -784,13 +780,11 @@ export default function UserDetail() {
   const [deductPsc, setDeductPsc] = useState('')
   const [deductBsc, setDeductBsc] = useState('')
   const [deductRsc, setDeductRsc] = useState('')
-  const [deductGc, setDeductGc] = useState('')
   const [deductReason, setDeductReason] = useState('')
   const [deducting, setDeducting] = useState(false)
   const [addPsc, setAddPsc] = useState('')
   const [addBsc, setAddBsc] = useState('')
   const [addRsc, setAddRsc] = useState('')
-  const [addGc, setAddGc] = useState('')
   const [addDescription, setAddDescription] = useState('')
   const [addingSc, setAddingSc] = useState(false)
   const [walletRefresh, setWalletRefresh] = useState(0)
@@ -988,20 +982,18 @@ export default function UserDetail() {
     const psc = deductPsc.trim() === '' ? null : Number(deductPsc)
     const bsc = deductBsc.trim() === '' ? null : Number(deductBsc)
     const rsc = deductRsc.trim() === '' ? null : Number(deductRsc)
-    const gc = deductGc.trim() === '' ? null : Number(deductGc)
     const hasPsc = psc != null && Number.isFinite(psc) && psc > 0
     const hasBsc = bsc != null && Number.isFinite(bsc) && bsc > 0
     const hasRsc = rsc != null && Number.isFinite(rsc) && rsc > 0
-    const hasGc = gc != null && Number.isFinite(gc) && gc > 0
-    if (!hasPsc && !hasBsc && !hasRsc && !hasGc) {
+    if (!hasPsc && !hasBsc && !hasRsc) {
       toast.error('Enter how much to take from at least one wallet.')
       return
     }
     const ok = await confirm({
-      title: hasGc && !hasPsc && !hasBsc && !hasRsc ? 'Take GC away?' : 'Take coins away?',
+      title: 'Take SC away?',
       message:
         'This removes ready balance from the customer. Amounts on hold stay. A note is saved in Wallet activity.',
-      confirmLabel: 'Take coins',
+      confirmLabel: 'Take SC',
       variant: 'danger'
     })
     if (!ok) return
@@ -1011,15 +1003,13 @@ export default function UserDetail() {
         psc: hasPsc ? psc : undefined,
         bsc: hasBsc ? bsc : undefined,
         rsc: hasRsc ? rsc : undefined,
-        gc: hasGc ? gc : undefined,
         reason: deductReason.trim()
       })
-      toast.success('Coins taken.')
+      toast.success('SC taken.')
       setDetail((d) => ({ ...d, balance: res.balance || d.balance }))
       setDeductPsc('')
       setDeductBsc('')
       setDeductRsc('')
-      setDeductGc('')
       setDeductReason('')
       if (tab === 'wallet') {
         setPage(1)
@@ -1037,24 +1027,22 @@ export default function UserDetail() {
     const psc = addPsc.trim() === '' ? null : Number(addPsc)
     const bsc = addBsc.trim() === '' ? null : Number(addBsc)
     const rsc = addRsc.trim() === '' ? null : Number(addRsc)
-    const gc = addGc.trim() === '' ? null : Number(addGc)
     const description = addDescription.trim()
     const hasPsc = psc != null && Number.isFinite(psc) && psc > 0
     const hasBsc = bsc != null && Number.isFinite(bsc) && bsc > 0
     const hasRsc = rsc != null && Number.isFinite(rsc) && rsc > 0
-    const hasGc = gc != null && Number.isFinite(gc) && gc > 0
-    if (!hasPsc && !hasBsc && !hasRsc && !hasGc) {
+    if (!hasPsc && !hasBsc && !hasRsc) {
       toast.error('Enter how much to give in at least one wallet.')
       return
     }
     if (!description) {
-      toast.error('Write why you are giving coins.')
+      toast.error('Write why you are giving SC.')
       return
     }
     const ok = await confirm({
-      title: hasGc && !hasPsc && !hasBsc && !hasRsc ? 'Give GC?' : 'Give coins?',
+      title: 'Give SC?',
       message: 'Credits go into the wallets you filled. Your note is saved in Wallet activity.',
-      confirmLabel: 'Give coins',
+      confirmLabel: 'Give SC',
       variant: 'success'
     })
     if (!ok) return
@@ -1064,15 +1052,13 @@ export default function UserDetail() {
         psc: hasPsc ? psc : undefined,
         bsc: hasBsc ? bsc : undefined,
         rsc: hasRsc ? rsc : undefined,
-        gc: hasGc ? gc : undefined,
         description
       })
-      toast.success('Coins added.')
+      toast.success('SC added.')
       setDetail((d) => ({ ...d, balance: res.balance || d.balance }))
       setAddPsc('')
       setAddBsc('')
       setAddRsc('')
-      setAddGc('')
       setAddDescription('')
       if (tab === 'wallet') {
         setPage(1)
@@ -1170,13 +1156,6 @@ export default function UserDetail() {
                   <span className="ud-mini-stat-value">{formatMoney(b.usable_balance_rsc ?? 0)}</span>
                   <span className="ud-mini-stat-hint">can withdraw</span>
                 </div>
-                {isPlayjuwaStore(u.storeCode) ? (
-                  <div className="ud-mini-stat ud-mini-stat--gc">
-                    <span className="ud-mini-stat-label">Gold Coins</span>
-                    <span className="ud-mini-stat-value">{formatMoney(b.usable_balance_gc ?? b.balance_gc ?? 0)}</span>
-                    <span className="ud-mini-stat-hint">entertainment only</span>
-                  </div>
-                ) : null}
               </div>
             ) : null}
           </div>
@@ -1419,9 +1398,6 @@ export default function UserDetail() {
                     <h2 className="ud-section-title">Wallet balances</h2>
                     <p className="ud-section-desc">
                       Games use Purchased SC first, then Bonus SC, then Redeemable SC. Withdrawals use Redeemable SC only.
-                      {isPlayjuwaStore(u.storeCode)
-                        ? ' Gold Coins are entertainment-only and cannot be withdrawn.'
-                        : ''}
                     </p>
                   </div>
                   <div className="ud-section-body">
@@ -1469,17 +1445,6 @@ export default function UserDetail() {
                           </ul>
                         ) : null}
                       </div>
-                      {isPlayjuwaStore(u.storeCode) ? (
-                        <div className="ud-wallet-card ud-wallet-card--gc">
-                          <h4>Gold Coins</h4>
-                          <p className="ud-wallet-card-sub">Optional package bonus</p>
-                          <p className="ud-wallet-big">{formatMoney(b.usable_balance_gc ?? b.balance_gc ?? 0)}</p>
-                          <p className="ud-wallet-big-label">play for fun</p>
-                          <ul className="ud-wallet-notes">
-                            <li>Not redeemable for cash</li>
-                          </ul>
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 </section>
@@ -1513,14 +1478,13 @@ export default function UserDetail() {
                 <div className="ud-section-header">
                   <h2 className="ud-section-title">Adjust wallet (admin)</h2>
                   <p className="ud-section-desc">
-                    Give or take Purchased SC, Bonus SC, or Redeemable SC
-                    {isPlayjuwaStore(u.storeCode) ? ', or Gold Coins' : ''}. Write a reason when giving. Every change is saved in Wallet activity.
+                    Give or take Purchased SC, Bonus SC, or Redeemable SC. Write a reason when giving. Every change is saved in Wallet activity.
                   </p>
                 </div>
                 <div className="ud-section-body">
                   <form onSubmit={submitAddSc} className="ud-adjust-form">
                     <div className="ud-adjust-form-head">
-                      <h3>{isPlayjuwaStore(u.storeCode) ? 'Give coins' : 'Give SC'}</h3>
+                      <h3>Give SC</h3>
                       <p>Fill any wallet you want to top up. Description is required.</p>
                     </div>
                     <div className="ud-form-grid">
@@ -1563,21 +1527,6 @@ export default function UserDetail() {
                           autoComplete="off"
                         />
                       </div>
-                      {isPlayjuwaStore(u.storeCode) ? (
-                        <div className="users-filter-field">
-                          <label htmlFor="add-gc">Gold Coins</label>
-                          <input
-                            id="add-gc"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={addGc}
-                            onChange={(e) => setAddGc(e.target.value)}
-                            autoComplete="off"
-                          />
-                        </div>
-                      ) : null}
                       <div className="users-filter-field" style={{ gridColumn: '1 / -1' }}>
                         <label htmlFor="add-sc-description">Why? (required)</label>
                         <input
@@ -1592,14 +1541,14 @@ export default function UserDetail() {
                     </div>
                     <div className="ud-form-actions">
                       <button type="submit" className="admin-btn admin-btn-sm ud-btn-add-sc" disabled={addingSc}>
-                        {addingSc ? 'Giving…' : isPlayjuwaStore(u.storeCode) ? 'Give coins' : 'Give SC'}
+                        {addingSc ? 'Giving…' : 'Give SC'}
                       </button>
                     </div>
                   </form>
 
                   <form onSubmit={submitDeduct}>
                     <div className="ud-adjust-form-head">
-                      <h3>{isPlayjuwaStore(u.storeCode) ? 'Take coins away' : 'Take SC away'}</h3>
+                      <h3>Take SC away</h3>
                       <p>Take from each wallet separately. Amounts on hold stay.</p>
                     </div>
                     <div className="ud-form-grid">
@@ -1642,21 +1591,6 @@ export default function UserDetail() {
                           autoComplete="off"
                         />
                       </div>
-                      {isPlayjuwaStore(u.storeCode) ? (
-                        <div className="users-filter-field">
-                          <label htmlFor="deduct-gc">Take Gold Coins</label>
-                          <input
-                            id="deduct-gc"
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={deductGc}
-                            onChange={(e) => setDeductGc(e.target.value)}
-                            autoComplete="off"
-                          />
-                        </div>
-                      ) : null}
                       <div className="users-filter-field" style={{ gridColumn: '1 / -1' }}>
                         <label htmlFor="deduct-reason">Internal note (optional)</label>
                         <input
@@ -1671,7 +1605,7 @@ export default function UserDetail() {
                     </div>
                     <div className="ud-form-actions">
                       <button type="submit" className="admin-btn admin-btn-sm admin-btn-primary" disabled={deducting}>
-                        {deducting ? 'Taking…' : isPlayjuwaStore(u.storeCode) ? 'Take coins' : 'Take SC'}
+                        {deducting ? 'Taking…' : 'Take SC'}
                       </button>
                     </div>
                   </form>

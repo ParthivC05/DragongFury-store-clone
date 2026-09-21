@@ -9,7 +9,7 @@ export function MaintenanceScreen() {
       <div className="maint-screen__glow" aria-hidden="true" />
       <div className="maint-screen__card">
         <div className="maint-screen__logo">
-          <img src="/logo-bg.png" alt={title} decoding="async" />
+          <img src={site.logoUrl} alt={title} decoding="async" />
         </div>
 
         <h1 className="maint-screen__title">Be right back</h1>

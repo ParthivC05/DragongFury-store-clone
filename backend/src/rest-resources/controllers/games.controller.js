@@ -486,8 +486,10 @@ async function syncPassword(req, res) {
  */
 async function firekirinExclusiveList(req, res) {
     try {
+        const headerStore = req.headers['x-store-code'] && String(req.headers['x-store-code']).trim();
+        const queryStore = req.query.store_code && String(req.query.store_code).trim();
         const data = await getFirekirinExclusiveGames({
-            storeCode: req.user?.storeCode || null,
+            storeCode: req.user?.storeCode || queryStore || headerStore || null,
             userId: req.user?.userId || null
         });
         sendSuccess(res, data);

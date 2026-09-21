@@ -547,9 +547,14 @@
 }
 
 .pc-btn-danger {
+  margin-left: auto;
   color: #b91c1c;
   border-color: #fecaca;
   background: #fff;
+}
+
+.pc-btn-danger:hover:not(:disabled) {
+  background: #fef2f2;
 }
 
 .pc-btn-file {

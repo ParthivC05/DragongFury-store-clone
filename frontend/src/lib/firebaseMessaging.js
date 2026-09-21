@@ -60,7 +60,7 @@ function iosVersionNumber() {
   return Number(m[1]) + Number(m[2]) / 100;
 }
 
-/** What this browser can actually do for DragonFury web push. */
+/** What this browser can actually do for PlayJuwa web push. */
 export function getPushCapability() {
   if (typeof window === 'undefined') {
     return { ok: false, reason: 'unsupported', permission: 'unsupported', needsGesture: true };
@@ -180,33 +180,22 @@ async function afterNotificationPermission(permission) {
 }
 
 /**
- * Must run as the first line of a real click/tap handler so Chrome/Safari/iOS
- * still treat it as a user gesture. Do not await or setState before this.
- */
-export function requestNativeNotificationPrompt() {
-  if (typeof Notification === 'undefined') {
-    return Promise.resolve('unsupported');
-  }
-  if (Notification.permission === 'default') {
-    try {
-      return Promise.resolve(Notification.requestPermission());
-    } catch {
-      return Promise.resolve(Notification.permission);
-    }
-  }
-  return Promise.resolve(Notification.permission);
-}
-
-/**
- * Call this from a click handler. The native Allow sheet must be requested in
- * the same turn as the tap — no awaits, timers, or iOS-only skips first.
+ * Call this from a click handler. iOS only treats a real click as a user gesture
+ * for the system Allow sheet — pointerdown / async setup will show nothing.
+ * Do not require PushManager/SW first: the Allow sheet can appear without them.
  */
 export function enablePushFromUserGesture() {
   const cap = getPushCapability();
   if (typeof Notification === 'undefined') {
     return Promise.resolve({ permission: 'unsupported', token: null, capability: cap });
   }
-  return requestNativeNotificationPrompt().then(afterNotificationPermission);
+  if (cap.isiOS && !cap.isStandalone) {
+    return Promise.resolve({ permission: 'unsupported', token: null, capability: cap });
+  }
+  if (Notification.permission === 'default') {
+    return Promise.resolve(Notification.requestPermission()).then(afterNotificationPermission);
+  }
+  return afterNotificationPermission(Notification.permission);
 }
 
 /** Foreground messages — call handler when a push arrives while tab is open. */
@@ -261,11 +250,11 @@ function notifyPageOfPush() {
 /** Show a system notification. On Android Chrome this must go through the service worker. */
 export function showBrowserNotification(payload = {}) {
   const data = payloadData(payload);
-  const title = data.title || payload.notification?.title || 'DragonFury';
+  const title = data.title || payload.notification?.title || 'PlayJuwa';
   const body = data.body || payload.notification?.body || '';
   const icon = data.iconUrl || payload.notification?.icon || '/favicon.ico';
   const image = data.imageUrl || payload.notification?.image || undefined;
-  const tag = data.campaignId ? `push-campaign-${data.campaignId}` : 'dragonfury-push';
+  const tag = data.campaignId ? `push-campaign-${data.campaignId}` : 'playjuwa-push';
   const options = {
     body,
     icon,

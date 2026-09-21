@@ -52,13 +52,6 @@ function applyBalancePayload(data, setters) {
   setters.setRscWalletUsable(rscU);
   setters.setLockedBalanceSc(Math.max(0, locked));
   setters.setBalanceSc(scU + rscU);
-  setters.setBalanceGc(
-    data.usable_balance_gc != null
-      ? Number(data.usable_balance_gc)
-      : data.balance_gc != null
-        ? Number(data.balance_gc)
-        : 0
-  );
 }
 
 /** Live wallet updates come from Socket.IO; HTTP is only for login / explicit refresh. */
@@ -73,7 +66,6 @@ export function AuthProvider({ children }) {
   const [scWalletUsable, setScWalletUsable] = useState(null);
   const [rscWalletUsable, setRscWalletUsable] = useState(null);
   const [lockedBalanceSc, setLockedBalanceSc] = useState(null);
-  const [balanceGc, setBalanceGc] = useState(null);
   const [balanceLoading, setBalanceLoading] = useState(false);
   const socketConnectedRef = useRef(false);
 
@@ -83,8 +75,7 @@ export function AuthProvider({ children }) {
     setScWalletUsable,
     setRscWalletUsable,
     setLockedBalanceSc,
-    setBalanceSc,
-    setBalanceGc
+    setBalanceSc
   };
 
   const clearBalances = useCallback(() => {
@@ -94,7 +85,6 @@ export function AuthProvider({ children }) {
     setScWalletUsable(null);
     setRscWalletUsable(null);
     setLockedBalanceSc(null);
-    setBalanceGc(null);
   }, []);
 
   const loadUser = useCallback(async () => {
@@ -378,7 +368,6 @@ export function AuthProvider({ children }) {
     scWalletUsable,
     rscWalletUsable,
     lockedBalanceSc,
-    balanceGc,
     balanceLoading,
     refreshUser: loadUser,
     refreshBalance: loadBalance,

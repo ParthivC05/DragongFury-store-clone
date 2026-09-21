@@ -27,7 +27,7 @@ export function GamesListing() {
         <p className="pj-seo-label">Game platforms</p>
         <h1 className="pj-seo-title">Fish tables &amp; slots</h1>
         <p className="pj-seo-lead">
-          Browse every game system on DragonFury — Juwa, Firekirin, Orionstars, Golden Dragon, Ultra
+          Browse every game system on PlayJuwa — Juwa, Firekirin, Orionstars, Golden Dragon, Ultra
           Panda, Riversweeps, and more. Sign up and play in your browser.
         </p>
       </header>
@@ -50,8 +50,8 @@ export function GamesListing() {
                     className="pj-seo-card-img"
                     width={280}
                     height={280}
-                    loading={index === 0 ? 'eager' : 'lazy'}
-                    fetchPriority={index === 0 ? 'high' : 'auto'}
+                    loading="eager"
+                    fetchPriority={index < 4 ? 'high' : 'auto'}
                   />
                 </div>
                 <div className="pj-seo-card-body">

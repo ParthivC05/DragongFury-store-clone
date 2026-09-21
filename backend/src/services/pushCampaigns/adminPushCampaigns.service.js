@@ -3,7 +3,7 @@
 const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
-const { PUSH_CAMPAIGN_STORE_CODE, isPushCampaignStoreAllowed, normalizeStoreCode } = require('./constants');
+const { isPushCampaignStoreAllowed, normalizeStoreCode } = require('./constants');
 const { loadEligibleDevices, runCampaignSend } = require('./sendPushCampaign.service');
 const { canViewPlayerEmail, stripPlayerEmailFields } = require('../../utils/playerEmailVisibility');
 
@@ -13,22 +13,33 @@ function err(message, statusCode = 400) {
   return e;
 }
 
-function assertPlayjuwaScope(req) {
+function resolveStoreScope(req, { required = true } = {}) {
   if (req.role === ROLES.DISTRIBUTOR_ADMIN) throw err('Not allowed.', 403);
   if (req.role === ROLES.STORE_ADMIN) {
-    if (!isPushCampaignStoreAllowed(req.storeCode)) {
-      throw err('Push campaigns are only available for DragonFury.', 403);
-    }
-    return PUSH_CAMPAIGN_STORE_CODE;
+    const store = normalizeStoreCode(req.storeCode);
+    if (!store) throw err('Store is required.', 400);
+    if (!isPushCampaignStoreAllowed(store)) throw err('Push notifications are not available for this store.', 403);
+    return store;
   }
   if (req.role === ROLES.MASTER_ADMIN) {
-    const requested = normalizeStoreCode(req.query?.storeCode || req.body?.storeCode || req.storeCode);
-    if (requested && requested !== PUSH_CAMPAIGN_STORE_CODE) {
-      throw err('Push campaigns are only available for DragonFury.', 403);
-    }
-    return PUSH_CAMPAIGN_STORE_CODE;
+    const requested = normalizeStoreCode(req.query?.storeCode || req.body?.storeCode);
+    if (required && !requested) throw err('storeCode is required.', 400);
+    return requested || null;
   }
   throw err('Not allowed.', 403);
+}
+
+async function requireCampaign(req, id) {
+  const store = resolveStoreScope(req, { required: false });
+  const where = { id };
+  if (store) where.storeCode = store;
+  const row = await db.PushCampaign.findOne({ where });
+  if (!row) throw err('Notification not found.', 404);
+  return row;
+}
+
+function assertPlayjuwaScope(req) {
+  return resolveStoreScope(req, { required: req.role !== ROLES.MASTER_ADMIN });
 }
 
 function serializeCampaign(row) {
@@ -81,16 +92,18 @@ function parseCampaignBody(body = {}, { partial = false } = {}) {
   return patch;
 }
 
-async function permissionStats() {
+async function permissionStats(storeCode) {
+  const store = normalizeStoreCode(storeCode);
+  const where = {
+    client: { [Op.in]: ['user', 'web'] }
+  };
+  if (store) where.storeCode = store;
   const rows = await db.UserDeviceToken.findAll({
     attributes: [
       'permissionStatus',
       [db.sequelize.fn('COUNT', db.sequelize.col('id')), 'cnt']
     ],
-    where: {
-      storeCode: PUSH_CAMPAIGN_STORE_CODE,
-      client: { [Op.in]: ['user', 'web'] }
-    },
+    where,
     group: ['permissionStatus'],
     raw: true
   });
@@ -99,14 +112,12 @@ async function permissionStats() {
     const key = r.permissionStatus;
     if (counts[key] != null) counts[key] = Number(r.cnt) || 0;
   });
-  const withToken = await db.UserDeviceToken.count({
-    where: {
-      storeCode: PUSH_CAMPAIGN_STORE_CODE,
-      client: { [Op.in]: ['user', 'web'] },
-      permissionStatus: 'granted',
-      token: { [Op.ne]: null }
-    }
-  });
+  const tokenWhere = {
+    ...where,
+    permissionStatus: 'granted',
+    token: { [Op.ne]: null }
+  };
+  const withToken = await db.UserDeviceToken.count({ where: tokenWhere });
   return { ...counts, reachable: withToken };
 }
 
@@ -139,14 +150,16 @@ async function sendCountMap(campaignIds) {
 }
 
 async function listCampaigns(req) {
-  assertPlayjuwaScope(req);
+  const store = resolveStoreScope(req, { required: false });
+  const where = store ? { storeCode: store } : {};
   const rows = await db.PushCampaign.findAll({
-    where: { storeCode: PUSH_CAMPAIGN_STORE_CODE },
+    where,
     order: [['id', 'DESC']]
   });
   const sendCounts = await sendCountMap(rows.map((r) => r.id));
-  const permissions = await permissionStats();
+  const permissions = await permissionStats(store);
   return {
+    storeCode: store,
     campaigns: rows.map((r) => ({
       ...serializeCampaign(r),
       sendCounts: sendCounts[r.id] || { queued: 0, sent: 0, failed: 0, no_token: 0, clicked: 0 }
@@ -156,20 +169,15 @@ async function listCampaigns(req) {
 }
 
 async function getCampaign(req, id) {
-  assertPlayjuwaScope(req);
-  const row = await db.PushCampaign.findOne({
-    where: { id, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!row) throw err('Campaign not found.', 404);
-  return serializeCampaign(row);
+  return serializeCampaign(await requireCampaign(req, id));
 }
 
 async function createCampaign(req, body) {
-  assertPlayjuwaScope(req);
+  const store = resolveStoreScope(req, { required: true });
   const data = parseCampaignBody(body);
   const row = await db.PushCampaign.create({
     ...data,
-    storeCode: PUSH_CAMPAIGN_STORE_CODE,
+    storeCode: store,
     createdByUserId: req.user?.userId || null,
     status: 'draft',
     testMode: data.testMode !== false
@@ -178,11 +186,7 @@ async function createCampaign(req, body) {
 }
 
 async function updateCampaign(req, id, body) {
-  assertPlayjuwaScope(req);
-  const row = await db.PushCampaign.findOne({
-    where: { id, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!row) throw err('Campaign not found.', 404);
+  const row = await requireCampaign(req, id);
   const patch = parseCampaignBody({ ...serializeCampaign(row), ...body }, { partial: false });
   if (body.testMode !== undefined) patch.testMode = body.testMode !== false;
   await row.update(patch);
@@ -190,12 +194,20 @@ async function updateCampaign(req, id, body) {
   return serializeCampaign(row);
 }
 
+async function deleteCampaign(req, id) {
+  const row = await requireCampaign(req, id);
+  if (row.status === 'sending') {
+    throw err('Wait until this send finishes, then delete.', 409);
+  }
+  const campaignId = row.id;
+  await db.PushCampaignSend.destroy({ where: { campaignId } });
+  await db.PushCampaignTestUser.destroy({ where: { campaignId } });
+  await row.destroy();
+  return { deleted: true, id: campaignId };
+}
+
 async function listTestUsers(req, campaignId) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   const rows = await db.PushCampaignTestUser.findAll({
     where: { campaignId },
     include: [
@@ -225,25 +237,21 @@ async function listTestUsers(req, campaignId) {
 }
 
 async function addTestUser(req, campaignId, body) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
 
   let user = null;
   const userId = parseInt(body.userId, 10);
   const email = body.email != null ? String(body.email).trim().toLowerCase() : '';
   if (Number.isFinite(userId)) {
     user = await db.User.findOne({
-      where: { userId, storeCode: PUSH_CAMPAIGN_STORE_CODE, deletedAt: null }
+      where: { userId, storeCode: campaign.storeCode, deletedAt: null }
     });
   } else if (email) {
     user = await db.User.findOne({
-      where: { email, storeCode: PUSH_CAMPAIGN_STORE_CODE, deletedAt: null }
+      where: { email, storeCode: campaign.storeCode, deletedAt: null }
     });
   }
-  if (!user) throw err('DragonFury user not found.', 404);
+  if (!user) throw err('User not found for this store.', 404);
 
   const [row] = await db.PushCampaignTestUser.findOrCreate({
     where: { campaignId, userId: user.userId },
@@ -255,11 +263,7 @@ async function addTestUser(req, campaignId, body) {
 }
 
 async function removeTestUser(req, campaignId, testUserId) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   const n = await db.PushCampaignTestUser.destroy({
     where: { id: testUserId, campaignId }
   });
@@ -268,11 +272,7 @@ async function removeTestUser(req, campaignId, testUserId) {
 }
 
 async function listSends(req, campaignId, query = {}) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
 
   const page = Math.max(1, parseInt(query.page, 10) || 1);
   const pageSize = Math.min(100, Math.max(1, parseInt(query.pageSize, 10) || 25));
@@ -342,11 +342,7 @@ async function listSends(req, campaignId, query = {}) {
 }
 
 async function countEligible(req, campaignId) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   let userIds = null;
   if (campaign.testMode) {
     const testers = await db.PushCampaignTestUser.findAll({
@@ -355,8 +351,8 @@ async function countEligible(req, campaignId) {
     });
     userIds = testers.map((t) => t.userId);
   }
-  const devices = await loadEligibleDevices({ userIds });
-  const permissions = await permissionStats();
+  const devices = await loadEligibleDevices({ userIds, storeCode: campaign.storeCode });
+  const permissions = await permissionStats(campaign.storeCode);
   return { eligibleCount: devices.length, permissions };
 }
 
@@ -367,11 +363,7 @@ function queueSend(campaignId, opts) {
 }
 
 async function sendToTestUsers(req, campaignId) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   if (!campaign.title) throw err('Save a notification title first.');
   const testers = await db.PushCampaignTestUser.count({ where: { campaignId } });
   if (!testers) throw err('Add at least one test user first.');
@@ -380,11 +372,7 @@ async function sendToTestUsers(req, campaignId) {
 }
 
 async function sendBroadcast(req, campaignId) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   if (!campaign.title) throw err('Save a notification title first.');
   if (campaign.testMode) {
     return sendToTestUsers(req, campaignId);
@@ -394,11 +382,7 @@ async function sendBroadcast(req, campaignId) {
 }
 
 async function sendTest(req, campaignId, body = {}) {
-  assertPlayjuwaScope(req);
-  const campaign = await db.PushCampaign.findOne({
-    where: { id: campaignId, storeCode: PUSH_CAMPAIGN_STORE_CODE }
-  });
-  if (!campaign) throw err('Campaign not found.', 404);
+  const campaign = await requireCampaign(req, campaignId);
   if (!campaign.title) throw err('Save a notification title first.');
 
   let user = null;
@@ -406,14 +390,14 @@ async function sendTest(req, campaignId, body = {}) {
   const email = body.email != null ? String(body.email).trim().toLowerCase() : '';
   if (Number.isFinite(userId)) {
     user = await db.User.findOne({
-      where: { userId, storeCode: PUSH_CAMPAIGN_STORE_CODE, deletedAt: null }
+      where: { userId, storeCode: campaign.storeCode, deletedAt: null }
     });
   } else if (email) {
     user = await db.User.findOne({
-      where: { email, storeCode: PUSH_CAMPAIGN_STORE_CODE, deletedAt: null }
+      where: { email, storeCode: campaign.storeCode, deletedAt: null }
     });
   }
-  if (!user) throw err('DragonFury user not found.', 404);
+  if (!user) throw err('User not found for this store.', 404);
 
   const result = await runCampaignSend(campaign.id, { userIds: [user.userId] });
   return { started: false, result, userId: user.userId };
@@ -424,6 +408,7 @@ module.exports = {
   getCampaign,
   createCampaign,
   updateCampaign,
+  deleteCampaign,
   listTestUsers,
   addTestUser,
   removeTestUser,

@@ -10,8 +10,8 @@ export function getScorpioGames() {
   return getRequest(`${SCORPIO_BASE}/games`);
 }
 
-export function launchScorpioGame({ gameCode, providerId, coinType = 'SC' } = {}) {
-  const body = { coinType };
+export function launchScorpioGame({ gameCode, providerId } = {}) {
+  const body = {};
   if (gameCode) body.gameCode = String(gameCode);
   const provider = Number(providerId);
   if (Number.isFinite(provider) && provider > 0) body.providerId = provider;

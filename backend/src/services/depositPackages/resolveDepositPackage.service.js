@@ -98,7 +98,6 @@ async function resolveDepositPackageForUser(userId, packageId, options = {}) {
 
   let payAmount = toNumber(pkg.finalPrice);
   const creditAmount = toNumber(pkg.finalSc);
-  const creditGc = Math.max(0, toNumber(pkg.gcCoin) || 0);
   if (payAmount == null || payAmount <= 0 || creditAmount == null || creditAmount <= 0) {
     const err = new Error('Package pricing is invalid.');
     err.statusCode = 400;
@@ -142,7 +141,6 @@ async function resolveDepositPackageForUser(userId, packageId, options = {}) {
     payAmount,
     originalPayAmount,
     creditAmount,
-    creditGc,
     actualPrice: toNumber(pkg.actualPrice),
     discountLabel: pkg.discountLabel || null,
     voucher: voucherMeta,
@@ -150,7 +148,6 @@ async function resolveDepositPackageForUser(userId, packageId, options = {}) {
     metadata: {
       packageId: pkg.id,
       creditAmount,
-      creditGc,
       packageTitle: pkg.title || pkg.Group.title,
       groupKey: pkg.Group.groupKey,
       ...(voucherMeta

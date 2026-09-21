@@ -1,10 +1,17 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState, lazy, Suspense, useSyncExternalStore } from 'react';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { scrollToGamesSection } from '../utils/scrollToGames';
 import { SiteLogo } from './SiteLogo';
 import { lockBodyScroll } from '../utils/bodyScrollLock';
 import { OPEN_MOBILE_MENU_EVENT } from '../utils/navEvents';
+import { warmupCasino } from '../utils/preloadCasino';
+import {
+  getBrowserPathname,
+  getBrowserRouteKey,
+  isCasinoPath,
+  subscribeBrowserLocation,
+} from '../utils/browserLocation';
 
 const DashboardSidebar = lazy(() =>
   import('./Home/DashboardSidebar').then((m) => ({ default: m.DashboardSidebar }))
@@ -21,6 +28,12 @@ export function BottomBar() {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { pathname, search, hash } = useLocation();
   const navigate = useNavigate();
+  const browserRouteKey = useSyncExternalStore(
+    subscribeBrowserLocation,
+    getBrowserRouteKey,
+    () => pathname
+  );
+  const browserPath = getBrowserPathname(browserRouteKey);
   const [menuOpen, setMenuOpen] = useState(false);
   const registerPath = `/register${search || ''}`;
   const isOnHome = pathname === '/';
@@ -35,7 +48,7 @@ export function BottomBar() {
     pathname.startsWith('/support/tickets');
   const platformHighlighted = isOnPlatform || (isAuthenticated && isOnHome && hash === '#games');
   const homeHighlighted = isOnHome && hash !== '#games' && !isOnPlatform;
-  const casinoHighlighted = pathname === '/casino' || pathname.startsWith('/casino/');
+  const casinoHighlighted = isCasinoPath(browserPath) || isCasinoPath(pathname);
   const bonusHighlighted = pathname === '/bonus' || pathname === '/account/affiliate';
 
   const closeMenu = () => setMenuOpen(false);
@@ -85,6 +98,13 @@ export function BottomBar() {
       navigate('/');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCasinoNav = () => {
+    warmupCasino();
+    if (casinoHighlighted) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -180,6 +200,8 @@ export function BottomBar() {
 
           <NavLink
             to="/casino"
+            onClick={handleCasinoNav}
+            onPointerEnter={warmupCasino}
             className={({ isActive }) =>
               navItemClass({
                 isActive: casinoHighlighted || isActive,

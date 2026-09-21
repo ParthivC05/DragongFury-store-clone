@@ -7,8 +7,7 @@ const {
   applyBalanceDelta,
   applyRollbackDelta
 } = require('../../gitslotpark/callbacks/gitslotparkCallbackWallet.service');
-const { HUB_CURRENCY, SUPPORTED_HUB_CURRENCIES } = require('../onegamehub.constants');
-const { coinFromHubCurrency } = require('../../../lib/normalizePlayCoinType');
+const { HUB_CURRENCY } = require('../onegamehub.constants');
 
 function centsToSc(amount) {
   return formatBalance(Number(amount || 0) / 100);
@@ -19,34 +18,7 @@ function scToCents(balance) {
 }
 
 function isUnsupportedCurrency(currency) {
-  return !SUPPORTED_HUB_CURRENCIES.has(String(currency || '').toUpperCase());
-}
-
-function playCoinFromSession(session) {
-  return coinFromHubCurrency(session?.currency);
-}
-
-/** Orionstars parity: GOC session must only debit/credit GC, SSC only SC. */
-function isCurrencyMismatch(session, currency) {
-  if (isUnsupportedCurrency(currency)) return true;
-  return playCoinFromSession(session) !== coinFromHubCurrency(currency);
-}
-
-async function getSessionPlayableBalance(userId, session, transaction) {
-  return getPlayableBalance(userId, transaction, playCoinFromSession(session));
-}
-
-async function applySessionBalanceDelta(userId, delta, meta, transaction, session, extra = {}) {
-  return applyBalanceDelta(userId, delta, meta, transaction, {
-    ...extra,
-    coinType: playCoinFromSession(session)
-  });
-}
-
-async function applySessionRollbackDelta(userId, originalTransactionId, reverseDelta, meta, transaction, session) {
-  return applyRollbackDelta(userId, originalTransactionId, reverseDelta, meta, transaction, {
-    coinType: playCoinFromSession(session)
-  });
+  return String(currency || '').toUpperCase() !== HUB_CURRENCY;
 }
 
 function isInsufficientFundsError(err) {
@@ -66,14 +38,9 @@ module.exports = {
   centsToSc,
   scToCents,
   isUnsupportedCurrency,
-  isCurrencyMismatch,
   isInsufficientFundsError,
   getPlayableBalance,
   applyBalanceDelta,
   applyRollbackDelta,
-  getSessionPlayableBalance,
-  applySessionBalanceDelta,
-  applySessionRollbackDelta,
-  playCoinFromSession,
   success
 };

@@ -4,14 +4,12 @@ const { sendSuccess, sendError } = require('../../helpers/response.helpers');
 const { ROLES } = require('../../constants/roles');
 const { can, canAdmin } = require('../../utils/permissionHelpers');
 const { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
-const { isPushCampaignStoreAllowed } = require('../../services/pushCampaigns/constants');
 const adminPushCampaigns = require('../../services/pushCampaigns/adminPushCampaigns.service');
 const { uploadImageBuffer, isS3Configured } = require('../../utils/s3Upload');
 
 function hasPushCampaignAccess(req) {
   if (req.role === ROLES.DISTRIBUTOR_ADMIN) return false;
   if (req.role === ROLES.STORE_ADMIN) {
-    if (!isPushCampaignStoreAllowed(req.storeCode)) return false;
     return can(req, STORE_FEATURE_KEYS.PUSH_CAMPAIGNS);
   }
   if (req.role === ROLES.MASTER_ADMIN) {
@@ -68,6 +66,17 @@ async function updateCampaign(req, res) {
     return sendSuccess(res, { campaign });
   } catch (err) {
     return sendError(res, err.message || 'Update failed.', err.statusCode || 500);
+  }
+}
+
+async function deleteCampaign(req, res) {
+  try {
+    if (!guard(req, res)) return;
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return sendError(res, 'Invalid id.', 400);
+    return sendSuccess(res, await adminPushCampaigns.deleteCampaign(req, id));
+  } catch (err) {
+    return sendError(res, err.message || 'Delete failed.', err.statusCode || 500);
   }
 }
 
@@ -185,6 +194,7 @@ module.exports = {
   getCampaign,
   createCampaign,
   updateCampaign,
+  deleteCampaign,
   listTestUsers,
   addTestUser,
   removeTestUser,

@@ -5,6 +5,11 @@ const paymentProviders = require('../paymentProviders');
 const { logger } = require('../../libs/logger');
 const { zeroRemainingWalletsAfterNeverDepositedWithdraw } = require('./neverDepositedWithdraw.service');
 const { rscAvailableToWithdraw } = require('./walletBuckets.service');
+const {
+  reservedFrozenByOtherWithdrawals,
+  thisRequestFrozenSlice,
+  captureThisWithdrawalFreeze
+} = require('./withdrawalFreeze.service');
 
 /**
  * Approve a pending withdrawal request: deduct balance and release freeze. (Used only for platform pending requests, if any.)
@@ -43,33 +48,51 @@ async function approveWithdrawalRequest(requestId, adminUserId, isAdmin) {
     throw err;
   }
 
-  const balance = Number(wallet.balance) || 0;
-  const frozenBalance = Number(wallet.frozenBalance) || 0;
   const availableToWithdraw = rscAvailableToWithdraw(wallet);
   if (amount > availableToWithdraw) {
     const err = new Error('Insufficient withdrawable balance for this user. Cannot approve.');
     err.statusCode = 400;
     throw err;
   }
-
-  const newBalance = Math.round((balance - amount) * 100) / 100;
-  const newFrozen = Math.max(0, Math.round((frozenBalance - amount) * 100) / 100);
+  const othersReservedForApprove = await reservedFrozenByOtherWithdrawals(userId, {
+    excludeLegacyId: requestId
+  });
+  if (amount > thisRequestFrozenSlice(wallet, amount, othersReservedForApprove) + 0.005) {
+    const err = new Error('Frozen balance does not match this request. Cannot approve.');
+    err.statusCode = 400;
+    throw err;
+  }
 
   await db.sequelize.transaction(async (t) => {
-    await wallet.update(
-      { balance: newBalance, frozenBalance: newFrozen },
-      { transaction: t }
-    );
+    const lockedWallet = await db.Wallet.findOne({
+      where: { userId, currencyCode },
+      transaction: t,
+      lock: t.LOCK.UPDATE
+    });
+    if (!lockedWallet) {
+      const err = new Error('User wallet not found.');
+      err.statusCode = 404;
+      throw err;
+    }
+    const othersReserved = await reservedFrozenByOtherWithdrawals(userId, {
+      excludeLegacyId: requestId,
+      transaction: t
+    });
+    const captured = await captureThisWithdrawalFreeze(lockedWallet, {
+      amount,
+      othersReserved,
+      transaction: t
+    });
     await request.update(
       { status: 'completed', approvedByUserId: adminUserId },
       { transaction: t }
     );
-    if (db.UserTransaction) {
+    if (db.UserTransaction && captured.debit > 0.005) {
       await db.UserTransaction.create(
         {
           userId,
           type: 'withdraw',
-          amount,
+          amount: captured.debit,
           currencyCode,
           description: `Withdrawal approved (request #${requestId})`
         },

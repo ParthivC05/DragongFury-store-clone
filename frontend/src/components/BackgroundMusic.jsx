@@ -22,7 +22,7 @@ import {
 import { lockBodyScroll } from '../utils/bodyScrollLock';
 import './BackgroundMusic.css';
 
-const MUSIC_TARGET_PATHS = ['/', '/link2play', '/casino'];
+const MUSIC_TARGET_PATHS = ['/', '/link2play', '/casino', '/firekirin-exclusive'];
 const SHUFFLE_AVAILABLE = BG_MUSIC_TRACKS.length > 1;
 const HOLD_MUTE_MS = 450;
 

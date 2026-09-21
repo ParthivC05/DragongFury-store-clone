@@ -6,8 +6,8 @@ const { notifyUserBalanceChanged } = require('../../realtime/notifyBalance.servi
 const { getActiveSession } = require('./session.service');
 const {
   centsToSc,
-  applySessionBalanceDelta,
-  isCurrencyMismatch,
+  applyBalanceDelta,
+  isUnsupportedCurrency,
   success
 } = require('./wallet.helpers');
 const { ERRORS, OPERATIONS, TX_STATUS } = require('../onegamehub.constants');
@@ -21,13 +21,13 @@ function cancelKey(transactionId) {
 }
 
 /**
- * GAP `win` — credit SC or GC to the player wallet.
- * Amounts arrive in cents. Zero wins (player lost) are valid. GC wins stay in GC.
+ * GAP `win` — credit SC to the player wallet (deposit / RSC).
+ * Amounts arrive in cents. Zero wins (player lost) are valid.
  */
 async function deposit(args) {
   const session = await getActiveSession(args.player_id);
   if (!session) return ERRORS.sessionTimeout;
-  if (isCurrencyMismatch(session, args.currency)) return ERRORS.unsupportedCurrency;
+  if (isUnsupportedCurrency(args.currency)) return ERRORS.unsupportedCurrency;
 
   const transactionId = String(args.transaction_id || '').trim();
   const roundId = args.round_id != null ? String(args.round_id) : null;
@@ -64,7 +64,7 @@ async function deposit(args) {
         return existing.balanceAfter;
       }
 
-      const after = await applySessionBalanceDelta(
+      const after = await applyBalanceDelta(
         session.userId,
         amountSc,
         {
@@ -79,8 +79,7 @@ async function deposit(args) {
             freeroundsFinished: args.freerounds_finished
           }
         },
-        t,
-        session
+        t
       );
 
       await db.OneGameHubTransaction.create(

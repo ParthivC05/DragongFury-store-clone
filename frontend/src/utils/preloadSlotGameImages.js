@@ -1,7 +1,7 @@
 const warmedUrls = new Set();
 const preloadedHrefs = new Set();
 const inFlight = new Map();
-const MAX_CONCURRENT = 12;
+const MAX_CONCURRENT = 16;
 
 function isMobileViewport() {
   return typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
@@ -24,7 +24,7 @@ function addPreloadLink(src, fetchPriority) {
   document.head.appendChild(link);
 }
 
-function loadImageOnce(src, fetchPriority = 'low') {
+function loadImageOnce(src, fetchPriority = 'auto') {
   if (!src || warmedUrls.has(src)) return Promise.resolve();
   if (inFlight.has(src)) return inFlight.get(src);
 
@@ -69,9 +69,8 @@ export function collectSlotPreviewImageUrls(categories, previewLimit = Infinity)
 export async function warmSlotGameImages(urls, { highCount } = {}) {
   if (shouldSkipWarm()) return;
   const mobile = isMobileViewport();
-  const priorityCount = highCount ?? (mobile ? 16 : 32);
-  const maxWarm = Math.max(priorityCount, mobile ? 16 : 32);
-  const unique = [...new Set((urls || []).filter(Boolean))].slice(0, maxWarm);
+  const priorityCount = highCount ?? (mobile ? 24 : 48);
+  const unique = [...new Set((urls || []).filter(Boolean))];
   if (!unique.length) return;
 
   unique.slice(0, priorityCount).forEach((src) => addPreloadLink(src, 'high'));
@@ -84,12 +83,12 @@ export async function warmSlotGameImages(urls, { highCount } = {}) {
     while (index < pending.length) {
       const current = index;
       index += 1;
-      await loadImageOnce(pending[current], current < priorityCount ? 'high' : 'low');
+      await loadImageOnce(pending[current], current < priorityCount ? 'high' : 'auto');
     }
   }
 
   const workers = Array.from(
-    { length: Math.min(mobile ? 6 : MAX_CONCURRENT, pending.length) },
+    { length: Math.min(mobile ? 8 : MAX_CONCURRENT, pending.length) },
     () => worker()
   );
   await Promise.all(workers);

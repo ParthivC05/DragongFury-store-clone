@@ -42,7 +42,6 @@ export function HomeCasinoCategorySlider({ category }) {
         onPlay={handlePlayGame}
         playingGameId={launchingGameId}
         label={category.label}
-        categoryId={category.id}
       />
 
       <DepositRequiredModal

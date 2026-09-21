@@ -35,20 +35,20 @@
 }
 
 .dash-root {
-  --dash-gold: #ffd700;
-  --dash-gold2: #ffa500;
-  --dash-pj-gold: #f9d038;
+  --dash-gold: #B6FF2A;
+  --dash-gold2: #8FE31A;
+  --dash-pj-gold: #C6FF4D;
   --dash-pj-green: #3ddc7a;
   --dash-teal: #00ffe0;
   --dash-purple: #9b59ff;
-  --dash-bg: #04060a;
-  --dash-bg2: #080c12;
-  --dash-deep: #0d1320;
-  --dash-card: #0d1320;
-  --dash-text: #f0ebe0;
-  --dash-muted: #93a4be;
-  --dash-border: rgba(255, 215, 0, 0.13);
-  --dash-nav-h: 56px;
+  --dash-bg: #0a0c0a;
+  --dash-bg2: #101410;
+  --dash-deep: #141814;
+  --dash-card: #151815;
+  --dash-text: #f3f7f0;
+  --dash-muted: #8d9a88;
+  --dash-border: rgba(182, 255, 42, 0.13);
+  --dash-nav-h: 80px;
   position: relative;
   min-height: 100dvh;
   display: flex;
@@ -69,7 +69,7 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(155, 89, 255, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(182, 255, 42, 0.10) 0%, transparent 55%),
     var(--dash-bg);
 }
 
@@ -131,13 +131,14 @@ body.guest-landing-active {
   right: 0;
   z-index: 50;
   height: var(--dash-nav-h);
+  overflow: visible;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   padding: 0 12px;
   background: rgba(4, 6, 10, 0.94);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.16);
+  border-bottom: 1px solid rgba(182, 255, 42, 0.16);
 }
 
 .dash-nav-inner,
@@ -211,7 +212,7 @@ body.guest-landing-active {
     flex-direction: column;
     gap: 0;
     padding: 10px 0 12px;
-    border: 1px solid rgba(255, 215, 0, 0.12);
+    border: 1px solid rgba(182, 255, 42, 0.12);
     border-radius: 14px;
     background: linear-gradient(180deg, rgba(13, 19, 32, 0.55) 0%, rgba(8, 12, 18, 0.35) 100%);
   }
@@ -259,8 +260,8 @@ body.guest-landing-active {
     height: 28px;
     flex: 0 0 28px;
     border-radius: 8px;
-    background: rgba(255, 215, 0, 0.18);
-    color: #ffd700;
+    background: rgba(182, 255, 42, 0.18);
+    color: #B6FF2A;
   }
 }
 
@@ -289,7 +290,7 @@ body.guest-landing-active {
   background: linear-gradient(
     110deg,
     rgba(18, 26, 42, 0.95) 8%,
-    rgba(255, 215, 0, 0.12) 18%,
+    rgba(182, 255, 42, 0.12) 18%,
     rgba(18, 26, 42, 0.95) 33%
   );
   background-size: 200% 100%;
@@ -440,7 +441,7 @@ body.guest-landing-active {
 @media (max-width: 767px) {
   body.guest-landing-active .dash-root,
   .dash-root--guest-landing {
-    --dash-nav-h: 68px;
+    --dash-nav-h: 76px;
   }
 
   body.guest-landing-active .dash-nav-inner--guest,
@@ -521,8 +522,8 @@ body.guest-landing-active {
 
   body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-logo-img,
   .dash-nav-inner--guest-landing .dash-nav-guest-logo-wrap--mobile .site-logo--nav {
-    height: 44px;
-    max-width: min(190px, 38vw);
+    height: 64px;
+    max-width: min(220px, 46vw);
   }
 }
 
@@ -537,11 +538,11 @@ body.guest-landing-active {
 
 .dash-btn-login {
   padding: 6px 14px;
-  border: 1.5px solid rgba(0, 255, 224, 0.45);
-  color: var(--dash-teal, #00ffe0);
-  background: rgba(0, 255, 224, 0.06);
-  border-radius: 20px;
-  font-family: Rajdhani, sans-serif;
+  border: 1.5px solid rgba(182, 255, 42, 0.45);
+  color: #b6ff2a;
+  background: transparent;
+  border-radius: 999px;
+  font-family: 'Exo 2', 'Segoe UI', sans-serif;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
@@ -549,14 +550,15 @@ body.guest-landing-active {
 
 .dash-btn-signup {
   padding: 6px 14px;
-  background: linear-gradient(135deg, #ff3d00, #ff8c00);
-  color: #fff;
+  background: #b6ff2a;
+  color: #111;
   border: none;
-  border-radius: 20px;
-  font-family: Rajdhani, sans-serif;
+  border-radius: 999px;
+  font-family: 'Exo 2', 'Segoe UI', sans-serif;
   font-size: 13px;
   font-weight: 700;
   text-decoration: none;
+  box-shadow: 0 8px 22px rgba(182, 255, 42, 0.22);
 }
 
 .dash-bottom-wrap {
@@ -575,7 +577,7 @@ body.guest-landing-active {
   min-height: 72px;
   padding: 0 6px 8px;
   background: linear-gradient(180deg, rgba(13, 19, 32, 0.98) 0%, rgba(4, 6, 10, 0.99) 100%);
-  border-top: 1px solid rgba(255, 215, 0, 0.13);
+  border-top: 1px solid rgba(182, 255, 42, 0.13);
 }
 
 .dash-bottom-nav .dash-nav-item {
@@ -677,7 +679,7 @@ body.guest-landing-active {
 }
 
 .dash-welcome-slideshow-dot--active::after {
-  background: var(--dash-gold, #ffd700);
+  background: var(--dash-gold, #B6FF2A);
   transform: scale(1.15);
 }
 
@@ -768,7 +770,7 @@ body.guest-landing-active {
 
 .dash-games-tab.active,
 .dashboard-games-tab.active {
-  color: var(--dash-gold, #ffd700);
+  color: var(--dash-gold, #B6FF2A);
 }
 
 .dash-games-grid {
@@ -788,7 +790,7 @@ body.guest-landing-active {
   min-height: 140px;
   border-radius: 16px;
   background: #0d1320;
-  border: 1px solid rgba(255, 215, 0, 0.13);
+  border: 1px solid rgba(182, 255, 42, 0.13);
 }
 
 .dash-platforms-grid {
@@ -820,7 +822,7 @@ body.guest-landing-active {
   overflow: hidden;
   border-radius: 14px;
   background: #101820;
-  border: 2px solid rgba(255, 215, 0, 0.2);
+  border: 2px solid rgba(182, 255, 42, 0.2);
   color: inherit;
   cursor: pointer;
 }
@@ -866,7 +868,7 @@ body.guest-landing-active {
 }
 
 .dash-platforms-title-accent {
-  color: var(--dash-gold, #ffd700);
+  color: var(--dash-gold, #B6FF2A);
 }
 
 .lp-pay-bar--inline {
@@ -911,9 +913,9 @@ body.guest-landing-active {
 }
 
 .lp-pay-btn--link2play {
-  color: #ffd700;
-  background: rgba(255, 215, 0, 0.1);
-  border-color: rgba(255, 215, 0, 0.45);
+  color: #B6FF2A;
+  background: rgba(182, 255, 42, 0.1);
+  border-color: rgba(182, 255, 42, 0.45);
   text-decoration: none;
 }
 

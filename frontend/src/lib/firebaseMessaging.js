@@ -123,6 +123,7 @@ async function getMessagingInstance() {
 
 export async function ensurePushServiceWorker() {
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return null;
+  listenForPushOpenMessages();
   const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
     scope: '/'
   });
@@ -231,12 +232,29 @@ function openPushUrl(rawUrl) {
     const next = resolved.origin === window.location.origin
       ? `${resolved.pathname}${resolved.search}${resolved.hash}`
       : resolved.toString();
-    if (next !== window.location.href) {
-      window.location.href = next;
+    const current = resolved.origin === window.location.origin
+      ? `${window.location.pathname}${window.location.search}${window.location.hash}`
+      : window.location.href;
+    if (next !== current) {
+      window.location.assign(next);
     }
   } catch {
-    window.location.href = url.startsWith('/') ? url : `/${url}`;
+    window.location.assign(url.startsWith('/') ? url : `/${url}`);
   }
+}
+
+let pushOpenListenerBound = false;
+
+/** Service worker posts this when a notification is clicked and the tab is already open. */
+export function listenForPushOpenMessages() {
+  if (pushOpenListenerBound || typeof navigator === 'undefined' || !navigator.serviceWorker) return;
+  pushOpenListenerBound = true;
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    const data = event.data || {};
+    if (data.type !== 'push-campaign:open') return;
+    const url = String(data.url || '').trim();
+    if (url) openPushUrl(url);
+  });
 }
 
 function notifyPageOfPush() {

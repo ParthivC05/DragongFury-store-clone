@@ -1,3 +1,5 @@
+import { listenForPushOpenMessages } from './firebaseMessaging';
+
 /**
  * Register the root service worker immediately so:
  * - Chrome Android can offer native Install
@@ -6,6 +8,7 @@
  */
 export function registerPwaServiceWorker() {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
+  listenForPushOpenMessages();
 
   const register = () => {
     navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' }).catch(() => {

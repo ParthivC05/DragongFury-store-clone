@@ -99,6 +99,15 @@ function isInvalidTokenError(code = '') {
   );
 }
 
+function asFcmData(obj) {
+  const out = {};
+  Object.entries(obj).forEach(([key, value]) => {
+    if (value == null || value === '') return;
+    out[key] = String(value);
+  });
+  return out;
+}
+
 function buildMessage(campaign, device, clickToken) {
   const storeCode = campaign.storeCode;
   const title = campaign.title || 'Notification';
@@ -109,7 +118,8 @@ function buildMessage(campaign, device, clickToken) {
   const publicImage = isPublicHttpsUrl(imageUrl) ? imageUrl : '';
   const publicIcon = isPublicHttpsUrl(iconUrl) ? iconUrl : '';
   const publicAction = isPublicHttpsUrl(actionUrl) ? actionUrl : '';
-  const data = {
+  const clickLink = publicAction || (isPublicHttpsUrl(actionUrl) ? actionUrl : '');
+  const data = asFcmData({
     type: 'push_campaign',
     campaignId: str(campaign.id),
     clickToken,
@@ -118,9 +128,10 @@ function buildMessage(campaign, device, clickToken) {
     body,
     imageUrl: publicImage,
     iconUrl: publicIcon,
-    actionUrl: publicAction || actionUrl,
-    click_action: publicAction || actionUrl
-  };
+    actionUrl: clickLink || actionUrl,
+    click_action: clickLink || actionUrl,
+    link: clickLink || actionUrl
+  });
 
   const notification = { title, body };
   if (publicImage) notification.image = publicImage;
@@ -137,7 +148,9 @@ function buildMessage(campaign, device, clickToken) {
       type: 'push_campaign',
       clickToken,
       pj_click: clickToken,
-      actionUrl: data.actionUrl
+      actionUrl: data.actionUrl,
+      click_action: data.click_action,
+      link: data.link
     }
   };
   if (publicIcon) webNotification.icon = publicIcon;
@@ -150,13 +163,13 @@ function buildMessage(campaign, device, clickToken) {
     webpush: {
       headers: {
         Urgency: 'high',
-        TTL: '86400'
+        TTL: '2419200'
       },
       notification: webNotification
     }
   };
-  if (publicAction) {
-    message.webpush.fcmOptions = { link: publicAction };
+  if (clickLink) {
+    message.webpush.fcmOptions = { link: clickLink };
   }
   return message;
 }

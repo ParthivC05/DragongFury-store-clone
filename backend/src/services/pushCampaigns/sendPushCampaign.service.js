@@ -5,7 +5,7 @@ const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { getFirebaseMessaging } = require('../../libs/firebaseAdmin');
 const { createLogger } = require('../../libs/logger');
-const { normalizeStoreCode } = require('./constants');
+const { normalizeStoreCode, getPushFrontendOrigin } = require('./constants');
 
 const log = createLogger('push-campaigns');
 const BATCH_SIZE = 80;
@@ -26,19 +26,8 @@ function isPublicHttpsUrl(url) {
   return /^https:\/\//i.test(str(url)) && !isLocalHostUrl(url);
 }
 
-function pushPublicOrigin(storeCode) {
-  const code = normalizeStoreCode(storeCode);
-  const fromStoreEnv = code
-    ? str(process.env[`${code.toUpperCase()}_FRONTEND_URL`]).split(',')[0].trim().replace(/\/+$/, '')
-    : '';
-  const user = str(process.env.USER_FRONTEND_URL).split(',')[0].trim().replace(/\/+$/, '');
-  if (fromStoreEnv && !isLocalHostUrl(fromStoreEnv)) return fromStoreEnv;
-  if (user && !isLocalHostUrl(user)) return user;
-  return fromStoreEnv || user || '';
-}
-
 function frontendOrigin(storeCode) {
-  return pushPublicOrigin(storeCode);
+  return getPushFrontendOrigin(storeCode);
 }
 
 function absoluteAssetUrl(url, fallbackPath, storeCode) {

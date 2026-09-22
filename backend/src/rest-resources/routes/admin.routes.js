@@ -46,6 +46,7 @@ const adminWalletAdjustReportController = require('../controllers/adminWalletAdj
 const adminWalletScReconciliationController = require('../controllers/adminWalletScReconciliation.controller');
 const adminDailyScReportController = require('../controllers/adminDailyScReport.controller');
 const adminGeoIpAllowlistController = require('../controllers/adminGeoIpAllowlist.controller');
+const adminGeoBlockController = require('../controllers/adminGeoBlock.controller');
 const adminFingerprintSignupIpAllowlistController = require('../controllers/adminFingerprintSignupIpAllowlist.controller');
 const adminDiditKycController = require('../controllers/adminDiditKyc.controller');
 const adminPhoneVerificationController = require('../controllers/adminPhoneVerification.controller');
@@ -579,6 +580,9 @@ router.post('/push-campaigns/:id/send', adminPushCampaignsController.sendBroadca
 router.get('/push-campaigns/:id/eligible-count', adminPushCampaignsController.eligibleCount);
 
 // Geo IP allowlist (bypass geo-blocking for specific IPs)
+router.get('/geo-block', adminGeoBlockController.getSettings);
+router.patch('/geo-block', adminGeoBlockController.updateSettings);
+
 router.get('/geo-ip-allowlist', adminGeoIpAllowlistController.list);
 router.post('/geo-ip-allowlist', adminGeoIpAllowlistController.create);
 router.delete('/geo-ip-allowlist/:id', adminGeoIpAllowlistController.remove);

@@ -46,11 +46,14 @@ function LocationMark() {
   );
 }
 
+const VPN_DETECTED_CODE = 3054;
+
 export function GeoBlocker({ errorCode }) {
   const brand = resolveBrand();
   const name = site.platformName || 'this platform';
   const support = site.supportEmail || null;
   const [showArt, setShowArt] = useState(true);
+  const vpnOutsideRegion = Number(errorCode) === VPN_DETECTED_CODE;
 
   useEffect(() => {
     hideHtmlLcpSlideshow();
@@ -84,10 +87,19 @@ export function GeoBlocker({ errorCode }) {
             <LocationMark />
           )}
         </div>
-        <h1 className="geo-blocker__title">Thank you for your interest!</h1>
-        <p className="geo-blocker__copy">
-          {name} is currently available only within the United States.
-        </p>
+        <h1 className="geo-blocker__title">
+          {vpnOutsideRegion ? 'VPN Detected' : 'Thank you for your interest!'}
+        </h1>
+        {vpnOutsideRegion ? (
+          <p className="geo-blocker__copy">
+            A VPN or proxy was detected, and your connection is outside the regions where {name} is
+            available. Disconnect the VPN and open the site again from an allowed region.
+          </p>
+        ) : (
+          <p className="geo-blocker__copy">
+            {name} is currently available only within the United States.
+          </p>
+        )}
         <p className="geo-blocker__copy">
           If you believe you should have access, please contact us
           {support ? ':' : '.'}

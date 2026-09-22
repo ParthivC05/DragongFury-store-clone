@@ -114,10 +114,10 @@ async function performDailyBonusSpin(userId) {
     };
   });
 
-  const balance = await getBalance(userId).catch(() => null);
+  const balance = await getBalance(userId, { skipCache: true }).catch(() => null);
   return {
     ...result,
-    balance_sc: balance?.balance_sc ?? null
+    balance_sc: balance?.wallet_balance_sc ?? balance?.balance_sc ?? null
   };
 }
 

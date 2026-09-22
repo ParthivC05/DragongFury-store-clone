@@ -57,6 +57,8 @@ async function getBalance(userId, { skipCache = false } = {}) {
   const usableSc = roundMoney(usablePscTotal + usableBsc);
   const playBalanceSc = roundMoney(pscPlayTotal + bscPlay);
   const frozenSc = roundMoney(pscFrozenTotal + bscFrozen);
+  // Header pill and celebration modals: usable purchased + bonus + redeemable SC.
+  const walletBalanceSc = roundMoney(usableSc + usableRsc);
 
   const payload = {
     currency_code: displayCode,
@@ -84,6 +86,8 @@ async function getBalance(userId, { skipCache = false } = {}) {
     usable_balance_sc: usableSc,
     play_balance_sc: playBalanceSc,
     frozen_balance_sc: frozenSc,
+    /** Usable PSC + BSC + RSC. Matches the header wallet pill. */
+    wallet_balance_sc: walletBalanceSc,
 
     balance_rsc: rscBal,
     usable_balance_rsc: usableRsc,

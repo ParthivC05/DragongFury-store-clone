@@ -133,6 +133,8 @@ export const ADMIN_FEATURE_KEYS = {
   DASHBOARD_SLIDESHOW: 'dashboard_slideshow',
   /** Manage IPs that bypass geo-blocking on the user site. */
   GEO_IP_ALLOWLIST: 'geo_ip_allowlist',
+  /** Turn geo blocking on or off per store. */
+  GEO_BLOCK: 'geo_block',
   /** Manage IPs that skip the one-account-per-device signup block. */
   FINGERPRINT_SIGNUP_IP_ALLOWLIST: 'fingerprint_signup_ip_allowlist',
   /** Store staff shift report and off-shift login approval. */

@@ -2,7 +2,7 @@ import { site } from '../config/site';
 import './SiteLogo.css';
 
 /**
- * Branded site logo from public/logo.png (override via VITE_LOGO_URL).
+ * Branded site logo from public/logo.webp (override via VITE_LOGO_URL).
  * Same asset on landing, auth, and post-login chrome.
  */
 const LOGO_SIZE = {

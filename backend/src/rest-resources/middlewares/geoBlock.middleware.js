@@ -5,6 +5,7 @@ const axios = require('axios');
 const config = require('../../configs/app.config');
 const { sendError } = require('../../helpers/response.helpers');
 const { isIpAllowlisted, normalizeIp, resolveStoreCodeForGeoRequest } = require('../../services/geo/ipAllowlist.service');
+const { isGeoBlockEnabledForStore } = require('../../services/geo/geoBlockSettings.service');
 const { isSearchCrawler } = require('../../utils/searchCrawler');
 
 /** Restricted US states — empty: all US states are allowed. */
@@ -348,19 +349,33 @@ function enforceGeoRules(data, res, next, context = {}) {
   }
 
   const proxyType = String(security?.proxy_type || '').toUpperCase();
-  if (security?.is_vpn === true || proxyType === 'VPN') {
-    return rejectGeo(res, 'VPN_DETECTED', {
-      ...context,
-      ruleDetail: `VPN/proxy detected (proxy_type=${proxyType || 'n/a'})`
-    });
-  }
+  const vpnDetected = security?.is_vpn === true || proxyType === 'VPN';
 
   const cityName = String(data?.location?.city || data?.city || '')
     .toLowerCase()
     .trim();
   const isDubai = cityName === 'dubai';
+  const inAllowedRegion = ALLOWED_COUNTRIES.includes(countryCode) || isDubai;
 
-  if (!ALLOWED_COUNTRIES.includes(countryCode) && !isDubai) {
+  if (vpnDetected && inAllowedRegion) {
+    console.info('[geo] allowed', {
+      ...context,
+      decision: 'allow',
+      reason: isDubai ? 'ALLOWED_DUBAI_VPN' : 'ALLOWED_REGION_VPN',
+      ruleDetail: `VPN flag ignored for allowed region (country=${countryCode || 'unknown'}, proxy_type=${proxyType || 'n/a'})`,
+      response: { status: 200, code: null, message: 'VPN flagged inside an allowed region' }
+    });
+    return next();
+  }
+
+  if (vpnDetected) {
+    return rejectGeo(res, 'VPN_DETECTED', {
+      ...context,
+      ruleDetail: `VPN/proxy detected outside allowed regions (country=${countryCode || 'unknown'}, proxy_type=${proxyType || 'n/a'})`
+    });
+  }
+
+  if (!inAllowedRegion) {
     return rejectGeo(res, 'NON_US_COUNTRY_BLOCKED', {
       ...context,
       ruleDetail: `Country ${countryCode || 'unknown'} not in allowlist [${ALLOWED_COUNTRIES.join(', ')}]`
@@ -378,7 +393,8 @@ function enforceGeoRules(data, res, next, context = {}) {
 
 /**
  * Geo / VPN gate for all partner-store user traffic.
- * Skips when DISABLE_GEO_BLOCK=true or IPGEO credentials missing.
+ * Skips when DISABLE_GEO_BLOCK=true, the store geo switch is off, or IPGEO credentials missing.
+ * A VPN flag is allowed when the resolved country is already in the allowlist.
  * Allowlisted IPs (admin DB + GEO_IP_ALLOWLIST env) bypass the provider check.
  * Store code from query/body scopes the per-store IP allowlist.
  */
@@ -395,6 +411,17 @@ function geoBlock() {
       }
 
       const storeCode = resolveStoreCodeForGeoRequest(req);
+      if (storeCode && !(await isGeoBlockEnabledForStore(storeCode))) {
+        console.info('[geo] skipped', {
+          storeCode,
+          path,
+          decision: 'allow',
+          reason: 'STORE_GEO_BLOCK_DISABLED',
+          response: { status: 200, code: null, message: 'geo blocking off for this store' }
+        });
+        return next();
+      }
+
       const requestIps = summarizeRequestIps(req);
       const ip = requestIps.chosenIp;
       const baseCtx = { storeCode, path, requestIps };

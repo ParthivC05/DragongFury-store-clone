@@ -230,6 +230,7 @@ export const ADMIN_PERMISSION_GROUPS = [
   { key: ADMIN_FEATURE_KEYS.BONUS_CODES, label: 'Bonus codes', description: 'Manage bonus codes across stores' },
   { key: ADMIN_FEATURE_KEYS.SOCIAL_LINKS, label: 'Social media links', description: 'Manage landing-page social links for any store' },
   { key: ADMIN_FEATURE_KEYS.LANDING_PAYMENT_LINKS, label: 'Landing payment links', description: 'Manage landing-page deposit and withdrawal dropdown links for any store' },
+  { key: ADMIN_FEATURE_KEYS.GEO_BLOCK, label: 'Geo blocking', description: 'Turn geo location blocking on or off for each store' },
   { key: ADMIN_FEATURE_KEYS.GEO_IP_ALLOWLIST, label: 'Geo IP allowlist', description: 'Add or remove store-scoped IPs that bypass geo-blocking on user sites' },
   { key: ADMIN_FEATURE_KEYS.FINGERPRINT_SIGNUP_IP_ALLOWLIST, label: 'Signup device IP allowlist', description: 'Add or remove IPs that skip the one-account-per-device signup block for QA/testing' },
   { key: ADMIN_FEATURE_KEYS.DIDIT_KYC, label: 'KYC Config', description: 'Manage identity KYC store toggles and view KYC reports' },

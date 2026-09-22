@@ -50,7 +50,7 @@ export function buildOrganizationSchema() {
     '@type': 'Organization',
     name: site.platformName,
     url: SITE_ORIGIN,
-    logo: absoluteUrl('/logo.png'),
+    logo: absoluteUrl(site.logoUrl || '/logo.webp'),
     description:
       'Dragon Fury is an online sweepstakes lobby with fish games, slots, and exclusive platforms.',
     email: site.supportEmail,
@@ -77,7 +77,7 @@ export function buildWebSiteSchema() {
     publisher: {
       '@type': 'Organization',
       name: site.platformName,
-      logo: absoluteUrl(site.logoUrl || '/logo.png'),
+      logo: absoluteUrl(site.logoUrl || '/logo.webp'),
     },
   };
 }

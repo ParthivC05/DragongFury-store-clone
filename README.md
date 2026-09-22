@@ -8,6 +8,14 @@ Separate `frontend/`, `backend/`, and `admin/` — same layout as Play Juwa / Ca
 - Admin: http://localhost:5174
 - Backend: http://localhost:8080
 
+## Production
+
+- Site: https://dragonfury.casino
+- Admin: https://admin.dragonfury.casino
+- Backend on the server: **8084** (nginx proxies `/api`)
+
+See [docs/DEPLOY.md](docs/DEPLOY.md) for nginx, PM2, Certbot, and GitHub Actions.
+
 ## Setup
 
 ### Backend

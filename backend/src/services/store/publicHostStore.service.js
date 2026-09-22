@@ -13,6 +13,8 @@ const {
 const DEFAULT_PUBLIC_HOST_STORE_MAP = {
   'dragonfury.com': 'dragonfury',
   'www.dragonfury.com': 'dragonfury',
+  'dragonfury.casino': 'dragonfury',
+  'www.dragonfury.casino': 'dragonfury',
   'goodgdragon.com': 'goodgdragon',
   'www.goodgdragon.com': 'goodgdragon',
   'luckywinnerspower.com': 'goodwork',

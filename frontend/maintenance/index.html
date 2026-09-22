@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-store" />
+  <title>Quick upgrade in progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #060911; --slab: #0E1422; --slab2: #151E31; --line: #222E47;
+      --gold: #F2B33D; --goldHi: #FFD470; --goldDp: #8A5A0C;
+      --emerald: #14E08A; --teal: #2DD4BF; --text: #EEF2F9; --mute: #8592AC;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Archivo', -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: var(--text);
+      background: #03060C;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 14px;
+    }
+    .mt-d { font-family: 'Archivo Black', sans-serif; letter-spacing: -.025em; line-height: .95; }
+    @keyframes m-orbit { to { transform: rotate(360deg); } }
+    @keyframes m-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+    @keyframes m-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    @keyframes m-sweep { 0%{transform:translateX(-140%)} 55%,100%{transform:translateX(300%)} }
+    @keyframes m-rise { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes m-glow {
+      0%,100%{box-shadow:0 0 0 0 rgba(20,224,138,0),inset 0 0 0 1px rgba(20,224,138,.4)}
+      55%{box-shadow:0 0 30px -4px rgba(20,224,138,.55),inset 0 0 0 1px rgba(20,224,138,.85)}
+    }
+    @keyframes m-slide { from{transform:translateY(100%)} to{transform:translateY(0)} }
+    @keyframes m-fade { from{opacity:0} to{opacity:1} }
+    .m-rise { animation: m-rise .45s cubic-bezier(.2,.85,.3,1) both; }
+    .card {
+      width: 100%; max-width: 400px; border-radius: 26px; overflow: hidden; position: relative;
+      border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.6);
+      background:
+        radial-gradient(110% 60% at 50% 0%, rgba(242,179,61,.13), transparent 58%),
+        linear-gradient(175deg, var(--slab), var(--ink) 72%);
+    }
+    .m-url {
+      position: relative; border-radius: 18px; padding: 14px 14px 14px 17px; overflow: hidden;
+      background: linear-gradient(150deg, rgba(20,224,138,.14), rgba(20,224,138,.04));
+      border: 1.5px solid rgba(20,224,138,.45); animation: m-glow 3s ease-in-out infinite;
+    }
+    .m-url::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--emerald); }
+    .m-copy {
+      border: 1px solid rgba(20,224,138,.5); background: rgba(20,224,138,.12); color: var(--emerald);
+      border-radius: 9px; padding: 10px 13px; font-size: 12.5px; font-weight: 800; cursor: pointer; white-space: nowrap;
+    }
+    .m-copy:active { background: rgba(20,224,138,.22); }
+    .m-cta {
+      position: relative; overflow: hidden; width: 100%; border: 0; border-radius: 15px; cursor: pointer;
+      font-family: 'Archivo Black', sans-serif; font-size: 16px; color: #180F02; padding: 15px;
+      background: linear-gradient(180deg, var(--goldHi), var(--gold));
+      box-shadow: 0 4px 0 var(--goldDp); transition: transform .1s, box-shadow .1s;
+    }
+    .m-cta:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--goldDp); }
+    .m-cta:disabled { background: var(--slab2); color: var(--mute); box-shadow: none; cursor: not-allowed; }
+    .m-cta .sw {
+      position: absolute; inset: 0; width: 34%;
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,.6), transparent);
+      animation: m-sweep 3s ease-in-out infinite;
+    }
+    .m-ghost {
+      flex: 1; border: 1.5px solid var(--line); background: var(--slab); color: var(--text);
+      border-radius: 14px; padding: 12px 10px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .m-ghost:active { background: var(--slab2); }
+    .m-opt {
+      width: 100%; text-align: left; border: 1.5px solid var(--line); background: var(--slab2); color: var(--text);
+      border-radius: 13px; padding: 13px 14px; font-size: 14.5px; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .m-opt.on { border-color: var(--emerald); background: rgba(20,224,138,.1); }
+    .m-in {
+      width: 100%; background: var(--slab2); border: 1.5px solid var(--line); color: var(--text);
+      border-radius: 13px; padding: 13px 14px; font-size: 14.5px; font-family: inherit;
+    }
+    .m-in::placeholder { color: #5A6580; }
+    .m-in:focus { outline: 0; border-color: var(--teal); }
+    button:focus-visible { outline: 3px solid var(--teal); outline-offset: 3px; }
+    .hidden { display: none !important; }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="padding:18px 17px 20px">
+      <div id="urlWarn" class="m-url m-rise">
+        <div style="display:flex;align-items:center;gap:9px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0">
+            <rect x="4" y="10.5" width="16" height="10.5" rx="2.5" /><path d="M8 10.5V7a4 4 0 018 0v3.5" />
+          </svg>
+          <p class="mt-d" style="font-size:15.5px;color:var(--emerald);line-height:1.15">Check you’re on the right site</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:11px">
+          <code id="canonUrl" class="mt-d" style="flex:1;font-size:14.5px;background:rgba(0,0,0,.45);border:1px solid rgba(20,224,138,.38);border-radius:10px;padding:10px 8px;text-align:center"></code>
+          <button class="m-copy" id="copyBtn" type="button">Copy</button>
+        </div>
+        <p style="font-size:12.5px;color:var(--text);opacity:.78;margin-top:9px;line-height:1.4">
+          Fake lookalike sites copy our name. Bookmark this one.
+        </p>
+      </div>
+
+      <div class="m-rise" style="display:flex;align-items:center;gap:15px;margin-top:16px">
+        <div style="position:relative;width:76px;height:76px;flex-shrink:0">
+          <div style="position:absolute;inset:0;border-radius:50%;border:2px dashed var(--line);animation:m-orbit 12s linear infinite">
+            <span style="position:absolute;top:-5px;left:50%;margin-left:-5px;width:10px;height:10px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)"></span>
+          </div>
+          <div style="position:absolute;inset:12px;border-radius:50%;background:var(--slab2);border:1px solid var(--line);display:grid;place-items:center">
+            <span id="pct" class="mt-d" style="font-size:19px;color:var(--gold)">12%</span>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <h1 class="mt-d" style="font-size:23px">Quick upgrade<br />in progress</h1>
+          <p style="font-size:13.5px;color:var(--mute);margin-top:7px;line-height:1.4">Your account and every coin are safe.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;background:var(--slab);border:1px solid var(--line);border-radius:14px;padding:11px 14px">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:m-blink 1.5s infinite"></span>
+        <span style="font-size:13px;color:var(--mute);font-weight:600">Back online in</span>
+        <span id="clock" class="mt-d" style="font-size:19px">08:00</span>
+      </div>
+
+
+      <div style="margin-top:14px">
+        <button class="m-cta" id="notifyBtn" type="button"><span class="sw"></span>Notify me when we’re back</button>
+      </div>
+      <div style="display:flex;gap:9px;margin-top:9px">
+        <button class="m-ghost" id="reportOpen" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+            <path d="M12 8.5v5M12 17h.01M10.3 3.9 2.6 17.4c-.8 1.4.2 3.1 1.7 3.1h15.4c1.5 0 2.5-1.7 1.7-3.1L13.7 3.9a2 2 0 00-3.4 0z" />
+          </svg>
+          Report a problem
+        </button>
+        <a class="m-ghost" id="supportLink" href="mailto:support@example.com" style="text-decoration:none">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.4 8.4 0 01-9 8.4L3 21l1.1-3.5A8.4 8.4 0 1121 11.5z" />
+          </svg>
+          Support
+        </a>
+      </div>
+      <p style="text-align:center;font-size:11px;color:#5A6580;margin-top:15px">18+ · No purchase necessary</p>
+    </div>
+
+    <div id="overlay" class="hidden" style="position:absolute;inset:0;background:rgba(3,6,12,.75);backdrop-filter:blur(3px);z-index:20;animation:m-fade .2s both"></div>
+    <div id="sheet" class="hidden" style="position:absolute;left:0;right:0;bottom:0;background:var(--slab);border-top:1px solid var(--line);border-radius:24px 24px 0 0;padding:11px 18px 22px;z-index:21;animation:m-slide .3s cubic-bezier(.2,.9,.3,1) both;max-height:94%;overflow-y:auto">
+      <div style="width:38px;height:4px;border-radius:4px;background:var(--line);margin:0 auto 16px"></div>
+      <div id="sentView" class="hidden" style="text-align:center;padding:24px 0 14px;animation:m-fade .3s both">
+        <div style="width:58px;height:58px;margin:0 auto;border-radius:50%;background:rgba(20,224,138,.14);border:2px solid var(--emerald);display:grid;place-items:center">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--emerald)" stroke-width="3.2" stroke-linecap="round"><path d="M4 12.5l5.5 5.5L20 7" /></svg>
+        </div>
+        <p class="mt-d" style="font-size:21px;margin-top:14px">Thanks — got it</p>
+        <p style="font-size:13.5px;color:var(--mute);margin-top:7px;line-height:1.45">Our team is looking at it now.</p>
+      </div>
+      <div id="formView">
+        <h3 class="mt-d" style="font-size:21px">What went wrong?</h3>
+        <p style="font-size:13.5px;color:var(--mute);margin-top:6px;line-height:1.4">Tap one. It takes five seconds and helps us fix it faster.</p>
+        <div id="issues" style="display:grid;gap:8px;margin-top:15px"></div>
+        <div style="margin-top:13px">
+          <label style="font-size:12.5px;font-weight:700;color:var(--mute);display:block;margin-bottom:7px">
+            Which link or site did you come from? <span style="font-weight:400">(optional)</span>
+          </label>
+          <input class="m-in" id="fromInput" placeholder="Paste the link you tapped" />
+        </div>
+        <p style="font-size:11.5px;color:#5A6580;margin-top:11px;line-height:1.45">
+          We automatically include the page address and your device type so our team can trace it. No personal details are sent.
+        </p>
+        <div style="margin-top:14px">
+          <button class="m-cta" id="sendBtn" type="button" disabled>Send report</button>
+        </div>
+        <button id="cancelBtn" type="button" style="width:100%;background:none;border:0;color:var(--mute);font-size:13.5px;padding:12px;cursor:pointer">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/maintenance/site.js"></script>
+  <script>
+    const ISSUES = [
+      { k: "wrong-url", l: "I arrived from a different link", i: "🔗" },
+      { k: "wont-load", l: "Site won’t load or keeps spinning", i: "🔄" },
+      { k: "login", l: "Can’t log in", i: "🔑" },
+      { k: "payment", l: "Payment or balance problem", i: "💰" },
+      { k: "other", l: "Something else", i: "💬" },
+    ];
+
+    const site = Object.assign({
+      name: "Play Juwa",
+      canonicalUrl: "",
+      supportEmail: "support@playjuwa.com",
+      defaultDurationSec: 480,
+    }, window.__MAINTENANCE_SITE__ || {});
+
+    let startedAt = Date.now();
+    let endsAt = startedAt + site.defaultDurationSec * 1000;
+    let issue = null;
+
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, "0");
+
+    function canonical() {
+      const raw = (site.canonicalUrl || window.location.origin || "").replace(/\/$/, "");
+      return raw || window.location.origin;
+    }
+
+    function applySite() {
+      const url = canonical();
+      $("canonUrl").textContent = url;
+      document.title = (site.name ? site.name + " — " : "") + "Quick upgrade in progress";
+      $("supportLink").href = "mailto:" + (site.supportEmail || "support@example.com");
+      if (!url) $("urlWarn").classList.add("hidden");
+    }
+
+    function renderClock() {
+      const left = Math.max(0, Math.floor((endsAt - Date.now()) / 1000));
+      $("clock").textContent = pad(Math.floor(left / 60)) + ":" + pad(left % 60);
+      const total = Math.max(1, endsAt - startedAt);
+      const elapsed = Math.min(total, Math.max(0, Date.now() - startedAt));
+      const pct = Math.min(94, Math.max(8, Math.round((elapsed / total) * 94)));
+      $("pct").textContent = pct + "%";
+    }
+
+    async function loadEta() {
+      try {
+        const res = await fetch("/maintenance/eta.json?t=" + Date.now(), { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.startedAt) startedAt = Number(data.startedAt);
+        if (data.endsAt) endsAt = Number(data.endsAt);
+        else if (data.durationSec) endsAt = startedAt + Number(data.durationSec) * 1000;
+        renderClock();
+      } catch (_) { /* keep defaults */ }
+    }
+
+    async function probeLive() {
+      try {
+        const res = await fetch("/?t=" + Date.now(), { method: "HEAD", cache: "no-store" });
+        if (res.ok && res.status !== 503) window.location.reload();
+      } catch (_) {}
+    }
+
+    $("copyBtn").onclick = async () => {
+      try { await navigator.clipboard.writeText(canonical()); } catch (_) {}
+      $("copyBtn").textContent = "✓";
+      setTimeout(() => { $("copyBtn").textContent = "Copy"; }, 2000);
+    };
+
+    $("notifyBtn").onclick = () => {
+      try {
+        localStorage.setItem("maintenance_notify", JSON.stringify({ url: canonical(), at: Date.now() }));
+      } catch (_) {}
+      $("notifyBtn").innerHTML = '<span class="sw"></span>You’re on the list';
+      $("notifyBtn").disabled = true;
+    };
+
+    const issuesEl = $("issues");
+    ISSUES.forEach((o) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "m-opt";
+      btn.dataset.k = o.k;
+      btn.innerHTML = '<span style="font-size:17px">' + o.i + '</span><span style="flex:1">' + o.l + '</span>';
+      btn.onclick = () => {
+        issue = o.k;
+        [...issuesEl.children].forEach((c) => c.classList.toggle("on", c.dataset.k === issue));
+        $("sendBtn").disabled = false;
+        $("sendBtn").innerHTML = '<span class="sw"></span>Send report';
+      };
+      issuesEl.appendChild(btn);
+    });
+
+    function openSheet(open) {
+      $("overlay").classList.toggle("hidden", !open);
+      $("sheet").classList.toggle("hidden", !open);
+      if (!open) {
+        issue = null;
+        $("fromInput").value = "";
+        $("sentView").classList.add("hidden");
+        $("formView").classList.remove("hidden");
+        $("sendBtn").disabled = true;
+        $("sendBtn").textContent = "Send report";
+        [...issuesEl.children].forEach((c) => c.classList.remove("on"));
+      }
+    }
+
+    $("reportOpen").onclick = () => openSheet(true);
+    $("overlay").onclick = () => openSheet(false);
+    $("cancelBtn").onclick = () => openSheet(false);
+    $("sendBtn").onclick = () => {
+      if (!issue) return;
+      try {
+        console.info("[maintenance-report]", {
+          issue,
+          arrivedFrom: $("fromInput").value,
+          href: location.href,
+          referrer: document.referrer,
+          ua: navigator.userAgent,
+          ts: Date.now(),
+        });
+      } catch (_) {}
+      $("formView").classList.add("hidden");
+      $("sentView").classList.remove("hidden");
+      setTimeout(() => openSheet(false), 1900);
+    };
+
+    applySite();
+    renderClock();
+    loadEta();
+    setInterval(renderClock, 1000);
+    setInterval(loadEta, 15000);
+    setInterval(probeLive, 10000);
+  </script>
+</body>
+</html>

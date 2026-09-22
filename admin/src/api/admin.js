@@ -1428,6 +1428,18 @@ export function deleteFingerprintSignupIpAllowlistEntry(id) {
   })
 }
 
+/** Per-store geo blocking (`/api/admin/geo-block`). Master admin. */
+export function getGeoBlockSettings() {
+  return request(`${ADMIN}/geo-block`)
+}
+
+export function updateGeoBlockSettings(body) {
+  return request(`${ADMIN}/geo-block`, {
+    method: 'PATCH',
+    body: JSON.stringify(body || {})
+  })
+}
+
 /** Didit KYC settings (`/api/admin/didit-kyc`). Master admin. */
 export function getDiditKycSettings() {
   return request(`${ADMIN}/didit-kyc`)

@@ -90,6 +90,7 @@ import TransactionFees from './pages/TransactionFees'
 import StoreWalletSummary from './pages/StoreWalletSummary'
 import AutomationUsage from './pages/AutomationUsage'
 import GeoIpAllowlist from './pages/GeoIpAllowlist'
+import GeoBlock from './pages/GeoBlock'
 import FingerprintSignupIpAllowlist from './pages/FingerprintSignupIpAllowlist'
 import DiditKyc from './pages/DiditKyc'
 import PhoneVerification from './pages/PhoneVerification'
@@ -226,6 +227,7 @@ export default function App() {
         <Route path="games" element={<RoleRoute><Games /></RoleRoute>} />
         <Route path="slot-providers" element={<RoleRoute><SlotProviders /></RoleRoute>} />
         <Route path="automation-usage" element={<RoleRoute><AutomationUsage /></RoleRoute>} />
+        <Route path="geo-block" element={<RoleRoute><GeoBlock /></RoleRoute>} />
         <Route path="geo-ip-allowlist" element={<RoleRoute><GeoIpAllowlist /></RoleRoute>} />
         <Route path="fingerprint-signup-ip-allowlist" element={<RoleRoute><FingerprintSignupIpAllowlist /></RoleRoute>} />
         <Route path="didit-kyc" element={<RoleRoute><DiditKyc /></RoleRoute>} />

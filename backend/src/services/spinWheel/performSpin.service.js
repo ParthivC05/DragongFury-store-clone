@@ -193,7 +193,7 @@ async function performSpin(userId) {
 
   const { segment, index, useFreeSpin, newPendingFreeSpins, issuedCoupon } = result;
   const [balanceInfo, spinStatus] = await Promise.all([
-    getBalance(userId),
+    getBalance(userId, { skipCache: true }),
     getSpinWheelStatus(userId).catch(() => null)
   ]);
   const outcomeValue =
@@ -220,7 +220,7 @@ async function performSpin(userId) {
 
   const payload = {
     outcome,
-    balance_sc: balanceInfo.usable_balance_sc != null ? balanceInfo.usable_balance_sc : balanceInfo.balance_sc,
+    balance_sc: balanceInfo.wallet_balance_sc != null ? balanceInfo.wallet_balance_sc : balanceInfo.usable_balance_sc,
     pending_free_spins: newPendingFreeSpins,
     can_spin: spinStatus ? spinStatus.can_spin === true : newPendingFreeSpins > 0,
     daily_limit_reached: spinStatus ? spinStatus.daily_limit_reached === true : false,
@@ -230,7 +230,7 @@ async function performSpin(userId) {
     usable_coupons: Array.isArray(spinStatus?.usable_coupons) ? spinStatus.usable_coupons : []
   };
 
-  logSpinResult(userId, outcome, balanceInfo.balance_sc, newPendingFreeSpins, useFreeSpin);
+  logSpinResult(userId, outcome, payload.balance_sc, newPendingFreeSpins, useFreeSpin);
 
   const encoded = Buffer.from(JSON.stringify(payload), 'utf8').toString('base64');
   return { payload: encoded };

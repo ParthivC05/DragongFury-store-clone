@@ -198,6 +198,7 @@ const ADMIN_PATH_TO_PERMISSION = {
   'automation-usage': ADMIN_FEATURE_KEYS.AUTOMATION_USAGE,
   'welcome-signup-bonus': ADMIN_FEATURE_KEYS.WELCOME_SIGNUP_BONUS,
   'referral-transactions': ADMIN_FEATURE_KEYS.AFFILIATE,
+  'geo-block': ADMIN_FEATURE_KEYS.GEO_BLOCK,
   'geo-ip-allowlist': ADMIN_FEATURE_KEYS.GEO_IP_ALLOWLIST,
   'fingerprint-signup-ip-allowlist': ADMIN_FEATURE_KEYS.FINGERPRINT_SIGNUP_IP_ALLOWLIST,
   'didit-kyc': ADMIN_FEATURE_KEYS.DIDIT_KYC,

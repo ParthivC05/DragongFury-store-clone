@@ -83,8 +83,7 @@ function extractClickToken(raw) {
 function isInvalidTokenError(code = '') {
   return (
     code.includes('registration-token-not-registered') ||
-    code.includes('invalid-registration-token') ||
-    code.includes('invalid-argument')
+    code.includes('invalid-registration-token')
   );
 }
 
@@ -182,7 +181,7 @@ async function loadEligibleDevices({ userIds = null, storeCode } = {}) {
 }
 
 async function sendToDevices(campaign, devices) {
-  const messaging = getFirebaseMessaging();
+  const messaging = getFirebaseMessaging(campaign.storeCode);
   if (!messaging) {
     throw Object.assign(new Error('Firebase is not configured on the server.'), { statusCode: 503 });
   }

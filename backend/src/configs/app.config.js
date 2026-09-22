@@ -202,12 +202,6 @@ const config = convict({
     publicBaseUrl: { format: String, default: '', env: 'AWS_S3_PUBLIC_BASE_URL' }
   },
   geo: {
-    /** When true, skip all geo / VPN checks. */
-    disableGeoBlock: {
-      format: Boolean,
-      default: false,
-      env: 'DISABLE_GEO_BLOCK'
-    },
     url: {
       format: String,
       default: 'https://api.ipgeolocation.io/v3/ipgeo',

@@ -82,6 +82,22 @@ export function GoogleAuthCallback() {
 
         setUserAndToken(data.user, data.token);
         handleSignupBonusesAfterAuthSuccess(data, toast);
+        try {
+          const { getFcmToken } = await import('../lib/firebaseMessaging');
+          const { getOrCreatePushDeviceId } = await import('../lib/pushDevice');
+          const { upsertPushDevice } = await import('../api/notifications');
+          if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            const fcmToken = await getFcmToken({ request: false }).catch(() => null);
+            await upsertPushDevice({
+              deviceId: getOrCreatePushDeviceId(),
+              token: fcmToken,
+              permission: 'granted',
+              client: 'user'
+            });
+          }
+        } catch {
+          /* push link is best-effort */
+        }
         navigate(returnTo, { replace: true });
       } catch (err) {
         clearGoogleAuthPending();

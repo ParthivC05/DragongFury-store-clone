@@ -8,10 +8,10 @@ let messaging = null;
 let initAttempted = false;
 
 /**
- * Lazy-init Firebase Admin from env (service account).
- * Returns messaging API or null if not configured / init failed.
+ * This store's own Firebase Admin from FIREBASE_* in this backend .env.
+ * storeCode is ignored — Partner Platform is what routes multi-store sends.
  */
-function getFirebaseMessaging() {
+function getFirebaseMessaging(_storeCode) {
   if (initAttempted) return messaging;
   initAttempted = true;
 
@@ -25,8 +25,7 @@ function getFirebaseMessaging() {
   }
 
   try {
-    privateKey = privateKey.replace(/\\n/g, '\n');
-    // firebase-admin v12+ modular API (no admin.apps / admin.credential)
+    privateKey = String(privateKey).replace(/\\n/g, '\n');
     const { initializeApp, getApps, cert } = require('firebase-admin/app');
     const { getMessaging } = require('firebase-admin/messaging');
 
@@ -41,7 +40,7 @@ function getFirebaseMessaging() {
     }
 
     messaging = getMessaging();
-    log.info('Firebase Admin messaging ready');
+    log.info('Firebase Admin messaging ready', { projectId });
   } catch (err) {
     log.error('Firebase Admin init failed', { error: err.message });
     messaging = null;

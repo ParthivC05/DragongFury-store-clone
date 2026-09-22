@@ -15,6 +15,11 @@ export const IS_PLAYJUWA_STORE =
     .toLowerCase()
     .replace(/[^a-z0-9]/g, '') === 'playjuwa';
 
+export const IS_DRAGONFURY_STORE =
+  String(STORE_CODE || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') === 'dragonfury';
+
 const SKIP_CATEGORY_IDS = new Set(['recently-played', 'top-fishing']);
 const MOBILE_GAMES_PER_GROUP = 2;
 const DESKTOP_GAMES_PER_GROUP = 3;
@@ -66,13 +71,13 @@ export function useLobbyPlatformChunkSize() {
   return size;
 }
 
-export function usePlayJuwaHomeCasinoCategories({ enabled = false } = {}) {
+function useHomeCasinoCategories({ enabled = false, allowed = false } = {}) {
   const [categories, setCategories] = useState(() =>
-    enabled && IS_PLAYJUWA_STORE ? collectHomeCasinoCategories() : []
+    enabled && allowed ? collectHomeCasinoCategories() : []
   );
 
   useEffect(() => {
-    if (!enabled || !IS_PLAYJUWA_STORE) {
+    if (!enabled || !allowed) {
       setCategories([]);
       return undefined;
     }
@@ -118,9 +123,17 @@ export function usePlayJuwaHomeCasinoCategories({ enabled = false } = {}) {
       cancelled = true;
       window.clearInterval(pollId);
     };
-  }, [enabled]);
+  }, [enabled, allowed]);
 
   return categories;
+}
+
+export function usePlayJuwaHomeCasinoCategories({ enabled = false } = {}) {
+  return useHomeCasinoCategories({ enabled, allowed: IS_PLAYJUWA_STORE });
+}
+
+export function useDragonFuryHomeCasinoCategories({ enabled = false } = {}) {
+  return useHomeCasinoCategories({ enabled, allowed: IS_DRAGONFURY_STORE });
 }
 
 export function buildLobbyMixRows(games, categories, gamesPerGroup = MOBILE_GAMES_PER_GROUP, options = {}) {
@@ -168,13 +181,14 @@ export function buildLobbyMixRows(games, categories, gamesPerGroup = MOBILE_GAME
 
 export function shouldMixHomeCasinoCategories({
   isPlayJuwa = IS_PLAYJUWA_STORE,
+  isDragonFury = IS_DRAGONFURY_STORE,
   isAuthenticated,
   filter,
   isSearchActive,
   categories,
 } = {}) {
   return Boolean(
-    isPlayJuwa &&
+    (isPlayJuwa || isDragonFury) &&
       isAuthenticated &&
       filter === 'all' &&
       !isSearchActive &&

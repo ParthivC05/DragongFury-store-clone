@@ -37,10 +37,6 @@ export function GeoWrapper({ children }) {
     let cancelled = false;
 
     async function run() {
-      if (import.meta.env.VITE_DISABLE_GEO_CHECK === 'true') {
-        return;
-      }
-
       try {
         await checkGeoAccess();
       } catch (error) {

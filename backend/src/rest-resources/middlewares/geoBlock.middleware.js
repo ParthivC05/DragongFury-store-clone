@@ -393,7 +393,7 @@ function enforceGeoRules(data, res, next, context = {}) {
 
 /**
  * Geo / VPN gate for all partner-store user traffic.
- * Skips when DISABLE_GEO_BLOCK=true, the store geo switch is off, or IPGEO credentials missing.
+ * Skips when the store geo switch is off, or IPGEO credentials missing.
  * A VPN flag is allowed when the resolved country is already in the allowlist.
  * Allowlisted IPs (admin DB + GEO_IP_ALLOWLIST env) bypass the provider check.
  * Store code from query/body scopes the per-store IP allowlist.
@@ -402,10 +402,6 @@ function geoBlock() {
   return async function geoBlockMiddleware(req, res, next) {
     const path = req.originalUrl || req.url;
     try {
-      if (config.get('geo.disableGeoBlock')) {
-        return next();
-      }
-
       if (isSearchCrawler(req.headers['user-agent'])) {
         return next();
       }

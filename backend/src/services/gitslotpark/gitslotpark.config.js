@@ -56,6 +56,16 @@ function resolveStoreCodeFromReq(req) {
   return fromUser || fromHeader || fromQuery || '';
 }
 
+/** Until DragonFury has its own GitSlotPark agents, reuse PlayJuwa store credentials. */
+const GITSLOTPARK_STORE_CREDENTIAL_ALIAS = {
+  dragonfury: 'playjuwa'
+};
+
+function resolveCredentialStoreCode(storeCode) {
+  const code = String(storeCode || '').trim().toLowerCase();
+  return GITSLOTPARK_STORE_CREDENTIAL_ALIAS[code] || code;
+}
+
 function emptyProviderConfig() {
   return { baseUrl: '', authToken: '', agentId: '', lobbyUrl: '', secretKey: '' };
 }
@@ -129,7 +139,8 @@ function firstNonEmpty(...values) {
 function resolveGitslotparkConfig(req) {
   const provider = resolveProviderFromRequest(req);
   const storeCode = resolveStoreCodeFromReq(req);
-  const storeCfg = readStoreProviderConfig(storeCode, provider);
+  const credentialStore = resolveCredentialStoreCode(storeCode);
+  const storeCfg = readStoreProviderConfig(credentialStore, provider);
   const envCfg = readEnvProviderConfig(provider);
 
   const headerBase = headerValue(req, 'x-gitslotpark-api-base-url');

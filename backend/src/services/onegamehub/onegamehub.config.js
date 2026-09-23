@@ -15,6 +15,19 @@ function envSuffix(storeCode) {
     .replace(/[^A-Z0-9]+/g, '_');
 }
 
+/**
+ * Until DragonFury has its own 1GameHub integration, reuse PlayJuwa credentials.
+ * Lookup still uses the request storeCode for caching / logging.
+ */
+const ONEGAMEHUB_STORE_CREDENTIAL_ALIAS = {
+  dragonfury: 'playjuwa'
+};
+
+function resolveCredentialStoreCode(storeCode) {
+  const code = String(storeCode || '').trim().toLowerCase();
+  return ONEGAMEHUB_STORE_CREDENTIAL_ALIAS[code] || code;
+}
+
 function parseAccountsJson() {
   const raw = String(process.env.GAMEHUB1_ACCOUNTS || '').trim();
   if (!raw) return {};
@@ -57,12 +70,13 @@ function readDefaultAccount() {
 
 function resolveOneGameHubConfig(storeCode) {
   const code = String(storeCode || '').trim();
-  const fromEnv = readEnvAccount(code);
+  const credentialCode = resolveCredentialStoreCode(code);
+  const fromEnv = readEnvAccount(credentialCode);
   if (fromEnv && fromEnv.baseUrl && fromEnv.secretToken) {
     return { ...fromEnv, publicBaseUrl: publicBaseUrl(), storeCode: code };
   }
 
-  const fromJson = parseAccountsJson()[code.toLowerCase()];
+  const fromJson = parseAccountsJson()[credentialCode.toLowerCase()];
   if (fromJson && fromJson.baseUrl && fromJson.secretToken) {
     return { ...fromJson, publicBaseUrl: publicBaseUrl(), storeCode: code };
   }

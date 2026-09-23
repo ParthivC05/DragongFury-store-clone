@@ -202,9 +202,10 @@ export function Layout({ children }) {
     <div
       className={`dash-root flex flex-col min-h-screen${isGuestLanding ? ' dash-root--guest-landing' : ''}${
         useNavOnlyBottomPad ? ' dash-root--bottom-nav-only' : ''
-      }${isDashboardLayout && !isGuestLanding ? ' dash-root--split-scroll' : ''}${
-        isSupportChat ? ' dash-root--support-chat' : ''
-      }`}
+      }${
+        /* DF lobby uses document scroll (live dragonfury.online) — do not lock to split-pane */
+        ''
+      }${isSupportChat ? ' dash-root--support-chat' : ''}`}
     >
       <Suspense fallback={null}>
         <DashboardBackground />

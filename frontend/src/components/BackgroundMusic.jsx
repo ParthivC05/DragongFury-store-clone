@@ -729,6 +729,15 @@ export function BackgroundMusic({ hideControls = false }) {
     }
   }, [clearShuffleTimer, pauseAll, startPlayback]);
 
+  useEffect(() => {
+    const onExternalMute = (e) => {
+      const next = Boolean(e?.detail?.muted);
+      setMutedState(next);
+    };
+    window.addEventListener('bg-music:set-muted', onExternalMute);
+    return () => window.removeEventListener('bg-music:set-muted', onExternalMute);
+  }, [setMutedState]);
+
   const setVolumeState = useCallback((nextVol) => {
     const v = Math.min(100, Math.max(0, Math.round(Number(nextVol) || 0)));
     const nextMuted = v === 0;
@@ -835,7 +844,7 @@ export function BackgroundMusic({ hideControls = false }) {
         aria-labelledby="bgmTitle"
       >
         <div className="bgm-head">
-          <h2 className="bgm-eyebrow" id="bgmTitle">Background music</h2>
+          <h2 className="bgm-eyebrow" id="bgmTitle">Sound</h2>
           <button type="button" className="bgm-close" onClick={closePanel} aria-label="Close">
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path
@@ -873,7 +882,7 @@ export function BackgroundMusic({ hideControls = false }) {
               </svg>
             </button>
             <div className="bgm-master-label">
-              <b>Sound</b>
+              <b>Lobby music</b>
               <span>{statusText}</span>
             </div>
             <div className="bgm-pct">{isMuted ? 'Off' : `${volume}%`}</div>

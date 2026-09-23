@@ -187,12 +187,6 @@ export function Home() {
             <GamesLoading isGuest />
           )}
 
-          {!showGuestSections && belowFoldReady ? (
-            <Suspense fallback={null}>
-              <DashboardSlotGamesSection />
-            </Suspense>
-          ) : null}
-
           {showGuestSections && belowFoldReady && (
             <Suspense fallback={null}>
               <SpinWinSection />

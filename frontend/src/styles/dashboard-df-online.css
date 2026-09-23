@@ -496,15 +496,13 @@ body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-logo-wrap--mobi
   margin-left: 18px;
 }
 
-/* Guest landing: hide our extra chrome */
+/* Guest landing: hide our extra chrome (keep BGM edge tab visible) */
 body.guest-landing-active .dash-side-nav,
 body.guest-landing-active .dash-layout--sided > aside,
 body.guest-landing-active .dash-bottom-wrap,
 body.guest-landing-active .dash-buy-row,
 body.guest-landing-active .home-promo-ticker,
-body.guest-landing-active .rbw-wrap,
-body.guest-landing-active .bgm-widget,
-body.guest-landing-active .bg-music-widget {
+body.guest-landing-active .rbw-wrap {
   display: none !important;
 }
 
@@ -1112,10 +1110,13 @@ body.df-help-desk-open .df-help-launcher {
 
 .df-auth-welcome h1 {
   margin: 0;
-  color: #fff;
-  font-family: "Lilita One", "Baloo 2", sans-serif;
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  text-shadow: 0 4px 0 rgba(54, 24, 108, 0.7);
+  color: #fff !important;
+  font-family: "Baloo 2", "Lilita One", sans-serif !important;
+  font-size: clamp(1.35rem, 4.5vw, 2rem) !important;
+  font-weight: 800 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  text-shadow: 0 2px 0 rgba(40, 8, 70, 0.55) !important;
 }
 
 .dashboard-ticker {
@@ -2595,4 +2596,1677 @@ body.welcome-modal-open {
   .dash-toast.df-toast.dash-toast-exit {
     animation: none;
   }
+}
+
+/* === Logged-in wallet HUD + auth header (match live lobby-header--app) === */
+@keyframes df-wallet-sheet-in {
+  0% { opacity: 0; transform: translate(-50%, -6px) scale(0.96); }
+  to { opacity: 1; transform: translate(-50%); }
+}
+
+.df-wallet-hud {
+  --w-bar: min(150px, calc(100vw - 220px));
+  --w-plus: 44px;
+  --w-close: 21px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  pointer-events: auto;
+  z-index: 72;
+}
+
+.df-wallet-hud__bar {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--w-bar);
+  aspect-ratio: 760 / 194;
+}
+
+.df-wallet-hud__holder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(8, 4, 24, 0.55));
+}
+
+.df-wallet-hud__amount {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  left: 27%;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  justify-content: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: translateY(-50%);
+  -webkit-tap-highlight-color: transparent;
+  font-family: "Baloo 2", system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: clamp(11px, 3.4vw, 15px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: #fff8e2;
+  text-shadow: 0 1px 0 rgba(46, 8, 84, 0.95), 0 0 8px rgba(255, 198, 74, 0.35);
+  white-space: nowrap;
+}
+
+.df-wallet-hud__amount:focus-visible {
+  outline: 2px solid rgba(255, 214, 122, 0.95);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.df-wallet-hud__amount small {
+  font-size: 0.68em;
+  font-weight: 700;
+  color: #ffd98a;
+  letter-spacing: 0.3px;
+}
+
+.df-wallet-hud__add,
+.df-wallet-hud__dismiss {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s cubic-bezier(0.2, 0.9, 0.3, 1.2), filter 0.12s ease;
+}
+
+.df-wallet-hud__add img,
+.df-wallet-hud__dismiss img {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  filter: drop-shadow(0 3px 6px rgba(6, 3, 20, 0.55));
+}
+
+.df-wallet-hud__add {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--w-plus);
+  aspect-ratio: 200 / 191;
+  height: auto;
+  text-decoration: none;
+}
+
+.df-wallet-hud__add::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: max(44px, 100%);
+  height: max(44px, 100%);
+  transform: translate(-50%, -50%);
+}
+
+.df-wallet-hud__dismiss {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  left: auto;
+  z-index: 3;
+  width: var(--w-close);
+  aspect-ratio: 1;
+}
+
+@media (hover: hover) {
+  .df-wallet-hud__add:hover,
+  .df-wallet-hud__dismiss:hover {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 8px rgba(255, 120, 255, 0.6));
+  }
+}
+
+.df-wallet-hud__add:active { transform: scale(0.95); }
+.df-wallet-hud__dismiss:active { transform: scale(0.94); }
+
+.df-wallet-hud__sheet {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  width: max(190px, 108%);
+  padding: 54px 14px 12px;
+  border: 2px solid rgba(255, 205, 92, 0.85);
+  border-radius: 18px;
+  background:
+    radial-gradient(120% 90% at 50% -20%, rgba(255, 198, 74, 0.16), transparent 62%),
+    linear-gradient(180deg, #3a1c74, #24124a 60%, #180d33);
+  box-shadow: inset 0 1px #ffffff2e, 0 16px 34px #06031499;
+  font-family: "Baloo 2", system-ui, -apple-system, Segoe UI, sans-serif;
+  animation: df-wallet-sheet-in 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.05) both;
+}
+
+.df-wallet-hud__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+}
+
+.df-wallet-hud__row + .df-wallet-hud__row { margin-top: 8px; }
+
+.df-wallet-hud__row-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+  color: #c9a6ff;
+}
+
+.df-wallet-hud__row-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #fff6d8;
+  text-shadow: 0 1px 0 rgba(46, 8, 84, 0.9);
+}
+
+.df-wallet-hud__lock { width: 12px; height: 12px; }
+
+.df-wallet-hud__unlock {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 205, 92, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(158, 78, 226, 0.95), rgba(88, 28, 152, 0.95));
+  color: #fff6d8;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Auth header shell — do NOT vertically center (that put logo under wallet) */
+.dash-root:not(.dash-root--guest-landing) .dash-nav.dash-nav--authenticated {
+  display: block !important;
+  align-items: stretch !important;
+  background: transparent !important;
+  border-bottom: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.05) !important;
+  backdrop-filter: blur(14px) saturate(1.05) !important;
+  height: auto !important;
+  min-height: 52px !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.dash-root:not(.dash-root--guest-landing) .dash-nav.dash-nav--authenticated::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -14px;
+  height: 14px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(10, 6, 24, 0.28), transparent);
+}
+
+.dash-root:has(.dash-nav--authenticated) {
+  --dash-nav-h: 52px;
+}
+
+/* Mobile (<1024): logo + desktop nav hidden; wallet fixed top-left; actions right */
+.dash-nav-inner--auth {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: 44px !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 4px max(12px, env(safe-area-inset-right)) 4px max(12px, env(safe-area-inset-left)) !important;
+}
+
+.dash-nav-inner--auth .dash-nav-auth-logo {
+  display: none !important;
+}
+
+.dash-nav-inner--auth .df-desktop-auth-nav {
+  display: none !important;
+}
+
+.dash-nav-inner--auth .df-auth-balances {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: center;
+  min-width: 0;
+  height: 44px;
+  width: min(200px, calc(100vw - 160px));
+  pointer-events: none;
+}
+
+.dash-nav-inner--auth .df-auth-balances .df-wallet-hud {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  left: 12px;
+  right: auto;
+  transform: none;
+  pointer-events: auto;
+}
+
+.df-lobby-header-actions {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-left: auto;
+  grid-column: 2;
+  grid-row: 1;
+  width: auto;
+  min-width: max-content;
+  pointer-events: auto;
+}
+
+.df-profile-trigger {
+  display: inline-grid !important;
+  place-items: center;
+  order: 1;
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  padding: 0;
+  border: 2px solid #ffdc83;
+  border-radius: 50%;
+  background: #31136b;
+  overflow: hidden;
+  box-shadow: 0 2px #9f591d, 0 0 12px #b85bec55;
+  cursor: pointer;
+}
+
+.df-profile-trigger img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: none;
+}
+
+.df-lobby-header-actions .df-tour-btn { order: 2; }
+
+.df-lobby-header-actions .df-notif-wrap { display: none !important; }
+
+.df-lobby-header-actions .df-menu-btn {
+  order: 3;
+  display: grid !important;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.df-menu-btn__dots {
+  display: block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+
+.df-header-bell { display: none; }
+
+.df-desktop-auth-nav {
+  display: none;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2px;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.df-desktop-auth-nav a {
+  display: block;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: #e8e2f2;
+  font-family: "Baloo 2", Inter, system-ui, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 44px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.df-desktop-auth-nav a:hover { color: #fff; }
+
+.df-desktop-auth-nav a.df-desktop-auth-nav__active,
+.df-desktop-auth-nav .df-desktop-auth-nav__active {
+  color: #fff !important;
+  background: rgba(18, 199, 129, 0.15);
+  text-decoration: none !important;
+}
+
+.df-vip-chip {
+  opacity: 0.75;
+  pointer-events: none;
+  font-size: 0.75rem;
+}
+
+/* Desktop (>=1024): logo | wallet same row, nav second row, tour right */
+@media (min-width: 1024px) {
+  .dash-root:has(.dash-nav--authenticated) {
+    --dash-nav-h: 148px;
+  }
+
+  .dash-root:not(.dash-root--guest-landing) .dash-nav.dash-nav--authenticated {
+    min-height: 148px !important;
+  }
+
+  .dash-nav-inner--auth {
+    grid-template-columns: 44px 112px minmax(0, 1fr) auto !important;
+    grid-template-rows: 64px minmax(48px, auto) !important;
+    gap: 6px 16px !important;
+    padding: 4px 24px 8px !important;
+    align-items: center !important;
+  }
+
+  .dash-nav-inner--auth .dash-nav-auth-logo {
+    display: flex !important;
+    visibility: visible !important;
+    align-items: center;
+    justify-content: center;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 112px;
+    min-height: 44px;
+    margin: 0;
+  }
+
+  .dash-nav-inner--auth .dash-nav-auth-logo .site-logo--nav,
+  .dash-root:not(.dash-root--guest-landing) .dash-nav--authenticated .site-logo--nav {
+    display: block !important;
+    height: 40px !important;
+    max-height: 40px !important;
+    width: auto !important;
+    max-width: 112px !important;
+    object-fit: contain !important;
+  }
+
+  .dash-nav-inner--auth .df-auth-balances {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-start;
+    height: auto;
+    width: auto;
+    min-width: 0;
+    pointer-events: auto;
+  }
+
+  .dash-nav-inner--auth .df-auth-balances .df-wallet-hud {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    --w-bar: 214px;
+    --w-plus: calc(var(--w-bar) * 0.245);
+    --w-close: 24px;
+  }
+
+  .dash-nav-inner--auth .df-desktop-auth-nav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    justify-content: center;
+    justify-self: center;
+    align-content: center;
+    width: 100%;
+    max-width: 1100px;
+    padding-left: 0;
+    row-gap: 2px;
+  }
+
+  .df-lobby-header-actions {
+    grid-column: 4 !important;
+    grid-row: 1 !important;
+    gap: 0;
+  }
+
+  .df-lobby-header-actions .df-profile-trigger,
+  .df-lobby-header-actions .df-menu-btn,
+  .df-lobby-header-actions .df-notif-wrap {
+    display: none !important;
+  }
+
+  .df-lobby-header-actions .df-tour-btn {
+    display: grid !important;
+    order: 0;
+  }
+}
+
+/* Live lobby has no left rail — menu is header + bottom HUD */
+.dash-root:has(.dash-nav--authenticated) .dash-layout--sided > .dash-side {
+  display: none !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-layout--sided {
+  display: block !important;
+}
+
+/* Authenticated lobby: document scroll like live (not locked split-pane) */
+@media (min-width: 1024px) {
+  body:has(.dash-root--split-scroll:has(.dash-nav--authenticated)) {
+    overflow: auto !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .dash-root--split-scroll:has(.dash-nav--authenticated) {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 100dvh;
+    overflow: visible !important;
+  }
+
+  .dash-root--split-scroll:has(.dash-nav--authenticated) > .dash-shell-main,
+  .dash-root--split-scroll:has(.dash-nav--authenticated) .dash-shell-inner,
+  .dash-root--split-scroll:has(.dash-nav--authenticated) .dashboard.dash-page,
+  .dash-root--split-scroll:has(.dash-nav--authenticated) .dash-layout--sided,
+  .dash-root--split-scroll:has(.dash-nav--authenticated) .dash-main {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+}
+
+.df-lobby-header-actions > .relative {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 340px) {
+  .df-wallet-hud {
+    --w-bar: min(132px, 42vw);
+    --w-close: 17px;
+  }
+}
+
+/* ─── Bottom menubar (live df-nav-hud) ─── */
+body.guest-landing-active .df-nav-hud {
+  display: none !important;
+}
+
+html body .df-nav-hud {
+  --hud-h: 84px;
+  --hud-icon: 52px;
+  --hud-home: 58px;
+  --hud-max: 540px;
+  --art-bottom: 24px;
+  --label-bottom: 7px;
+  position: fixed !important;
+  z-index: 60 !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  box-sizing: border-box !important;
+  right: auto !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  transform: translate(-50%) !important;
+  width: min(100% - 12px, var(--hud-max)) !important;
+  min-height: 0 !important;
+  height: calc(var(--hud-h) + env(safe-area-inset-bottom, 0px)) !important;
+  margin: 0 !important;
+  padding: 0 6px env(safe-area-inset-bottom, 0px) !important;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+  pointer-events: none;
+}
+
+html body .df-nav-hud > * {
+  pointer-events: auto;
+}
+
+html body .df-nav-hud .df-nav-hud__backdrop {
+  position: absolute !important;
+  z-index: 0 !important;
+  right: 0 !important;
+  bottom: env(safe-area-inset-bottom, 0px) !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: var(--hud-h) !important;
+  object-fit: fill !important;
+  pointer-events: none !important;
+  filter: drop-shadow(0 -6px 18px rgba(8, 4, 24, 0.55));
+}
+
+html body .df-nav-hud .df-nav-hud__item {
+  position: relative !important;
+  z-index: 1 !important;
+  display: flex !important;
+  flex: 1 1 0 !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 0 !important;
+  box-sizing: border-box !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+  height: var(--hud-h) !important;
+  margin: 0 !important;
+  padding: 0 0 var(--label-bottom) !important;
+  border: 0 !important;
+  background: none !important;
+  color: #fff !important;
+  text-decoration: none !important;
+  cursor: pointer;
+  overflow: visible !important;
+  -webkit-tap-highlight-color: transparent;
+  transform: none;
+  transition: transform 0.16s cubic-bezier(0.2, 0.9, 0.3, 1.2), filter 0.16s ease;
+}
+
+html body .df-nav-hud .df-nav-hud__art {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: var(--art-bottom) !important;
+  transform: translate(-50%);
+  display: block !important;
+  width: var(--hud-icon) !important;
+  height: auto !important;
+  line-height: 0 !important;
+  pointer-events: none !important;
+}
+
+html body .df-nav-hud .df-nav-hud__art img {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  filter: drop-shadow(0 3px 6px rgba(6, 3, 20, 0.55));
+  transition: filter 0.18s ease;
+}
+
+html body .df-nav-hud .df-nav-hud__label {
+  position: relative !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: "Baloo 2", system-ui, -apple-system, Segoe UI, sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2px !important;
+  line-height: 1 !important;
+  color: #f6ecff !important;
+  text-shadow: 0 1px 0 rgba(40, 8, 70, 0.95), 0 0 6px rgba(30, 6, 60, 0.7) !important;
+  text-transform: uppercase;
+  white-space: nowrap !important;
+}
+
+html body .df-nav-hud .df-nav-hud__item--home .df-nav-hud__art {
+  width: var(--hud-home) !important;
+}
+
+html body .df-nav-hud .df-nav-hud__item--home .df-nav-hud__art img {
+  filter: drop-shadow(0 6px 12px rgba(6, 3, 20, 0.6)) drop-shadow(0 0 12px rgba(255, 198, 74, 0.35));
+}
+
+html body .df-nav-hud .df-nav-hud__item--bonus .df-nav-hud__art {
+  width: calc(var(--hud-icon) * 0.94) !important;
+}
+
+html body .df-nav-hud .df-nav-hud__counter {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: calc(var(--art-bottom) - 7px) !important;
+  transform: translate(-50%) !important;
+  z-index: 2 !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 1px 7px 2px !important;
+  border: 1px solid rgba(255, 205, 92, 0.92) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #9e4ee2fa, #581c98fa) !important;
+  box-shadow:
+    inset 0 1px #ffffff59,
+    inset 0 -2px 4px #26064699,
+    0 2px 5px #06031480,
+    0 0 8px #ffc64a4d !important;
+  font-family: "Baloo 2", system-ui, -apple-system, Segoe UI, sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 800 !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1.15 !important;
+  color: #fff6d8 !important;
+  text-shadow: 0 1px 0 rgba(60, 14, 100, 0.95) !important;
+  white-space: nowrap !important;
+}
+
+@media (hover: hover) {
+  html body .df-nav-hud .df-nav-hud__item:hover {
+    transform: translateY(-2px);
+  }
+
+  html body .df-nav-hud .df-nav-hud__item:hover .df-nav-hud__art img {
+    filter: drop-shadow(0 4px 8px rgba(6, 3, 20, 0.55)) drop-shadow(0 0 10px rgba(255, 214, 122, 0.55));
+  }
+}
+
+html body .df-nav-hud .df-nav-hud__item:active {
+  transform: scale(0.95);
+}
+
+html body .df-nav-hud .df-nav-hud__item--active {
+  transform: translateY(-2px);
+}
+
+html body .df-nav-hud .df-nav-hud__item--active .df-nav-hud__art img {
+  filter: drop-shadow(0 4px 8px rgba(6, 3, 20, 0.55)) drop-shadow(0 0 11px rgba(255, 214, 122, 0.7))
+    brightness(1.08);
+}
+
+html body .df-nav-hud .df-nav-hud__item--active .df-nav-hud__label {
+  color: #ffe9ad !important;
+}
+
+html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-hud__art {
+  transform: translate(-50%) scale(1.04);
+}
+
+html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-hud__art img {
+  filter: drop-shadow(0 7px 14px rgba(6, 3, 20, 0.6)) drop-shadow(0 0 18px rgba(255, 205, 92, 0.85))
+    brightness(1.06);
+}
+
+@media (max-width: 400px) {
+  html body .df-nav-hud {
+    --hud-h: 79px;
+    --hud-icon: 48px;
+    --hud-home: 54px;
+    --art-bottom: 22px;
+  }
+
+  html body .df-nav-hud .df-nav-hud__label {
+    font-size: 8px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  html body .df-nav-hud {
+    --hud-h: 92px;
+    --hud-icon: 58px;
+    --hud-home: 65px;
+    --art-bottom: 27px;
+    --hud-max: 620px;
+  }
+
+  html body .df-nav-hud .df-nav-hud__label {
+    font-size: 9.5px !important;
+  }
+
+  html body .df-nav-hud .df-nav-hud__counter {
+    font-size: 11px !important;
+  }
+}
+
+/* Clear fixed HUD */
+.dash-root:not(.dash-root--guest-landing) .dash-footer,
+.dash-root:not(.dash-root--guest-landing) .dash-shell-main {
+  padding-bottom: calc(var(--hud-h, 84px) + 18px + env(safe-area-inset-bottom, 0px));
+}
+
+.dash-menu-drawer-close img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* ─── Live-style hamburger quick menu ─── */
+.df-quick-menu {
+  position: fixed;
+  z-index: 240;
+  box-sizing: border-box;
+  width: min(332px, calc(100vw - 16px));
+  max-height: calc(100dvh - 64px - env(safe-area-inset-bottom, 0px));
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  filter: drop-shadow(0 14px 30px rgba(8, 2, 28, 0.7));
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.df-quick-menu__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 10px 8px 12px;
+  border: 2px solid rgba(255, 70, 210, 0.9);
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 90, 220, 0.2), transparent 55%),
+    linear-gradient(180deg, #2a1058, #14082e 70%, #0c061c);
+  box-shadow:
+    0 0 20px rgba(255, 40, 200, 0.5),
+    inset 0 1px rgba(255, 255, 255, 0.14);
+}
+
+.df-quick-menu__tile {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.df-quick-menu__tile:focus,
+.df-quick-menu__tile:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.df-quick-menu__tile:focus-visible img {
+  filter: drop-shadow(0 0 12px rgba(255, 120, 230, 0.85));
+}
+
+.df-quick-menu__tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: contain;
+  border: 0;
+  border-radius: 18px;
+  outline: none;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 10px rgba(20, 0, 50, 0.45));
+  user-select: none;
+}
+
+.df-quick-menu__tile:active {
+  transform: scale(0.94);
+}
+
+@media (hover: hover) {
+  .df-quick-menu__tile:hover {
+    transform: scale(1.04);
+  }
+}
+
+.df-menu-btn--open .df-menu-btn__dots {
+  filter: drop-shadow(0 0 10px rgba(255, 90, 220, 0.7));
+}
+
+@media (min-width: 1024px) {
+  .dash-root:has(.dash-nav--authenticated) {
+    --dash-nav-h: 148px;
+  }
+
+  .dash-root:not(.dash-root--guest-landing) .dash-nav.dash-nav--authenticated {
+    min-height: 148px !important;
+  }
+
+  .df-desktop-auth-nav {
+    gap: 4px 2px;
+  }
+
+  .df-desktop-auth-nav a {
+    flex: 0 0 auto;
+    padding: 0 11px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 40px;
+  }
+
+  .df-quick-menu {
+    width: min(360px, calc(100vw - 24px));
+  }
+}
+
+@media (min-width: 1280px) {
+  .df-desktop-auth-nav a {
+    padding: 0 12px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .df-desktop-auth-nav a {
+    padding: 0 14px;
+    font-size: 1.15rem;
+  }
+}
+
+
+/* -- Lobby filter chips (auth home) -- */
+.df-lobby-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px 10px;
+  width: min(100%, 1180px);
+  margin: 8px auto 14px;
+  padding: 0 4px;
+}
+
+.df-lobby-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  background: rgba(18, 8, 40, 0.72);
+  color: #d9c8f5;
+  font-family: var(--df-display);
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.df-lobby-filter-chip__glyph {
+  width: 22px;
+  height: 18px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
+.df-lobby-filter-chip--fav {
+  padding-left: 12px;
+  padding-right: 12px;
+  min-width: 40px;
+}
+
+.df-lobby-filter-chip--fav .df-lobby-filter-chip__glyph {
+  width: 18px;
+  height: 18px;
+}
+
+.df-lobby-filter-chip:hover {
+  color: #fff;
+  border-color: rgba(255, 201, 40, 0.35);
+}
+
+.df-lobby-filter-chip--active {
+  color: #ffe06a;
+  border-color: #ffc928;
+  background: rgba(255, 201, 40, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 201, 40, 0.25), 0 0 18px rgba(255, 201, 40, 0.18);
+}
+
+.df-games-tabs--embedded {
+  margin-top: 18px;
+  justify-content: flex-start;
+}
+
+.df-games-included--embedded {
+  margin-top: 20px;
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+  max-width: none;
+  text-align: left;
+}
+
+.dash-platform-search-wrap {
+  width: min(100%, 1180px);
+  margin: 0 auto 12px;
+  padding: 0 4px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-games-section--auth {
+  width: min(100%, 1180px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Document scroll for auth lobby (no split-pane lock) */
+html:has(.dash-nav--authenticated),
+body:has(.dash-nav--authenticated) {
+  overflow-x: clip;
+  overflow-y: auto !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 100dvh;
+  overflow: visible !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) > .dash-shell-main,
+.dash-root:has(.dash-nav--authenticated) .dash-shell-inner,
+.dash-root:has(.dash-nav--authenticated) .dashboard.dash-page,
+.dash-root:has(.dash-nav--authenticated) .dash-layout--sided,
+.dash-root:has(.dash-nav--authenticated) .dash-main {
+  height: auto !important;
+  max-height: none !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  flex: none !important;
+}
+
+/* -- Game transfer / connect modals � DF purple-gold theme -- */
+.gtm-backdrop {
+  background: rgba(8, 2, 22, 0.82) !important;
+  backdrop-filter: blur(12px);
+}
+
+.gtm-modal,
+.gtm-modal--topup,
+.gtm-modal--redeem,
+.gtm-modal--connect,
+.gtm-modal--celebrate {
+  --dash-gold: #ffc928;
+  --dash-gold2: #ffe06a;
+  --dash-teal: #39e72f;
+  --dash-teal2: #76ff43;
+  --dash-purple: #a52bef;
+  --dash-text: #fff8ef;
+  --dash-muted: #cbb8ea;
+  --dash-border-strong: rgba(255, 201, 40, 0.35);
+  font-family: var(--df-body) !important;
+  background:
+    radial-gradient(ellipse 110% 60% at 50% -10%, rgba(165, 43, 239, 0.35), transparent 55%),
+    linear-gradient(165deg, #2a1058 0%, #14082e 48%, #0c051c 100%) !important;
+  border: 1.5px solid rgba(255, 201, 40, 0.42) !important;
+  box-shadow:
+    0 0 0 1px rgba(165, 43, 239, 0.25),
+    0 24px 56px rgba(0, 0, 0, 0.75),
+    0 0 40px rgba(165, 43, 239, 0.22) !important;
+  border-radius: 22px !important;
+}
+
+.gtm-modal--redeem {
+  border-color: rgba(57, 231, 47, 0.45) !important;
+  background:
+    radial-gradient(ellipse 110% 60% at 50% -10%, rgba(57, 231, 47, 0.18), transparent 55%),
+    linear-gradient(165deg, #16301a 0%, #0c1a12 48%, #08140e 100%) !important;
+}
+
+.gtm-modal--connect {
+  border-color: rgba(255, 201, 40, 0.38) !important;
+}
+
+.gtm-modal .gtm-glow-ring {
+  box-shadow:
+    inset 0 0 36px rgba(165, 43, 239, 0.12),
+    0 0 28px rgba(255, 201, 40, 0.1) !important;
+}
+
+.gtm-modal .gtm-spark {
+  color: var(--df-gold) !important;
+}
+
+.gtm-modal .gtm-title {
+  font-family: var(--df-display) !important;
+  color: #fff !important;
+  text-shadow: 0 2px 0 rgba(58, 26, 107, 0.85) !important;
+}
+
+.gtm-modal .gtm-subtitle,
+.gtm-modal .gtm-field-hint,
+.gtm-modal .gtm-balance-label,
+.gtm-modal .gtm-balance-sub {
+  color: #cbb8ea !important;
+}
+
+.gtm-modal .gtm-close {
+  color: #cbb8ea !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+}
+
+.gtm-modal .gtm-close:hover {
+  color: #ffc928 !important;
+  border-color: rgba(255, 201, 40, 0.5) !important;
+  background: rgba(255, 201, 40, 0.1) !important;
+}
+
+.gtm-modal .gtm-badge--topup {
+  color: #2a1058 !important;
+  background: linear-gradient(90deg, #ffe06a, #ffc928) !important;
+  box-shadow: 0 0 14px rgba(255, 201, 40, 0.45) !important;
+}
+
+.gtm-modal .gtm-badge--redeem {
+  color: #08210f !important;
+  background: linear-gradient(90deg, #76ff43, #39e72f) !important;
+}
+
+.gtm-modal .gtm-input,
+.gtm-modal .gtm-input--connect {
+  background: rgba(8, 2, 22, 0.72) !important;
+  border: 1.5px solid rgba(165, 43, 239, 0.35) !important;
+  color: #fff !important;
+  border-radius: 14px !important;
+}
+
+.gtm-modal .gtm-input:focus,
+.gtm-modal .gtm-input--connect:focus {
+  border-color: #ffc928 !important;
+  box-shadow: 0 0 0 3px rgba(255, 201, 40, 0.18) !important;
+  outline: none !important;
+}
+
+.gtm-modal .gtm-submit,
+.gtm-modal .gtm-submit--topup {
+  background: linear-gradient(180deg, #ffe38a, #ffc22b 55%, #ef9a08) !important;
+  color: #2a1058 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  font-family: var(--df-display) !important;
+  box-shadow: 0 8px 22px rgba(255, 154, 8, 0.35), 0 0 0 1px rgba(255, 201, 40, 0.4) !important;
+}
+
+.gtm-modal .gtm-submit--redeem {
+  background: linear-gradient(180deg, #76ff43, #39e72f 55%, #1fad18) !important;
+  color: #08210f !important;
+}
+
+.gtm-modal .gtm-btn-secondary {
+  color: #ffe06a !important;
+  background: rgba(255, 201, 40, 0.08) !important;
+  border: 1.5px solid rgba(255, 201, 40, 0.4) !important;
+  border-radius: 999px !important;
+}
+
+.gtm-modal .gtm-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 201, 40, 0.16) !important;
+  color: #fff !important;
+}
+
+.gtm-modal .gtm-game-highlight,
+.gtm-modal .gtm-balance-value {
+  color: #ffc928 !important;
+}
+
+@media (max-width: 767px) {
+  .df-lobby-filter-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .df-lobby-filter-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .df-lobby-filter-chip {
+    flex: 0 0 auto;
+    font-size: 0.84rem;
+    min-height: 36px;
+    padding: 5px 12px;
+  }
+}
+
+/* -- Auth lobby skyline (match live body::before on /lobby) -- */
+.dash-root:has(.dash-nav--authenticated) {
+  isolation: isolate;
+  background: transparent !important;
+}
+
+.dash-root:has(.dash-nav--authenticated)::before {
+  content: "" !important;
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: min(82vh, 760px) !important;
+  z-index: 0 !important;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(10, 6, 24, 0.15), rgba(10, 6, 24, 0.35) 52%, #0a0518),
+    var(--df-skyline) !important;
+  background-size: cover, cover !important;
+  background-position: center top, center top !important;
+  background-repeat: no-repeat, no-repeat !important;
+  opacity: 0.85 !important;
+  -webkit-mask-image: linear-gradient(#000 62%, transparent 100%);
+  mask-image: linear-gradient(#000 62%, transparent 100%);
+}
+
+.dash-root:has(.dash-nav--authenticated)::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(82% 55% at 50% 24%, transparent 58%, rgba(6, 3, 16, 0.62) 100%),
+    radial-gradient(2px 2px at 22% 22%, rgba(255, 255, 255, 0.45), transparent 60%),
+    radial-gradient(1.5px 1.5px at 72% 16%, rgba(255, 224, 106, 0.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 86% 32%, rgba(240, 75, 255, 0.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 34% 14%, rgba(61, 164, 255, 0.55), transparent 60%);
+}
+
+.dash-root:has(.dash-nav--authenticated) > *:not(.dash-bg-canvas):not(.dash-lightning):not(.dash-nav):not(.mobile-lobby-nav):not(.df-help-launcher):not(.bgm-widget):not(.bg-music-widget):not(.lp-social-dock) {
+  position: relative;
+  z-index: 1;
+}
+
+.dash-root:has(.dash-nav--authenticated) > .dash-bg-canvas,
+.dash-root:has(.dash-nav--authenticated) > .dash-lightning {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+}
+
+body:has(.dash-nav--authenticated) {
+  background:
+    radial-gradient(120% 78% at 50% -6%, rgba(139, 36, 232, 0.45), transparent 58%),
+    radial-gradient(120% 120% at 50% 116%, rgba(18, 100, 217, 0.24), transparent 60%),
+    linear-gradient(#0d0724, #0a0620) !important;
+}
+
+/* Lobby search � match live .lobby-search */
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap {
+  width: min(100%, 720px);
+  margin: 4px auto 16px;
+  padding: 0 12px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search,
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-field {
+  background: #000 !important;
+  border: 0.8px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  min-height: 52px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-input {
+  color: #fff !important;
+  font-size: 16px !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-icon {
+  color: #fff !important;
+  opacity: 0.9;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-lobby-filter-bar {
+  justify-content: center;
+  gap: 14px 18px;
+  margin: 2px auto 18px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-lobby-filter-chip {
+  background: transparent;
+  border-color: transparent;
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  min-height: 36px;
+  padding: 4px 8px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-lobby-filter-chip--active {
+  color: #ffe06a;
+  border-color: #ffc928;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 999px;
+  padding-inline: 14px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-lobby-filter-chip--fav {
+  min-width: 36px;
+  padding: 4px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-lobby-filter-chip--fav.df-lobby-filter-chip--active {
+  padding: 4px 10px;
+}
+
+.dash-root:has(.dash-nav--authenticated) .df-auth-welcome {
+  margin: 10px auto 14px;
+}
+
+/* View more � thin gold outline like live "Load More Games" */
+.df-games-view-more {
+  min-height: 44px;
+  padding: 0 22px;
+  border: 0.8px solid rgba(231, 185, 76, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--df-body);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+
+.df-games-view-more:hover {
+  border-color: #ffc928;
+  color: #ffe06a;
+  background: rgba(255, 201, 40, 0.08);
+}
+
+.df-games-tab__glyph {
+  object-fit: contain;
+}
+
+/* Auth lobby platforms — live “Try Other Games” stack (art → ACTIVATE → title) */
+.df-lobby-platforms {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 10px;
+  margin: 8px 0 18px;
+  padding: 0 4px;
+  list-style: none;
+}
+
+@media (min-width: 560px) {
+  .df-lobby-platforms {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .df-lobby-platforms {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 16px 12px;
+  }
+}
+
+.df-lobby-platform {
+  position: relative;
+  min-width: 0;
+}
+
+.df-lobby-platform__card {
+  display: grid !important;
+  justify-items: center;
+  gap: 8px;
+  width: 100%;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  padding: 0 0 4px !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #fff;
+  cursor: pointer;
+}
+
+.df-lobby-platform__art-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
+
+.df-lobby-platform__art,
+.df-lobby-platform__card img {
+  display: block !important;
+  width: clamp(80px, 20vw, 112px) !important;
+  height: auto !important;
+  aspect-ratio: 320 / 432;
+  margin: 0 auto;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 12px !important;
+  filter: drop-shadow(0 8px 16px rgba(6, 3, 20, 0.55));
+  background: none !important;
+}
+
+.df-lobby-platform__title {
+  display: block;
+  max-width: 100%;
+  margin: 0;
+  color: #fff;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+.df-lobby-platform__badge {
+  position: static !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  padding: 5px 10px;
+  border: 1px solid rgba(255, 227, 115, 0.66);
+  border-radius: 999px;
+  background: linear-gradient(145deg, #ff9f1a, #ffc857);
+  color: #201200;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 1000;
+  letter-spacing: 0.045em;
+  line-height: 1;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.df-lobby-platform__badge--active {
+  border-color: rgba(57, 231, 47, 0.7);
+  background: linear-gradient(145deg, #76ff43, #39e72f);
+  color: #08210f;
+}
+
+.df-lobby-platform__badge--pending {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.55);
+  color: #cbb8ea;
+}
+
+.df-lobby-platform__new {
+  position: absolute;
+  top: 4px;
+  left: calc(50% - 40px);
+  z-index: 4;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #ff3355;
+  color: #fff;
+  font-size: 0.55rem;
+  font-weight: 800;
+}
+
+.df-lobby-platform__fav {
+  position: absolute;
+  top: -4px;
+  right: 8%;
+  z-index: 5;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: rgba(255, 228, 119, 0.82);
+  font-size: 24px;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.68);
+  pointer-events: none;
+}
+
+.df-lobby-platform__actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.df-lobby-platform__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ffe06a;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.df-lobby-slots-block {
+  margin-top: 10px;
+}
+
+.df-lobby-slots-title {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #fff;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+/* Lobby casino cards — live nexusggr square tiles */
+.df-games-included--lobby .df-games-grid--lobby {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+
+@media (min-width: 720px) {
+  .df-games-included--lobby .df-games-grid--lobby {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 1100px) {
+  .df-games-included--lobby .df-games-grid--lobby {
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  }
+}
+
+.df-game-card-wrap {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.df-game-card--lobby {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 10px !important;
+  background: #100a1c !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+
+.df-game-card--lobby::after {
+  display: none !important;
+}
+
+.df-game-card--lobby .df-game-card__logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.df-game-card--lobby .df-game-card__name--overlay,
+.df-game-card--lobby .df-game-card__name {
+  position: absolute !important;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  padding: 22px 7px 7px !important;
+  background: linear-gradient(
+    rgba(8, 4, 18, 0),
+    rgba(8, 4, 18, 0.82) 62%,
+    rgba(8, 4, 18, 0.95)
+  ) !important;
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 0.95 !important;
+  text-transform: uppercase !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9) !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.df-game-card-wrap .df-game-card__fav {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 228, 119, 0.82);
+  font-size: 0;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.df-game-card-wrap .df-game-card__fav::before {
+  content: "♡";
+  color: currentColor;
+  font-size: 24px;
+  line-height: 1;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.68);
+}
+
+/* Lobby search — black pill, inset; never edge-to-edge sticky bar */
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap.lobby-search {
+  width: min(100%, 720px);
+  max-width: 100%;
+  margin: 4px auto 12px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search {
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-field {
+  display: grid !important;
+  grid-template-columns: 32px minmax(0, 1fr) auto !important;
+  gap: 2px !important;
+  align-items: center;
+  min-height: 44px;
+  padding: 3px 5px !important;
+  border: 0.8px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 999px !important;
+  background: #000 !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.04) !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-input {
+  min-height: 36px !important;
+  padding: 0 7px !important;
+  background: transparent !important;
+  color: #fff !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
+  font-weight: 700;
+}
+
+.dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap .dash-slot-search-icon {
+  color: #fff !important;
+  opacity: 0.95;
+}
+
+/* Kill sticky full-bleed search on auth lobby even if sticky flips on elsewhere */
+.dash-root:has(.dash-nav--authenticated) .dash-slot-search--sticky,
+body.slots-search-sticky .dash-root:has(.dash-nav--authenticated) .dash-slot-search--sticky {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+/* Tighten auth shell padding on mobile — match live ~12px content inset */
+@media (max-width: 1023px) {
+  .dash-root:has(.dash-nav--authenticated) > .dash-shell-main {
+    padding-top: 8px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .dash-root:has(.dash-nav--authenticated) .df-auth-welcome {
+    margin: 4px auto 8px;
+  }
+
+  .dash-root:has(.dash-nav--authenticated) .df-auth-welcome h1 {
+    font-size: 1.25rem !important;
+  }
+
+  .dash-root:has(.dash-nav--authenticated) .dash-platform-search-wrap.lobby-search {
+    padding: 0;
+  }
+}
+
+/* Auth lobby: no boxed games panel (live is open on skyline) */
+.dash-root:has(.dash-nav--authenticated) .dash-games-panel,
+.dash-root:has(.dash-nav--authenticated) .dash-games-section--auth {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
 }

@@ -1198,9 +1198,8 @@
   }
 }
 
-/* Header — logged-in dragon logo */
 .dash-root:not(.dash-root--guest-landing) {
-  --dash-nav-h: 80px;
+  --dash-nav-h: 52px;
 }
 
 .dash-root:not(.dash-root--guest-landing) .dash-nav {
@@ -1212,20 +1211,21 @@
   overflow: visible;
 }
 
-.dash-root:not(.dash-root--guest-landing) .site-logo--nav {
-  height: 72px !important;
-  max-width: min(240px, 52vw) !important;
+.dash-root:not(.dash-root--guest-landing) .dash-nav--authenticated .site-logo--nav {
+  height: 40px !important;
+  max-width: 112px !important;
   object-fit: contain !important;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .dash-root:not(.dash-root--guest-landing) {
-    --dash-nav-h: 76px;
+    --dash-nav-h: 52px;
   }
+}
 
-  .dash-root:not(.dash-root--guest-landing) .site-logo--nav {
-    height: 64px !important;
-    max-width: min(210px, 46vw) !important;
+@media (min-width: 1024px) {
+  .dash-root:not(.dash-root--guest-landing):has(.dash-nav--authenticated) {
+    --dash-nav-h: 120px;
   }
 }
 

@@ -66,6 +66,7 @@ export function SlotGamesSearchBar({
   placeholder = 'Search games by name…',
   ariaLabel = 'Search casino games',
   resultNoun = 'game',
+  enableSticky = true,
 }) {
   const inputId = useId();
   const inputRef = useRef(null);
@@ -170,6 +171,10 @@ export function SlotGamesSearchBar({
   );
 
   useLayoutEffect(() => {
+    if (!enableSticky) {
+      applyStickyState(false);
+      return undefined;
+    }
     const sentinel = sentinelRef.current;
     if (!sentinel) return undefined;
 
@@ -220,7 +225,7 @@ export function SlotGamesSearchBar({
       document.documentElement.style.removeProperty('--slots-search-sticky-h');
       document.documentElement.style.removeProperty('--slots-search-nav-bottom');
     };
-  }, [applyStickyState, syncFixedGeometry]);
+  }, [applyStickyState, enableSticky, syncFixedGeometry]);
 
   useLayoutEffect(() => {
     if (isSticky) {

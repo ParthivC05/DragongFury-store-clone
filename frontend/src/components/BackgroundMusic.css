@@ -1,24 +1,25 @@
 /* ============================================================
-   BGM SOUND CONTROL — single button + modal
-   Classes prefixed .bgm- so nothing clashes with the site.
+   BGM SOUND CONTROL — DF Online neon theme
    ============================================================ */
 :root {
-  --bgm-panel: #141b2c;
-  --bgm-panel-2: #1c2437;
-  --bgm-panel-3: #232c42;
-  --bgm-line: #2b3450;
-  --bgm-gold: #e6b45c;
-  --bgm-gold-dim: #8a6b33;
-  --bgm-text: #f1f4fa;
-  --bgm-text-dim: #97a1b8;
-  --bgm-green: #24c264;
-  --bgm-red: #e0243c;
-  --bgm-radius: 20px;
-  --bgm-font-display: 'Fredoka', 'Russo One', system-ui, sans-serif;
-  --bgm-font-body: 'Nunito', 'Rajdhani', system-ui, sans-serif;
+  --bgm-panel: #1a0d3a;
+  --bgm-panel-2: #24124f;
+  --bgm-panel-3: #2e1763;
+  --bgm-line: rgba(255, 90, 220, 0.45);
+  --bgm-accent: #ff5ad4;
+  --bgm-accent-hi: #ff9aec;
+  --bgm-accent-dim: #a03ab8;
+  --bgm-gold: #ffd98a;
+  --bgm-text: #fff6ff;
+  --bgm-text-dim: #c9a6ff;
+  --bgm-green: #24d98a;
+  --bgm-radius: 22px;
+  --bgm-font-display: "Baloo 2", "Lilita One", system-ui, sans-serif;
+  --bgm-font-body: "Baloo 2", Inter, system-ui, sans-serif;
+  --bgm-glow: 0 0 18px rgba(255, 70, 210, 0.45);
 }
 
-/* ---------- widget anchor (desktop: right center; mobile: left mid-bottom) ---------- */
+/* ---------- widget anchor ---------- */
 .bgm-widget {
   position: fixed;
   left: auto;
@@ -32,14 +33,11 @@
   transform: translateY(-50%);
 }
 
-/* Hide edge tab while the music dialog is open so it can't sit on top of it */
 .bgm-widget.is-panel-open {
   visibility: hidden;
   pointer-events: none;
 }
 
-/* Hide the music tab while any other modal/overlay is open (tab is z-index 9999).
-   Matches Intercom/social-dock: app-modal-open + Radix data-scroll-locked. */
 body.app-modal-open:not(.bgm-modal-open) .bgm-widget,
 body[data-scroll-locked] .bgm-widget,
 body.welcome-modal-open .bgm-widget,
@@ -52,12 +50,11 @@ body.slot-game-play-active .bgm-widget {
   pointer-events: none;
 }
 
-/* Desktop stays vertically centered even when slots search is sticky */
 body.slots-search-sticky .bgm-widget {
   z-index: 46;
 }
 
-/* ---------- 1. THE SINGLE BUTTON (old edge tab) ----------------- */
+/* ---------- Edge sound tab ---------- */
 .bgm-btn {
   position: relative;
   z-index: 2;
@@ -66,20 +63,22 @@ body.slots-search-sticky .bgm-widget {
   align-items: center;
   justify-content: center;
   gap: 0;
-  width: 52px;
-  height: 34px;
-  padding: 0 7px;
+  width: 54px;
+  height: 40px;
+  padding: 0 8px;
   border: none;
-  border-radius: 8px 0 0 8px;
-  background: rgba(13, 19, 32, 0.94);
-  border-top: 1.5px solid rgba(245, 196, 81, 0.45);
-  border-bottom: 1.5px solid rgba(245, 196, 81, 0.45);
-  border-left: 1.5px solid rgba(245, 196, 81, 0.45);
+  border-radius: 12px 0 0 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 110, 220, 0.95), rgba(120, 40, 180, 0.98));
+  border-top: 1.5px solid rgba(255, 180, 240, 0.65);
+  border-bottom: 1.5px solid rgba(180, 60, 200, 0.75);
+  border-left: 1.5px solid rgba(255, 180, 240, 0.65);
   border-right: none;
-  color: #f5c451;
+  color: #fff8ff;
   box-shadow:
-    -4px 0 20px rgba(0, 0, 0, 0.55),
-    0 0 16px rgba(245, 196, 81, 0.18);
+    -4px 0 22px rgba(8, 2, 28, 0.65),
+    0 0 18px rgba(255, 70, 210, 0.4),
+    inset 0 1px rgba(255, 255, 255, 0.28);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   cursor: pointer;
@@ -91,32 +90,39 @@ body.slots-search-sticky .bgm-widget {
     transform 0.2s ease,
     border-color 0.2s ease,
     box-shadow 0.2s ease,
-    background 0.2s ease;
+    filter 0.2s ease;
 }
 
 .bgm-btn:hover {
-  transform: translateX(-2px);
-  border-color: rgba(245, 196, 81, 0.85);
+  transform: translateX(-3px);
+  filter: brightness(1.08);
   box-shadow:
-    -6px 0 24px rgba(0, 0, 0, 0.65),
-    0 0 22px rgba(245, 196, 81, 0.32);
+    -6px 0 26px rgba(8, 2, 28, 0.7),
+    0 0 26px rgba(255, 90, 220, 0.55),
+    inset 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .bgm-btn:focus-visible {
-  outline: 2px solid rgba(245, 196, 81, 0.75);
+  outline: 2px solid rgba(255, 154, 236, 0.9);
   outline-offset: 2px;
 }
 
-/* Waiting for user gesture (autoplay policy) — subtle hint, no layout shift */
 .bgm-btn.is-waiting:not(.is-muted) .bgm-btn__icon-wrap {
-  opacity: 0.72;
+  opacity: 0.78;
+  animation: bgm-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes bgm-pulse {
+  0%,
+  100% { opacity: 0.72; }
+  50% { opacity: 1; }
 }
 
 .bgm-btn__rule {
   display: block;
   width: 1px;
-  height: 16px;
-  background: linear-gradient(180deg, transparent, rgba(245, 196, 81, 0.55), transparent);
+  height: 18px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.55), transparent);
   flex-shrink: 0;
 }
 
@@ -125,77 +131,80 @@ body.slots-search-sticky .bgm-widget {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   margin: 0 5px;
   flex-shrink: 0;
 }
 
 .bgm-btn__icon {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   position: relative;
   z-index: 1;
+  filter: drop-shadow(0 1px 2px rgba(40, 0, 80, 0.55));
 }
 
 .bgm-btn.is-muted {
-  color: rgba(245, 196, 81, 0.55);
-  background: rgba(10, 14, 22, 0.92);
+  color: rgba(255, 230, 255, 0.55);
+  background: linear-gradient(180deg, rgba(60, 30, 90, 0.95), rgba(28, 12, 52, 0.98));
+  border-color: rgba(180, 100, 200, 0.4);
+  box-shadow:
+    -4px 0 18px rgba(8, 2, 28, 0.55),
+    0 0 10px rgba(150, 60, 180, 0.2);
 }
 
 .bgm-btn.is-muted .bgm-btn__rule {
-  background: linear-gradient(180deg, transparent, rgba(245, 196, 81, 0.28), transparent);
+  background: linear-gradient(180deg, transparent, rgba(200, 140, 220, 0.35), transparent);
 }
 
 .bgm-btn.is-open {
-  border-color: rgba(245, 196, 81, 0.85);
-  background: rgba(20, 28, 44, 0.98);
   box-shadow:
-    -4px 0 20px rgba(0, 0, 0, 0.55),
-    0 0 22px rgba(245, 196, 81, 0.28);
+    -4px 0 22px rgba(8, 2, 28, 0.65),
+    0 0 26px rgba(255, 90, 220, 0.55);
 }
 
-/* Mobile: left edge, mid-bottom — mirrored tab (round + gold on the RIGHT) */
+/* Mobile: left edge, mid-bottom */
 @media (max-width: 767px) {
   .bgm-widget {
     left: 0;
     right: auto;
     top: auto;
-    bottom: max(28vh, calc(152px + env(safe-area-inset-bottom, 0px)));
+    bottom: max(26vh, calc(140px + env(safe-area-inset-bottom, 0px)));
     align-items: flex-start;
     transform: none;
   }
 
+  body.guest-landing-active .bgm-widget {
+    bottom: max(22vh, calc(96px + env(safe-area-inset-bottom, 0px)));
+  }
+
   body.slots-search-sticky .bgm-widget {
     top: auto;
-    bottom: max(28vh, calc(152px + env(safe-area-inset-bottom, 0px)));
+    bottom: max(26vh, calc(140px + env(safe-area-inset-bottom, 0px)));
     z-index: 46;
   }
 
   .bgm-btn {
-    border-radius: 0 8px 8px 0;
-    border-top: 1.5px solid rgba(245, 196, 81, 0.45);
-    border-bottom: 1.5px solid rgba(245, 196, 81, 0.45);
+    border-radius: 0 12px 12px 0;
+    border-top: 1.5px solid rgba(255, 180, 240, 0.65);
+    border-bottom: 1.5px solid rgba(180, 60, 200, 0.75);
     border-left: none;
-    border-right: 1.5px solid rgba(245, 196, 81, 0.45);
+    border-right: 1.5px solid rgba(255, 180, 240, 0.65);
     box-shadow:
-      4px 0 20px rgba(0, 0, 0, 0.55),
-      0 0 16px rgba(245, 196, 81, 0.18);
+      4px 0 22px rgba(8, 2, 28, 0.65),
+      0 0 18px rgba(255, 70, 210, 0.4),
+      inset 0 1px rgba(255, 255, 255, 0.28);
   }
 
   .bgm-btn:hover {
-    transform: translateX(2px);
-    border-color: rgba(245, 196, 81, 0.85);
-    box-shadow:
-      6px 0 24px rgba(0, 0, 0, 0.65),
-      0 0 22px rgba(245, 196, 81, 0.32);
+    transform: translateX(3px);
   }
 
-  .bgm-btn.is-open {
-    border-color: rgba(245, 196, 81, 0.85);
+  .bgm-btn.is-muted {
     box-shadow:
-      4px 0 20px rgba(0, 0, 0, 0.55),
-      0 0 22px rgba(245, 196, 81, 0.28);
+      4px 0 18px rgba(8, 2, 28, 0.55),
+      0 0 10px rgba(150, 60, 180, 0.2);
   }
 }
 
@@ -206,35 +215,31 @@ body.slots-search-sticky .bgm-widget {
   }
 
   .bgm-btn {
-    width: 56px;
-    height: 36px;
-    padding: 0 8px;
-  }
-
-  .bgm-btn__rule {
-    height: 18px;
+    width: 58px;
+    height: 42px;
+    padding: 0 9px;
   }
 
   .bgm-btn__icon-wrap {
-    width: 24px;
-    height: 24px;
+    width: 26px;
+    height: 26px;
     margin: 0 6px;
   }
 
   .bgm-btn__icon {
-    width: 16px;
-    height: 16px;
+    width: 17px;
+    height: 17px;
   }
 }
 
-/* ---------- 2. MODAL ---------------------------------------- */
+/* ---------- Modal ---------------------------------------- */
 .bgm-overlay {
   position: fixed;
   inset: 0;
   z-index: 10050;
-  background: rgba(6, 9, 17, 0.72);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: rgba(8, 2, 24, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   display: grid;
   place-items: center;
   padding: 20px;
@@ -254,11 +259,16 @@ body.slots-search-sticky .bgm-widget {
 
 .bgm-modal {
   width: 100%;
-  max-width: 372px;
-  background: var(--bgm-panel);
-  border: 1px solid var(--bgm-line);
+  max-width: 380px;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 90, 220, 0.22), transparent 55%),
+    linear-gradient(180deg, #2a1058 0%, #160a32 70%, #0c061c 100%);
+  border: 2px solid rgba(255, 70, 210, 0.85);
   border-radius: var(--bgm-radius);
-  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.62);
+  box-shadow:
+    0 26px 70px rgba(4, 0, 16, 0.72),
+    0 0 28px rgba(255, 40, 200, 0.35),
+    inset 0 1px rgba(255, 255, 255, 0.14);
   font-family: var(--bgm-font-body);
   color: var(--bgm-text);
   transform: translateY(14px) scale(0.97);
@@ -278,49 +288,53 @@ body.slots-search-sticky .bgm-widget {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 18px 14px;
+  padding: 18px 18px 12px;
 }
 
 .bgm-eyebrow {
   font-family: var(--bgm-font-display);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--bgm-gold);
+  color: var(--bgm-accent-hi);
   margin: 0;
+  text-shadow: 0 0 12px rgba(255, 90, 220, 0.45);
 }
 
 .bgm-close {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  border: 1px solid var(--bgm-line);
-  background: transparent;
-  color: var(--bgm-text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 120, 220, 0.55);
+  background: linear-gradient(180deg, rgba(158, 78, 226, 0.55), rgba(88, 28, 152, 0.75));
+  color: #fff6ff;
   cursor: pointer;
   display: grid;
   place-items: center;
   transition: 0.2s;
   padding: 0;
+  box-shadow: 0 0 12px rgba(255, 70, 210, 0.25);
 }
 
 .bgm-close:hover {
-  color: var(--bgm-text);
-  background: var(--bgm-panel-2);
+  color: #fff;
+  filter: brightness(1.12);
+  box-shadow: 0 0 16px rgba(255, 90, 220, 0.5);
 }
 
 .bgm-close:focus-visible {
-  outline: 2px solid var(--bgm-gold);
+  outline: 2px solid var(--bgm-accent-hi);
   outline-offset: 2px;
 }
 
 .bgm-master {
-  margin: 0 18px 12px;
+  margin: 0 16px 12px;
   padding: 14px;
-  background: var(--bgm-panel-2);
-  border: 1px solid var(--bgm-line);
-  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(60, 24, 110, 0.9), rgba(28, 12, 58, 0.95));
+  border: 1.5px solid rgba(255, 90, 220, 0.4);
+  border-radius: 16px;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .bgm-master-top {
@@ -330,33 +344,39 @@ body.slots-search-sticky .bgm-widget {
 }
 
 .bgm-speaker {
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   flex: none;
-  border-radius: 11px;
-  border: 1px solid var(--bgm-gold-dim);
-  background: rgba(230, 180, 92, 0.09);
-  color: var(--bgm-gold);
+  border-radius: 14px;
+  border: 1.5px solid rgba(255, 150, 230, 0.65);
+  background: linear-gradient(180deg, rgba(255, 110, 220, 0.95), rgba(120, 40, 180, 0.98));
+  color: #fff;
   display: grid;
   place-items: center;
   cursor: pointer;
   transition: 0.2s;
   padding: 0;
+  box-shadow:
+    0 4px 12px rgba(40, 0, 80, 0.45),
+    0 0 12px rgba(255, 70, 210, 0.35),
+    inset 0 1px rgba(255, 255, 255, 0.3);
 }
 
 .bgm-speaker:hover {
-  background: rgba(230, 180, 92, 0.18);
+  filter: brightness(1.08);
+  transform: scale(1.04);
 }
 
 .bgm-speaker:focus-visible {
-  outline: 2px solid var(--bgm-gold);
+  outline: 2px solid var(--bgm-accent-hi);
   outline-offset: 2px;
 }
 
 .bgm-speaker.is-muted {
-  border-color: var(--bgm-line);
-  background: transparent;
+  border-color: rgba(160, 100, 180, 0.45);
+  background: linear-gradient(180deg, rgba(70, 36, 100, 0.95), rgba(36, 16, 60, 0.98));
   color: var(--bgm-text-dim);
+  box-shadow: 0 2px 8px rgba(20, 0, 40, 0.4);
 }
 
 .bgm-master-label {
@@ -366,20 +386,22 @@ body.slots-search-sticky .bgm-widget {
 
 .bgm-master-label b {
   display: block;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 800;
   font-family: var(--bgm-font-display);
+  color: #fff;
 }
 
 .bgm-master-label span {
-  font-size: 12px;
+  font-size: 0.78rem;
   color: var(--bgm-text-dim);
 }
 
 .bgm-pct {
-  font-size: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--bgm-text-dim);
+  color: var(--bgm-gold);
   flex: none;
 }
 
@@ -387,62 +409,65 @@ body.slots-search-sticky .bgm-widget {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 4px;
+  height: 5px;
   margin: 14px 0 0;
   border-radius: 99px;
   background: linear-gradient(
     to right,
-    var(--bgm-gold) 0 var(--pct, 40%),
-    var(--bgm-line) var(--pct, 40%) 100%
+    var(--bgm-accent) 0 var(--pct, 40%),
+    rgba(80, 40, 120, 0.85) var(--pct, 40%) 100%
   );
   cursor: pointer;
+  box-shadow: 0 0 8px rgba(255, 70, 210, 0.25);
 }
 
 .bgm-range::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--bgm-gold);
-  border: 3px solid var(--bgm-panel-2);
-  box-shadow: 0 0 0 1px var(--bgm-gold-dim);
+  background: linear-gradient(180deg, #ffe6ff, var(--bgm-accent));
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba(255, 90, 220, 0.7);
 }
 
 .bgm-range::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  border: 3px solid var(--bgm-panel-2);
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
   border-radius: 50%;
-  background: var(--bgm-gold);
+  background: linear-gradient(180deg, #ffe6ff, var(--bgm-accent));
+  box-shadow: 0 0 10px rgba(255, 90, 220, 0.7);
 }
 
 .bgm-range:focus-visible {
-  outline: 2px solid var(--bgm-gold);
+  outline: 2px solid var(--bgm-accent-hi);
   outline-offset: 4px;
 }
 
 .bgm-master.is-muted .bgm-range {
   background: linear-gradient(
     to right,
-    var(--bgm-text-dim) 0 var(--pct, 40%),
-    var(--bgm-line) var(--pct, 40%) 100%
+    rgba(160, 120, 180, 0.7) 0 var(--pct, 40%),
+    rgba(60, 30, 90, 0.85) var(--pct, 40%) 100%
   );
+  box-shadow: none;
 }
 
 .bgm-master.is-muted .bgm-range::-webkit-slider-thumb {
   background: var(--bgm-text-dim);
-  box-shadow: 0 0 0 1px var(--bgm-line);
+  box-shadow: none;
 }
 
 .bgm-shuffle {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 0 18px 14px;
+  margin: 0 16px 14px;
   padding: 13px 14px;
-  background: var(--bgm-panel-2);
-  border: 1px solid var(--bgm-line);
-  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(60, 24, 110, 0.75), rgba(28, 12, 58, 0.9));
+  border: 1.5px solid rgba(255, 90, 220, 0.32);
+  border-radius: 16px;
 }
 
 .bgm-shuffle div {
@@ -451,15 +476,15 @@ body.slots-search-sticky .bgm-widget {
 
 .bgm-shuffle b {
   display: block;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 800;
   font-family: var(--bgm-font-display);
 }
 
 .bgm-shuffle span {
-  font-size: 12px;
-  color: var(--bgm-gold);
-  opacity: 0.85;
+  font-size: 0.75rem;
+  color: var(--bgm-accent-hi);
+  opacity: 0.9;
 }
 
 .bgm-switch {
@@ -469,10 +494,11 @@ body.slots-search-sticky .bgm-widget {
   flex: none;
   border: none;
   border-radius: 99px;
-  background: var(--bgm-line);
+  background: rgba(80, 40, 120, 0.9);
   cursor: pointer;
   padding: 0;
   transition: background-color 0.25s;
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.35);
 }
 
 .bgm-switch::after {
@@ -485,10 +511,12 @@ body.slots-search-sticky .bgm-widget {
   border-radius: 50%;
   background: #fff;
   transition: transform 0.25s cubic-bezier(0.4, 1.3, 0.5, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .bgm-switch[aria-checked='true'] {
-  background: var(--bgm-green);
+  background: linear-gradient(90deg, #c84bff, var(--bgm-accent));
+  box-shadow: 0 0 12px rgba(255, 70, 210, 0.45);
 }
 
 .bgm-switch[aria-checked='true']::after {
@@ -496,18 +524,18 @@ body.slots-search-sticky .bgm-widget {
 }
 
 .bgm-switch:focus-visible {
-  outline: 2px solid var(--bgm-gold);
+  outline: 2px solid var(--bgm-accent-hi);
   outline-offset: 3px;
 }
 
 .bgm-list {
   list-style: none;
   margin: 0;
-  padding: 0 18px;
+  padding: 0 16px;
   max-height: 236px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: var(--bgm-line) transparent;
+  scrollbar-color: rgba(255, 90, 220, 0.45) transparent;
 }
 
 .bgm-list::-webkit-scrollbar {
@@ -515,7 +543,7 @@ body.slots-search-sticky .bgm-widget {
 }
 
 .bgm-list::-webkit-scrollbar-thumb {
-  background: var(--bgm-line);
+  background: rgba(255, 90, 220, 0.45);
   border-radius: 9px;
 }
 
@@ -524,36 +552,39 @@ body.slots-search-sticky .bgm-widget {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px;
+  padding: 13px 14px;
   margin-bottom: 6px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 12px;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
   color: var(--bgm-text);
   font-family: var(--bgm-font-display);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: 700;
   text-align: left;
   cursor: pointer;
   transition:
     background-color 0.18s,
     border-color 0.18s,
-    color 0.18s;
+    color 0.18s,
+    box-shadow 0.18s;
 }
 
 .bgm-track:hover {
-  background: var(--bgm-panel-3);
+  background: rgba(255, 90, 220, 0.12);
+  border-color: rgba(255, 90, 220, 0.25);
 }
 
 .bgm-track:focus-visible {
-  outline: 2px solid var(--bgm-gold);
+  outline: 2px solid var(--bgm-accent-hi);
   outline-offset: -2px;
 }
 
 .bgm-track[aria-current='true'] {
-  color: var(--bgm-gold);
-  background: rgba(230, 180, 92, 0.07);
-  border-color: var(--bgm-gold-dim);
+  color: #fff;
+  background: linear-gradient(180deg, rgba(255, 90, 220, 0.22), rgba(120, 40, 180, 0.28));
+  border-color: rgba(255, 120, 230, 0.65);
+  box-shadow: 0 0 14px rgba(255, 70, 210, 0.25);
 }
 
 .bgm-track span {
@@ -576,7 +607,7 @@ body.slots-search-sticky .bgm-widget {
   display: block;
   width: 2.5px;
   border-radius: 2px;
-  background: var(--bgm-gold);
+  background: var(--bgm-accent-hi);
   height: 4px;
   animation: bgm-bounce-sm 0.8s ease-in-out infinite alternate;
   transition:
@@ -595,12 +626,8 @@ body.slots-search-sticky .bgm-widget {
 }
 
 @keyframes bgm-bounce-sm {
-  from {
-    height: 3px;
-  }
-  to {
-    height: 13px;
-  }
+  from { height: 3px; }
+  to { height: 13px; }
 }
 
 .bgm-modal.is-muted .bgm-mini i {
@@ -612,18 +639,20 @@ body.slots-search-sticky .bgm-widget {
 .bgm-foot {
   margin-top: 6px;
   padding: 12px 18px 16px;
-  border-top: 1px solid var(--bgm-line);
-  font-size: 12px;
+  border-top: 1px solid rgba(255, 90, 220, 0.25);
+  font-size: 0.75rem;
   color: var(--bgm-text-dim);
   text-align: center;
 }
 
 .bgm-foot kbd {
   font: inherit;
-  color: var(--bgm-gold);
-  border: 1px solid var(--bgm-gold-dim);
-  border-radius: 5px;
-  padding: 1px 6px;
+  font-weight: 700;
+  color: var(--bgm-accent-hi);
+  border: 1px solid rgba(255, 120, 230, 0.5);
+  border-radius: 6px;
+  padding: 1px 7px;
+  background: rgba(255, 90, 220, 0.12);
 }
 
 @media (max-width: 420px) {
@@ -637,14 +666,15 @@ body.slots-search-sticky .bgm-widget {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bgm-mini i {
+  .bgm-mini i,
+  .bgm-btn.is-waiting:not(.is-muted) .bgm-btn__icon-wrap {
     animation: none !important;
-    height: 9px;
   }
 
   .bgm-overlay,
   .bgm-modal,
-  .bgm-switch::after {
+  .bgm-switch::after,
+  .bgm-btn {
     transition: none !important;
   }
 }

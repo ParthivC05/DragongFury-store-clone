@@ -8,6 +8,7 @@ import * as gamesApi from '../../../api/games';
 import { GameCard } from '../../Games/GameCard';
 import { GamesGridSkeleton } from '../GamesGridSkeleton';
 import { SlotGamesSearchBar } from '../../SlotGames/SlotGamesSearchBar';
+import { LobbyPlatformTile } from '../LobbyPlatformTile';
 import { isGoldenDragonGameName, isFirekirinGameName, isIntegerScAmount, GAME_DEPOSIT_AMOUNT_ERROR, GAME_WITHDRAW_AMOUNT_ERROR } from '../../../utils/goldenDragon';
 import { isManualModeGame } from '../../../utils/gameDisplay';
 import {
@@ -31,10 +32,31 @@ import { FirekirinExclusiveSlider, FirekirinExclusiveOverlays } from '../Firekir
 import { useFirekirinExclusiveGames } from '../../../hooks/useFirekirinExclusiveGames';
 import {
   buildLobbyMixRows,
-  shouldMixHomeCasinoCategories,
   useLobbyPlatformChunkSize,
   useDragonFuryHomeCasinoCategories,
 } from '../homeCasinoLobbyMix';
+import { SlotGamesCatalogGrid } from '../SlotGamesCatalogGrid';
+import {
+  appendBonaToSlotCategories,
+  buildOrionstarSlotCategories,
+} from '../../../utils/gitslotparkLandingGames';
+import {
+  getAllCachedProviderSlotGames,
+} from '../../../utils/dashboardSlotGamesCache';
+import { prefetchLobbySlotGames } from '../DashboardSlotGamesSection';
+import { useLaunchDashboardSlotGame } from '../../../hooks/useLaunchDashboardSlotGame';
+import { fetchEnabledSlotProviders } from '../../../hooks/useEnabledSlotProviders';
+
+const LOBBY_FILTERS = [
+  { id: 'registered', label: '', icon: '/df-online/club-icons/heart.png', ariaLabel: 'My Games' },
+  { id: 'all', label: 'All' },
+  { id: 'web', label: 'Web', icon: '/df-online/club-icons/gamepad.png' },
+  { id: 'slots', label: 'Slots', icon: '/df-online/club-icons/slots-777.png' },
+  { id: 'live-casino', label: 'Live', icon: '/df-online/club-icons/dice.webp' },
+];
+
+const CASINO_FILTER_IDS = new Set(['slots', 'live-casino']);
+const PLATFORM_FILTER_IDS = new Set(['all', 'web', 'registered']);
 
 export function GamesSection() {
   const navigate = useNavigate();
@@ -53,6 +75,16 @@ export function GamesSection() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
+  const [casinoCatalogGames, setCasinoCatalogGames] = useState(() => getAllCachedProviderSlotGames());
+  const [casinoCatalogCategories, setCasinoCatalogCategories] = useState([]);
+  const [casinoLoading, setCasinoLoading] = useState(false);
+  const {
+    handlePlayGame: handleCasinoPlay,
+    launchingGameId: casinoLaunchingId,
+    depositRequiredModalOpen: casinoDepositOpen,
+    closeDepositRequiredModal: closeCasinoDeposit,
+    activationBonusType: casinoActivationBonus,
+  } = useLaunchDashboardSlotGame();
   const [activeGame, setActiveGame] = useState(null);
   const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
@@ -105,6 +137,45 @@ export function GamesSection() {
     loadGames();
     return undefined;
   }, [isAuthenticated, loadGames]);
+
+  useEffect(() => {
+    if (!isAuthenticated) return undefined;
+    let cancelled = false;
+    setCasinoLoading(true);
+
+    const refreshCasino = (providerFlags = {}) => {
+      const all = getAllCachedProviderSlotGames();
+      if (cancelled) return;
+      setCasinoCatalogGames(all);
+      setCasinoCatalogCategories(
+        appendBonaToSlotCategories(buildOrionstarSlotCategories(all, providerFlags), all)
+      );
+    };
+
+    fetchEnabledSlotProviders()
+      .then((providers) => {
+        if (cancelled) return null;
+        const flags = {
+          gitslotpark: Boolean(providers?.gitslotpark),
+          onegamehub: Boolean(providers?.onegamehub),
+        };
+        refreshCasino(flags);
+        return flags;
+      })
+      .then((flags) => {
+        if (cancelled || !flags) return;
+        return prefetchLobbySlotGames().then(() => {
+          if (!cancelled) refreshCasino(flags);
+        });
+      })
+      .finally(() => {
+        if (!cancelled) setCasinoLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const onReload = () => {
@@ -200,14 +271,18 @@ export function GamesSection() {
   }
 
   const tabFilteredGames = useMemo(() => {
+    /* Auth lobby platforms: curated static list (live dragonfury.online/lobby). */
+    const platformList = buildGuestPlatformGames(games);
     if (filter === 'registered') {
-      return games.filter((g) => g.has_account && g.account_status === 'approved');
+      return platformList.filter((g) => g.has_account && g.account_status === 'approved');
     }
-    return games;
+    if (filter === 'web' || filter === 'all') return platformList;
+    return platformList;
   }, [games, filter]);
 
   const searchQuery = normalizePlatformSearch(deferredSearch);
-  const isSearchActive = isAuthenticated && searchQuery.length > 0;
+  const isSearchActive =
+    isAuthenticated && searchQuery.length > 0 && PLATFORM_FILTER_IDS.has(filter);
 
   const filteredGames = useMemo(
     () => (isSearchActive ? searchPlatformGames(tabFilteredGames, deferredSearch) : tabFilteredGames),
@@ -216,19 +291,23 @@ export function GamesSection() {
 
   const guestPlatformGames = useMemo(() => buildGuestPlatformGames(games), [games]);
 
-  const gamesGridClassName = `dash-games-grid${filter === 'all' ? ' dash-games-grid--3' : ''}`;
+  const gamesGridClassName = `dash-games-grid${filter === 'all' || filter === 'web' ? ' dash-games-grid--3' : ''}`;
   const searchResultCount = filteredGames.length;
   const searchEmptyQueryLabel = normalizePlatformSearch(search) || searchQuery;
   const casinoCategories = useDragonFuryHomeCasinoCategories({
     enabled: isAuthenticated,
   });
   const platformChunkSize = useLobbyPlatformChunkSize();
-  const mixCasinoCategories = shouldMixHomeCasinoCategories({
-    isAuthenticated,
-    filter,
-    isSearchActive,
-    categories: casinoCategories,
-  });
+  /* Platforms + full casino catalog are stacked below; skip interleaved mix rows. */
+  const mixCasinoCategories = false;
+
+  const lobbyFilterItems = useMemo(() => LOBBY_FILTERS, []);
+
+  const isCasinoFilterEffective = CASINO_FILTER_IDS.has(filter);
+  const showCasinoCatalog =
+    isAuthenticated && (isCasinoFilterEffective || filter === 'all');
+  const catalogInitialTab =
+    filter === 'live-casino' ? 'live-casino' : filter === 'slots' ? 'slots' : 'all';
   const firekirinExclusive = useFirekirinExclusiveGames({ enabled: isAuthenticated });
   const lobbyMixRows = useMemo(
     () =>
@@ -264,6 +343,18 @@ export function GamesSection() {
   }
 
   function renderPlatformGameCard(game, i) {
+    if (isAuthenticated) {
+      return (
+        <LobbyPlatformTile
+          key={game.id ?? `game-${i}`}
+          game={game}
+          onRegistered={loadGames}
+          onOpenDeposit={handleOpenDeposit}
+          onOpenWithdraw={handleOpenWithdraw}
+          onOpenPlay={handleOpenPlay}
+        />
+      );
+    }
     return (
       <div
         key={game.id ?? `game-${i}`}
@@ -516,57 +607,75 @@ export function GamesSection() {
 
   return (
     <section id="games" className={`dash-games-section dash-animate-in dash-delay-3${!isAuthenticated ? ' dash-games-section--guest' : ' dash-games-section--auth'}`}>
-      <div className="dash-section-head">
-        {isAuthenticated ? (
-          <>
-            <p className="dash-priority-lobby-kick">Also on your account</p>
-            <h2 className="dash-section-title">Try Other Games</h2>
-          </>
-        ) : (
+      {!isAuthenticated ? (
+        <div className="dash-section-head">
           <h2 className="dash-section-title dash-platforms-title">
             Top <span className="dash-platforms-title-accent">Game</span> Platforms
           </h2>
-        )}
-      </div>
-
-      {isAuthenticated ? (
-        <div className="dash-games-tabs dash-games-tabs--standalone" role="tablist">
-          {['all', 'registered'].map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFilter(f)}
-              className={`dash-games-tab${filter === f ? ' active' : ''}`}
-            >
-              {f === 'all' ? 'All Games' : 'My Games'}
-              <span className="dash-games-tab-count">
-                {f === 'all'
-                  ? games.length
-                  : games.filter((g) => g.has_account && g.account_status === 'approved').length}
-              </span>
-            </button>
-          ))}
         </div>
       ) : null}
 
       {isAuthenticated ? (
-        <div className="dash-platform-search-wrap">
+        <div className="dash-platform-search-wrap lobby-search">
           <SlotGamesSearchBar
             value={search}
             onChange={setSearch}
             onClear={clearSearch}
             resultCount={isSearchActive ? searchResultCount : null}
             disabled={gamesLoading && games.length === 0}
-            placeholder="Search platforms by name…"
-            ariaLabel="Search platform games"
-            resultNoun="platform"
+            placeholder="Search games"
+            ariaLabel="Search games"
+            resultNoun="game"
+            enableSticky={false}
           />
         </div>
       ) : null}
 
+      {isAuthenticated ? (
+        <div className="df-lobby-filter-bar" role="tablist" aria-label="Lobby filters">
+          {lobbyFilterItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-label={item.ariaLabel || item.label || item.id}
+              aria-selected={filter === item.id}
+              className={`df-lobby-filter-chip${filter === item.id ? ' df-lobby-filter-chip--active' : ''}${item.id === 'registered' ? ' df-lobby-filter-chip--fav' : ''}`}
+              onClick={() => setFilter(item.id)}
+            >
+              {item.icon ? (
+                <img
+                  className="df-lobby-filter-chip__glyph"
+                  src={item.icon}
+                  alt=""
+                  width={64}
+                  height={50}
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : null}
+              {item.label || null}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       <div className="dash-games-panel">
-      {gamesLoading && games.length === 0 && isAuthenticated ? (
-        <GamesGridSkeleton threeColumns={filter === 'all'} />
+      {isCasinoFilterEffective ? (
+        <SlotGamesCatalogGrid
+          games={casinoCatalogGames}
+          categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
+          loading={casinoLoading}
+          onPlay={handleCasinoPlay}
+          playingGameId={casinoLaunchingId}
+          embedded
+          hideIntro
+          showCategoryTabs
+          lobbyMode
+          initialTab={catalogInitialTab}
+        />
+      ) : gamesLoading && games.length === 0 && isAuthenticated ? (
+        <GamesGridSkeleton threeColumns={filter === 'all' || filter === 'web'} />
       ) : isSearchActive && searchResultCount === 0 ? (
         <div className="dash-games-empty dash-slot-search-empty">
           <span className="dash-games-empty-icon" aria-hidden>🔍</span>
@@ -631,21 +740,29 @@ export function GamesSection() {
             ))}
           </div>
         ) : (
-        <div className={gamesGridClassName}>
-          {filteredGames.map((game, i) => (
-            <Fragment key={game.id ?? `game-${i}`}>
-              {renderPlatformGameCard(game, i)}
-              {(isFirekirinGameName(game?.name) || isFirekirinGameName(game?.gameKey)) &&
-              firekirinExclusive.hasGames ? (
-                <div className="dash-games-grid-fk-exclusive">
-                  {renderFirekirinExclusiveRail()}
-                </div>
-              ) : null}
-            </Fragment>
-          ))}
+        <div className="df-lobby-platforms" aria-label="Platform games">
+          {filteredGames.map((game, i) => renderPlatformGameCard(game, i))}
         </div>
         )
       )}
+
+      {showCasinoCatalog && !isCasinoFilterEffective ? (
+        <div className="df-lobby-slots-block">
+          <h3 className="df-lobby-slots-title">DragonFury Slots</h3>
+          <SlotGamesCatalogGrid
+            games={casinoCatalogGames}
+            categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
+            loading={casinoLoading}
+            onPlay={handleCasinoPlay}
+            playingGameId={casinoLaunchingId}
+            embedded
+            hideIntro
+            showCategoryTabs={false}
+            lobbyMode
+            initialTab="slots"
+          />
+        </div>
+      ) : null}
       </div>
 
       <DepositGameModal
@@ -685,9 +802,12 @@ export function GamesSection() {
         errorMessage={redeemError}
       />
       <DepositRequiredModal
-        open={depositRequiredModalOpen}
-        onClose={closeDepositRequiredModal}
-        activationBonusType={activationBonusType}
+        open={depositRequiredModalOpen || casinoDepositOpen}
+        onClose={() => {
+          closeDepositRequiredModal();
+          closeCasinoDeposit();
+        }}
+        activationBonusType={activationBonusType || casinoActivationBonus}
       />
       <FirekirinExclusiveOverlays
         createPrompt={firekirinExclusive.createPrompt}

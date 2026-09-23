@@ -149,15 +149,7 @@ body.guest-landing-active {
   max-width: 100%;
 }
 
-/* Authenticated: logo left, wallet center, actions right (desktop) */
-@media (min-width: 768px) {
-  .dash-nav-inner--auth {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 12px;
-  }
-}
+/* Authenticated auth grid is owned by dashboard-df-online.css (live lobby-header--app) */
 
 .dash-nav-start {
   display: flex;

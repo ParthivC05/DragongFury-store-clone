@@ -1,59 +1,19 @@
-import { useEffect, useState, lazy, Suspense } from 'react';
-import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { SiteLogo } from './SiteLogo';
-import { lockBodyScroll } from '../utils/bodyScrollLock';
-import { OPEN_MOBILE_MENU_EVENT } from '../utils/navEvents';
+import { openSupportWidget } from './intercomApi';
 
-const DashboardSidebar = lazy(() =>
-  import('./Home/DashboardSidebar').then((m) => ({ default: m.DashboardSidebar }))
-);
-
-function navItemClass({ isActive, isCenter }) {
-  const base = isCenter ? 'dash-nav-item dash-nav-item--home' : 'dash-nav-item';
-  return `${base}${isActive ? ' active' : ''}`;
+function hudItemClass(base, isActive) {
+  return `df-nav-hud__item df-nav-hud__item--${base}${isActive ? ' df-nav-hud__item--active' : ''}`;
 }
 
 export function BottomBar() {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, bscWalletUsable } = useAuth();
   const { pathname, search } = useLocation();
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const registerPath = `/register${search || ''}`;
   const isOnHome = pathname === '/';
-  const hideBuyWithdrawRow =
-    authLoading ||
-    !isAuthenticated ||
-    pathname === '/deposit' ||
-    pathname === '/withdraw' ||
-    pathname.startsWith('/support/tickets');
-  const homeHighlighted = isOnHome;
   const bonusHighlighted = pathname === '/bonus' || pathname === '/account/affiliate';
-
-  const closeMenu = () => setMenuOpen(false);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const openFromPage = () => setMenuOpen(true);
-    window.addEventListener(OPEN_MOBILE_MENU_EVENT, openFromPage);
-    return () => window.removeEventListener(OPEN_MOBILE_MENU_EVENT, openFromPage);
-  }, []);
-
-  useEffect(() => {
-    if (!menuOpen) return undefined;
-    const onKey = (e) => {
-      if (e.key === 'Escape') setMenuOpen(false);
-    };
-    window.addEventListener('keydown', onKey);
-    const releaseScrollLock = lockBodyScroll();
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      releaseScrollLock();
-    };
-  }, [menuOpen]);
+  const bonusCount = Math.max(0, Math.floor(Number(bscWalletUsable) || 0));
 
   const handleHomeNav = (e) => {
     e.preventDefault();
@@ -65,145 +25,99 @@ export function BottomBar() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleSupport = (e) => {
+    e.preventDefault();
+    try {
+      openSupportWidget();
+    } catch (_) {
+      navigate('/help');
+    }
+  };
+
+  const shopTo = isAuthenticated ? '/deposit' : registerPath;
+  const redeemTo = isAuthenticated ? '/withdraw' : registerPath;
+
   return (
-    <>
-      <div className="dash-bottom-wrap md:hidden safe-area-pb onboarding-bottom-bar">
-        {!hideBuyWithdrawRow && (
-          <div className="dash-buy-row">
-            <Link
-              to={isAuthenticated ? '/deposit' : registerPath}
-              className="dash-btn-buy dash-action-btn dash-action-btn--buy onboarding-buy-sc-btn"
-            >
-              <span className="dash-action-btn-shine" aria-hidden />
-              <span className="dash-action-btn-inner">
-                <span className="dash-action-btn-emoji dash-action-btn-emoji--buy" aria-hidden>
-                  💰
-                </span>
-                <span className="dash-action-btn-copy">
-                  <span className="dash-action-btn-label">Buy SC</span>
-                  <span className="dash-action-btn-sub">Add funds</span>
-                </span>
-              </span>
-            </Link>
-            <Link
-              to={isAuthenticated ? '/withdraw' : registerPath}
-              className="dash-btn-withdraw dash-action-btn dash-action-btn--withdraw"
-            >
-              <span className="dash-action-btn-shine" aria-hidden />
-              <span className="dash-action-btn-inner">
-                <span className="dash-action-btn-emoji dash-action-btn-emoji--withdraw" aria-hidden>
-                  💸
-                </span>
-                <span className="dash-action-btn-copy">
-                  <span className="dash-action-btn-label">Withdraw SC</span>
-                  <span className="dash-action-btn-sub">Cash out SC</span>
-                </span>
-              </span>
-            </Link>
-          </div>
-        )}
+    <nav
+      className="mobile-lobby-nav df-nav-hud mobile-lobby-nav--lobby onboarding-bottom-bar"
+      aria-label="Lobby navigation"
+    >
+      <img
+        className="df-nav-hud__backdrop"
+        src="/df-online/nav-backdrop.webp"
+        alt=""
+        width={1024}
+        height={131}
+        decoding="async"
+        aria-hidden
+      />
 
-        <nav className="dash-bottom-nav" aria-label="Lobby navigation">
-          <NavLink
-            to={isAuthenticated ? '/deposit' : registerPath}
-            className={({ isActive }) =>
-              `dash-nav-item${isAuthenticated && pathname === '/deposit' ? ' active' : isActive && pathname === '/deposit' ? ' active' : ''}`
-            }
-          >
-            <span className="dash-nav-emoji" aria-hidden>
-              <img src="/df-online/nav-shop.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
-            </span>
-            <span className="dash-nav-label">Shop</span>
-          </NavLink>
+      <NavLink
+        to={shopTo}
+        className={({ isActive }) =>
+          hudItemClass('shop', isAuthenticated ? pathname === '/deposit' : isActive)
+        }
+      >
+        <span className="df-nav-hud__art" aria-hidden>
+          <img src="/df-online/nav-shop.webp" alt="" width={256} height={256} decoding="async" />
+        </span>
+        <small className="df-nav-hud__label">SHOP</small>
+      </NavLink>
 
-          <NavLink
-            to={isAuthenticated ? '/withdraw' : registerPath}
-            className={() =>
-              `dash-nav-item${pathname === '/withdraw' ? ' active' : ''}`
-            }
-          >
-            <span className="dash-nav-emoji" aria-hidden>
-              <img src="/df-online/nav-redeem.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
-            </span>
-            <span className="dash-nav-label">Redeem</span>
-          </NavLink>
+      <NavLink
+        to={redeemTo}
+        className={() => hudItemClass('redeem', pathname === '/withdraw')}
+      >
+        <span className="df-nav-hud__art" aria-hidden>
+          <img src="/df-online/nav-redeem.webp" alt="" width={256} height={256} decoding="async" />
+        </span>
+        <small className="df-nav-hud__label">REDEEM</small>
+      </NavLink>
 
-          <NavLink
-            to="/"
-            onClick={handleHomeNav}
-            className={navItemClass({ isActive: homeHighlighted, isCenter: true })}
-          >
-            <span className="dash-nav-home-btn" aria-hidden>
-              <img src="/df-online/nav-home.webp" alt="" className="dash-nav-hud-art" width={52} height={52} />
-            </span>
-            <span className="dash-nav-label">Home</span>
-          </NavLink>
+      <NavLink
+        to="/"
+        onClick={handleHomeNav}
+        className={hudItemClass('home', isOnHome)}
+        aria-current={isOnHome ? 'page' : undefined}
+      >
+        <span className="df-nav-hud__art" aria-hidden>
+          <img src="/df-online/nav-home.webp" alt="" width={256} height={256} decoding="async" />
+        </span>
+        <small className="df-nav-hud__label">HOME</small>
+      </NavLink>
 
-          <NavLink
-            to="/bonus"
-            className={`dash-nav-item${bonusHighlighted ? ' active' : ''}`}
-            aria-current={bonusHighlighted ? 'page' : undefined}
-          >
-            <span className="dash-nav-emoji dash-nav-emoji--bonus" aria-hidden>
-              <img
-                src="/df-online/nav-bonus.webp"
-                alt=""
-                className="dash-nav-hud-art"
-                width={42}
-                height={42}
-                draggable={false}
-                decoding="async"
-                loading="lazy"
-              />
-            </span>
-            <span className="dash-nav-label">Bonus</span>
-          </NavLink>
+      <NavLink
+        to="/bonus"
+        className={hudItemClass('bonus', bonusHighlighted)}
+        aria-current={bonusHighlighted ? 'page' : undefined}
+      >
+        <span className="df-nav-hud__art" aria-hidden>
+          <img
+            src="/df-online/nav-bonus.webp"
+            alt=""
+            width={256}
+            height={256}
+            decoding="async"
+            draggable={false}
+          />
+        </span>
+        <span className="df-nav-hud__counter" aria-label={`Bonus balance ${bonusCount}`}>
+          {bonusCount}
+        </span>
+        <small className="df-nav-hud__label">BONUS</small>
+      </NavLink>
 
-          <NavLink
-            to="/help"
-            className={({ isActive }) => `dash-nav-item${isActive || pathname.startsWith('/support') ? ' active' : ''}`}
-          >
-            <span className="dash-nav-emoji" aria-hidden>
-              <img src="/df-online/nav-support.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
-            </span>
-            <span className="dash-nav-label">Support</span>
-          </NavLink>
-        </nav>
-      </div>
-
-      {menuOpen && (
-        <div className="dash-menu-drawer-root md:hidden" role="dialog" aria-modal="true" aria-label="Menu">
-          <button type="button" className="dash-menu-drawer-backdrop" aria-label="Close menu" onClick={closeMenu} />
-          <div className="dash-menu-drawer">
-            <div className="dash-menu-drawer-glow" aria-hidden />
-            <div className="dash-menu-drawer-head">
-              <div className="dash-menu-drawer-brand">
-                <SiteLogo variant="drawer" />
-              </div>
-              <button type="button" className="dash-menu-drawer-close" aria-label="Close menu" onClick={closeMenu}>
-                ✕
-              </button>
-            </div>
-            <div className="dash-menu-drawer-body">
-              <Suspense fallback={null}>
-                <DashboardSidebar
-                  hasSlots
-                  onNavigate={closeMenu}
-                  isAuthenticated={isAuthenticated}
-                />
-              </Suspense>
-            </div>
-            {!isAuthenticated && (
-              <div className="dash-menu-drawer-cta">
-                <Link to={registerPath} className="dash-menu-drawer-cta-signup" onClick={closeMenu}>
-                  <span className="dash-menu-drawer-cta-shine" aria-hidden />
-                  Sign Up Free
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </>
+      <button
+        type="button"
+        className={hudItemClass('support', false)}
+        aria-label="Open live chat support"
+        onClick={handleSupport}
+      >
+        <span className="df-nav-hud__art" aria-hidden>
+          <img src="/df-online/nav-support.webp" alt="" width={256} height={256} decoding="async" />
+        </span>
+        <small className="df-nav-hud__label">SUPPORT</small>
+      </button>
+    </nav>
   );
 }

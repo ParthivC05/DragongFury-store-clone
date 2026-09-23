@@ -9,8 +9,24 @@ const PREVIEW_ROWS = 3;
 const SPIN_MODAL_SCROLL = 3;
 const GUEST_SLOTS_SPIN_MODAL_KEY = 'guest_slots_spin_modal_shown';
 
-const TAB_ORDER = ['all', 'slots', 'fishing', 'table-games'];
-const FALLBACK_TABS = ['others', 'live-casino'];
+const TAB_ORDER = ['all', 'slots', 'fishing', 'table-games', 'live-casino', 'others'];
+const FALLBACK_TABS = [
+  'bingo',
+  'shooting',
+  'crash-game',
+  'instant-win',
+  'keno',
+  'scratch-cards',
+  'lottery',
+  'plinko',
+  'casual-games',
+  'new-games',
+  'trending-games',
+  'hot-games',
+  'popular-games',
+  'top-games',
+  'classic-slots',
+];
 
 const TABLE_TITLE_RE =
   /\b(poker|blackjack|roulette|baccarat|craps|sic[\s-]?bo|teen[\s-]?patti|andar[\s-]?bahar|hold'?em|pai[\s-]?gow|casino war|three card|video poker)\b/i;
@@ -19,7 +35,17 @@ const TAB_ICONS = {
   slots: '/df-online/club-icons/slots-777.webp',
   fishing: '/df-online/club-icons/fish.webp',
   'table-games': '/df-online/club-icons/cards.webp',
-  'live-casino': '/df-online/club-icons/cards.webp',
+  'live-casino': '/df-online/club-icons/dice.webp',
+  others: '/df-online/club-icons/gamepad.webp',
+  bingo: '/df-online/club-icons/bingo.webp',
+  shooting: '/df-online/club-icons/shooting.webp',
+  'crash-game': '/df-online/club-icons/crash.webp',
+  keno: '/df-online/club-icons/keno.webp',
+  'scratch-cards': '/df-online/club-icons/scratch.webp',
+  lottery: '/df-online/club-icons/lottery.webp',
+  plinko: '/df-online/club-icons/plinko.webp',
+  'casual-games': '/df-online/club-icons/casual.webp',
+  'instant-win': '/df-online/club-icons/instant.webp',
 };
 
 const TAB_LABELS = {
@@ -29,6 +55,21 @@ const TAB_LABELS = {
   'table-games': 'Poker',
   'live-casino': 'Live',
   others: 'Other',
+  bingo: 'Bingo',
+  shooting: 'Shooting',
+  'crash-game': 'Crash',
+  'instant-win': 'Instant',
+  keno: 'Keno',
+  'scratch-cards': 'Scratch',
+  lottery: 'Lottery',
+  plinko: 'Plinko',
+  'casual-games': 'Casual',
+  'new-games': 'New',
+  'trending-games': 'Trending',
+  'hot-games': 'Hot',
+  'popular-games': 'Popular',
+  'top-games': 'Top',
+  'classic-slots': 'Classic',
 };
 
 const TAB_SOURCE_IDS = {
@@ -118,12 +159,19 @@ function gamesFromSources(tabId, categories) {
 }
 
 function gamesForTab(tabId, categories, allGames) {
-  if (tabId === 'all') return allGames;
-  const fromCats = gamesFromSources(tabId, categories);
-  if (tabId === 'table-games') {
-    return uniqueGames([...fromCats, ...(allGames || []).filter(isTableLikeGame)]);
+  if (tabId === 'all') return uniqueGames(allGames);
+
+  if (TAB_SOURCE_IDS[tabId]) {
+    const fromCats = gamesFromSources(tabId, categories);
+    if (tabId === 'table-games' || tabId === 'live-casino') {
+      return uniqueGames([...fromCats, ...(allGames || []).filter(isTableLikeGame)]);
+    }
+    if (fromCats.length) return fromCats;
   }
-  return fromCats;
+
+  const direct = (categories || []).find((c) => c.id === tabId);
+  if (direct?.games?.length) return uniqueGames(direct.games);
+  return [];
 }
 
 function gameCategoryId(game, categories) {
@@ -156,7 +204,7 @@ function useGridColumns(ref) {
 }
 
 /**
- * Guest Instant Casino — live Games Included layout, API catalog.
+ * Casino catalog grid — guest landing + auth lobby filters.
  */
 export function SlotGamesCatalogGrid({
   games,
@@ -165,10 +213,15 @@ export function SlotGamesCatalogGrid({
   playingGameId,
   loading = false,
   guestSpinModal = false,
+  embedded = false,
+  initialTab = 'all',
+  hideIntro = false,
+  showCategoryTabs = false,
+  lobbyMode = false,
 }) {
   const gridRef = useRef(null);
-  const [activeTab, setActiveTab] = useState('all');
-  const [expanded, setExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState(initialTab || 'all');
+  const [visiblePages, setVisiblePages] = useState(1);
   const [spinModalOpen, setSpinModalOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -184,9 +237,18 @@ export function SlotGamesCatalogGrid({
     [categories]
   );
 
+  useEffect(() => {
+    if (initialTab) setActiveTab(initialTab);
+  }, [initialTab]);
+
   const tabCounts = useMemo(() => {
     const counts = { all: allGames.length };
-    for (const id of [...TAB_ORDER, ...FALLBACK_TABS]) {
+    const ids = new Set([
+      ...TAB_ORDER,
+      ...FALLBACK_TABS,
+      ...categoryList.map((c) => c.id).filter((id) => id && id !== 'recently-played'),
+    ]);
+    for (const id of ids) {
       if (id === 'all') continue;
       counts[id] = gamesForTab(id, categoryList, allGames).length;
     }
@@ -194,12 +256,19 @@ export function SlotGamesCatalogGrid({
   }, [allGames, categoryList]);
 
   const tabs = useMemo(() => {
-    const next = TAB_ORDER.filter((id) => id === 'all' || (tabCounts[id] || 0) > 0);
-    if (next.length < 4) {
-      const extra = FALLBACK_TABS.find((id) => (tabCounts[id] || 0) > 0);
-      if (extra) next.push(extra);
-    }
-    return next;
+    const preferred = TAB_ORDER.filter((id) => id === 'all' || (tabCounts[id] || 0) > 0);
+    const mappedIntoPreferred = new Set(
+      Object.values(TAB_SOURCE_IDS).flatMap((set) => [...set])
+    );
+    const extras = Object.keys(tabCounts)
+      .filter((id) => {
+        if (id === 'all' || preferred.includes(id)) return false;
+        if (id === 'recently-played' || id === 'top-fishing' || id === 'top-games') return false;
+        if (mappedIntoPreferred.has(id)) return false;
+        return (tabCounts[id] || 0) > 0;
+      })
+      .sort((a, b) => (tabCounts[b] || 0) - (tabCounts[a] || 0));
+    return [...preferred, ...extras];
   }, [tabCounts]);
 
   const filteredGames = useMemo(
@@ -207,8 +276,8 @@ export function SlotGamesCatalogGrid({
     [activeTab, allGames, categoryList]
   );
 
-  const previewCount = cols * PREVIEW_ROWS;
-  const visibleGames = expanded ? filteredGames : filteredGames.slice(0, previewCount);
+  const pageSize = Math.max(cols * PREVIEW_ROWS, PREVIEW_ROWS);
+  const visibleGames = filteredGames.slice(0, pageSize * visiblePages);
   const remaining = Math.max(0, filteredGames.length - visibleGames.length);
 
   const goSignup = useCallback(() => {
@@ -228,15 +297,23 @@ export function SlotGamesCatalogGrid({
 
   const selectTab = useCallback((nextId) => {
     setActiveTab(nextId);
-    setExpanded(false);
+    setVisiblePages(1);
+  }, []);
+
+  const loadMore = useCallback(() => {
+    setVisiblePages((n) => n + 1);
   }, []);
 
   useEffect(() => {
     if (!tabs.includes(activeTab)) {
       setActiveTab('all');
-      setExpanded(false);
+      setVisiblePages(1);
     }
   }, [activeTab, tabs]);
+
+  useEffect(() => {
+    setVisiblePages(1);
+  }, [filteredGames.length, cols]);
 
   useEffect(() => {
     if (!showGuestSpinModal || loading) return;
@@ -266,18 +343,29 @@ export function SlotGamesCatalogGrid({
   const totalCount = allGames.length;
 
   return (
-    <section className="df-games-included" aria-labelledby="df-games-title">
-      <p className="df-games-eyebrow">All in one game</p>
-      <h2 className="df-games-title" id="df-games-title">
-        GAMES INCLUDED
-      </h2>
-      <p className="df-games-sub">
-        One account unlocks <strong>{totalCount || 'these'} titles</strong> — slots, fishing and table
-        games. Every one of them is inside.
-      </p>
+    <section
+      className={`df-games-included${embedded ? ' df-games-included--embedded' : ''}${lobbyMode ? ' df-games-included--lobby' : ''}`}
+      aria-labelledby={hideIntro ? undefined : 'df-games-title'}
+    >
+      {!hideIntro ? (
+        <>
+          <p className="df-games-eyebrow">All in one game</p>
+          <h2 className="df-games-title" id="df-games-title">
+            GAMES INCLUDED
+          </h2>
+          <p className="df-games-sub">
+            One account unlocks <strong>{totalCount || 'these'} titles</strong> — slots, fishing and table
+            games. Every one of them is inside.
+          </p>
+        </>
+      ) : null}
 
-      {tabs.length > 1 ? (
-        <div className="df-games-tabs" role="tablist" aria-label="Game categories">
+      {tabs.length > 1 && (!embedded || showCategoryTabs) ? (
+        <div
+          className={`df-games-tabs${embedded ? ' df-games-tabs--embedded' : ''}`}
+          role="tablist"
+          aria-label="Game categories"
+        >
           {tabs.map((id) => {
             const count = tabCounts[id] || 0;
             const icon = TAB_ICONS[id];
@@ -321,18 +409,58 @@ export function SlotGamesCatalogGrid({
       >
         <div
           ref={gridRef}
-          className="df-games-grid df-games-grid--dense"
+          className={`df-games-grid df-games-grid--dense${lobbyMode ? ' df-games-grid--lobby' : ''}`}
           role="list"
           aria-label={`${tabLabel(activeTab)} inside Dragon Fury`}
         >
           {loading && visibleGames.length === 0
             ? Array.from({ length: 12 }, (_, i) => (
-                <div key={`sk-${i}`} className="df-game-card df-game-card--skel" aria-hidden />
+                <div
+                  key={`sk-${i}`}
+                  className={`df-game-card df-game-card--skel${lobbyMode ? ' df-game-card--lobby' : ''}`}
+                  aria-hidden
+                />
               ))
             : visibleGames.map((game, index) => {
                 const catId = gameCategoryId(game, categoryList);
-                const hot = !expanded && index < Math.min(6, cols);
-                return (
+                const hot = !lobbyMode && index < Math.min(6, cols);
+                return lobbyMode ? (
+                  <article
+                    key={game.id || `${game.title}-${index}`}
+                    className="df-game-card-wrap"
+                    role="listitem"
+                  >
+                    <button
+                      type="button"
+                      className="df-game-card df-game-card--lobby"
+                      aria-label={`Play ${game.title}`}
+                      disabled={playingGameId === game.id}
+                      onClick={() => handleCardPlay(game)}
+                    >
+                      <img
+                        className="df-game-card__logo"
+                        src={game.image}
+                        alt={game.title}
+                        width={220}
+                        height={220}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <span className="df-game-card__name df-game-card__name--overlay">
+                        {game.title}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="df-game-card__fav"
+                      aria-label={`Add ${game.title} to favorites`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                    />
+                  </article>
+                ) : (
                   <button
                     key={game.id || `${game.title}-${index}`}
                     type="button"
@@ -366,15 +494,14 @@ export function SlotGamesCatalogGrid({
         </div>
       </div>
 
-      {remaining > 0 || expanded ? (
+      {remaining > 0 ? (
         <div className="df-games-more df-games-more--toggle">
           <button
-            className="df-games-view-all"
+            className="df-games-view-more"
             type="button"
-            aria-expanded={expanded}
-            onClick={() => setExpanded((v) => !v)}
+            onClick={loadMore}
           >
-            {expanded ? 'SHOW LESS' : `VIEW ALL (${remaining} MORE)`}
+            {lobbyMode ? 'Load More Games' : 'VIEW MORE'}
           </button>
         </div>
       ) : null}

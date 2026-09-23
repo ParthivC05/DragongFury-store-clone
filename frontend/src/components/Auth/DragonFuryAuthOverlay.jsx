@@ -60,7 +60,9 @@ export function DragonFuryAuthOverlay({ title, intro, mode = 'signup', children 
       </span>
       <section
         className="dragonfury-auth-card"
-        data-auth-mode={mode === 'signin' ? 'signin' : 'signup'}
+        data-auth-mode={
+          mode === 'signin' ? 'signin' : mode === 'recovery' ? 'recovery' : 'signup'
+        }
         role="dialog"
         aria-modal="true"
         aria-labelledby="dragonfury-auth-title"

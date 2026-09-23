@@ -4,11 +4,11 @@ import { Formik } from 'formik';
 import { useToast } from '../../context/ToastContext';
 import * as authApi from '../../api/auth';
 import { usePageContentReady } from '../../context/PageReadyContext';
-import { AuthBackground } from './AuthBackground';
-import { SiteLogo } from '../SiteLogo';
+import { DragonFuryAuthOverlay } from './DragonFuryAuthOverlay';
 import { DragonFuryForgotPasswordForm } from './DragonFuryForgotPasswordForm';
 import { FORGOT_PASSWORD_VALIDATION } from './constants/validation';
 import './auth-dragonfury.css';
+import './auth-df-modal.css';
 
 const FORGOT_FORM_INITIAL = { email: '' };
 
@@ -40,111 +40,66 @@ export function DragonFuryForgotPasswordPage() {
     }
   };
 
+  const handleResend = async () => {
+    if (!sentEmail || resendLoading) return;
+    setResendLoading(true);
+    try {
+      const res = await authApi.forgotPassword(sentEmail);
+      toast.success(res?.message || 'Password reset link sent again. Check your inbox.');
+    } catch (err) {
+      toast.error(err.message || 'Could not resend reset email.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   return (
-    <div className="pj-auth-root pj-auth-no-neon">
-      <AuthBackground />
-
-      <div className="pj-auth-scroll">
-        <div className="pj-page">
-          <div className="pj-logo-area">
-            <SiteLogo variant="auth" />
-
-            <h1 className="pj-page-title">{sent ? 'Check Your Email!' : 'Forgot Password?'}</h1>
-            <p className="pj-page-sub">
-              {sent
-                ? '📬 We sent you a link to reset your password'
-                : '🔑 Enter your email and we’ll send a reset link'}
-            </p>
-          </div>
-
-          <div className="pj-card">
-            <div className="pj-corner tl" aria-hidden>
-              ♠
-            </div>
-            <div className="pj-corner tr" aria-hidden>
-              ♥
-            </div>
-            <div className="pj-corner bl" aria-hidden>
-              ♦
-            </div>
-            <div className="pj-corner br" aria-hidden>
-              ♣
-            </div>
-            <div className="pj-shine" aria-hidden />
-
-            <div className="pj-back-row">
-              <Link to="/login" className="pj-back-lnk" aria-label="Back to login">
-                ← Back to login
-              </Link>
-            </div>
-
-            {sent ? (
-              <div className="pj-forgot-success">
-                <div className="pj-success-icon" aria-hidden>
-                  ✅
-                </div>
-                <p className="pj-card-intro">
-                  A password reset link has been sent to{' '}
-                  <span className="pj-email-highlight">{sentEmail}</span>. Click the link in the email to set a new
-                  password.
-                </p>
-                <p className="pj-info-note">
-                  Didn&apos;t receive the email? Check your spam folder, or{' '}
-                  <button
-                    type="button"
-                    className="pj-verify-resend df-verify-resend"
-                    disabled={resendLoading}
-                    onClick={async () => {
-                      if (!sentEmail || resendLoading) return;
-                      setResendLoading(true);
-                      try {
-                        const res = await authApi.forgotPassword(sentEmail);
-                        toast.success(res?.message || 'Password reset link sent again. Check your inbox.');
-                      } catch (err) {
-                        toast.error(err.message || 'Could not resend reset email.');
-                      } finally {
-                        setResendLoading(false);
-                      }
-                    }}
-                  >
-                    {resendLoading ? 'sending…' : 'resend'}
-                  </button>
-                  .
-                </p>
-                <Link to="/login" className="pj-btn-login pj-btn-login-link">
-                  <span className="pj-btn-txt">🎮 BACK TO LOGIN</span>
-                </Link>
-              </div>
-            ) : (
-              <>
-                <p className="pj-card-intro">
-                  Enter the email address associated with your account and we’ll send you a link to reset your password.
-                </p>
-                <Formik
-                  initialValues={FORGOT_FORM_INITIAL}
-                  validationSchema={FORGOT_PASSWORD_VALIDATION}
-                  onSubmit={handleSubmit}
-                >
-                  {(formik) => (
-                    <DragonFuryForgotPasswordForm
-                      formik={formik}
-                      isSubmitting={formik.isSubmitting}
-                      shakeBtn={shakeBtn}
-                      onEmptySubmit={triggerShake}
-                    />
-                  )}
-                </Formik>
-              </>
-            )}
-          </div>
-
-          <nav className="pj-b-links" aria-label="Legal links">
-            <Link to="/privacy">Privacy</Link>
-            <Link to="/terms">Terms</Link>
-            <Link to="/help">Support</Link>
-          </nav>
+    <DragonFuryAuthOverlay
+      title="Reset Password"
+      intro={
+        sent
+          ? 'Check your inbox for the reset link.'
+          : 'We will email you a reset link.'
+      }
+      mode="recovery"
+    >
+      {sent ? (
+        <div className="dragonfury-auth-form">
+          <p className="dragonfury-auth-status dragonfury-auth-status--success" role="status">
+            A password reset link was sent to <strong>{sentEmail}</strong>. Check your inbox and spam
+            folder.
+          </p>
+          <p className="dragonfury-auth-intro df-auth-resend-note">
+            Didn&apos;t get it?{' '}
+            <button
+              type="button"
+              className="df-verify-resend"
+              disabled={resendLoading}
+              onClick={handleResend}
+            >
+              {resendLoading ? 'sending…' : 'Resend'}
+            </button>
+          </p>
+          <Link to="/login" className="dragonfury-auth-submit df-auth-submit-link">
+            <span>Back to Log In</span>
+          </Link>
         </div>
-      </div>
-    </div>
+      ) : (
+        <Formik
+          initialValues={FORGOT_FORM_INITIAL}
+          validationSchema={FORGOT_PASSWORD_VALIDATION}
+          onSubmit={handleSubmit}
+        >
+          {(formik) => (
+            <DragonFuryForgotPasswordForm
+              formik={formik}
+              isSubmitting={formik.isSubmitting}
+              shakeBtn={shakeBtn}
+              onEmptySubmit={triggerShake}
+            />
+          )}
+        </Formik>
+      )}
+    </DragonFuryAuthOverlay>
   );
 }

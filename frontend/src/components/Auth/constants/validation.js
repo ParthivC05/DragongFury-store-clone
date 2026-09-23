@@ -41,6 +41,13 @@ export const FORGOT_PASSWORD_VALIDATION = Yup.object().shape({
   email: emailRule
 });
 
+export const RESET_PASSWORD_VALIDATION = Yup.object().shape({
+  newPassword: passwordRule,
+  confirmPassword: Yup.string()
+    .required('Confirm new password is required.')
+    .oneOf([Yup.ref('newPassword')], 'New password and confirm password do not match.')
+});
+
 export const SIGNUP_VALIDATION = Yup.object().shape({
   firstName: Yup.string()
     .trim()

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Field } from 'formik';
 import { submitOrRevealErrors } from './submitOrRevealErrors';
@@ -43,24 +42,18 @@ export function DragonFuryLoginForm({
   togglePassword,
   forgotPasswordLink,
   registerLink,
+  ssoSlot,
   isSubmitting,
   shakeBtn,
   onEmptySubmit
 }) {
-  const { values, errors, touched, handleChange, handleBlur } = formik;
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passFocused, setPassFocused] = useState(false);
+  const { values, errors, touched, handleChange, handleBlur, setFieldValue } = formik;
 
   const emailVal = values.email ?? '';
-  const passVal = values.password ?? '';
   const emailLen = emailVal.length;
   const emailOk = isValidLoginId(emailVal);
-  const emailShowIcon = emailLen > 4 && !errors.email;
   const emailErr = (touched.email && errors.email) || (emailLen > 4 && !emailOk);
   const phoneMode = isLikelyPhone(emailVal);
-
-  const passOk = passVal.length > 0 && !errors.password;
-  const passShowIcon = passOk && touched.password;
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -68,111 +61,105 @@ export function DragonFuryLoginForm({
   };
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <div className="pj-field">
-        <label
-          htmlFor="pj-email"
-          className={`pj-f-label${emailFocused ? ' focused' : ''}`}
-        >
-          <span className="ico" aria-hidden>
-            {phoneMode ? '📱' : '✉️'}
-          </span>
-          Email or phone
-        </label>
-        <div className="pj-inp-wrap">
-          <Field
-            id="pj-email"
-            name="email"
-            type="text"
-            inputMode={phoneMode ? 'tel' : 'email'}
-            value={emailVal}
-            onChange={handleChange}
-            onBlur={(e) => {
-              handleBlur(e);
-              setEmailFocused(false);
-            }}
-            onFocus={() => setEmailFocused(true)}
-            placeholder="Email or 10-digit phone"
-            autoComplete="username"
-            aria-invalid={emailErr ? 'true' : undefined}
-            aria-describedby={touched.email && errors.email ? 'pj-email-err' : undefined}
-            className={emailErr ? 'err' : emailOk && emailLen > 4 ? 'ok' : ''}
-          />
-          <div className="pj-inp-side">
-            <span className={`pj-v-ico${emailShowIcon ? ' show' : ''}`} aria-hidden>
-              {emailOk ? '✅' : emailLen > 4 ? '❌' : ''}
-            </span>
-          </div>
-        </div>
+    <form className="dragonfury-auth-form" onSubmit={onSubmit} noValidate>
+      <label
+        className={`dragonfury-auth-check${touched.terms && errors.terms ? ' dragonfury-auth-check--err' : ''}`}
+        htmlFor="pj-login-terms"
+      >
+        <input
+          id="pj-login-terms"
+          name="terms"
+          type="checkbox"
+          checked={!!values.terms}
+          onChange={(e) => setFieldValue('terms', e.target.checked)}
+          onBlur={handleBlur}
+          aria-invalid={touched.terms && errors.terms ? 'true' : undefined}
+          aria-describedby={touched.terms && errors.terms ? 'pj-login-terms-err' : undefined}
+        />
+        <span>
+          I agree to the{' '}
+          <Link to="/terms" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link to="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
+            Privacy Policy
+          </Link>
+          .
+        </span>
+      </label>
+      {touched.terms && errors.terms && (
+        <p className="dragonfury-auth-consent-error" id="pj-login-terms-err" role="alert">
+          {errors.terms}
+        </p>
+      )}
+
+      <div className="dragonfury-auth-field">
+        <label htmlFor="pj-email">Email</label>
+        <Field
+          id="pj-email"
+          name="email"
+          type="text"
+          inputMode={phoneMode ? 'tel' : 'email'}
+          value={emailVal}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder=" "
+          autoComplete="username"
+          aria-invalid={emailErr ? 'true' : undefined}
+          aria-describedby={touched.email && errors.email ? 'pj-email-err' : undefined}
+        />
         {touched.email && errors.email && (
-          <p className="pj-field-err" id="pj-email-err" role="alert">
+          <p className="dragonfury-auth-field-err" id="pj-email-err" role="alert">
             {errors.email}
           </p>
         )}
       </div>
 
-      <div className="pj-field">
-        <label
-          htmlFor="pj-password"
-          className={`pj-f-label${passFocused ? ' focused' : ''}`}
-        >
-          <span className="ico" aria-hidden>
-            🔒
-          </span>
-          Password
-        </label>
-        <div className="pj-inp-wrap">
+      <div className="dragonfury-auth-field">
+        <label htmlFor="pj-password">Password</label>
+        <div className="dragonfury-auth-field-control">
           <Field
             id="pj-password"
             name="password"
             type={showPassword ? 'text' : 'password'}
-            value={passVal}
+            value={values.password ?? ''}
             onChange={handleChange}
-            onBlur={(e) => {
-              handleBlur(e);
-              setPassFocused(false);
-            }}
-            onFocus={() => setPassFocused(true)}
-            placeholder="Enter your password"
+            onBlur={handleBlur}
+            placeholder=" "
             autoComplete="current-password"
             aria-invalid={touched.password && errors.password ? 'true' : undefined}
             aria-describedby={touched.password && errors.password ? 'pj-password-err' : undefined}
-            className={touched.password && errors.password ? 'err' : passOk ? 'ok' : ''}
           />
-          <div className="pj-inp-side">
-            <span className={`pj-v-ico${passShowIcon ? ' show' : ''}`} aria-hidden>
-              {passShowIcon ? '✅' : ''}
-            </span>
-            <button
-              type="button"
-              className="pj-eye-btn"
-              onClick={togglePassword}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-            >
-              <EyeIcon show={showPassword} />
-            </button>
-          </div>
+          <button
+            type="button"
+            className="dragonfury-auth-eye"
+            onClick={togglePassword}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            <EyeIcon show={showPassword} />
+          </button>
         </div>
         {touched.password && errors.password && (
-          <p className="pj-field-err" id="pj-password-err" role="alert">
+          <p className="dragonfury-auth-field-err" id="pj-password-err" role="alert">
             {errors.password}
           </p>
         )}
       </div>
 
-      <div className="pj-forgot-row">{forgotPasswordLink}</div>
+      {ssoSlot}
 
       <button
         type="submit"
-        className={`pj-btn-login${isSubmitting ? ' ld' : ''}${shakeBtn ? ' shk' : ''}`}
+        className={`dragonfury-auth-submit${isSubmitting ? ' ld' : ''}${shakeBtn ? ' shk' : ''}`}
         disabled={isSubmitting}
       >
-        <span className="pj-btn-txt">🎮 LOG IN &amp; PLAY</span>
-        <span className="pj-spin" aria-hidden />
+        <span>{isSubmitting ? 'Signing in…' : 'Login'}</span>
       </button>
 
-      <div className="pj-c-foot">
-        Don&apos;t have an account? {registerLink}
+      <div className="dragonfury-auth-footer">
+        {forgotPasswordLink}
+        {registerLink}
       </div>
     </form>
   );

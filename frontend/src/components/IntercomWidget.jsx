@@ -11,6 +11,7 @@ import {
   consumePendingChatOpen,
   consumePendingSupportOpen,
 } from './intercomApi';
+import { beginAnimatedClose } from '../utils/dfCloseAnimation';
 import './intercom-widget.css';
 
 /** Lazy Intercom SDK — keeps the messenger out of the initial landing bundle. */
@@ -30,13 +31,24 @@ const INTERCOM_APP_ID = import.meta.env?.VITE_INTERCOM_APP_ID?.trim();
  */
 const INTERCOM_IDENTIFY_USERS =
   import.meta.env?.VITE_INTERCOM_IDENTIFY_USERS?.trim()?.toLowerCase() !== 'false';
-/** Floating bubble stays on homepage only. Support panel / messenger can open from help pages too. */
-const SUPPORT_PANEL_PATHS = new Set(['/', '/contact', '/faq', '/help']);
+/** Support / Help Desk can open across the site (blocked on auth / in-game play). */
+const SUPPORT_PANEL_BLOCKED = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/google-auth',
+  '/auth',
+];
 /** TEMP: hide "Raise a ticket" in support panel UI. Flip to true to restore. */
 const SHOW_RAISE_TICKET_ACTION = false;
 
 function isSupportPanelAllowedRoute(pathname) {
-  return SUPPORT_PANEL_PATHS.has(pathname);
+  const path = String(pathname || '');
+  if (!path) return false;
+  if (SUPPORT_PANEL_BLOCKED.some((p) => path === p || path.startsWith(`${p}/`))) return false;
+  if (path.includes('/play')) return false;
+  return true;
 }
 
 /** Where Intercom messenger is allowed to boot. */
@@ -225,6 +237,7 @@ function HelpIcon() {
 }
 
 function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated = false }) {
+  const [exiting, setExiting] = useState(false);
   const topics = useMemo(() => {
     const all = [
       { label: 'Create Account', to: '/help?tab=create-account' },
@@ -236,29 +249,64 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
     return isAuthenticated ? all.filter((topic) => !topic.guestOnly) : all;
   }, [isAuthenticated]);
 
+  const requestClose = useCallback(() => {
+    beginAnimatedClose(exiting, setExiting, onClose);
+  }, [exiting, onClose]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setExiting(false);
+      document.body.classList.remove('df-help-desk-open');
+      return undefined;
+    }
+    document.body.classList.add('df-help-desk-open');
+    return () => document.body.classList.remove('df-help-desk-open');
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <>
-      <div className="pj-support-backdrop" onClick={onClose} aria-hidden />
-      <aside className="pj-support-panel" role="dialog" aria-label={`${site.platformName} support`}>
-        <header className="pj-support-header">
-          <div className="pj-support-brand">
-            <img src={site.logoUrl} alt={site.platformName} className="pj-support-logo" />
-            <span>Support</span>
+    <div
+      className={`df-help-desk${exiting ? ' is-exiting' : ''}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="df-help-desk-title"
+    >
+      <button type="button" className="df-help-desk__backdrop" onClick={requestClose} aria-label="Close help desk" />
+      <section className="df-help-desk__panel">
+        <header className="df-help-desk__header">
+          <span className="df-help-desk__avatar" aria-hidden>
+            <img src={site.logoUrl} alt="" width="52" height="52" />
+          </span>
+          <div className="df-help-desk__titles">
+            <h2 id="df-help-desk-title">{site.platformName} Help Desk</h2>
+            <span className={`df-help-desk__presence${isAuthenticated ? '' : ' is-offline'}`}>
+              <i />
+              {isAuthenticated ? 'Online support' : 'No login needed'}
+            </span>
           </div>
-          <button type="button" onClick={onClose} className="pj-support-close" aria-label="Close support panel">
-            x
+          <span className="df-help-desk__badge">{isAuthenticated ? userName : 'Guest'}</span>
+          <button
+            type="button"
+            onClick={requestClose}
+            className="df-help-desk__close dragonfury-close-button"
+            aria-label="Close help desk"
+          >
+            <img src="/df-online/wallet-close.webp" alt="" width="44" height="44" />
           </button>
         </header>
 
-        <div className="pj-support-greeting">
-          <h2>Hello! {userName}</h2>
-          <p>How can we help?</p>
+        <div className="df-help-desk__intro">
+          <strong>Need a hand with {site.platformName}?</strong>
+          <span>
+            {isAuthenticated
+              ? 'Message our team or browse help guides below.'
+              : 'Start a chat or browse help guides — no account needed to reach support.'}
+          </span>
         </div>
 
-        <div className="pj-support-scroll">
-          <button type="button" onClick={onOpenChat} className="pj-support-action">
+        <div className="df-help-desk__scroll">
+          <button type="button" onClick={onOpenChat} className="df-help-desk__action df-help-desk__action--primary">
             <span>
               <strong>Send us a message</strong>
               <small>We typically reply as soon as possible</small>
@@ -266,10 +314,9 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
             <SendIcon />
           </button>
 
-          {/* TEMP hidden: set SHOW_RAISE_TICKET_ACTION to true to restore in support panel */}
           {SHOW_RAISE_TICKET_ACTION &&
             (isAuthenticated ? (
-              <Link to="/support/tickets" onClick={onClose} className="pj-support-action">
+              <Link to="/support/tickets" onClick={requestClose} className="df-help-desk__action">
                 <span>
                   <strong>Raise a ticket</strong>
                   <small>Track your issue and chat with support</small>
@@ -277,7 +324,7 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
                 <ChevronIcon />
               </Link>
             ) : (
-              <Link to="/login" onClick={onClose} className="pj-support-action">
+              <Link to="/login" onClick={requestClose} className="df-help-desk__action">
                 <span>
                   <strong>Raise a ticket</strong>
                   <small>Sign in to submit and track a support ticket</small>
@@ -286,7 +333,7 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
               </Link>
             ))}
 
-          <Link to="/help" onClick={onClose} className="pj-support-action">
+          <Link to="/help" onClick={requestClose} className="df-help-desk__action">
             <span>
               <strong>Search for help</strong>
               <small>Browse {site.platformName} guides and FAQs</small>
@@ -294,10 +341,10 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
             <SearchIcon />
           </Link>
 
-          <div className="pj-support-topics">
-            <p className="pj-support-section-label">Help topics</p>
+          <div className="df-help-desk__topics">
+            <p className="df-help-desk__section-label">Help topics</p>
             {topics.map((topic) => (
-              <Link key={topic.label} to={topic.to} onClick={onClose} className="pj-support-topic">
+              <Link key={topic.label} to={topic.to} onClick={requestClose} className="df-help-desk__topic">
                 <span>{topic.label}</span>
                 <ChevronIcon />
               </Link>
@@ -305,22 +352,22 @@ function SupportWidget({ isOpen, onClose, onOpenChat, userName, isAuthenticated 
           </div>
         </div>
 
-        <nav className="pj-support-footer-nav" aria-label="Support navigation">
-          <div className="pj-support-footer-btn is-active">
+        <nav className="df-help-desk__footer" aria-label="Support navigation">
+          <div className="df-help-desk__footer-btn is-active">
             <HomeIcon />
             <span>Home</span>
           </div>
-          <Link to="/help" onClick={onClose} className="pj-support-footer-link">
+          <Link to="/help" onClick={requestClose} className="df-help-desk__footer-link">
             <HelpIcon />
             <span>Help</span>
           </Link>
-          <button type="button" onClick={onOpenChat} className="pj-support-footer-btn">
+          <button type="button" onClick={onOpenChat} className="df-help-desk__footer-btn">
             <MessageIcon className="pj-support-footer-icon" />
             <span>Messages</span>
           </button>
         </nav>
-      </aside>
-    </>
+      </section>
+    </div>
   );
 }
 
@@ -498,12 +545,14 @@ export function IntercomWidget() {
 
   return createPortal(
     <>
+      {/* Replaced by DragonFuryHelpLauncher (.df-help-launcher) */}
       <button
         id="intercom-custom-launcher"
         type="button"
         onClick={openSupportPanel}
-        className="pj-intercom-launcher"
-        aria-label="Open support"
+        className="pj-intercom-launcher pj-intercom-launcher--hidden"
+        aria-hidden="true"
+        tabIndex={-1}
       >
         <MessageIcon className="pj-intercom-launcher-icon" />
       </button>

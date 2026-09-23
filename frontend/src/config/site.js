@@ -17,12 +17,12 @@ export const site = {
   seoTitle:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_TITLE
       ? String(import.meta.env.VITE_SEO_TITLE).trim()
-      : 'Dragon Fury | Instant sweepstakes games in black and green',
+      : 'DragonFury | Games & Account Website',
   /** Default meta description for SEO */
   seoDescription:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_DESCRIPTION
       ? String(import.meta.env.VITE_SEO_DESCRIPTION).trim()
-      : 'Dragon Fury is a black-and-green sweepstakes lobby for fish games, slots, and exclusive platforms. Join free and play in minutes.',
+      : 'Dragon Fury is the game platform featured here. Browse listed games; use this website for your player account, wallet tools and support.',
   /** Header / auth / footer / landing logo image */
   logoUrl:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LOGO_URL
@@ -53,13 +53,13 @@ export const site = {
   supportPhone: '+1 (987) 654-3210',
   /** Geo-blocker palette (black + lime) */
   geoTheme: {
-    accent: '#B6FF2A',
-    glow: 'rgba(182, 255, 42, 0.18)',
-    bgFrom: '#0a0c0a',
-    bgMid: '#121512',
-    bgTo: '#0d120d',
-    text: '#f3f7f0',
-    email: '#B6FF2A',
+    accent: '#3da4ff',
+    glow: 'rgba(139, 36, 232, 0.22)',
+    bgFrom: '#09071a',
+    bgMid: '#100a25',
+    bgTo: '#0a0620',
+    text: '#ffffff',
+    email: '#ffc928',
   },
   /** Social profile URLs (optional — icons hidden when empty) */
   socialLinks: {

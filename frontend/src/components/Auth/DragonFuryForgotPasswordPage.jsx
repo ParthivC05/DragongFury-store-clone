@@ -17,6 +17,7 @@ export function DragonFuryForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [sentEmail, setSentEmail] = useState('');
   const [shakeBtn, setShakeBtn] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   usePageContentReady(true);
 
@@ -88,7 +89,27 @@ export function DragonFuryForgotPasswordPage() {
                   password.
                 </p>
                 <p className="pj-info-note">
-                  Didn’t receive the email? Check your spam folder or try again with the same email.
+                  Didn&apos;t receive the email? Check your spam folder, or{' '}
+                  <button
+                    type="button"
+                    className="pj-verify-resend df-verify-resend"
+                    disabled={resendLoading}
+                    onClick={async () => {
+                      if (!sentEmail || resendLoading) return;
+                      setResendLoading(true);
+                      try {
+                        const res = await authApi.forgotPassword(sentEmail);
+                        toast.success(res?.message || 'Password reset link sent again. Check your inbox.');
+                      } catch (err) {
+                        toast.error(err.message || 'Could not resend reset email.');
+                      } finally {
+                        setResendLoading(false);
+                      }
+                    }}
+                  >
+                    {resendLoading ? 'sending…' : 'resend'}
+                  </button>
+                  .
                 </p>
                 <Link to="/login" className="pj-btn-login pj-btn-login-link">
                   <span className="pj-btn-txt">🎮 BACK TO LOGIN</span>

@@ -26,12 +26,13 @@ const {
   getXxpayCredentialsFromRequest
 } = require('../../services/paymentProviders/xxpay/xxpay.credentials');
 const { paymentTypeToOrionAcceptedOption } = require('../../constants/paymentTypes');
+const { sanitizePlayerFacingMessage } = require('../../utils/playerFacingMessage');
 
 function safeMessage(err, defaultMsg) {
   if (!err) return defaultMsg;
   const status = err.statusCode ?? err.response?.status;
   if (status != null && status >= 500) return defaultMsg;
-  const msg = (err.message || '').trim();
+  const msg = sanitizePlayerFacingMessage((err.message || '').trim());
   return msg || defaultMsg;
 }
 
@@ -280,11 +281,15 @@ async function createDepositSessionHandler(req, res) {
     const status = err.statusCode || 500;
     // For 503 (e.g. provider not available), expose the specific message so user sees "Crypto payment is not available" etc.
     const message = status === 503 && (err.message || '').trim()
-      ? String(err.message).trim()
+      ? sanitizePlayerFacingMessage(String(err.message).trim())
       : safeMessage(err, 'Could not create deposit session.');
     // Surface Orion account requirement when DollarPay fell back without credentials.
     if (err.code === 'ORION_PAYMENT_ACCOUNT_REQUIRED') {
-      return sendError(res, err.message || 'Payment credentials are required for this method.', status || 400);
+      return sendError(
+        res,
+        sanitizePlayerFacingMessage(err.message || 'Payment credentials are required for this method.'),
+        status || 400
+      );
     }
     return sendError(res, message, status);
   }

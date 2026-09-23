@@ -1,0 +1,463 @@
+/*
+ * Shared DragonFury purple/gold theme for footer-linked content pages
+ * (FAQ, Contact, Legal, Help, Blog, CMS footer pages).
+ */
+
+.df-content-page {
+  --dfc-gold: #ffe06a;
+  --dfc-gold-hi: #ffc928;
+  --dfc-rim: #d9b8ff;
+  --dfc-frame: #2a0f4a;
+  --dfc-pink: #ff7bf5;
+  width: 100%;
+  max-width: min(760px, 100%);
+  margin: 0 auto;
+  padding: 0.5rem 0 2rem;
+}
+
+.df-content-page--wide {
+  max-width: min(1120px, 100%);
+}
+
+.df-content-card {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.25rem, 4vw, 2rem) clamp(1.1rem, 4vw, 2rem);
+  border: 3px solid var(--dfc-rim);
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 14%, transparent 28%),
+    radial-gradient(120% 60% at 50% -4%, rgba(165, 43, 239, 0.45), transparent 62%),
+    linear-gradient(180deg, #2a1660 0%, #170c3a 52%, #0f0726 100%);
+  box-shadow:
+    0 0 0 4px var(--dfc-frame),
+    0 0 0 6px rgba(255, 123, 245, 0.55),
+    0 0 40px rgba(217, 184, 255, 0.35),
+    0 24px 60px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 -12px 28px rgba(20, 6, 50, 0.55);
+  color: #fff;
+  font-family: "Baloo 2", system-ui, sans-serif;
+}
+
+.df-content-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.df-content-crumbs a {
+  color: #f8dc80;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.df-content-crumbs a:hover {
+  color: var(--dfc-gold);
+}
+
+.df-content-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0 0 0.75rem;
+  padding: 6px 10px;
+  border: 1px solid rgba(245, 200, 76, 0.34);
+  border-radius: 999px;
+  background: rgba(245, 200, 76, 0.1);
+  color: #ffdb45;
+  font-size: 0.76rem;
+  font-weight: 900;
+}
+
+.df-content-title {
+  margin: 0 0 0.65rem;
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-size: clamp(1.55rem, 4.2vw, 2.15rem);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: var(--dfc-gold);
+  background: linear-gradient(#fff8d6, #ffe06a 34%, #ffc928 58%, #f6b900);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(0 2px 0 #3a1305)
+    drop-shadow(0 0 12px rgba(255, 201, 40, 0.45));
+}
+
+.df-content-lead {
+  margin: 0 0 1.25rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.df-content-body {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.df-content-body h1,
+.df-content-body h2,
+.df-content-body h3,
+.df-content-body h4,
+.pj-blog-page .pj-blog-content h1,
+.pj-blog-page .pj-blog-content h2,
+.pj-blog-page .pj-blog-content h3,
+.pj-blog-page .pj-blog-content h4,
+.pj-seo-faq-item h2,
+.pj-seo-faq-item h3 {
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-weight: 400;
+  color: var(--dfc-gold) !important;
+  text-shadow: 0 1px 0 rgba(60, 0, 110, 0.65);
+}
+
+.df-content-body a,
+.pj-blog-page .pj-blog-content a,
+.pj-seo-games a:not(.pj-seo-btn):not(.pj-seo-card),
+.df-content-card a:not(.pj-seo-btn):not(.df-help-tab) {
+  color: var(--dfc-gold-hi) !important;
+}
+
+.df-content-body p,
+.pj-blog-page .pj-blog-content p,
+.pj-seo-faq-item p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.df-content-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.df-content-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.25rem;
+  border: 2px solid #ffe08a;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1) 40%, transparent 48%),
+    linear-gradient(180deg, #ffcc3d 0%, #ff8a1f 52%, #e85a00 100%);
+  box-shadow: 0 6px 0 #a83c00, 0 0 0 3px #2a0f4a, 0 12px 22px rgba(0, 0, 0, 0.45);
+  color: #fff !important;
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  font-size: 0.98rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.df-content-btn:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  color: #fff !important;
+}
+
+.df-content-btn--ghost {
+  background: rgba(16, 10, 37, 0.72);
+  border: 1px solid rgba(255, 201, 40, 0.45);
+  box-shadow: none;
+  color: #fff !important;
+}
+
+.df-content-btn--ghost:hover {
+  border-color: #ffc928;
+  color: #ffe06a !important;
+}
+
+/* FAQ items inside themed card */
+.df-content-card .pj-seo-faq-item {
+  margin: 0 0 0.85rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid rgba(217, 184, 255, 0.28);
+  border-radius: 16px;
+  background: rgba(10, 6, 32, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.df-content-card .pj-seo-faq-item:last-child {
+  margin-bottom: 0;
+}
+
+.df-content-card .pj-seo-contact-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-content-card .pj-seo-contact-list li {
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(217, 184, 255, 0.25);
+  background: rgba(10, 6, 32, 0.42);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Blog / legal page shells */
+.pj-blog-page.df-content-skin,
+.pj-seo-games.df-content-skin {
+  color: #fff;
+}
+
+.pj-blog-page.df-content-skin .pj-blog-article,
+.pj-blog-page.df-content-skin .pj-blog-detail,
+.pj-footer-layout-page.df-content-skin {
+  /* layout pages keep their own structure; card wraps where used */
+}
+
+.pj-blog-page.df-content-skin .pj-blog-title {
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dfc-gold, #ffe06a);
+  background: linear-gradient(#fff8d6, #ffe06a 34%, #ffc928 58%, #f6b900);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #3a1305) drop-shadow(0 0 12px rgba(255, 201, 40, 0.4));
+  text-shadow: none;
+}
+
+.pj-blog-page.df-content-skin .pj-blog-sub,
+.pj-blog-page.df-content-skin .pj-blog-status {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.pj-blog-page.df-content-skin .pj-blog-content {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pj-blog-page.df-content-skin .pj-blog-content blockquote {
+  border-left-color: rgba(255, 201, 40, 0.55);
+  background: rgba(10, 6, 32, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pj-blog-page.df-content-skin .pj-blog-content th,
+.pj-blog-page.df-content-skin .pj-blog-content td {
+  border-color: rgba(217, 184, 255, 0.28);
+}
+
+.pj-blog-page.df-content-skin .pj-blog-content th {
+  background: rgba(42, 15, 74, 0.85);
+  color: #ffe06a;
+}
+
+.pj-blog-page.df-content-skin .pj-blog-content pre,
+.pj-blog-page.df-content-skin .pj-blog-content code {
+  background: rgba(10, 6, 32, 0.75);
+}
+
+/* Blog journal list / detail — purple/gold DF skin */
+.pj-blog-page.df-content-skin.pj-journal {
+  --dfc-gold: #ffe06a;
+  --dfc-gold-hi: #ffc928;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-kicker,
+.pj-blog-page.df-content-skin .pj-blog-label {
+  color: #ffdb45;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-title,
+.pj-blog-page.df-content-skin .pj-journal-story-title {
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #ffe06a;
+  background: linear-gradient(#fff8d6, #ffe06a 34%, #ffc928 58%, #f6b900);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 0 #3a1305) drop-shadow(0 0 12px rgba(255, 201, 40, 0.4));
+  text-shadow: none;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-sub,
+.pj-blog-page.df-content-skin .pj-blog-sub,
+.pj-blog-page.df-content-skin .pj-blog-status,
+.pj-blog-page.df-content-skin .pj-journal-meta,
+.pj-blog-page.df-content-skin .pj-journal-feature-copy p,
+.pj-blog-page.df-content-skin .pj-journal-row-copy p {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.pj-blog-page.df-content-skin .pj-journal-chip {
+  border-color: rgba(217, 184, 255, 0.35);
+  background: rgba(10, 6, 32, 0.55);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.pj-blog-page.df-content-skin .pj-journal-chip.is-active {
+  border-color: transparent;
+  background: linear-gradient(180deg, #ffd24a, #f08a12);
+  color: #3a1400;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-feature-card,
+.pj-blog-page.df-content-skin .pj-journal-row,
+.pj-blog-page.df-content-skin .pj-journal-tile {
+  border: 1px solid rgba(217, 184, 255, 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 28%),
+    linear-gradient(180deg, #2a1660 0%, #170c3a 100%);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.pj-blog-page.df-content-skin .pj-journal-feature-copy h2,
+.pj-blog-page.df-content-skin .pj-journal-row-copy h3,
+.pj-blog-page.df-content-skin .pj-journal-tile-copy h3 {
+  color: #fff;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-ribbon {
+  color: #3a1400;
+  background: linear-gradient(180deg, #ffd24a, #f08a12);
+}
+
+.pj-blog-page.df-content-skin .pj-journal-back {
+  color: #f8dc80;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-back:hover {
+  color: #ffe06a;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-prose,
+.pj-blog-page.df-content-skin .pj-journal-prose p,
+.pj-blog-page.df-content-skin .pj-journal-prose li {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pj-blog-page.df-content-skin .pj-journal-prose h1,
+.pj-blog-page.df-content-skin .pj-journal-prose h2,
+.pj-blog-page.df-content-skin .pj-journal-prose h3,
+.pj-blog-page.df-content-skin .pj-journal-prose h4 {
+  color: #ffe06a;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-prose a {
+  color: #ffc928;
+}
+
+.pj-blog-page.df-content-skin .pj-journal-prose blockquote {
+  border-left-color: rgba(255, 201, 40, 0.55);
+  background: rgba(10, 6, 32, 0.55);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.pj-footer-empty__cta {
+  border: 2px solid #ffe08a !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.1) 40%, transparent 48%),
+    linear-gradient(180deg, #ffcc3d 0%, #ff8a1f 52%, #e85a00 100%) !important;
+  box-shadow: 0 6px 0 #a83c00, 0 0 0 3px #2a0f4a !important;
+  color: #fff !important;
+  font-family: "Lilita One", "Baloo 2", sans-serif !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.pj-footer-empty__title {
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  color: #ffe06a !important;
+}
+
+/* Help center tabs */
+.df-help-page .df-content-title {
+  margin-bottom: 0.35rem;
+}
+
+.df-help-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.15rem 0 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid rgba(217, 184, 255, 0.28);
+}
+
+.df-help-tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid rgba(217, 184, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(10, 6, 32, 0.45);
+  color: rgba(255, 255, 255, 0.82);
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.df-help-tab:hover {
+  color: #fff;
+  border-color: rgba(255, 201, 40, 0.55);
+}
+
+.df-help-tab.is-active {
+  color: #3a1400;
+  border-color: transparent;
+  background: linear-gradient(180deg, #ffd24a, #f08a12);
+  box-shadow: 0 4px 12px rgba(240, 138, 18, 0.35);
+}
+
+.df-help-panel {
+  margin-top: 0.35rem;
+}
+
+.df-help-panel-card {
+  padding: 1.1rem 1rem;
+  border: 1px solid rgba(217, 184, 255, 0.28);
+  border-radius: 18px;
+  background: rgba(10, 6, 32, 0.42);
+}
+
+.df-help-panel-card h2 {
+  margin: 0 0 0.75rem;
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: var(--dfc-gold);
+}
+
+.df-help-panel-card,
+.df-help-panel-card p,
+.df-help-panel-card li {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 640px) {
+  .df-content-page {
+    padding-bottom: 1.25rem;
+  }
+
+  .df-content-card {
+    border-radius: 20px;
+    padding: 1.1rem 0.95rem 1.25rem;
+  }
+}

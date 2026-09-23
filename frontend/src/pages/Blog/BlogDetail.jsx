@@ -6,6 +6,7 @@ import { site } from '../../config/site';
 import { usePageSeo } from '../../utils/pageSeo';
 import { extractBlogInnerHtml, formatBlogDate, readingMinutes } from '../../utils/blogHtml';
 import './Blog.css';
+import '../df-content-pages.css';
 
 function wrapTablesForScroll(root) {
   if (!root) return;
@@ -69,7 +70,7 @@ export function BlogDetail() {
 
   if (loading) {
     return (
-      <div className="pj-blog-page pj-journal pj-blog-detail">
+      <div className="pj-blog-page pj-journal pj-blog-detail df-content-skin">
         <p className="pj-blog-status">Loading…</p>
       </div>
     );
@@ -77,7 +78,7 @@ export function BlogDetail() {
 
   if (error || !post) {
     return (
-      <div className="pj-blog-page pj-journal pj-blog-detail">
+      <div className="pj-blog-page pj-journal pj-blog-detail df-content-skin">
         <p className="pj-blog-status pj-blog-status--error">{error || 'Blog post not found'}</p>
         <Link to="/blog" className="pj-journal-back">← Back to blog</Link>
       </div>
@@ -85,7 +86,7 @@ export function BlogDetail() {
   }
 
   return (
-    <article className="pj-blog-page pj-journal pj-blog-detail">
+    <article className="pj-blog-page pj-journal pj-blog-detail df-content-skin">
         <Link to="/blog" className="pj-journal-back">← Back to blog</Link>
       <header className="pj-journal-hero">
         {post.titleImage && (

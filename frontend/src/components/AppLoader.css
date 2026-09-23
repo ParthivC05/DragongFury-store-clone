@@ -21,7 +21,10 @@
   align-items: center;
   justify-content: center;
   min-height: 100dvh;
-  background: rgba(0, 0, 0, 0.96);
+  padding: 28px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(35, 183, 116, 0.16), transparent 26rem),
+    linear-gradient(160deg, rgb(18, 8, 39), rgb(9, 5, 15) 62%, rgb(4, 17, 13));
   transform: translateZ(0);
   touch-action: none;
   overscroll-behavior: none;
@@ -30,6 +33,7 @@
 .dash-loader {
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 1;
@@ -40,70 +44,61 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: min(340px, 88vw);
-  min-height: clamp(76px, 20vw, 132px);
+  min-width: min(230px, 42vw);
+  min-height: clamp(70px, 18vw, 110px);
 }
 
 .dash-loader-logo-glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 150%;
-  height: 150%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 180, 0, 0.42) 0%,
-    rgba(255, 120, 0, 0.18) 38%,
-    transparent 72%
-  );
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0;
-}
-
-.dash-loader-logo-wrap.is-ready .dash-loader-logo-glow {
-  animation: dash-loader-glow-pulse 2.4s ease-in-out infinite;
+  display: none;
 }
 
 .dash-loader-logo {
   position: relative;
   z-index: 1;
   display: block;
-  width: min(340px, 88vw);
+  width: clamp(160px, 42vw, 230px);
   height: auto;
-  max-width: min(340px, 88vw);
+  max-width: min(230px, 42vw);
   object-fit: contain;
   user-select: none;
   -webkit-user-drag: none;
   opacity: 0;
+  transform-origin: 50% 50%;
+  backface-visibility: visible;
+  will-change: transform, filter;
+  filter: drop-shadow(rgba(0, 0, 0, 0.58) 0px 14px 28px);
 }
 
 .dash-loader-logo.is-ready {
   opacity: 1;
-  animation: dash-loader-logo-scale 2.4s ease-in-out infinite;
+  animation: dragonfury-brand-logo-spin 1.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
-@keyframes dash-loader-glow-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: translate(-50%, -50%) scale(0.96);
+.df-loader-caption {
+  display: none;
+}
+
+@keyframes dragonfury-brand-logo-spin {
+  0% {
+    filter: brightness(0.94) drop-shadow(rgba(0, 0, 0, 0.58) 0px 14px 28px);
+    transform: perspective(720px) rotateY(0deg) scale(0.96);
   }
 
   50% {
+    filter: brightness(1.12) drop-shadow(rgba(65, 231, 142, 0.38) 0px 14px 34px);
+    transform: perspective(720px) rotateY(180deg) scale(1.04);
+  }
+
+  100% {
+    filter: brightness(0.94) drop-shadow(rgba(0, 0, 0, 0.58) 0px 14px 28px);
+    transform: perspective(720px) rotateY(360deg) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-loader-logo.is-ready {
+    animation: none;
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.08);
-  }
-}
-
-@keyframes dash-loader-logo-scale {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.04);
+    transform: none;
   }
 }

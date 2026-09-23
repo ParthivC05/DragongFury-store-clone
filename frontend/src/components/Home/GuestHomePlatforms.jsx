@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { buildGuestPlatformGames } from '../../config/featuredPlatformGames';
-import { GuestPlatformsGrid } from './GamesSection/GuestPlatformsGrid';
+import { GameImage } from '../Games/GameImage';
+import { getGameDisplayName } from '../../utils/gameDisplay';
 import { scrollToSectionById } from '../../utils/scrollToGames';
 
 const GUEST_PLATFORMS = buildGuestPlatformGames([]);
 const INITIAL_VISIBLE = 12;
 const COLLAPSE_MS = 320;
 
-/** Guest home platforms from the bundled list — no catalog or casino API. */
 export function GuestHomePlatforms() {
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -20,7 +20,12 @@ export function GuestHomePlatforms() {
   const total = GUEST_PLATFORMS.length;
   const showAll = expanded || collapsing;
   const visibleGames = showAll ? GUEST_PLATFORMS : GUEST_PLATFORMS.slice(0, INITIAL_VISIBLE);
+  const remaining = Math.max(0, total - INITIAL_VISIBLE);
   const canToggle = total > INITIAL_VISIBLE;
+
+  const goSignup = useCallback(() => {
+    navigate(signupTo);
+  }, [navigate, signupTo]);
 
   const handleToggle = useCallback(() => {
     if (collapseTimerRef.current) {
@@ -50,43 +55,57 @@ export function GuestHomePlatforms() {
   }, []);
 
   return (
-    <section
-      id="games"
-      className="dash-games-section dash-games-section--guest dash-priority-lobby dash-animate-in"
-    >
-      <div className="dash-priority-lobby-head">
-        <div className="dash-priority-lobby-copy">
-          <p className="dash-priority-lobby-kick">Priority lobby</p>
-          <h2 className="dash-priority-lobby-title">Top Game Platforms</h2>
-        </div>
-        <button
-          type="button"
-          className="dash-priority-lobby-signup"
-          onClick={() => navigate(signupTo)}
-        >
-          Sign Up to Play All →
-        </button>
-      </div>
+    <section className="df-other-games" id="games" aria-labelledby="df-other-games-title">
+      <p className="df-games-eyebrow">Also on your account</p>
+      <h2 className="df-games-title" id="df-other-games-title">
+        TRY OTHER GAMES
+      </h2>
+      <p className="df-games-sub">
+        Dragon Fury is the main event. One <strong>DragonFury.casino</strong> account also opens
+        these web platforms.
+      </p>
 
-      <GuestPlatformsGrid
-        games={visibleGames}
-        initialVisible={INITIAL_VISIBLE}
-        collapsing={collapsing}
-        showFooterCta={false}
-        priorityLobby
-        onSelectPlatform={() => navigate(signupTo)}
-      />
+      <ul className="df-other-games__list">
+        {visibleGames.map((game, index) => {
+          const name = getGameDisplayName(game);
+          return (
+            <li key={game.id ?? `${name}-${index}`}>
+              <button
+                type="button"
+                className="df-other-games__tile"
+                aria-label={`${name} (secondary platform)`}
+                onClick={goSignup}
+              >
+                <span className="df-other-games__ring">
+                  {game.isNew ? <span className="df-other-games__new">NEW</span> : null}
+                  <GameImage
+                    game={game}
+                    className="df-other-games__art"
+                    loading="lazy"
+                    fetchPriority={index < 8 ? 'high' : 'auto'}
+                    width={160}
+                    height={160}
+                  />
+                </span>
+                <span className="df-other-games__name">{name}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
 
       {canToggle ? (
-        <button
-          type="button"
-          className="dash-platforms-toggle"
-          aria-expanded={expanded && !collapsing}
-          disabled={collapsing}
-          onClick={handleToggle}
-        >
-          {expanded && !collapsing ? '▴ Show Less' : `▾ Show All ${total} Platforms`}
-        </button>
+        <div className="df-games-more df-games-more--toggle">
+          <button
+            className="df-games-view-all"
+            type="button"
+            aria-expanded={expanded && !collapsing}
+            disabled={collapsing}
+            onClick={handleToggle}
+          >
+            {expanded && !collapsing ? 'SHOW LESS' : `VIEW ALL (${remaining} MORE)`}
+          </button>
+        </div>
       ) : null}
     </section>
   );

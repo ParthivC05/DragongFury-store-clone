@@ -4,7 +4,7 @@
   padding: 1.5rem 1rem 3.5rem;
   width: 100%;
   text-align: left;
-  color: #e8edf5;
+  color: #f4ecff;
 }
 
 .pj-seo-crumbs {
@@ -14,16 +14,16 @@
   align-items: center;
   margin: 0 0 1.35rem;
   font-size: 0.85rem;
-  color: #93a4be;
+  color: rgba(244, 236, 255, 0.62);
 }
 
 .pj-seo-crumbs a {
-  color: #cbd5e1;
+  color: #ffe06a;
   text-decoration: none;
 }
 
 .pj-seo-crumbs a:hover {
-  color: #B6FF2A;
+  color: #ffc928;
   text-decoration: underline;
 }
 
@@ -43,25 +43,28 @@
 
 .pj-seo-label {
   margin: 0 0 0.4rem;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #00ffe0;
+  color: #ffe06a;
 }
 
 .pj-seo-title {
   margin: 0 0 0.55rem;
+  font-family: "Lilita One", "Baloo 2", sans-serif;
   font-size: clamp(1.7rem, 4.2vw, 2.35rem);
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.15;
-  color: #fff8dc;
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.45), 0 0 18px rgba(165, 43, 239, 0.35);
 }
 
 .pj-seo-lead {
   margin: 0;
   max-width: 42rem;
-  color: #93a4be;
+  color: rgba(244, 236, 255, 0.78);
   font-size: 1rem;
   line-height: 1.6;
 }
@@ -84,14 +87,14 @@
 }
 
 .pj-seo-card {
-  --platform-accent: rgba(182, 255, 42, 0.5);
-  --platform-glow: rgba(182, 255, 42, 0.16);
+  --platform-accent: rgba(255, 201, 40, 0.55);
+  --platform-glow: rgba(165, 43, 239, 0.22);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.1rem;
-  background: linear-gradient(165deg, #101826 0%, #0b1220 100%);
-  border: 1px solid rgba(182, 255, 42, 0.14);
+  background: linear-gradient(165deg, #1a0f38 0%, #100a25 100%);
+  border: 1px solid rgba(255, 201, 40, 0.22);
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
   text-decoration: none;
   color: inherit;
@@ -149,9 +152,9 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #B6FF2A;
-  background: rgba(182, 255, 42, 0.1);
-  border: 1px solid rgba(182, 255, 42, 0.22);
+  color: #ffe06a;
+  background: rgba(255, 201, 40, 0.12);
+  border: 1px solid rgba(255, 201, 40, 0.28);
 }
 
 .pj-seo-card-body h2 {
@@ -173,7 +176,7 @@
   margin-top: 0.35rem;
   font-size: 0.82rem;
   font-weight: 700;
-  color: #00ffe0;
+  color: #ffe06a;
 }
 
 .pj-seo-card:hover .pj-seo-card-cta {
@@ -195,9 +198,9 @@
   padding: 1.25rem;
   border-radius: 1.25rem;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(182, 255, 42, 0.16), transparent 65%),
-    linear-gradient(165deg, #141c2c, #0b1220);
-  border: 1px solid rgba(182, 255, 42, 0.18);
+    radial-gradient(ellipse at 50% 30%, rgba(165, 43, 239, 0.28), transparent 65%),
+    linear-gradient(165deg, #1a0f38, #100a25);
+  border: 1px solid rgba(255, 201, 40, 0.22);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
@@ -231,36 +234,49 @@
   justify-content: center;
   padding: 0.7rem 1.2rem;
   border-radius: 999px;
-  border: 1px solid rgba(182, 255, 42, 0.28);
-  color: #f0ebe0;
+  border: 1px solid rgba(255, 201, 40, 0.4);
+  color: #fff;
   text-decoration: none;
-  font-weight: 700;
-  font-size: 0.92rem;
-  background: rgba(13, 19, 32, 0.7);
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  font-weight: 400;
+  font-size: 0.98rem;
+  background: rgba(16, 10, 37, 0.72);
   cursor: pointer;
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .pj-seo-btn:hover {
-  border-color: #B6FF2A;
+  border-color: #ffc928;
+  color: #ffe06a;
   transform: translateY(-1px);
 }
 
 .pj-seo-btn-primary {
-  background: linear-gradient(135deg, #B6FF2A, #8FE31A);
-  border-color: #B6FF2A;
-  color: #1a1200;
-  box-shadow: 0 8px 20px rgba(182, 255, 42, 0.25);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.28) 34%, transparent 48%),
+    linear-gradient(#9ff2ff, #3fd6ff 40%, #16bdf5, #0ea6ea);
+  border-color: transparent;
+  color: #fff;
+  text-shadow: 0 2px 0 rgb(11, 61, 138);
+  box-shadow:
+    rgb(10, 123, 212) 0 5px,
+    rgb(11, 95, 176) 0 0 0 2px,
+    rgba(63, 214, 255, 0.4) 0 0 18px;
 }
 
 .pj-seo-btn-primary:hover {
-  box-shadow: 0 10px 24px rgba(182, 255, 42, 0.35);
+  color: #fff;
+  filter: brightness(1.06);
+  box-shadow:
+    rgb(10, 123, 212) 0 6px,
+    rgb(11, 95, 176) 0 0 0 2px,
+    rgba(63, 214, 255, 0.5) 0 0 22px;
 }
 
 .pj-seo-faq {
   margin-top: 2.25rem;
   padding-top: 1.4rem;
-  border-top: 1px solid rgba(182, 255, 42, 0.12);
+  border-top: 1px solid rgba(255, 201, 40, 0.18);
 }
 
 .pj-seo-faq h2 {
@@ -273,8 +289,8 @@
   margin-bottom: 0.85rem;
   padding: 0.95rem 1.05rem;
   border-radius: 0.9rem;
-  background: rgba(13, 19, 32, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(16, 10, 37, 0.62);
+  border: 1px solid rgba(255, 201, 40, 0.14);
 }
 
 .pj-seo-faq-item h2,
@@ -303,7 +319,7 @@
 }
 
 .pj-seo-contact-list a {
-  color: #00ffe0;
+  color: #ffe06a;
 }
 
 @media (max-width: 760px) {

@@ -7,14 +7,21 @@ const VERIFICATION_EXPIRY_HOURS = 24;
 const PASSWORD_RESET_EXPIRY_HOURS = 1;
 const OTP_EXPIRY_MINUTES = 10;
 
-const DEFAULT_VERIFICATION_SUBJECT = 'Verify your email - Partner Platform';
-const FOOTER_BRAND = 'Partner Platform';
+const DEFAULT_VERIFICATION_SUBJECT = 'Verify your email - Dragon Fury';
+const FOOTER_BRAND = 'Dragon Fury';
 
 /** Format storeCode to display name (thor -> Thor, ironman -> Ironman) */
 function storeCodeToDisplayName(storeCode) {
   if (!storeCode || typeof storeCode !== 'string') return null;
   const s = String(storeCode).trim();
   if (!s) return null;
+  const known = {
+    dragonfury: 'Dragon Fury',
+    playjuwa: 'PlayJuwa',
+    grandsweep: 'Grand Sweep'
+  };
+  const key = s.toLowerCase();
+  if (known[key]) return known[key];
   return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
 }
 

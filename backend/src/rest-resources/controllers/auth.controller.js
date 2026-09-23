@@ -94,7 +94,7 @@ async function login(req, res) {
       typeof err.message === 'string' && err.message.trim()
         ? err.message.trim()
         : 'Something went wrong. Please try again later.';
-    sendError(res, message, status, err.code || null);
+    sendError(res, message, status, err.code || null, err.data ? { data: err.data } : null);
   }
 }
 

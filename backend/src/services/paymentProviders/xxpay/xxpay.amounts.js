@@ -60,11 +60,8 @@ function isAllowedXxpayPayinAmount(amount, paymentType) {
 
 function assertAllowedXxpayPayinAmount(amount, paymentType) {
   const n = round2(amount);
-  const list = getXxpayPayinAmountsForPaymentType(paymentType);
   if (isAllowedXxpayPayinAmount(n, paymentType)) return n;
-  const err = new Error(
-    `XXPay does not allow amount ${Number.isFinite(n) ? n.toFixed(2) : amount} for ${normalizePaymentType(paymentType) || 'this method'}. Choose one of: ${list.map((a) => a.toFixed(2)).join(', ')}.`
-  );
+  const err = new Error("This amount isn't available. Please choose a different amount.");
   err.statusCode = 400;
   throw err;
 }

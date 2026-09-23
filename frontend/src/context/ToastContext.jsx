@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import { sanitizePlayerFacingMessage } from '../utils/playerFacingMessage';
 
 const ToastContext = createContext(null);
 
@@ -21,7 +22,10 @@ export function ToastProvider({ children }) {
   const addToast = useCallback(
     ({ type = 'info', message, duration = DEFAULT_DURATION, action = null }) => {
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-      setToasts((prev) => [...prev, { id, type, message, duration, action }]);
+      setToasts((prev) => [
+        ...prev,
+        { id, type, message: sanitizePlayerFacingMessage(message, { type }), duration, action }
+      ]);
       if (duration > 0) {
         setTimeout(() => removeToast(id), duration);
       }

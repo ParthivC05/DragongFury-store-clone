@@ -4,18 +4,24 @@
  */
 export function HelpTabPage({ title, children, image, note }) {
   return (
-    <div className="rounded-2xl bg-card border border-gray-700 p-4 sm:p-6">
-      {title && (
-        <h2 className="text-base sm:text-lg font-semibold text-gray-100 m-0 mb-3">{title}</h2>
-      )}
-      <div className="help-tab-body text-sm text-gray-200">
+    <div className="df-help-panel-card">
+      {title ? <h2>{title}</h2> : null}
+      <div className="help-tab-body">
         {children}
-        {note && <p className="mt-4 italic text-gray-400 m-0">{note}</p>}
+        {note ? <p className="mt-4 italic m-0" style={{ color: 'rgba(255,255,255,0.55)' }}>{note}</p> : null}
       </div>
-      {image?.src && (
+      {image?.src ? (
         <div className="mt-6">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Guide image</p>
-          <div className="relative w-full max-w-lg rounded-xl border border-gray-600 overflow-hidden bg-gray-800/50">
+          <p
+            className="text-xs font-semibold uppercase tracking-wider mb-2 m-0"
+            style={{ color: 'rgba(255,224,106,0.85)' }}
+          >
+            Guide image
+          </p>
+          <div
+            className="relative w-full max-w-lg rounded-xl overflow-hidden"
+            style={{ border: '1px solid rgba(217,184,255,0.35)', background: 'rgba(10,6,32,0.5)' }}
+          >
             <img
               src={image.src}
               alt={image.alt ?? 'Guide'}
@@ -29,12 +35,15 @@ export function HelpTabPage({ title, children, image, note }) {
                 }
               }}
             />
-            <div className="hidden absolute inset-0 items-center justify-center p-4 text-center text-sm text-gray-500">
+            <div
+              className="hidden absolute inset-0 items-center justify-center p-4 text-center text-sm"
+              style={{ color: 'rgba(255,255,255,0.45)' }}
+            >
               Add your guide image (e.g. in public/help/) or set image.src to your URL.
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

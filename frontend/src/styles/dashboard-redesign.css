@@ -22,22 +22,22 @@
 }
 
 .dashboard {
-  --rd-gold: #B6FF2A;
-  --rd-gold-deep: #6FBF00;
-  --rd-gold-glow: rgba(182, 255, 42, 0.3);
-  --rd-green: #B6FF2A;
-  --rd-green-deep: #6FBF00;
-  --rd-green-glow: rgba(182, 255, 42, 0.4);
-  --rd-bg: #0a0c0a;
-  --rd-panel: #121512;
-  --rd-panel-2: #181c18;
-  --rd-txt: #f3f7f0;
-  --rd-dim: #8d9a88;
-  --rd-teal: #8fe31a;
-  --rd-cyan: #b6ff2a;
+  --rd-gold: #3da4ff;
+  --rd-gold-deep: #1264d9;
+  --rd-gold-glow: rgba(61, 164, 255, 0.3);
+  --rd-green: #39e72f;
+  --rd-green-deep: #148a12;
+  --rd-green-glow: rgba(57, 231, 47, 0.4);
+  --rd-bg: #09071a;
+  --rd-panel: #100a25;
+  --rd-panel-2: #160d32;
+  --rd-txt: #ffffff;
+  --rd-dim: #c9b8ff;
+  --rd-teal: #3da4ff;
+  --rd-cyan: #3da4ff;
   --rd-red: #ff5630;
-  --rd-violet: #6FBF00;
-  --rd-faint: #8d9a88;
+  --rd-violet: #8b24e8;
+  --rd-faint: #c9b8ff;
   --rd-r-md: 14px;
   --rd-r-lg: 20px;
   --rd-shadow: 0 22px 50px -22px rgba(0, 0, 0, 0.75);

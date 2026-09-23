@@ -644,20 +644,20 @@
 
   /* Dashboard tokens — overridden by .dash-root in dashboard-dragonfury.css */
   .dashboard {
-    --dash-black: #04060a;
-    --dash-deep: #0d1320;
-    --dash-card: #0d1320;
-    --dash-card2: #121a2a;
-    --dash-gold: #B6FF2A;
-    --dash-gold2: #8FE31A;
-    --dash-gold3: #4FA000;
-    --dash-neon: #00e676;
-    --dash-neon2: #00ffe0;
-    --dash-purple: #9b59ff;
+    --dash-black: #09071a;
+    --dash-deep: #100a25;
+    --dash-card: #160d32;
+    --dash-card2: #1c1140;
+    --dash-gold: #3da4ff;
+    --dash-gold2: #2585f4;
+    --dash-gold3: #1264d9;
+    --dash-neon: #3da4ff;
+    --dash-neon2: #ffc928;
+    --dash-purple: #8b24e8;
     --dash-red: #ff3355;
-    --dash-border: rgba(182, 255, 42, 0.13);
-    --dash-text: #f0ebe0;
-    --dash-muted: #5a6880;
+    --dash-border: rgba(157, 123, 255, 0.22);
+    --dash-text: #ffffff;
+    --dash-muted: #c9b8ff;
   }
   .dashboard-hero-bg {
     animation: dashboard-hero-bg-pulse 6s ease-in-out infinite;

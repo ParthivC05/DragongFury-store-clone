@@ -1,29 +1,29 @@
 /* Dragon Fury dashboard — lime on black */
 
 .dash-root {
-  --dash-gold: #B6FF2A;
-  --dash-gold2: #8FE31A;
-  --dash-gold-glow: rgba(182, 255, 42, 0.55);
+  --dash-gold: #3da4ff;
+  --dash-gold2: #2585f4;
+  --dash-gold-glow: rgba(139, 36, 232, 0.45);
   --dash-fire: #ff3d00;
   --dash-ember: #ff8c00;
-  --dash-teal: #8fe31a;
-  --dash-teal2: #6FBF00;
-  --dash-purple: #6FBF00;
-  --dash-green: #00e676;
-  --dash-pj-gold: #C6FF4D;
-  --dash-pj-green: #3ddc7a;
-  --dash-bg: #0a0c0a;
-  --dash-bg2: #101410;
-  --dash-deep: #141814;
-  --dash-card: #151815;
-  --dash-card2: #1a1f18;
-  --dash-surface: #151815;
-  --dash-border: rgba(182, 255, 42, 0.13);
-  --dash-border-strong: rgba(182, 255, 42, 0.28);
-  --dash-text: #f3f7f0;
-  --dash-muted: #8d9a88;
-  --dash-neon: #00e676;
-  --dash-neon2: #B6FF2A;
+  --dash-teal: #3da4ff;
+  --dash-teal2: #1264d9;
+  --dash-purple: #8b24e8;
+  --dash-green: #39e72f;
+  --dash-pj-gold: #ffc928;
+  --dash-pj-green: #39e72f;
+  --dash-bg: #09071a;
+  --dash-bg2: #100a25;
+  --dash-deep: #160d32;
+  --dash-card: #160d32;
+  --dash-card2: #1c1140;
+  --dash-surface: #160d32;
+  --dash-border: rgba(157, 123, 255, 0.22);
+  --dash-border-strong: rgba(61, 164, 255, 0.38);
+  --dash-text: #ffffff;
+  --dash-muted: #c9b8ff;
+  --dash-neon: #3da4ff;
+  --dash-neon2: #ffc928;
   --dash-red: #ff3355;
   --dash-nav-h: 56px;
   position: relative;
@@ -48,9 +48,9 @@ body.guest-landing-active {
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(182, 255, 42, 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(182, 255, 42, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(143, 227, 26, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 36, 232, 0.22) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(61, 164, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(139, 36, 232, 0.08) 0%, transparent 50%),
     var(--dash-bg);
 }
 
@@ -215,7 +215,7 @@ body.guest-landing-active {
 @media (max-width: 767px) {
   body.guest-landing-active .dash-root,
   .dash-root--guest-landing {
-    --dash-nav-h: 68px;
+    --dash-nav-h: 54px;
   }
 
   body.guest-landing-active .dash-nav-inner--guest,
@@ -268,7 +268,7 @@ body.guest-landing-active {
   .dash-nav-inner--guest-landing .dash-nav-guest-logo--desktop,
   body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-login--desktop,
   .dash-nav-inner--guest-landing .dash-nav-guest-login--desktop {
-    display: none !important;
+    display: flex !important;
   }
 
   body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-login--mobile,

@@ -48,7 +48,7 @@ export default function BlogPostForm() {
 
   const [form, setForm] = useState(() => ({
     ...EMPTY,
-    storeCode: isMaster ? 'playjuwa' : (user?.storeCode || '')
+    storeCode: isMaster ? 'dragonfury' : (user?.storeCode || '')
   }))
   const [slugTouched, setSlugTouched] = useState(isEdit)
   const [loading, setLoading] = useState(isEdit)
@@ -74,7 +74,8 @@ export default function BlogPostForm() {
             return prev
           }
           if (isEdit) return prev
-          return { ...prev, storeCode: scoped[0] || '' }
+          const preferred = scoped.find((c) => String(c).toLowerCase() === 'dragonfury')
+          return { ...prev, storeCode: preferred || scoped[0] || '' }
         })
       })
       .catch(() => setStoreOptions([]))

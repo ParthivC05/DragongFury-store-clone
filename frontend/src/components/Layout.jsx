@@ -1,12 +1,15 @@
 import { lazy, Suspense, useEffect, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePinAppChromeToVisualViewport } from '../hooks/usePinAppChromeToVisualViewport';
+import { DragonFuryHelpLauncher } from './Home/DragonFuryHelpLauncher';
 import { Navbar } from './Navbar';
 import { BottomBar } from './BottomBar';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 /* Above-fold shell. Full theme is scheduled after first paint on `/`. */
 import '../styles/dashboard-critical.css';
+import '../styles/dashboard-df-online.css';
+import './Auth/auth-df-modal.css';
 import { loadDashboardStyles, scheduleDashboardStyles } from '../styles/loadDashboardStyles';
 import { warmupDeposit } from '../utils/preloadDeposit';
 import { warmupCasino } from '../utils/preloadCasino';
@@ -33,8 +36,6 @@ const LandingFooter = lazy(() =>
 const LandingSocialLinks = lazy(() =>
   import('./LandingSocialLinks').then((m) => ({ default: m.LandingSocialLinks }))
 );
-
-const AUTH_PATHS = ['/login', '/register', '/check-email', '/forgot-password', '/reset-password'];
 
 export function Layout({ children }) {
   usePinAppChromeToVisualViewport();
@@ -126,29 +127,22 @@ export function Layout({ children }) {
     };
   }, [layoutPath]);
 
-  const isAuthPage = AUTH_PATHS.includes(layoutPath);
-  const isPlayJuwaAuth =
-    layoutPath === '/login' ||
-    layoutPath === '/register' ||
+  const isAuthOverlay = layoutPath === '/login' || layoutPath === '/register';
+  const isAuthPage =
     layoutPath === '/check-email' ||
-    layoutPath === '/forgot-password';
+    layoutPath === '/forgot-password' ||
+    layoutPath === '/reset-password';
+  const isPlayJuwaAuth = isAuthPage;
   const isDashboardLayout =
     layoutPath === '/' ||
+    isAuthOverlay ||
     layoutPath === '/link2play' ||
     layoutPath === '/casino' ||
     layoutPath.startsWith('/casino/') ||
     layoutPath === '/firekirin-exclusive' ||
     layoutPath === '/platform' ||
     layoutPath === '/bonus';
-  const isGuestLanding =
-    (layoutPath === '/' ||
-      layoutPath === '/link2play' ||
-      layoutPath === '/casino' ||
-      layoutPath.startsWith('/casino/') ||
-      layoutPath === '/platform' ||
-      layoutPath === '/bonus') &&
-    !authLoading &&
-    !isAuthenticated;
+  const isGuestLanding = !authLoading && !isAuthenticated && !isAuthPage;
   const hideGuestBuyWithdraw = !authLoading && !isAuthenticated;
   const isBottomNavOnly =
     layoutPath === '/deposit' ||
@@ -208,7 +202,7 @@ export function Layout({ children }) {
     <div
       className={`dash-root flex flex-col min-h-screen${isGuestLanding ? ' dash-root--guest-landing' : ''}${
         useNavOnlyBottomPad ? ' dash-root--bottom-nav-only' : ''
-      }${isDashboardLayout ? ' dash-root--split-scroll' : ''}${
+      }${isDashboardLayout && !isGuestLanding ? ' dash-root--split-scroll' : ''}${
         isSupportChat ? ' dash-root--support-chat' : ''
       }`}
     >
@@ -274,6 +268,7 @@ export function Layout({ children }) {
           <LandingSocialLinks variant="dock" />
         </Suspense>
       )}
+      {!isAuthPage ? <DragonFuryHelpLauncher /> : null}
     </div>
   );
 }

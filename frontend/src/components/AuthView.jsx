@@ -3,10 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { usePageContentReady } from '../context/PageReadyContext';
 import { AuthPage } from './Auth';
 import { AppLoader } from './AppLoader';
+import { Home } from '../pages/Home';
 
 /**
- * Full-page login/signup for /login and /register.
- * If user is already logged in, redirect to home. Layout hides sidebar on these routes.
+ * Login/signup overlay on the guest landing, matching dragonfury.online.
+ * If user is already logged in, redirect to home.
  */
 export function AuthView() {
   const { pathname } = useLocation();
@@ -21,5 +22,10 @@ export function AuthView() {
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
-  return <AuthPage mode={mode} />;
+  return (
+    <>
+      <Home />
+      <AuthPage mode={mode} />
+    </>
+  );
 }

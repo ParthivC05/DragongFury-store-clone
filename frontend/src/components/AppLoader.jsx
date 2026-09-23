@@ -79,7 +79,6 @@ export function AppLoader({ fullScreen = false, fillPage = true, message = 'Load
       aria-label={message}
     >
       <div className={`dash-loader-logo-wrap${logoReady ? ' is-ready' : ''}`} aria-hidden>
-        <span className="dash-loader-logo-glow" />
         {logoSrc ? (
           <img
             key={logoSrc}
@@ -87,8 +86,8 @@ export function AppLoader({ fullScreen = false, fillPage = true, message = 'Load
             src={logoSrc}
             alt=""
             className={`dash-loader-logo${logoReady ? ' is-ready' : ''}`}
-            width={340}
-            height={132}
+            width={230}
+            height={90}
             loading="eager"
             decoding="async"
             fetchPriority="high"

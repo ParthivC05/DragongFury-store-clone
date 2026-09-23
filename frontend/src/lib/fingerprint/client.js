@@ -3,7 +3,7 @@ import { STORE_CODE } from '../../config/site';
 
 const PUBLIC_KEY = import.meta.env.VITE_FINGERPRINT_PUBLIC_API_KEY;
 const REGION = import.meta.env.VITE_FINGERPRINT_REGION || 'us';
-const ENFORCE_STORES = String(import.meta.env.VITE_FINGERPRINT_ENFORCE_STORES || 'dragonfury')
+const ENFORCE_STORES = String(import.meta.env.VITE_FINGERPRINT_ENFORCE_STORES || '')
   .split(',')
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);

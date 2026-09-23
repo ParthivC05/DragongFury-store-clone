@@ -19,6 +19,7 @@ const passwordRule = Yup.string()
   .matches(PASSWORD_PATTERN, PASSWORD_MESSAGE);
 
 export const LOGIN_VALIDATION = Yup.object().shape({
+  terms: Yup.boolean().oneOf([true], 'You must agree to the terms and conditions and privacy policy.'),
   email: Yup.string()
     .trim()
     .required('Email or phone number is required.')
@@ -56,6 +57,7 @@ export const SIGNUP_VALIDATION = Yup.object().shape({
   email: emailRule,
   password: passwordRule,
   username: Yup.string().trim().max(255, 'Username must be at most 255 characters.'),
+  referral: Yup.string().trim().max(64, 'Referral code must be at most 64 characters.'),
   terms: Yup.boolean()
     .oneOf([true], 'You must agree to the terms and conditions and privacy policy to sign up.')
 });

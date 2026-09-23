@@ -519,15 +519,8 @@ export function GamesSection() {
       <div className="dash-section-head">
         {isAuthenticated ? (
           <>
-            <p className="dash-priority-lobby-kick">Your lobby</p>
-            <h2 className="dash-section-title">Your Platforms</h2>
-            <p className="dash-section-sub">
-              {isSearchActive
-                ? 'Search results for platform games'
-                : filter === 'registered'
-                  ? 'Your registered games — play, recharge, or redeem'
-                  : 'Recharge, redeem or play — same as always.'}
-            </p>
+            <p className="dash-priority-lobby-kick">Also on your account</p>
+            <h2 className="dash-section-title">Try Other Games</h2>
           </>
         ) : (
           <h2 className="dash-section-title dash-platforms-title">

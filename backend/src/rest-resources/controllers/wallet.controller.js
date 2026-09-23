@@ -6,6 +6,7 @@ const { sendSuccess, sendError } = require('../../helpers/response.helpers');
 const { assertKycForWithdraw } = require('../../services/kyc/assertKycForWithdraw.service');
 const { paymentLog, logger } = require('../../libs/logger');
 const { sendPaymentAccountCreatedEmail } = require('../../utils/email');
+const { sanitizePlayerFacingMessage } = require('../../utils/playerFacingMessage');
 
 const DEPOSIT_DEFAULT_ERROR = 'Deposit could not be completed. Please try again later.';
 
@@ -19,7 +20,8 @@ function isDatabaseOrInternalError(err) {
 
 function safeMessage(err, defaultMsg) {
   if (isDatabaseOrInternalError(err)) return defaultMsg;
-  return typeof err.message === 'string' && err.message.trim() ? err.message.trim() : defaultMsg;
+  const msg = typeof err.message === 'string' ? sanitizePlayerFacingMessage(err.message.trim()) : '';
+  return msg || defaultMsg;
 }
 
 async function getBalance(req, res) {

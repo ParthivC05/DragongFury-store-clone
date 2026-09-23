@@ -8,13 +8,14 @@ export const GUEST_STYLE_PATHS = ['/', '/link2play', '/casino', '/platform', '/b
 
 export function loadDashboardStyles() {
   if (!dashboardStylesPromise) {
-    dashboardStylesPromise = Promise.all([
-      import('./dashboard-dragonfury.css'),
-      import('./dashboard-redesign.css'),
-      import('./dashboard-fury-layout.css'),
-    ]).catch(() => {
-      /* Still resolve so UI never waits forever if a CSS chunk fails. */
-    });
+    dashboardStylesPromise = import('./dashboard-dragonfury.css')
+      .then(() => import('./dashboard-redesign.css'))
+      .then(() => import('./dashboard-fury-layout.css'))
+      .then(() => import('./dashboard-df-online.css'))
+      .then(() => import('../components/Auth/auth-df-modal.css'))
+      .catch(() => {
+        /* Still resolve so UI never waits forever if a CSS chunk fails. */
+      });
   }
   return dashboardStylesPromise;
 }

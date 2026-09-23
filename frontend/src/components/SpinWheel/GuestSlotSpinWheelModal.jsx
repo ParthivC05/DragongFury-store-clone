@@ -65,7 +65,12 @@ export function GuestSlotSpinWheelModal({ open, onClose }) {
               <span />
             </div>
 
-            <button type="button" className="fdb-close fury-spin-close" onClick={onClose} aria-label="Close" />
+            <button
+              type="button"
+              className="fdb-close fury-spin-close dragonfury-close-button"
+              onClick={onClose}
+              aria-label="Close"
+            />
 
             <div className="lp-guest-spin-modal-head fury-spin-head">
               <p className="lp-guest-spin-modal-eyebrow fury-spin-live">

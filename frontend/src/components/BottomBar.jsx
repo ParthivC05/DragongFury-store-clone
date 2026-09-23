@@ -1,23 +1,13 @@
-import { useEffect, useState, lazy, Suspense, useSyncExternalStore } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { scrollToGamesSection } from '../utils/scrollToGames';
 import { SiteLogo } from './SiteLogo';
 import { lockBodyScroll } from '../utils/bodyScrollLock';
 import { OPEN_MOBILE_MENU_EVENT } from '../utils/navEvents';
-import { warmupCasino } from '../utils/preloadCasino';
-import {
-  getBrowserPathname,
-  getBrowserRouteKey,
-  isCasinoPath,
-  subscribeBrowserLocation,
-} from '../utils/browserLocation';
 
 const DashboardSidebar = lazy(() =>
   import('./Home/DashboardSidebar').then((m) => ({ default: m.DashboardSidebar }))
 );
-
-const BONUS_ICON = '/bonus.webp';
 
 function navItemClass({ isActive, isCenter }) {
   const base = isCenter ? 'dash-nav-item dash-nav-item--home' : 'dash-nav-item';
@@ -26,29 +16,18 @@ function navItemClass({ isActive, isCenter }) {
 
 export function BottomBar() {
   const { isAuthenticated, loading: authLoading } = useAuth();
-  const { pathname, search, hash } = useLocation();
+  const { pathname, search } = useLocation();
   const navigate = useNavigate();
-  const browserRouteKey = useSyncExternalStore(
-    subscribeBrowserLocation,
-    getBrowserRouteKey,
-    () => pathname
-  );
-  const browserPath = getBrowserPathname(browserRouteKey);
   const [menuOpen, setMenuOpen] = useState(false);
   const registerPath = `/register${search || ''}`;
   const isOnHome = pathname === '/';
-  const isOnPlatform = pathname === '/platform';
-  // Guests never see Buy SC / Withdraw SC on mobile. Hide while auth is resolving
-  // so logged-in users don't get a guest flash, then show once session is known.
   const hideBuyWithdrawRow =
     authLoading ||
     !isAuthenticated ||
     pathname === '/deposit' ||
     pathname === '/withdraw' ||
     pathname.startsWith('/support/tickets');
-  const platformHighlighted = isOnPlatform || (isAuthenticated && isOnHome && hash === '#games');
-  const homeHighlighted = isOnHome && hash !== '#games' && !isOnPlatform;
-  const casinoHighlighted = isCasinoPath(browserPath) || isCasinoPath(pathname);
+  const homeHighlighted = isOnHome;
   const bonusHighlighted = pathname === '/bonus' || pathname === '/account/affiliate';
 
   const closeMenu = () => setMenuOpen(false);
@@ -76,20 +55,6 @@ export function BottomBar() {
     };
   }, [menuOpen]);
 
-  const handlePlatformNav = (e) => {
-    e.preventDefault();
-    if (!isAuthenticated) {
-      if (!isOnPlatform) navigate('/platform');
-      return;
-    }
-    if (isOnHome) {
-      scrollToGamesSection();
-      navigate({ pathname: '/', hash: '#games' }, { replace: true });
-    } else {
-      navigate('/#games');
-    }
-  };
-
   const handleHomeNav = (e) => {
     e.preventDefault();
     if (isOnHome) {
@@ -98,13 +63,6 @@ export function BottomBar() {
       navigate('/');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleCasinoNav = () => {
-    warmupCasino();
-    if (casinoHighlighted) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
   };
 
   return (
@@ -145,27 +103,30 @@ export function BottomBar() {
           </div>
         )}
 
-        <nav className="dash-bottom-nav" aria-label="Main navigation">
-          <button
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className={`dash-nav-item${menuOpen ? ' active' : ''}`}
-            aria-haspopup="true"
-            aria-expanded={menuOpen}
+        <nav className="dash-bottom-nav" aria-label="Lobby navigation">
+          <NavLink
+            to={isAuthenticated ? '/deposit' : registerPath}
+            className={({ isActive }) =>
+              `dash-nav-item${isAuthenticated && pathname === '/deposit' ? ' active' : isActive && pathname === '/deposit' ? ' active' : ''}`
+            }
           >
-            <span className="dash-nav-emoji" aria-hidden>☰</span>
-            <span className="dash-nav-label">Menu</span>
-          </button>
+            <span className="dash-nav-emoji" aria-hidden>
+              <img src="/df-online/nav-shop.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
+            </span>
+            <span className="dash-nav-label">Shop</span>
+          </NavLink>
 
-          <button
-            type="button"
-            onClick={handlePlatformNav}
-            className={`dash-nav-item${platformHighlighted ? ' active' : ''}`}
-            aria-current={platformHighlighted ? 'page' : undefined}
+          <NavLink
+            to={isAuthenticated ? '/withdraw' : registerPath}
+            className={() =>
+              `dash-nav-item${pathname === '/withdraw' ? ' active' : ''}`
+            }
           >
-            <span className="dash-nav-emoji" aria-hidden>🎮</span>
-            <span className="dash-nav-label">Platform</span>
-          </button>
+            <span className="dash-nav-emoji" aria-hidden>
+              <img src="/df-online/nav-redeem.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
+            </span>
+            <span className="dash-nav-label">Redeem</span>
+          </NavLink>
 
           <NavLink
             to="/"
@@ -173,7 +134,7 @@ export function BottomBar() {
             className={navItemClass({ isActive: homeHighlighted, isCenter: true })}
           >
             <span className="dash-nav-home-btn" aria-hidden>
-              <span className="dash-nav-home-emoji">🏠</span>
+              <img src="/df-online/nav-home.webp" alt="" className="dash-nav-hud-art" width={52} height={52} />
             </span>
             <span className="dash-nav-label">Home</span>
           </NavLink>
@@ -185,9 +146,9 @@ export function BottomBar() {
           >
             <span className="dash-nav-emoji dash-nav-emoji--bonus" aria-hidden>
               <img
-                src={BONUS_ICON}
+                src="/df-online/nav-bonus.webp"
                 alt=""
-                className="dash-nav-bonus-icon"
+                className="dash-nav-hud-art"
                 width={42}
                 height={42}
                 draggable={false}
@@ -199,18 +160,13 @@ export function BottomBar() {
           </NavLink>
 
           <NavLink
-            to="/casino"
-            onClick={handleCasinoNav}
-            onPointerEnter={warmupCasino}
-            className={({ isActive }) =>
-              navItemClass({
-                isActive: casinoHighlighted || isActive,
-                isCenter: false,
-              })
-            }
+            to="/help"
+            className={({ isActive }) => `dash-nav-item${isActive || pathname.startsWith('/support') ? ' active' : ''}`}
           >
-            <span className="dash-nav-emoji" aria-hidden>🎰</span>
-            <span className="dash-nav-label">Casino</span>
+            <span className="dash-nav-emoji" aria-hidden>
+              <img src="/df-online/nav-support.webp" alt="" className="dash-nav-hud-art" width={42} height={42} />
+            </span>
+            <span className="dash-nav-label">Support</span>
           </NavLink>
         </nav>
       </div>

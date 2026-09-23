@@ -18,7 +18,7 @@ const REGION_API_HOST = {
 const DEVICE_ALREADY_REGISTERED_MESSAGE =
   'An account has already been created on this device. Only one account is allowed per device.';
 
-const DEFAULT_ENFORCED_STORES = ['dragonfury'];
+const DEFAULT_ENFORCED_STORES = [];
 
 function truncate(value, max = 12) {
   if (!value || typeof value !== 'string') return value ?? null;

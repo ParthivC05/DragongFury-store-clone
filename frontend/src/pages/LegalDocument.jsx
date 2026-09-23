@@ -6,6 +6,7 @@ import { usePageContentReady } from '../context/PageReadyContext';
 import { usePageSeo } from '../utils/pageSeo';
 import './Blog/Blog.css';
 import './FooterPage/FooterPage.css';
+import './df-content-pages.css';
 
 function siteOrigin() {
   const fromSite = String(site.canonicalUrl || '').trim().replace(/\/+$/, '');
@@ -143,21 +144,31 @@ export function LegalDocument({ pageKey }) {
   }
 
   return (
-    <div className="pj-blog-page pj-blog-detail">
-      <article className="pj-blog-article">
-        <h1 className="pj-blog-title">{title}</h1>
+    <div className="df-content-page pj-blog-page pj-blog-detail df-content-skin">
+      <article className="df-content-card pj-blog-article">
+        <nav className="df-content-crumbs" aria-label="Breadcrumb">
+          <Link to="/">Home</Link>
+          <span aria-hidden="true">/</span>
+          <span>{title}</span>
+        </nav>
+        <span className="df-content-badge">Legal</span>
+        <h1 className="df-content-title pj-blog-title">{title}</h1>
         {html ? (
           <div
-            className="pj-blog-content pj-footer-page-content pj-legal-page-content"
+            className="pj-blog-content pj-footer-page-content pj-legal-page-content df-content-body"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         ) : (
-          <p className="pj-blog-content">{fallbackCopy(pageKey)}</p>
+          <p className="df-content-lead">{fallbackCopy(pageKey)}</p>
         )}
-        <p className="mt-6 text-gray-400 text-sm">{site.copyright}</p>
-        <p className="mt-4">
-          <Link to={meta.backTo}>{meta.backLabel}</Link>
+        <p className="df-content-lead" style={{ marginTop: '1.25rem', marginBottom: 0, fontSize: '0.85rem' }}>
+          {site.copyright}
         </p>
+        <div className="df-content-actions">
+          <Link to={meta.backTo} className="df-content-btn df-content-btn--ghost">
+            {meta.backLabel}
+          </Link>
+        </div>
       </article>
     </div>
   );

@@ -2,18 +2,12 @@ import { useState, useEffect, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { scrollToGamesSection } from '../../utils/scrollToGames';
 import { useAuth } from '../../context/AuthContext';
-import * as affiliateApi from '../../api/affiliate';
-import * as promotionsApi from '../../api/promotions';
 import * as welcomeSignupBonusApi from '../../api/welcomeSignupBonus';
-import { DashboardWelcome } from '../../components/Home/DashboardWelcome';
 import { DashboardSidebar } from '../../components/Home/DashboardSidebar';
-import { HomePromoTicker } from '../../components/Home/HomePromoTicker';
-import { RecentBigWins } from '../../components/Home/RecentBigWins';
 import { GamesGridSkeleton } from '../../components/Home/GamesGridSkeleton';
-import { LandingPaymentButtons } from '../../components/LandingPaymentButtons';
 import { GuestHomePlatforms } from '../../components/Home/GuestHomePlatforms';
 import { GuestPlatformsGridSkeleton } from '../../components/Home/GamesSection/GuestPlatformsGrid';
-import { FuryArenaSection } from '../../components/Home/FuryArenaSection';
+import { DragonFuryOnlineHero } from '../../components/Home/DragonFuryOnlineHero';
 import { WelcomeBonusModal } from '../../components/Home/WelcomeBonusModal';
 import { useWelcomeBonusScrollModal } from '../../hooks/useWelcomeBonusScrollModal';
 import { useWelcomeBonusImagePreload } from '../../hooks/useWelcomeBonusImagePreload';
@@ -36,38 +30,18 @@ const PaymentMethodsSection = lazy(() =>
     default: m.PaymentMethodsSection,
   }))
 );
-const InviteFriendsSection = lazy(() =>
-  import('../../components/Home/InviteFriendsSection').then((m) => ({
-    default: m.InviteFriendsSection,
-  }))
-);
-const CasinoCrossSellPanel = lazy(() =>
-  import('../../components/Home/CasinoCrossSellPanel').then((m) => ({
-    default: m.CasinoCrossSellPanel,
-  }))
-);
-const DashboardFx = lazy(() =>
-  import('../../components/Home/DashboardFx').then((m) => ({ default: m.DashboardFx }))
-);
 const DashboardSlotGamesSection = lazy(() =>
   import('../../components/Home/DashboardSlotGamesSection').then((m) => ({
     default: m.DashboardSlotGamesSection,
   }))
 );
-const GuestFinalCta = lazy(() =>
-  import('../../components/Home/GuestFinalCta').then((m) => ({ default: m.GuestFinalCta }))
-);
 
 function GamesLoading({ isGuest }) {
   if (isGuest) {
     return (
-      <section id="games" className="dash-games-section dash-games-section--guest dash-priority-lobby dash-animate-in">
-        <div className="dash-priority-lobby-head">
-          <div className="dash-priority-lobby-copy">
-            <p className="dash-priority-lobby-kick">Priority lobby</p>
-            <h2 className="dash-priority-lobby-title">Top Game Platforms</h2>
-          </div>
-        </div>
+      <section className="df-other-games" id="games" aria-busy="true">
+        <p className="df-games-eyebrow">Also on your account</p>
+        <h2 className="df-games-title">TRY OTHER GAMES</h2>
         <GuestPlatformsGridSkeleton count={12} priorityLobby />
       </section>
     );
@@ -76,8 +50,8 @@ function GamesLoading({ isGuest }) {
   return (
     <section id="games" className="dash-games-section dash-games-section--auth dash-animate-in">
       <div className="dash-section-head">
-        <p className="dash-priority-lobby-kick">Your lobby</p>
-        <h2 className="dash-section-title">Your Platforms</h2>
+        <p className="dash-priority-lobby-kick">Try Other Games</p>
+        <h2 className="dash-section-title">Try Other Games</h2>
       </div>
       <div className="dash-games-tabs">
         <span className="dashboard-games-tab active">All Games</span>
@@ -88,19 +62,8 @@ function GamesLoading({ isGuest }) {
   );
 }
 
-function runWhenIdle(fn, timeoutMs = 2500) {
-  if (typeof window.requestIdleCallback === 'function') {
-    const id = window.requestIdleCallback(fn, { timeout: timeoutMs });
-    return () => {
-      if (typeof window.cancelIdleCallback === 'function') window.cancelIdleCallback(id);
-    };
-  }
-  const id = window.setTimeout(fn, Math.min(timeoutMs, 800));
-  return () => window.clearTimeout(id);
-}
-
 export function Home() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const { hash } = useLocation();
   usePageContentReady(true);
   // While the initial auth check is in-flight (e.g. on refresh), `isAuthenticated`
@@ -110,19 +73,19 @@ export function Home() {
   // Start counting guest scroll gestures immediately (1st = welcome, 3rd = spin).
   useGuestLandingScrollCount(showGuestSections);
   const [welcomeModalImageSrc, setWelcomeModalImageSrc] = useState(null);
+  const [welcomeConfigReady, setWelcomeConfigReady] = useState(!showGuestSections);
   const welcomeModalEnabled = showGuestSections && Boolean(welcomeModalImageSrc);
   const welcomeBonusImageReady = useWelcomeBonusImagePreload(
     welcomeModalEnabled,
     welcomeModalImageSrc
   );
   const { open: welcomeModalOpen, onClose: closeWelcomeModal } = useWelcomeBonusScrollModal({
-    enabled: welcomeModalEnabled,
+    guestReady: showGuestSections,
+    configReady: welcomeConfigReady,
+    hasImage: Boolean(welcomeModalImageSrc),
     imageReady: welcomeBonusImageReady,
   });
   const [activeView, setActiveView] = useState('games');
-  const [promotions, setPromotions] = useState([]);
-  const [affiliateSettings, setAffiliateSettings] = useState(null);
-  const [affiliateData, setAffiliateData] = useState(null);
   const [belowFoldReady, setBelowFoldReady] = useState(
     () => typeof document !== 'undefined' && document.readyState === 'complete'
   );
@@ -145,10 +108,11 @@ export function Home() {
   useEffect(() => {
     if (!showGuestSections) {
       setWelcomeModalImageSrc(null);
+      setWelcomeConfigReady(true);
       return undefined;
     }
+    setWelcomeConfigReady(false);
     let cancelled = false;
-    // Fetch immediately so the first-scroll welcome modal is ready early.
     welcomeSignupBonusApi
       .getWelcomeSignupBonusPublic()
       .then((res) => {
@@ -158,59 +122,14 @@ export function Home() {
       })
       .catch(() => {
         if (!cancelled) setWelcomeModalImageSrc(null);
+      })
+      .finally(() => {
+        if (!cancelled) setWelcomeConfigReady(true);
       });
     return () => {
       cancelled = true;
     };
   }, [showGuestSections]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const stop = runWhenIdle(() => {
-      promotionsApi
-        .getPromotions()
-        .then((res) => {
-          if (cancelled) return;
-          const list = res?.promotions ?? [];
-          setPromotions(Array.isArray(list) ? list : []);
-        })
-        .catch(() => {
-          if (!cancelled) setPromotions([]);
-        });
-      affiliateApi
-        .getAffiliateSettings()
-        .then((res) => {
-          if (!cancelled) setAffiliateSettings(res || null);
-        })
-        .catch(() => {
-          if (!cancelled) setAffiliateSettings(null);
-        });
-    }, 2500);
-    return () => {
-      cancelled = true;
-      stop();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setAffiliateData(null);
-      return undefined;
-    }
-    let cancelled = false;
-    affiliateApi
-      .getAffiliateStats()
-      .then((res) => {
-        if (cancelled) return;
-        setAffiliateData(res);
-      })
-      .catch(() => {
-        if (!cancelled) setAffiliateData(null);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [isAuthenticated]);
 
   useEffect(() => {
     if (hash !== '#games') return;
@@ -228,41 +147,33 @@ export function Home() {
           imageSrc={welcomeModalImageSrc}
         />
       )}
-      {belowFoldReady ? (
-        <Suspense fallback={null}>
-          <DashboardFx />
-        </Suspense>
-      ) : null}
-      <HomePromoTicker promotions={promotions} affiliateSettings={affiliateSettings} />
 
       <div className="dash-layout dash-layout--sided">
-        <DashboardSidebar
-          activeView={activeView}
-          onSelectView={setActiveView}
-          hasSlots
-          isAuthenticated={isAuthenticated}
-        />
+        {!showGuestSections ? (
+          <DashboardSidebar
+            activeView={activeView}
+            onSelectView={setActiveView}
+            hasSlots
+            isAuthenticated={isAuthenticated}
+          />
+        ) : null}
 
         <div className="dash-main">
-          <div className="dash-fury-hero">
-            <DashboardWelcome isAuthenticated={isAuthenticated} />
+          {showGuestSections ? (
+            <DragonFuryOnlineHero />
+          ) : isAuthenticated ? (
+            <div className="df-auth-welcome">
+              <h1>
+                Welcome Back
+                {user?.username || user?.firstName ? `, ${user.username || user.firstName}` : ''}
+              </h1>
+              <h2 className="dash-home-h1 sr-only">{site.seoTitle || site.platformName}</h2>
+            </div>
+          ) : null}
 
-            <h1 className="dash-home-h1">{site.seoTitle || site.platformName}</h1>
-
-            {!isAuthenticated ? (
-              <div className="dash-fury-actions">
-                <LandingPaymentButtons inline highlight />
-              </div>
-            ) : null}
-          </div>
-
-          <RecentBigWins />
-
-          {showGuestSections ? <FuryArenaSection /> : null}
-
-          {!loading && isAuthenticated && belowFoldReady ? (
+          {showGuestSections ? (
             <Suspense fallback={null}>
-              <CasinoCrossSellPanel />
+              <DashboardSlotGamesSection catalogOnly />
             </Suspense>
           ) : null}
 
@@ -276,9 +187,9 @@ export function Home() {
             <GamesLoading isGuest />
           )}
 
-          {showGuestSections && belowFoldReady ? (
+          {!showGuestSections && belowFoldReady ? (
             <Suspense fallback={null}>
-              <DashboardSlotGamesSection catalogOnly />
+              <DashboardSlotGamesSection />
             </Suspense>
           ) : null}
 
@@ -292,20 +203,6 @@ export function Home() {
             <Suspense fallback={null}>
               <PaymentMethodsSection />
             </Suspense>
-          )}
-
-          {showGuestSections && belowFoldReady ? (
-            <Suspense fallback={null}>
-              <GuestFinalCta />
-            </Suspense>
-          ) : null}
-
-          {isAuthenticated && belowFoldReady && (
-            <div className="dash-invite-wrap dash-animate-in dash-delay-4">
-              <Suspense fallback={null}>
-                <InviteFriendsSection affiliateData={affiliateData} />
-              </Suspense>
-            </div>
           )}
 
           {belowFoldReady ? (

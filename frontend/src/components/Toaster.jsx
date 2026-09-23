@@ -3,23 +3,20 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 
-const EXIT_DURATION_MS = 280;
+const EXIT_DURATION_MS = 220;
 
 const TOAST_META = {
   success: {
-    icon: '✓',
     label: 'Success',
-    className: 'dash-toast-success'
+    className: 'dash-toast-success df-toast--success'
   },
   error: {
-    icon: '!',
     label: 'Error',
-    className: 'dash-toast-error'
+    className: 'dash-toast-error df-toast--error'
   },
   info: {
-    icon: 'i',
     label: 'Notice',
-    className: 'dash-toast-info'
+    className: 'dash-toast-info df-toast--info'
   }
 };
 
@@ -45,26 +42,22 @@ export function Toaster() {
   if (toasts.length === 0) return null;
 
   return createPortal(
-    <div className="dash-toast-host" aria-live="polite" aria-label="Notifications">
+    <div className="dash-toast-host df-toast-stack" aria-live="polite" aria-label="Notifications">
       {toasts.map(({ id, type, message, duration, action }) => {
         const meta = TOAST_META[type] || TOAST_META.info;
         const isExiting = exitingIds.has(id);
         return (
           <div
             key={id}
-            className={`dash-toast ${meta.className}${isExiting ? ' dash-toast-exit' : ' dash-toast-enter'}`}
+            className={`dash-toast df-toast ${meta.className}${isExiting ? ' dash-toast-exit df-toast--exit' : ' dash-toast-enter df-toast--enter'}`}
             role="alert"
           >
-            <span className="dash-toast-icon" aria-hidden>
-              {meta.icon}
-            </span>
-            <div className="dash-toast-body">
-              <span className="dash-toast-type">{meta.label}</span>
-              <p className="dash-toast-message">{message}</p>
+            <div className="dash-toast-body df-toast__body">
+              <p className="dash-toast-message df-toast__message">{message}</p>
               {action?.to && action?.label ? (
                 <Link
                   to={action.to}
-                  className="dash-toast-action"
+                  className="dash-toast-action df-toast__action"
                   onClick={() => handleDismiss(id)}
                 >
                   {action.label}
@@ -72,7 +65,7 @@ export function Toaster() {
               ) : null}
               {duration > 0 && (
                 <span
-                  className="dash-toast-progress"
+                  className="dash-toast-progress df-toast__progress"
                   style={{ animationDuration: `${duration}ms` }}
                   aria-hidden
                 />
@@ -81,7 +74,7 @@ export function Toaster() {
             <button
               type="button"
               onClick={() => handleDismiss(id)}
-              className="dash-toast-close"
+              className="dash-toast-close df-toast__close"
               aria-label="Dismiss notification"
             >
               ×

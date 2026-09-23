@@ -148,11 +148,29 @@ async function login(body) {
   }
 
   if (!sessionUser.isEmailVerified) {
+    let emailSent = false;
+    try {
+      const { refreshEmailToken } = require('./refreshEmailToken.service');
+      await refreshEmailToken(sessionUser.email, {
+        storeCode: sessionUser.storeCode || storeCode || null
+      });
+      emailSent = true;
+    } catch (emailErr) {
+      const { logger } = require('../../libs/logger');
+      logger.warn('Verification email send failed on login (pending verification):', emailErr.message);
+    }
     const err = new Error(
-      'Your email address has not been verified. Please check your inbox for the verification link or request a new one.'
+      emailSent
+        ? 'Your email address has not been verified. Please check your inbox for the verification link or request a new one.'
+        : 'Your email address has not been verified. We could not send the verification email; please use Resend in a moment.'
     );
     err.statusCode = 403;
     err.code = 'EMAIL_VERIFICATION_PENDING';
+    err.data = {
+      email: sessionUser.email,
+      emailSent,
+      registeredEmail: sessionUser.email
+    };
     throw err;
   }
 

@@ -263,7 +263,7 @@ const config = convict({
      */
     enforcedStoreCodes: {
       format: String,
-      default: 'dragonfury',
+      default: '',
       env: 'FINGERPRINT_ENFORCED_STORE_CODES'
     }
   },

@@ -35,26 +35,26 @@
 }
 
 .dash-root {
-  --dash-gold: #B6FF2A;
-  --dash-gold2: #8FE31A;
-  --dash-pj-gold: #C6FF4D;
-  --dash-pj-green: #3ddc7a;
-  --dash-teal: #00ffe0;
-  --dash-purple: #9b59ff;
-  --dash-bg: #0a0c0a;
-  --dash-bg2: #101410;
-  --dash-deep: #141814;
-  --dash-card: #151815;
-  --dash-text: #f3f7f0;
-  --dash-muted: #8d9a88;
-  --dash-border: rgba(182, 255, 42, 0.13);
-  --dash-nav-h: 80px;
+  --dash-gold: #3da4ff;
+  --dash-gold2: #2585f4;
+  --dash-pj-gold: #ffc928;
+  --dash-pj-green: #39e72f;
+  --dash-teal: #3da4ff;
+  --dash-purple: #8b24e8;
+  --dash-bg: #09071a;
+  --dash-bg2: #100a25;
+  --dash-deep: #160d32;
+  --dash-card: #160d32;
+  --dash-text: #ffffff;
+  --dash-muted: #c9b8ff;
+  --dash-border: rgba(157, 123, 255, 0.22);
+  --dash-nav-h: 88px;
   position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
   color: var(--dash-text);
-  font-family: Rajdhani, system-ui, sans-serif;
+  font-family: "Baloo 2", Inter, system-ui, sans-serif;
   font-weight: 500;
   padding-top: var(--dash-nav-h);
   max-width: 100%;
@@ -69,7 +69,7 @@
   z-index: 0;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(182, 255, 42, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(139, 36, 232, 0.22) 0%, transparent 55%),
     var(--dash-bg);
 }
 
@@ -136,9 +136,11 @@ body.guest-landing-active {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 0 12px;
-  background: rgba(4, 6, 10, 0.94);
-  border-bottom: 1px solid rgba(182, 255, 42, 0.16);
+  padding: 12px clamp(16px, 4vw, 56px);
+  background: linear-gradient(rgba(13, 7, 34, 0.86), rgba(13, 7, 34, 0.3));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: rgba(0, 0, 0, 0.45) 0 6px 22px, rgba(165, 43, 239, 0.3) 0 1px;
+  backdrop-filter: blur(10px);
 }
 
 .dash-nav-inner,
@@ -162,6 +164,23 @@ body.guest-landing-active {
 .dash-nav-end {
   justify-content: flex-end;
   gap: 8px;
+}
+
+.df-nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+
+.df-nav-link {
+  color: #fff;
+  font-family: "Lilita One", "Baloo 2", sans-serif;
+  font-weight: 400;
+  font-size: 1.05rem;
+  letter-spacing: 0.35px;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .dashboard.dash-page {
@@ -260,8 +279,8 @@ body.guest-landing-active {
     height: 28px;
     flex: 0 0 28px;
     border-radius: 8px;
-    background: rgba(182, 255, 42, 0.18);
-    color: #B6FF2A;
+    background: rgba(139, 36, 232, 0.18);
+    color: #3da4ff;
   }
 }
 
@@ -441,7 +460,7 @@ body.guest-landing-active {
 @media (max-width: 767px) {
   body.guest-landing-active .dash-root,
   .dash-root--guest-landing {
-    --dash-nav-h: 76px;
+    --dash-nav-h: 54px;
   }
 
   body.guest-landing-active .dash-nav-inner--guest,
@@ -493,7 +512,7 @@ body.guest-landing-active {
   .dash-nav-inner--guest-landing .dash-nav-guest-logo--desktop,
   body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-login--desktop,
   .dash-nav-inner--guest-landing .dash-nav-guest-login--desktop {
-    display: none !important;
+    display: flex !important;
   }
 
   body.guest-landing-active .dash-nav-inner--guest .dash-nav-guest-login--mobile,
@@ -537,28 +556,37 @@ body.guest-landing-active {
 }
 
 .dash-btn-login {
-  padding: 6px 14px;
-  border: 1.5px solid rgba(182, 255, 42, 0.45);
-  color: #b6ff2a;
-  background: transparent;
+  padding: 0 14px;
+  border: 0;
+  color: #fff;
+  min-height: 36px;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.28) 34%, transparent 48%),
+    linear-gradient(rgb(159, 242, 255), rgb(63, 214, 255) 40%, rgb(22, 189, 245), rgb(14, 166, 234));
   border-radius: 999px;
-  font-family: 'Exo 2', 'Segoe UI', sans-serif;
+  font-family: "Baloo 2", 'Segoe UI', sans-serif;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
+  box-shadow: 0 6px #0b4dad, 0 12px 22px rgba(37, 133, 244, 0.35);
 }
 
 .dash-btn-signup {
   padding: 6px 14px;
-  background: #b6ff2a;
-  color: #111;
+  background: linear-gradient(180deg, #5ec8ff, #2585f4 58%, #1264d9);
+  color: #fff;
   border: none;
   border-radius: 999px;
-  font-family: 'Exo 2', 'Segoe UI', sans-serif;
+  font-family: "Baloo 2", 'Segoe UI', sans-serif;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
-  box-shadow: 0 8px 22px rgba(182, 255, 42, 0.22);
+  box-shadow: 0 6px #0b4dad, 0 12px 22px rgba(37, 133, 244, 0.35);
+}
+
+body.guest-landing-active .dash-bottom-wrap,
+body.guest-landing-active .dash-root > .dash-bottom-wrap {
+  display: none !important;
 }
 
 .dash-bottom-wrap {
@@ -679,7 +707,7 @@ body.guest-landing-active {
 }
 
 .dash-welcome-slideshow-dot--active::after {
-  background: var(--dash-gold, #B6FF2A);
+  background: var(--dash-gold, #3da4ff);
   transform: scale(1.15);
 }
 
@@ -770,7 +798,7 @@ body.guest-landing-active {
 
 .dash-games-tab.active,
 .dashboard-games-tab.active {
-  color: var(--dash-gold, #B6FF2A);
+  color: var(--dash-gold, #3da4ff);
 }
 
 .dash-games-grid {
@@ -868,7 +896,7 @@ body.guest-landing-active {
 }
 
 .dash-platforms-title-accent {
-  color: var(--dash-gold, #B6FF2A);
+  color: var(--dash-gold, #3da4ff);
 }
 
 .lp-pay-bar--inline {
@@ -913,9 +941,9 @@ body.guest-landing-active {
 }
 
 .lp-pay-btn--link2play {
-  color: #B6FF2A;
-  background: rgba(182, 255, 42, 0.1);
-  border-color: rgba(182, 255, 42, 0.45);
+  color: #3da4ff;
+  background: rgba(61, 164, 255, 0.1);
+  border-color: rgba(61, 164, 255, 0.45);
   text-decoration: none;
 }
 

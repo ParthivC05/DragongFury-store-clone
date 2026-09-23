@@ -7,6 +7,7 @@ import { usePageSeo } from '../../utils/pageSeo';
 import { FooterPageLayout, hasFooterLayout } from './FooterPageLayout';
 import '../Blog/Blog.css';
 import './FooterPage.css';
+import '../df-content-pages.css';
 
 function wrapTablesForScroll(root) {
   if (!root) return;
@@ -148,15 +149,20 @@ export function FooterPage() {
   const useLayout = hasFooterLayout(page.sections);
 
   return (
-    <div className={`pj-blog-page pj-blog-detail${useLayout ? ' pj-footer-layout-page' : ''}`}>
-      <article className="pj-blog-article">
+    <div className={`pj-blog-page pj-blog-detail df-content-skin${useLayout ? ' pj-footer-layout-page df-content-page--wide' : ' df-content-page'}`}>
+      <article className={useLayout ? 'pj-blog-article' : 'df-content-card pj-blog-article'}>
         {useLayout ? (
           <FooterPageLayout sections={page.sections} fallbackTitle={page.title} />
         ) : (
           <>
-            <h1 className="pj-blog-title">{page.title}</h1>
+            <nav className="df-content-crumbs" aria-label="Breadcrumb">
+              <Link to="/">Home</Link>
+              <span aria-hidden="true">/</span>
+              <span>{page.title}</span>
+            </nav>
+            <h1 className="df-content-title pj-blog-title">{page.title}</h1>
             <div
-              className="pj-blog-content pj-footer-page-content"
+              className="pj-blog-content pj-footer-page-content df-content-body"
               dangerouslySetInnerHTML={{ __html: page.content || '' }}
             />
           </>

@@ -17,7 +17,7 @@ import { buildAuthPayloadWithGuestSpin, handleSignupBonusesAfterAuthSuccess } fr
 import { composeE164 } from './phoneCountry';
 import { handleDeviceSignupBlockedError } from '../../lib/auth/showDeviceBlockModal';
 
-const LOGIN_INITIAL = { email: '', password: '' };
+const LOGIN_INITIAL = { email: '', password: '', terms: true };
 const SIGNUP_INITIAL = {
   firstName: '',
   lastName: '',
@@ -118,13 +118,27 @@ export function AuthModal({ mode: initialMode }) {
     } catch (err) {
       const msgLower = (err.message || '').toLowerCase();
       const isUnverified =
+        err.code === 'EMAIL_VERIFICATION_PENDING' ||
         err.body?.code === 'EMAIL_VERIFICATION_PENDING' ||
         msgLower.includes('not been verified') ||
         msgLower.includes('verification link') ||
         (msgLower.includes('verify') && msgLower.includes('email'));
-      if (isUnverified && values.email?.trim()?.includes('@')) {
-        setUnverifiedEmail(values.email.trim());
-        return;
+      if (isUnverified) {
+        const email =
+          err.registeredEmail ||
+          err.body?.registeredEmail ||
+          err.body?.email ||
+          values.email?.trim() ||
+          '';
+        if (email) {
+          setUnverifiedEmail(email);
+          if (err.body?.emailSent === false) {
+            toast.error(
+              'We could not send the verification email. Use Resend, or try again in a moment.'
+            );
+          }
+          return;
+        }
       }
       const msg = (err.body?.code === 'EMAIL_SERVICE_UNAVAILABLE' || err.status === 503)
         ? "We're facing some issue. Please try again later."
@@ -139,7 +153,6 @@ export function AuthModal({ mode: initialMode }) {
     try {
       await authApi.refreshEmailToken(unverifiedEmail);
       toast.success('Verification email sent. Check your inbox.');
-      setUnverifiedEmail(null);
     } catch (err) {
       const msg = (err.body?.code === 'EMAIL_SERVICE_UNAVAILABLE' || err.status === 503)
         ? 'Please try again later.'
@@ -174,7 +187,7 @@ export function AuthModal({ mode: initialMode }) {
             "Signup completed. We're having trouble sending the verification email; please try again later from your profile."
           );
         }
-        navigate(`/check-email?email=${encodeURIComponent(res.email || values.email)}`, { replace: true });
+        setUnverifiedEmail(res.email || values.email.trim());
         return;
       }
       window.dispatchEvent(new CustomEvent('notifications:refresh'));

@@ -108,13 +108,27 @@ export function AuthPage({ mode: initialMode }) {
     } catch (err) {
       const msg = (err.message || '').toLowerCase();
       const isUnverified =
+        err.code === 'EMAIL_VERIFICATION_PENDING' ||
         err.body?.code === 'EMAIL_VERIFICATION_PENDING' ||
         msg.includes('not been verified') ||
         msg.includes('verification link') ||
         (msg.includes('verify') && msg.includes('email'));
-      if (isUnverified && values.email?.trim()?.includes('@')) {
-        setUnverifiedEmail(values.email.trim());
-        return;
+      if (isUnverified) {
+        const email =
+          err.registeredEmail ||
+          err.body?.registeredEmail ||
+          err.body?.email ||
+          values.email?.trim() ||
+          '';
+        if (email) {
+          setUnverifiedEmail(email);
+          if (err.body?.emailSent === false) {
+            toast.error(
+              'We could not send the verification email. Use Resend, or try again in a moment.'
+            );
+          }
+          return;
+        }
       }
       toast.error(err.message || 'Login failed. Please check your email/phone and password.');
     }
@@ -126,7 +140,6 @@ export function AuthPage({ mode: initialMode }) {
     try {
       await authApi.refreshEmailToken(unverifiedEmail);
       toast.success('Verification email sent. Check your inbox.');
-      setUnverifiedEmail(null);
     } catch (err) {
       toast.error(err.message || 'Could not send verification email.');
     } finally {
@@ -138,11 +151,15 @@ export function AuthPage({ mode: initialMode }) {
 
   const handleSignupSubmit = async (values) => {
     try {
-      const referral = (refCode || '').trim();
+      const referral = (values.referral || refCode || '').trim();
+      const nameParts = String(values.fullName || '')
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
       const res = await register(
         buildAuthPayloadWithGuestSpin({
-          firstName: (values.firstName || '').trim(),
-          lastName: (values.lastName || '').trim(),
+          firstName: (values.firstName || nameParts[0] || '').trim(),
+          lastName: (values.lastName || (nameParts.length > 1 ? nameParts[nameParts.length - 1] : '')).trim(),
           email: values.email.trim(),
           password: values.password,
           username: values.username?.trim() || undefined,
@@ -158,7 +175,7 @@ export function AuthPage({ mode: initialMode }) {
             "Signup completed. We're having trouble sending the verification email; please try again later from your profile."
           );
         }
-        navigate(`/check-email?email=${encodeURIComponent(res.email || values.email)}`, { replace: true });
+        setUnverifiedEmail(res.email || values.email.trim());
         return;
       }
       window.dispatchEvent(new CustomEvent('notifications:refresh'));
@@ -198,11 +215,16 @@ export function AuthPage({ mode: initialMode }) {
       {ssoLoading ? <AppLoader fullScreen message="Signing you in" /> : null}
       <DragonFurySignupPage
         querySuffix={querySuffix}
+        initialReferral={refCode}
         onSignupSubmit={handleSignupSubmit}
         onGoogleSuccess={handleGoogleSuccess}
         onFacebookSuccess={handleFacebookSuccess}
         googleAuthOptions={googleAuthOptions}
         ssoLoading={ssoLoading}
+        unverifiedEmail={unverifiedEmail}
+        onCloseVerification={closeVerificationModal}
+        onResendVerification={handleResendVerification}
+        resendLoading={resendLoading}
       />
     </>
   );

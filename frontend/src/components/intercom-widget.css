@@ -4,141 +4,262 @@
   --lp-side-fab-gap: 12px;
 }
 
-.pj-intercom-launcher {
-  position: fixed;
-  right: 20px;
-  bottom: var(--intercom-launcher-bottom);
-  z-index: 999999;
-  width: var(--intercom-launcher-size);
-  height: var(--intercom-launcher-size);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 999px;
-  color: #120900;
-  background: linear-gradient(135deg, #ffef9f 0%, #B6FF2A 42%, #ff8c00 100%);
-  box-shadow: 0 12px 32px rgba(255, 140, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
-  cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+/* Legacy Intercom FAB — replaced by .df-help-launcher */
+.pj-intercom-launcher,
+.pj-intercom-launcher--hidden {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
 
-.pj-intercom-launcher:hover,
-.pj-intercom-launcher:focus-visible {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 16px 40px rgba(255, 140, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.24) inset;
-  outline: none;
-}
+/* ── DragonFury Help Desk chat modal (live-matched) ── */
 
-.pj-intercom-launcher-icon {
-  width: 32px;
-  height: 32px;
-}
-
-.pj-support-backdrop {
+.df-help-desk {
   position: fixed;
   inset: 0;
-  z-index: 999998;
-  background: rgba(0, 0, 0, 0.52);
-}
-
-.pj-support-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  max-width: 100%;
   z-index: 999999;
-  display: flex;
-  flex-direction: column;
-  color: #f8fafc;
-  background: #070b16;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  font-family: "Baloo 2", system-ui, sans-serif;
 }
 
-.pj-support-header,
-.pj-support-greeting,
-.pj-support-footer-nav {
-  background: linear-gradient(180deg, #0d1424 0%, #080d18 100%);
-  border-color: rgba(182, 255, 42, 0.12);
+.df-help-desk__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  cursor: pointer;
+  background:
+    radial-gradient(70% 60% at 50% 40%, rgba(139, 36, 232, 0.45), transparent 70%),
+    rgba(20, 6, 40, 0.82);
+  backdrop-filter: blur(6px);
 }
 
-.pj-support-header {
-  display: flex;
+.df-help-desk__panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(430px, 100%);
+  height: min(680px, calc(100dvh - 36px));
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 3px solid #d9b8ff;
+  border-radius: 26px;
+  color: #fff;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 14%, transparent 28%),
+    radial-gradient(120% 60% at 50% -4%, rgba(165, 43, 239, 0.45), transparent 62%),
+    linear-gradient(180deg, #2a1660 0%, #170c3a 52%, #0f0726 100%);
+  box-shadow:
+    0 0 0 4px #2a0f4a,
+    0 0 0 6px rgba(255, 123, 245, 0.55),
+    0 0 40px rgba(217, 184, 255, 0.35),
+    0 30px 80px rgba(0, 0, 0, 0.7),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 -12px 28px rgba(20, 6, 50, 0.55);
+  animation: df-help-desk-enter 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes df-help-desk-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.df-help-desk__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(182, 255, 42, 0.12);
-}
-
-.pj-support-brand {
-  display: inline-flex;
-  align-items: center;
-  min-width: 0;
   gap: 10px;
-  font-size: 12px;
-  color: rgba(248, 250, 252, 0.74);
+  min-height: 76px;
+  padding: 12px 14px;
+  border-radius: 22px 22px 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.18), transparent 60%),
+    linear-gradient(135deg, #a24dff, #6d1ed4 60%, #4b23a8);
+  box-shadow:
+    inset 0 -2px rgba(217, 184, 255, 0.6),
+    0 8px 18px rgba(0, 0, 0, 0.35);
 }
 
-.pj-support-logo {
-  width: auto;
-  max-width: 140px;
-  height: 40px;
+.df-help-desk__avatar {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(10, 6, 32, 0.55);
+  box-shadow:
+    0 0 0 2.5px #d9b8ff,
+    0 0 0 4.5px #2a0f4a,
+    0 0 18px rgba(255, 123, 245, 0.6);
+}
+
+.df-help-desk__avatar img {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 
-.pj-support-close {
-  width: 36px;
-  height: 36px;
+.df-help-desk__titles {
+  min-width: 0;
+}
+
+.df-help-desk__header h2 {
+  margin: 0;
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-size: clamp(1rem, 3.4vw, 1.2rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  color: #ffe06a;
+  background: linear-gradient(#fff8d6, #ffe06a 34%, #ffc928 58%, #f6b900);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter:
+    drop-shadow(0 2px 0 #3a1305)
+    drop-shadow(0 0 10px rgba(255, 123, 245, 0.45));
+}
+
+.df-help-desk__presence {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  border: none;
+  gap: 5px;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.df-help-desk__presence i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #50eb8c;
+  box-shadow: 0 0 10px #50eb8c;
+}
+
+.df-help-desk__presence.is-offline i {
+  background: #f2bd55;
+  box-shadow: 0 0 8px rgba(242, 189, 85, 0.5);
+}
+
+.df-help-desk__badge {
+  max-width: 88px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 7px 10px;
+  border: 2px solid rgb(242, 220, 255);
   border-radius: 999px;
-  color: #f8fafc;
+  background: linear-gradient(180deg, #b57bff, #8b24e8 55%, #5a12b0);
+  box-shadow: 0 3px 0 #2a0f4a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(60, 0, 110, 0.8);
+}
+
+.df-help-desk__close {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
   background: transparent;
   cursor: pointer;
-  font-size: 20px;
-  line-height: 1;
 }
 
-.pj-support-close:hover,
-.pj-support-close:focus-visible {
-  background: rgba(255, 255, 255, 0.1);
-  outline: none;
+.df-help-desk__close img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.45));
 }
 
-.pj-support-greeting {
-  padding: 18px 16px;
-  border-bottom: 1px solid rgba(182, 255, 42, 0.1);
+.df-help-desk.is-exiting {
+  pointer-events: none;
 }
 
-.pj-support-greeting h2 {
-  margin: 0;
-  font-size: 22px;
+.df-help-desk.is-exiting .df-help-desk__backdrop {
+  animation: df-help-desk-backdrop-out 0.22s ease-in both;
+}
+
+.df-help-desk.is-exiting .df-help-desk__panel {
+  animation: df-help-desk-exit 0.22s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes df-help-desk-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+}
+
+@keyframes df-help-desk-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.df-help-desk__intro {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 2px solid rgba(120, 70, 200, 0.45);
+  border-width: 0 0 2px;
+  margin: 10px 12px 0;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #0a0620, #130a30);
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.45);
+}
+
+.df-help-desk__intro strong {
+  color: #ffc928;
+  font-size: 14px;
   font-weight: 800;
-  letter-spacing: -0.02em;
 }
 
-.pj-support-greeting p {
-  margin: 6px 0 0;
-  color: rgba(248, 250, 252, 0.78);
+.df-help-desk__intro span {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
-.pj-support-scroll {
-  flex: 1;
+.df-help-desk__scroll {
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: 10px;
+  padding: 14px 16px;
   overflow-y: auto;
+  overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(182, 255, 42, 0.38) #070b16;
+  scrollbar-color: rgba(181, 123, 255, 0.55) transparent;
 }
 
-.pj-support-action {
+.df-help-desk__action {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -146,88 +267,100 @@
   width: 100%;
   min-height: 64px;
   padding: 14px;
-  border: 1px solid rgba(182, 255, 42, 0.16);
-  border-radius: 14px;
+  border: 1px solid rgba(217, 184, 255, 0.28);
+  border-radius: 16px;
   color: inherit;
   text-align: left;
   text-decoration: none;
-  background: rgba(255, 255, 255, 0.07);
+  background: rgba(10, 6, 32, 0.5);
   cursor: pointer;
   transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 
-.pj-support-action:hover,
-.pj-support-action:focus-visible {
-  background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(182, 255, 42, 0.3);
-  transform: translateY(-1px);
+.df-help-desk__action:hover,
+.df-help-desk__action:focus-visible {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 201, 40, 0.45);
   outline: none;
+  transform: translateY(-1px);
 }
 
-.pj-support-action strong {
+.df-help-desk__action--primary {
+  border-color: rgba(255, 201, 40, 0.4);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 40%),
+    rgba(42, 15, 74, 0.75);
+}
+
+.df-help-desk__action strong {
   display: block;
   font-size: 14px;
   font-weight: 800;
+  color: #fff;
 }
 
-.pj-support-action small {
+.df-help-desk__action small {
   display: block;
   margin-top: 3px;
-  color: rgba(248, 250, 252, 0.66);
+  color: rgba(255, 255, 255, 0.62);
   font-size: 12px;
 }
 
-.pj-support-icon {
+.df-help-desk__action .pj-support-icon {
   width: 22px;
   height: 22px;
   flex-shrink: 0;
-  color: rgba(182, 255, 42, 0.88);
+  color: #ffc928;
 }
 
-.pj-support-topics {
-  padding-top: 4px;
+.df-help-desk__topics {
+  padding-top: 2px;
 }
 
-.pj-support-section-label {
+.df-help-desk__section-label {
   margin: 0 0 8px;
-  font-size: 12px;
-  color: rgba(248, 250, 252, 0.62);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 224, 106, 0.75);
 }
 
-.pj-support-topic {
+.df-help-desk__topic {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
   padding: 12px 10px;
-  border-radius: 10px;
+  border-radius: 12px;
   color: inherit;
   text-decoration: none;
 }
 
-.pj-support-topic:hover,
-.pj-support-topic:focus-visible {
+.df-help-desk__topic:hover,
+.df-help-desk__topic:focus-visible {
   background: rgba(255, 255, 255, 0.08);
   outline: none;
 }
 
-.pj-support-chevron {
+.df-help-desk__topic .pj-support-chevron {
   width: 16px;
   height: 16px;
-  color: rgba(248, 250, 252, 0.55);
+  color: rgba(255, 255, 255, 0.5);
 }
 
-.pj-support-footer-nav {
+.df-help-desk__footer {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  padding: 12px 16px;
-  border-top: 1px solid rgba(182, 255, 42, 0.12);
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(217, 184, 255, 0.22);
+  background: rgba(10, 6, 32, 0.55);
   flex-shrink: 0;
 }
 
-.pj-support-footer-btn,
-.pj-support-footer-link {
+.df-help-desk__footer-btn,
+.df-help-desk__footer-link {
   min-width: 74px;
   display: inline-flex;
   flex-direction: column;
@@ -236,30 +369,43 @@
   padding: 8px 10px;
   border: none;
   border-radius: 11px;
-  color: rgba(248, 250, 252, 0.68);
+  color: rgba(255, 255, 255, 0.68);
   background: transparent;
   text-decoration: none;
   font-size: 12px;
+  font-weight: 700;
   cursor: pointer;
 }
 
-.pj-support-footer-btn.is-active {
-  color: #120900;
-  background: linear-gradient(135deg, #B6FF2A, #ff8c00);
+.df-help-desk__footer-btn.is-active {
+  color: #3a1400;
+  background: linear-gradient(180deg, #ffd24a, #f08a12);
+  box-shadow: 0 4px 12px rgba(240, 138, 18, 0.35);
 }
 
-.pj-support-footer-btn:hover,
-.pj-support-footer-link:hover,
-.pj-support-footer-btn:focus-visible,
-.pj-support-footer-link:focus-visible {
+.df-help-desk__footer-btn:hover,
+.df-help-desk__footer-link:hover,
+.df-help-desk__footer-btn:focus-visible,
+.df-help-desk__footer-link:focus-visible {
   color: #fff;
   background: rgba(255, 255, 255, 0.08);
   outline: none;
 }
 
+.df-help-desk__footer-btn.is-active:hover,
+.df-help-desk__footer-btn.is-active:focus-visible {
+  color: #3a1400;
+  background: linear-gradient(180deg, #ffd24a, #f08a12);
+}
+
 .pj-support-footer-icon {
   width: 20px;
   height: 20px;
+}
+
+body.df-help-desk-open .df-help-launcher {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 body.hide-intercom-launcher:not(.intercom-maximized) .pj-intercom-launcher,
@@ -276,60 +422,25 @@ body.slot-game-play-active .pj-intercom-launcher {
   pointer-events: none !important;
 }
 
-body.app-modal-open:not(.intercom-maximized) .pj-support-panel,
-body.app-modal-open:not(.intercom-maximized) .pj-support-backdrop,
-body[data-scroll-locked]:not(.intercom-maximized) .pj-support-panel,
-body[data-scroll-locked]:not(.intercom-maximized) .pj-support-backdrop,
-body.welcome-modal-open .pj-support-panel,
-body.welcome-modal-open .pj-support-backdrop,
-body.onboarding-tutorial-active .pj-support-panel,
-body.onboarding-tutorial-active .pj-support-backdrop,
-body.game-transfer-modal-open .pj-support-panel,
-body.game-transfer-modal-open .pj-support-backdrop,
-body.guest-spin-modal-open .pj-support-panel,
-body.guest-spin-modal-open .pj-support-backdrop,
-body.page-loader-active:not(.intercom-maximized) .pj-support-panel,
-body.page-loader-active:not(.intercom-maximized) .pj-support-backdrop,
-body.slot-game-play-active .pj-support-panel,
-body.slot-game-play-active .pj-support-backdrop {
+body.app-modal-open:not(.intercom-maximized) .df-help-desk,
+body[data-scroll-locked]:not(.intercom-maximized) .df-help-desk,
+body.welcome-modal-open .df-help-desk,
+body.onboarding-tutorial-active .df-help-desk,
+body.game-transfer-modal-open .df-help-desk,
+body.guest-spin-modal-open .df-help-desk,
+body.page-loader-active:not(.intercom-maximized) .df-help-desk,
+body.slot-game-play-active .df-help-desk {
   display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
 }
 
-@media (max-width: 767px) {
-  :root {
-    --intercom-launcher-bottom: calc(9.75rem + env(safe-area-inset-bottom, 0px));
-    --intercom-launcher-size: 64px;
-  }
-
-  body.guest-hide-buy-withdraw {
-    --intercom-launcher-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
-  }
-
-  body.intercom-maximized {
-    overflow: hidden;
-  }
-
-  body.intercom-maximized .dash-bottom-wrap,
-  body.intercom-maximized .lp-sticky-cta-wrap,
-  body.intercom-maximized .lp-social-dock,
-  body.intercom-maximized .pj-intercom-launcher {
-    visibility: hidden !important;
-    pointer-events: none !important;
+@media (min-width: 720px) {
+  .df-help-desk__panel {
+    height: min(720px, calc(100dvh - 48px));
   }
 }
 
-@media (min-width: 768px) {
-  .pj-support-panel {
-    top: auto;
-    right: 24px;
-    bottom: 24px;
-    width: min(386px, calc(100vw - 32px));
-    height: min(720px, calc(100vh - 48px));
-    max-height: calc(100vh - 48px);
-    border: 1px solid rgba(182, 255, 42, 0.15);
-    border-radius: 18px;
-    overflow: hidden;
+@media (prefers-reduced-motion: reduce) {
+  .df-help-desk__panel {
+    animation: none;
   }
 }

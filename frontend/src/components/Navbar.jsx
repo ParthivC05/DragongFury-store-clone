@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useVipStatus } from '../context/VipStatusContext';
 import { AccountIcon, ChevronDownIcon, BellIcon, SCCoinIcon, PlusIcon, LockIcon } from '../assets/icons';
@@ -10,6 +10,7 @@ import { lockBodyScroll } from '../utils/bodyScrollLock';
 import { PhoneVerifyGateModal } from './Auth/PhoneVerifyGateModal';
 import * as notificationsApi from '../api/notifications';
 import { warmupDeposit } from '../utils/preloadDeposit';
+import { openMobileMenu } from '../utils/navEvents';
 
 const profileDropdownLinks = [
   { to: '/settings', label: 'Profile' },
@@ -21,6 +22,32 @@ const profileDropdownLinks = [
 ];
 
 const AUTH_PATHS = ['/login', '/register', '/check-email', '/forgot-password', '/reset-password'];
+
+const HEADER_PAGE_LINKS = [
+  { to: '/casino', label: 'Play', match: (path) => path === '/casino' || path.startsWith('/casino/') },
+  { to: '/bonus', label: 'Bonuses', match: (path) => path === '/bonus' || path === '/promotions' },
+  { to: '/faq', label: 'How to Play', match: (path) => path === '/faq' },
+  { to: '/blog', label: 'Updates', match: (path) => path === '/blog' || path.startsWith('/blog/') },
+  { to: '/contact', label: 'Support', match: (path) => path === '/contact' },
+];
+
+function HeaderPageLinks({ pathname }) {
+  return (
+    <nav className="df-nav-links" aria-label="Site">
+      {HEADER_PAGE_LINKS.map(({ to, label, match }) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) =>
+            `df-nav-link${isActive || match(pathname) ? ' is-active' : ''}`
+          }
+        >
+          {label}
+        </NavLink>
+      ))}
+    </nav>
+  );
+}
 
 /** Default avatar URL (DiceBear) with username as seed; used when user has no custom profile image. */
 function getDefaultAvatarUrl(user) {
@@ -47,7 +74,7 @@ function formatWalletAmount(n) {
 }
 
 export function Navbar() {
-  const { user, isAuthenticated, logout, balanceSc, pscWalletUsable, bscWalletUsable, rscWalletUsable, lockedBalanceSc, balanceLoading } = useAuth();
+  const { user, isAuthenticated, loading: authLoading, logout, balanceSc, pscWalletUsable, bscWalletUsable, rscWalletUsable, lockedBalanceSc, balanceLoading } = useAuth();
   const { vipStatus } = useVipStatus();
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,8 +98,10 @@ export function Navbar() {
   const isDashboardLayout =
     location.pathname === '/' ||
     location.pathname === '/link2play' ||
-    location.pathname === '/bonus';
-  const isGuestLanding = isDashboardLayout && !isAuthenticated;
+    location.pathname === '/bonus' ||
+    location.pathname === '/casino' ||
+    location.pathname.startsWith('/casino/');
+  const isGuestLanding = !isAuthenticated && !authLoading;
   const registerPath = `/register${location.search || ''}`;
   const loginPath = `/login${location.search || ''}`;
   const playNotificationSound = useCallback(() => {
@@ -371,11 +400,23 @@ export function Navbar() {
               <Link to="/" className="dash-logo min-w-0">
                 <SiteLogo variant="nav" />
               </Link>
+              <HeaderPageLinks pathname={location.pathname} />
             </div>
 
             <div className="dash-nav-center">{walletSection}</div>
 
             <div className="dash-nav-end">
+            <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Help">
+              <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
+            </Link>
+            <button
+              type="button"
+              className="df-menu-btn md:hidden"
+              aria-label="Open menu"
+              onClick={() => openMobileMenu()}
+            >
+              <img src="/df-online/menu-button.png" width="44" height="44" alt="" />
+            </button>
             {/* VIP tier progress from API – tier-colored */}
             <Link
               to="/account/vip"
@@ -524,37 +565,22 @@ export function Navbar() {
           </>
         ) : (
           <>
-            <div className="dash-nav-start">
-              <Link
-                to={loginPath}
-                className="dash-btn-login dash-nav-guest-login dash-nav-guest-login--mobile"
-              >
-                Login
+            <Link to="/" className="dash-logo dash-nav-guest-logo min-w-0">
+              <SiteLogo variant="nav" />
+            </Link>
+            <HeaderPageLinks pathname={location.pathname} />
+            <div className="dash-nav-actions">
+              <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Help">
+                <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
               </Link>
-              <Link
-                to="/"
-                className="dash-logo dash-nav-guest-logo dash-nav-guest-logo--desktop min-w-0"
-              >
-                <SiteLogo variant="nav" />
-              </Link>
-            </div>
-
-            <div className="dash-nav-center dash-nav-guest-logo-wrap--mobile">
-              <Link to="/" className="dash-logo dash-nav-guest-logo min-w-0">
-                <SiteLogo variant="nav" className="dash-nav-guest-logo-img" />
-              </Link>
-            </div>
-
-            <div className="dash-nav-end">
-              <Link to={registerPath} className="dash-btn-signup">
-                Sign Up
-              </Link>
-              <Link
-                to={loginPath}
-                className="dash-btn-login dash-nav-guest-login dash-nav-guest-login--desktop"
-              >
-                Login
-              </Link>
+              <div className="dash-nav-auth">
+                <Link to={registerPath} className="dash-btn-signup">
+                  Sign Up
+                </Link>
+                <Link to={loginPath} className="dash-btn-login">
+                  Login
+                </Link>
+              </div>
             </div>
           </>
         )}

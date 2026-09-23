@@ -5,6 +5,7 @@ import { site } from '../../config/site';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { excerptFromHtml, formatBlogDate } from '../../utils/blogHtml';
 import './Blog.css';
+import '../df-content-pages.css';
 
 function buildCategories(posts) {
   const set = new Set();
@@ -57,7 +58,7 @@ export function Blog() {
   const featuredExcerpt = excerptFromHtml(featured?.metaDescription || featured?.content, 180);
 
   return (
-    <div className="pj-blog-page pj-journal">
+    <div className="pj-blog-page pj-journal df-content-skin">
       <header className="pj-journal-head">
         <p className="pj-journal-kicker">Blog</p>
         <h1 className="pj-journal-title">{site.platformName} Blog</h1>

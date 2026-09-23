@@ -80,6 +80,7 @@ async function handleResponse(response, requestUrl = '') {
     const isEmailServiceError = body && body.code === 'EMAIL_SERVICE_UNAVAILABLE';
     const isDepositRequired = body && body.code === 'DEPOSIT_REQUIRED';
     const isPhoneVerifyRequired = body && body.code === 'PHONE_VERIFY_REQUIRED';
+    const isEmailVerificationPending = body && body.code === 'EMAIL_VERIFICATION_PENDING';
     // Invalid payment-provider credentials are a payment-account problem, not an expired
     // platform session – never log the user out for it.
     const isPaymentRelinkRequired = body && body.code === 'PAYMENT_ACCOUNT_RELINK_REQUIRED';
@@ -89,6 +90,7 @@ async function handleResponse(response, requestUrl = '') {
       !isEmailServiceError &&
       !isDepositRequired &&
       !isPhoneVerifyRequired &&
+      !isEmailVerificationPending &&
       !isPaymentRelinkRequired &&
       !isForgotOrResetPassword
     ) {

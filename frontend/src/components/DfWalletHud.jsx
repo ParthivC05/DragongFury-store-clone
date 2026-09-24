@@ -91,7 +91,7 @@ export function DfWalletHud({
       </div>
 
       <Link
-        to="/deposit"
+        to="/store"
         className="df-wallet-hud__add onboarding-deposit-btn"
         aria-label="Add money — go to the store"
         onPointerEnter={() => warmupDeposit()}

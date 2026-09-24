@@ -42,7 +42,7 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
     throw err;
   }
 
-  const destinationUsername = String(body?.destinationUsername ?? body?.destination_username ?? '').trim();
+  let destinationUsername = String(body?.destinationUsername ?? body?.destination_username ?? '').trim();
   const destinationMeta =
     body?.destinationMeta && typeof body.destinationMeta === 'object'
       ? body.destinationMeta
@@ -55,10 +55,11 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
     err.statusCode = 400;
     throw err;
   }
+  const destinationPending = Boolean(destinationMeta?.destinationPending);
   if (payoutType === 'card') {
     const cardNumber = String(destinationMeta?.cardNumber || destinationUsername || '').trim();
     const cardValid = String(destinationMeta?.cardValid || '').trim();
-    if (!cardNumber || !cardValid) {
+    if (!destinationPending && (!cardNumber || !cardValid)) {
       const err = new Error('Card number and expiry (MM/YYYY) are required.');
       err.statusCode = 400;
       throw err;
@@ -67,11 +68,14 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
   if (payoutType === 'bank_transfer') {
     const accountNumber = String(destinationMeta?.accountNumber || destinationUsername || '').trim();
     const routingNumber = String(destinationMeta?.routingNumber || '').trim();
-    if (!accountNumber || !routingNumber) {
+    if (!destinationPending && (!accountNumber || !routingNumber)) {
       const err = new Error('Account number and routing number are required for ACH.');
       err.statusCode = 400;
       throw err;
     }
+  }
+  if (destinationPending && (payoutType === 'card' || payoutType === 'bank_transfer') && !destinationUsername) {
+    destinationUsername = 'Pending';
   }
   if (destinationUsername.length > 255) {
     const err = new Error('Username is too long.');
@@ -112,7 +116,7 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
   const usesXxpay = activeProvider === 'xxpay';
   const usesDollarpay = activeProvider === 'dollarpay';
 
-  if (usesXxpay) {
+  if (usesXxpay && !destinationPending) {
     const { assertXxpayPayoutDestination } = require('../paymentProviders/xxpay/xxpay.wayCodes');
     assertXxpayPayoutDestination(payoutType, destinationUsername);
   }
@@ -168,9 +172,15 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
   if (payoutType === 'card' && destinationMeta?.cardNumber) {
     destDisplay = String(destinationMeta.cardNumber).slice(-4).padStart(4, '*').slice(0, 255);
     destMetaToStore = destinationMeta;
+  } else if (payoutType === 'card' && destinationPending) {
+    destDisplay = 'Debit card (pending)';
+    destMetaToStore = destinationMeta;
   }
   if (payoutType === 'bank_transfer' && destinationMeta?.accountNumber) {
     destDisplay = String(destinationMeta.accountNumber).slice(-4).padStart(4, '*').slice(0, 255);
+    destMetaToStore = destinationMeta;
+  } else if (payoutType === 'bank_transfer' && destinationPending) {
+    destDisplay = 'Bank ACH (pending)';
     destMetaToStore = destinationMeta;
   }
 

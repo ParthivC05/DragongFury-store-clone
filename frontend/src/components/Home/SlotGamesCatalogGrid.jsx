@@ -9,22 +9,29 @@ const PREVIEW_ROWS = 3;
 const SPIN_MODAL_SCROLL = 3;
 const GUEST_SLOTS_SPIN_MODAL_KEY = 'guest_slots_spin_modal_shown';
 
-const TAB_ORDER = ['all', 'slots', 'fishing', 'table-games', 'live-casino', 'others'];
-const FALLBACK_TABS = [
-  'bingo',
-  'shooting',
+const TAB_ORDER = [
+  'all',
+  'slots',
+  'fishing',
+  'table-games',
+  'live-casino',
   'crash-game',
   'instant-win',
+  'shooting',
   'keno',
   'scratch-cards',
   'lottery',
   'plinko',
+  'bingo',
   'casual-games',
+  'others',
+];
+const FALLBACK_TABS = [
+  'video-poker',
   'new-games',
   'trending-games',
   'hot-games',
   'popular-games',
-  'top-games',
   'classic-slots',
 ];
 
@@ -32,27 +39,28 @@ const TABLE_TITLE_RE =
   /\b(poker|blackjack|roulette|baccarat|craps|sic[\s-]?bo|teen[\s-]?patti|andar[\s-]?bahar|hold'?em|pai[\s-]?gow|casino war|three card|video poker)\b/i;
 
 const TAB_ICONS = {
-  slots: '/df-online/club-icons/slots-777.webp',
+  slots: '/df-online/club-icons/slots-777.png',
   fishing: '/df-online/club-icons/fish.webp',
   'table-games': '/df-online/club-icons/cards.webp',
   'live-casino': '/df-online/club-icons/dice.webp',
-  others: '/df-online/club-icons/gamepad.webp',
-  bingo: '/df-online/club-icons/bingo.webp',
-  shooting: '/df-online/club-icons/shooting.webp',
-  'crash-game': '/df-online/club-icons/crash.webp',
-  keno: '/df-online/club-icons/keno.webp',
-  'scratch-cards': '/df-online/club-icons/scratch.webp',
-  lottery: '/df-online/club-icons/lottery.webp',
-  plinko: '/df-online/club-icons/plinko.webp',
-  'casual-games': '/df-online/club-icons/casual.webp',
-  'instant-win': '/df-online/club-icons/instant.webp',
+  others: '/df-online/club-icons/gamepad.png',
+  bingo: '/df-online/club-icons/bingo.svg',
+  shooting: '/df-online/club-icons/shooting.svg',
+  'crash-game': '/df-online/club-icons/crash.svg',
+  keno: '/df-online/club-icons/keno.svg',
+  'scratch-cards': '/df-online/club-icons/scratch.svg',
+  lottery: '/df-online/club-icons/lottery.svg',
+  plinko: '/df-online/club-icons/plinko.svg',
+  'casual-games': '/df-online/club-icons/casual.svg',
+  'instant-win': '/df-online/club-icons/instant.svg',
+  'video-poker': '/df-online/club-icons/cards.webp',
 };
 
 const TAB_LABELS = {
   all: 'All',
   slots: 'Slots',
   fishing: 'Fishing',
-  'table-games': 'Poker',
+  'table-games': 'Table',
   'live-casino': 'Live',
   others: 'Other',
   bingo: 'Bingo',
@@ -64,11 +72,11 @@ const TAB_LABELS = {
   lottery: 'Lottery',
   plinko: 'Plinko',
   'casual-games': 'Casual',
+  'video-poker': 'Video Poker',
   'new-games': 'New',
   'trending-games': 'Trending',
   'hot-games': 'Hot',
   'popular-games': 'Popular',
-  'top-games': 'Top',
   'classic-slots': 'Classic',
 };
 
@@ -90,23 +98,16 @@ const TAB_SOURCE_IDS = {
   fishing: new Set(['fishing', 'fishing-games', 'top-fishing']),
   'table-games': new Set(['table-games', 'video-poker']),
   'live-casino': new Set(['live-casino']),
-  others: new Set([
-    'others',
-    'bingo',
-    'shooting',
-    'crash-game',
-    'instant-win',
-    'keno',
-    'scratch-cards',
-    'lottery',
-    'plinko',
-    'casual-games',
-    'zesus',
-    'olympus',
-    'candy',
-    'animal',
-    'buffalo-blast',
-  ]),
+  'crash-game': new Set(['crash-game']),
+  'instant-win': new Set(['instant-win']),
+  shooting: new Set(['shooting']),
+  keno: new Set(['keno']),
+  'scratch-cards': new Set(['scratch-cards']),
+  lottery: new Set(['lottery']),
+  plinko: new Set(['plinko']),
+  bingo: new Set(['bingo']),
+  'casual-games': new Set(['casual-games']),
+  others: new Set(['others']),
 };
 
 function tabLabel(id) {

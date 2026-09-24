@@ -282,15 +282,17 @@ function RouteTitleManager() {
       ['/help', 'Help Center'],
       ['/support/tickets', 'Support Tickets'],
       ['/blog', 'Blog'],
-      ['/casino', 'Casino Games'],
+      ['/casino', 'Games'],
       ['/firekirin-exclusive', 'Firekirin Exclusive'],
       ['/platform', 'Platforms'],
       ['/link2play', 'Link2Play'],
       ['/install', 'How to Install'],
       ['/games', 'Games'],
-      ['/deposit', 'Deposit'],
+      ['/deposit', 'Store'],
+      ['/store', 'Store'],
       ['/deposit/return', 'Deposit Status'],
-      ['/withdraw', 'Withdraw'],
+      ['/withdraw', 'Redeem'],
+      ['/redeem', 'Redeem'],
       ['/promotions', 'Promotions'],
       ['/spinwheel', 'Spin Wheel'],
       ['/daily-bonus', 'Daily Bonus'],
@@ -313,7 +315,7 @@ function RouteTitleManager() {
     let pageTitle = routeTitleMap.get(pathname);
 
     if (!pageTitle && pathname.startsWith('/casino/')) {
-      pageTitle = 'Casino Games';
+      pageTitle = 'Games';
     }
 
     const isBlogDetail = pathname.startsWith('/blog/');
@@ -449,8 +451,10 @@ function App() {
 
                 {/* Protected routes */}
                 <Route path="/deposit" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
+                <Route path="/store" element={<ProtectedRoute><Deposit /></ProtectedRoute>} />
                 <Route path="/deposit/return" element={<DepositReturn />} />
                 <Route path="/withdraw" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
+                <Route path="/redeem" element={<ProtectedRoute><Withdraw /></ProtectedRoute>} />
                 <Route path="/kyc/callback" element={<ProtectedRoute><KycCallback /></ProtectedRoute>} />
                 <Route path="/promotions" element={<ProtectedRoute><Promotions /></ProtectedRoute>} />
                 <Route path="/spinwheel" element={<ProtectedRoute><SpinWheel /></ProtectedRoute>} />

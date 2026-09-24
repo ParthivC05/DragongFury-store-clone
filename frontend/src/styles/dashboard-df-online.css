@@ -1514,6 +1514,10 @@ body.guest-landing-active .dash-nav-home-btn,
   height: 17px;
   margin: 0;
   object-fit: contain;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
   filter: drop-shadow(rgba(0, 0, 0, 0.6) 0 1px 2px);
 }
 
@@ -3474,17 +3478,25 @@ html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-h
 /* -- Lobby filter chips (auth home) -- */
 .df-lobby-filter-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-start;
   gap: 8px 10px;
   width: min(100%, 1180px);
   margin: 8px auto 14px;
-  padding: 0 4px;
+  padding: 0 4px 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.df-lobby-filter-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .df-lobby-filter-chip {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   gap: 6px;
@@ -3508,6 +3520,15 @@ html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-h
   height: 18px;
   object-fit: contain;
   flex: 0 0 auto;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.df-lobby-filter-chip--active .df-lobby-filter-chip__glyph {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35)) brightness(0.35) sepia(1) saturate(4) hue-rotate(-10deg);
 }
 
 .df-lobby-filter-chip--fav {
@@ -3838,9 +3859,11 @@ body:has(.dash-nav--authenticated) {
 }
 
 .dash-root:has(.dash-nav--authenticated) .df-lobby-filter-bar {
-  justify-content: center;
-  gap: 14px 18px;
+  justify-content: flex-start;
+  gap: 10px 12px;
   margin: 2px auto 18px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
 }
 
 .dash-root:has(.dash-nav--authenticated) .df-lobby-filter-chip {
@@ -4269,4 +4292,133 @@ body.slots-search-sticky .dash-root:has(.dash-nav--authenticated) .dash-slot-sea
   box-shadow: none !important;
   padding: 0 !important;
   overflow: visible !important;
+}
+
+/* ─── /casino Games page (= live /games) ─── */
+.df-games-page {
+  background: transparent;
+}
+
+.df-games-page .dash-layout,
+.df-games-page .dash-main {
+  max-width: 1180px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 18px 14px 112px;
+  background: transparent;
+  box-sizing: border-box;
+}
+
+.df-route-heading {
+  margin: 4px 0 0;
+  padding: 0 2px;
+  text-align: left;
+}
+
+.df-route-heading__eyebrow {
+  display: block;
+  color: #ffe367;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.df-route-heading__title {
+  margin: 2px 0 14px;
+  color: #fff;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: clamp(1.85rem, 7vw, 2.375rem);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.df-games-page .dash-games-section--games-page {
+  margin-top: 0;
+}
+
+.df-games-page .dash-platform-search-wrap.lobby-search {
+  margin-top: 0;
+}
+
+/* Lobby-mode category chips under Slots — match live slot-subfilters */
+.df-games-included--lobby .df-games-tabs--embedded {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 0 0 12px !important;
+  padding: 0 2px 4px !important;
+}
+
+.df-games-included--lobby .df-games-tabs--embedded::-webkit-scrollbar {
+  display: none;
+}
+
+.df-games-included--lobby .df-games-tab {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  min-height: 34px !important;
+  padding: 0 11px !important;
+  border: 2px solid #2b2432 !important;
+  border-radius: 999px !important;
+  background: #050505 !important;
+  color: #fff !important;
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.02em !important;
+  white-space: nowrap;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.df-games-included--lobby .df-games-tab:hover,
+.df-games-included--lobby .df-games-tab:active {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.df-games-included--lobby .df-games-tab--active {
+  border-color: #ffc600 !important;
+  color: #ffc600 !important;
+  background: #050505 !important;
+  box-shadow: none !important;
+}
+
+.df-games-included--lobby .df-games-tab__n {
+  display: none !important;
+}
+
+.df-games-included--lobby .df-games-tab__glyph {
+  width: 18px !important;
+  height: 14px !important;
+  margin-right: 4px;
+}
+
+@media (max-width: 1023px) {
+  .df-games-page .dash-main {
+    padding: 12px 12px calc(112px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .df-route-heading__title {
+    margin-bottom: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .df-route-heading {
+    margin-top: 12px;
+  }
+
+  .df-route-heading__title {
+    font-size: 38px;
+    margin-bottom: 18px;
+  }
 }

@@ -1,18 +1,18 @@
-/* Forced identity verification gate — unclosable until action / status change */
+/* Forced identity verification gate — purple/gold Dragon Fury theme */
 
 .kyc-gate {
-  --kyc-ink: #0b1220;
-  --kyc-card: #121a2b;
-  --kyc-card-2: #1a2438;
-  --kyc-line: rgba(182, 255, 42, 0.22);
-  --kyc-gold: #B6FF2A;
-  --kyc-gold-2: #8FE31A;
-  --kyc-teal: #2dd4bf;
-  --kyc-text: #f4f7fb;
-  --kyc-muted: #9aa8bc;
-  --kyc-ok: #34d399;
-  --kyc-warn: #fbbf24;
-  --kyc-bad: #f87171;
+  --kyc-ink: #12081f;
+  --kyc-card: #1a0f2e;
+  --kyc-card-2: #12081f;
+  --kyc-line: rgba(255, 232, 163, 0.35);
+  --kyc-gold: #ffe8a3;
+  --kyc-gold-2: #e7b94c;
+  --kyc-teal: #c4a1ff;
+  --kyc-text: #f6efff;
+  --kyc-muted: #cdb9e8;
+  --kyc-ok: #66eb9c;
+  --kyc-warn: #ffd977;
+  --kyc-bad: #ffb3c0;
   position: fixed;
   inset: 0;
   z-index: 10070;
@@ -21,9 +21,9 @@
   padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
     max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
   background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(182, 255, 42, 0.18), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 80% 100%, rgba(45, 212, 191, 0.12), transparent 50%),
-    rgba(5, 8, 16, 0.82);
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(113, 53, 205, 0.35), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 80% 100%, rgba(231, 185, 76, 0.12), transparent 50%),
+    rgba(5, 2, 12, 0.82);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   animation: kyc-gate-fade 0.28s ease-out;
@@ -42,24 +42,31 @@
 
 .kyc-gate__card {
   position: relative;
-  width: min(100%, 420px);
+  width: min(376px, calc(100vw - 22px));
   max-height: min(92dvh, 720px);
   overflow-x: hidden;
   overflow-y: auto;
   border-radius: 22px;
   padding: 1.75rem 1.5rem 1.5rem;
   background:
-    linear-gradient(165deg, rgba(182, 255, 42, 0.08) 0%, transparent 42%),
+    linear-gradient(165deg, rgba(255, 232, 163, 0.1) 0%, transparent 42%),
     linear-gradient(180deg, var(--kyc-card) 0%, var(--kyc-card-2) 100%);
   border: 1px solid var(--kyc-line);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04) inset,
     0 24px 64px rgba(0, 0, 0, 0.55),
-    0 0 48px rgba(182, 255, 42, 0.08);
+    0 0 48px rgba(113, 53, 205, 0.18);
   color: var(--kyc-text);
   text-align: center;
   animation: kyc-gate-rise 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .kyc-gate__card {
+    width: min(92vw, 720px);
+    max-height: min(88dvh, 860px);
+  }
 }
 
 .kyc-gate__close {
@@ -136,7 +143,7 @@
 
 .kyc-gate__ring--paused {
   animation: none;
-  border-color: rgba(182, 255, 42, 0.25);
+  border-color: rgba(255, 232, 163, 0.25);
   border-top-color: var(--kyc-gold);
 }
 
@@ -187,9 +194,9 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: rgba(182, 255, 42, 0.12);
+  background: rgba(255, 232, 163, 0.12);
   color: var(--kyc-gold);
-  border: 1px solid rgba(182, 255, 42, 0.28);
+  border: 1px solid rgba(255, 232, 163, 0.28);
 }
 
 .kyc-gate--pending .kyc-gate__badge {
@@ -279,10 +286,10 @@
   font-weight: 800;
   letter-spacing: -0.01em;
   cursor: pointer;
-  color: #0b1220;
+  color: #291506;
   background: linear-gradient(135deg, var(--kyc-gold) 0%, var(--kyc-gold-2) 100%);
   box-shadow:
-    0 10px 28px rgba(255, 165, 0, 0.35),
+    0 10px 28px rgba(231, 185, 76, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.15) inset;
   transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
 }
@@ -346,7 +353,7 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: rgba(182, 255, 42, 0.85);
+  color: rgba(255, 232, 163, 0.9);
 }
 
 @media (max-width: 420px) {

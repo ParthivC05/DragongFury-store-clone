@@ -820,7 +820,7 @@ function GameDetailInner() {
         amount={redeemedAmount}
         onConfirm={() => {
           setWithdrawPromptOpen(false);
-          navigate('/withdraw');
+          navigate('/redeem');
         }}
       />
     </div>

@@ -16,17 +16,17 @@ export const AUTH_LOBBY_LINKS = [
   },
   {
     id: 'store',
-    to: '/deposit',
+    to: '/store',
     label: 'Store',
     art: '/df-online/menu/menu-store.webp',
-    match: (path) => path === '/deposit'
+    match: (path) => path === '/deposit' || path === '/store'
   },
   {
     id: 'redeem',
-    to: '/withdraw',
+    to: '/redeem',
     label: 'Redeem',
     art: '/df-online/menu/menu-redeem.webp',
-    match: (path) => path === '/withdraw'
+    match: (path) => path === '/redeem' || path === '/withdraw'
   },
   {
     id: 'bonus',

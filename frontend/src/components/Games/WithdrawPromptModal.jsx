@@ -207,7 +207,7 @@ export function WithdrawPromptModal({
       return;
     }
     closeModal();
-    navigate('/withdraw');
+    navigate('/redeem');
   }
 
   function handleSlotImageError(event) {

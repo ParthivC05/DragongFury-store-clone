@@ -34,8 +34,8 @@ export function BottomBar() {
     }
   };
 
-  const shopTo = isAuthenticated ? '/deposit' : registerPath;
-  const redeemTo = isAuthenticated ? '/withdraw' : registerPath;
+  const shopTo = isAuthenticated ? '/store' : registerPath;
+  const redeemTo = isAuthenticated ? '/redeem' : registerPath;
 
   return (
     <nav
@@ -55,7 +55,7 @@ export function BottomBar() {
       <NavLink
         to={shopTo}
         className={({ isActive }) =>
-          hudItemClass('shop', isAuthenticated ? pathname === '/deposit' : isActive)
+          hudItemClass('shop', isAuthenticated ? pathname === '/deposit' || pathname === '/store' : isActive)
         }
       >
         <span className="df-nav-hud__art" aria-hidden>
@@ -66,7 +66,7 @@ export function BottomBar() {
 
       <NavLink
         to={redeemTo}
-        className={() => hudItemClass('redeem', pathname === '/withdraw')}
+        className={() => hudItemClass('redeem', pathname === '/redeem' || pathname === '/withdraw')}
       >
         <span className="df-nav-hud__art" aria-hidden>
           <img src="/df-online/nav-redeem.webp" alt="" width={256} height={256} decoding="async" />

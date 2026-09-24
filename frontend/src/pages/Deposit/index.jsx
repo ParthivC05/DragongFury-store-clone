@@ -13,9 +13,9 @@ import {
   catalogHasVisiblePackages
 } from '../../utils/depositPackageAvailability';
 import { useDepositBonusCountdown, depositTierLabel, formatBonusHighlight } from '../../hooks/useDepositBonusEligibility';
-import { AddCoinsDepositView } from '../../components/deposit/AddCoinsDepositView';
+import { DfStoreDepositView } from '../../components/deposit/DfStoreDepositView';
 import { usePageContentReady } from '../../context/PageReadyContext';
-import { preloadDepositPackageImages } from '../../utils/depositPackageImage';
+import { preloadStoreChestImages } from '../../utils/storeChest';
 import { SecurePaymentModal } from '../../components/deposit/SecurePaymentModal';
 import { PaymentSuccessScreen } from '../../components/deposit/PaymentSuccessScreen';
 import { ChimeDepositModal } from '../../components/deposit/ChimeDepositModal';
@@ -244,7 +244,7 @@ export function Deposit() {
   const packageEmptyRetryRef = useRef(false);
 
   useEffect(() => {
-    preloadDepositPackageImages();
+    preloadStoreChestImages();
   }, []);
 
   usePageContentReady(!(loading && balance == null));
@@ -477,9 +477,33 @@ export function Deposit() {
   /** Custom (non-package) deposits use admin wallet-limits min/max. */
   const customDepositMin = depositMin;
   const railAmountBounds = { min: customDepositMin, max: depositMax };
+  /** Package checkout: provider amount lists matter more than custom-deposit min. */
+  const packageRailBounds = useMemo(
+    () => ({ min: 0, max: platformDepositMax }),
+    [platformDepositMax]
+  );
   const allCatalogPacks = useMemo(
     () => flattenCatalogPackages(packageCatalog?.groups),
     [packageCatalog]
+  );
+  /** Store chests stay visible regardless of selected rail; methods filter per package in the modal. */
+  const storePackageGroups = useMemo(
+    () =>
+      (Array.isArray(packageCatalog?.groups) ? packageCatalog.groups : [])
+        .map((group) => ({
+          ...group,
+          packages: (group.packages || []).map((pkg) => ({
+            ...pkg,
+            group_key: group.group_key,
+            group_title: group.title
+          }))
+        }))
+        .filter((group) => (group.packages || []).length > 0),
+    [packageCatalog]
+  );
+  const storeOpenPacks = useMemo(
+    () => flattenCatalogPackages(storePackageGroups),
+    [storePackageGroups]
   );
   const visiblePackageGroups = useMemo(
     () => (Array.isArray(packageCatalog?.groups) ? packageCatalog.groups : [])
@@ -1875,12 +1899,13 @@ export function Deposit() {
         </section>
       )}
 
-      <AddCoinsDepositView
+      <DfStoreDepositView
         rails={depositRails}
+        amountBounds={packageRailBounds}
         selectedRail={selectedRail}
         onSelectRail={handleSelectRail}
-        openPacks={openPacks}
-        packageGroups={visiblePackageGroups}
+        openPacks={storeOpenPacks}
+        packageGroups={storePackageGroups}
         packagesLoading={packagesLoading || loading}
         selectedPackage={selectedPackage}
         onSelectPackage={handleSelectPackage}

@@ -1,15 +1,13 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { DashboardSidebar } from '../../components/Home/DashboardSidebar';
-import { DashboardFx } from '../../components/Home/DashboardFx';
-import { DashboardWelcome } from '../../components/Home/DashboardWelcome';
-import { DashboardSlotGamesSection } from '../../components/Home/DashboardSlotGamesSection';
-import { useEnabledSlotProviders } from '../../hooks/useEnabledSlotProviders';
 import { isHiddenSlotCategoryId } from '../../utils/gitslotparkLandingGames';
-import '../../components/SlotGames/slot-lobby-v5.css';
 
-function resetSlotsPageScroll() {
+const GamesSection = lazy(() =>
+  import('../../components/Home/GamesSection').then((m) => ({ default: m.GamesSection }))
+);
+
+function resetGamesPageScroll() {
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.documentElement.scrollLeft = 0;
@@ -23,37 +21,53 @@ function resetSlotsPageScroll() {
 }
 
 /**
- * Dedicated Casino lobby (same casinoslots v5 design + curated 1GameHub games).
+ * Authenticated Games page — matches dragonfury.online/games
+ * (route heading + lobby search/filters/grid, not the old carousel lobby).
  */
 export function AllSlotGames() {
-  const { isAuthenticated } = useAuth();
-  const { hasSlotProviders, loaded: providersLoaded } = useEnabledSlotProviders();
+  const { isAuthenticated, loading } = useAuth();
   const { categoryId } = useParams();
 
   useEffect(() => {
-    resetSlotsPageScroll();
+    resetGamesPageScroll();
   }, [categoryId]);
 
   if (isHiddenSlotCategoryId(categoryId)) {
     return <Navigate to="/casino" replace />;
   }
 
+  const initialFilter = (() => {
+    const id = String(categoryId || '').toLowerCase();
+    if (!id) return 'all';
+    if (id === 'slot') return 'slots';
+    if (id === 'live' || id === 'livecasino') return 'live-casino';
+    if (id === 'platforms') return 'web';
+    if (id === 'favorites' || id === 'my-games') return 'registered';
+    if (id === 'table' || id === 'poker') return 'table-games';
+    if (id === 'crash') return 'crash-game';
+    if (id === 'instant') return 'instant-win';
+    if (id === 'scratch') return 'scratch-cards';
+    if (id === 'casual') return 'casual-games';
+    return id;
+  })();
+
   return (
-    <div className="dashboard dash-page slot-lobby-v5">
-      <DashboardFx />
-
-      <div className="dash-layout dash-layout--sided">
-        <DashboardSidebar
-          activeView="casino"
-          hasSlots={hasSlotProviders}
-          isAuthenticated={isAuthenticated}
-        />
-
+    <div className="dashboard dash-page df-games-page">
+      <div className="dash-layout">
         <div className="dash-main">
-          {providersLoaded && hasSlotProviders ? (
-            <DashboardWelcome isAuthenticated={isAuthenticated} placement="casino" />
+          <header className="df-route-heading" aria-label="Games">
+            <span className="df-route-heading__eyebrow">Game lobby</span>
+            <h1 className="df-route-heading__title">Games</h1>
+          </header>
+
+          {!loading ? (
+            <Suspense fallback={null}>
+              <GamesSection
+                pageMode
+                initialFilter={isAuthenticated ? initialFilter : undefined}
+              />
+            </Suspense>
           ) : null}
-          <DashboardSlotGamesSection categoryId={categoryId || null} />
         </div>
       </div>
     </div>

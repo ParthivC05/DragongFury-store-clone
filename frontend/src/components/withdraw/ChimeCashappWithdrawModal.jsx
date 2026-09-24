@@ -5,7 +5,8 @@ import { CashAppIcon, PayPalIcon } from '../../assets/icons';
 import '../deposit/ChimeDepositModal.css';
 
 /**
- * Modal: confirm withdrawal amount and collect destination for Chime / Cash App / PayPal / Venmo / Zelle / Card / ACH.
+ * Confirm redeem amount. Wallet methods also confirm destination.
+ * Card / ACH confirm amount only — no card/account number fields.
  */
 export function ChimeCashappWithdrawModal({
   open,
@@ -17,11 +18,11 @@ export function ChimeCashappWithdrawModal({
   amountNum,
   availableSc,
   onSubmit,
-  submitting
+  submitting,
+  className = '',
+  initialDestination = ''
 }) {
   const [username, setUsername] = useState('');
-  const [cardValid, setCardValid] = useState('');
-  const [routingNumber, setRoutingNumber] = useState('');
   const payoutType = String(payoutTypeProp || '').toLowerCase();
   const isChime = payoutLabel === 'Chime' || payoutType === 'chime';
   const isCashapp = payoutType === 'cashapp' || (!isChime && payoutLabel === 'Cash App');
@@ -30,15 +31,14 @@ export function ChimeCashappWithdrawModal({
   const isZelle = payoutType === 'zelle' || payoutLabel === 'Zelle';
   const isCard = payoutType === 'card';
   const isAch = payoutType === 'bank_transfer';
+  const needsDestination = !isCard && !isAch;
   const usesDollarPrefix = isChime || isCashapp;
 
   useEffect(() => {
     if (open) {
-      setUsername('');
-      setCardValid('');
-      setRoutingNumber('');
+      setUsername(String(initialDestination || '').replace(/^\$+/, ''));
     }
-  }, [open, payoutLabel, payoutType]);
+  }, [open, payoutLabel, payoutType, initialDestination]);
 
   if (!open) return null;
 
@@ -57,18 +57,14 @@ export function ChimeCashappWithdrawModal({
               : 'Cash App Withdrawal';
 
   const fieldLabel = isChime
-    ? 'Chime username'
+    ? 'Chime $ChimeSign'
     : isPaypal
       ? 'PayPal email'
       : isVenmo
         ? 'Venmo email'
         : isZelle
           ? 'Zelle email or phone'
-          : isCard
-            ? 'Card number'
-            : isAch
-              ? 'Account number'
-              : 'Cash App $Cashtag';
+          : 'Cash App $Cashtag';
 
   const placeholder = isChime
     ? 'YourChime'
@@ -76,27 +72,21 @@ export function ChimeCashappWithdrawModal({
       ? 'you@example.com'
       : isZelle
         ? 'email or +1phone'
-        : isCard
-          ? '4111111111111111'
-          : isAch
-            ? 'Bank account number'
-            : 'YourCashtag';
+        : 'YourCashtag';
 
   const tagBody = (username || '').trim().replace(/^\$+/, '');
   const cashappError = isCashapp ? cashappCashtagError(tagBody) : null;
   const chimeError = isChime ? chimeSignError(tagBody) : null;
-  const destError = cashappError || chimeError;
+  const destError = needsDestination ? cashappError || chimeError : null;
 
   const canSubmit =
-    profileOk(username, { isCashapp, isChime }) &&
-    !destError &&
-    (!isCard || /^\d{2}\/\d{4}$/.test(cardValid.trim())) &&
-    (!isAch || /^\d{9}$/.test(routingNumber.trim())) &&
     amountNum >= withdrawMin &&
     amountNum <= availableSc &&
-    !submitting;
+    !submitting &&
+    (needsDestination ? profileOk(username, { isCashapp, isChime }) && !destError : true);
 
   const submitUsername = () => {
+    if (!needsDestination) return 'Pending';
     const raw = (username || '').trim().replace(/^\$+/, '');
     if (!raw) return '';
     if (isChime || isCashapp) return `$${raw}`;
@@ -105,13 +95,9 @@ export function ChimeCashappWithdrawModal({
 
   const handleSubmit = () => {
     const dest = submitUsername();
-    if (!dest || destError) return;
-    if (isCard) {
-      onSubmit(dest, { cardNumber: dest, cardValid: cardValid.trim() });
-      return;
-    }
-    if (isAch) {
-      onSubmit(dest, { accountNumber: dest, routingNumber: routingNumber.trim() });
+    if (needsDestination && (!dest || destError)) return;
+    if (!needsDestination) {
+      onSubmit(dest, { destinationPending: true });
       return;
     }
     onSubmit(dest);
@@ -119,12 +105,12 @@ export function ChimeCashappWithdrawModal({
 
   return (
     <div
-      className="dash-chime-modal-root fixed inset-0 z-[10080] flex items-center justify-center p-4 dash-chime-modal-backdrop overflow-y-auto"
+      className={`dash-chime-modal-root fixed inset-0 z-[10080] flex items-center justify-center p-4 dash-chime-modal-backdrop overflow-y-auto ${className}`.trim()}
       role="dialog"
       aria-modal="true"
       aria-labelledby="chime-cashapp-modal-title"
     >
-      <div className="dash-chime-modal-shell">
+      <div className="dash-chime-modal-shell df-live-modal-shell">
         <div className="dash-chime-modal-card dash-chime-withdraw-card">
           <header className="dash-chime-modal-header">
             <div className="dash-chime-modal-header-main">
@@ -153,7 +139,9 @@ export function ChimeCashappWithdrawModal({
 
           <div className="dash-chime-modal-body dash-chime-withdraw-body">
             <p className="dash-chime-modal-desc">
-              Double-check your details. We’ll hold this amount until your request is reviewed.
+              {needsDestination
+                ? 'Double-check your details. We’ll hold this amount until your request is reviewed.'
+                : 'Confirm the amount. We’ll hold it until the operator reviews and completes the payout.'}
             </p>
 
             <div className="dash-chime-modal-field">
@@ -168,87 +156,63 @@ export function ChimeCashappWithdrawModal({
               </p>
             </div>
 
-            <div className="dash-chime-modal-field">
-              <label htmlFor="withdraw-destination-username" className="dash-chime-section-label">
-                {fieldLabel}
-              </label>
-              <div
-                className={`dash-chime-username-field${
-                  usesDollarPrefix ? ' dash-chime-username-field--prefixed' : ''
-                }`}
-              >
-                {usesDollarPrefix ? (
-                  <span className="dash-chime-username-prefix" aria-hidden>
-                    $
-                  </span>
+            {needsDestination ? (
+              <div className="dash-chime-modal-field">
+                <label htmlFor="withdraw-destination-username" className="dash-chime-section-label">
+                  {fieldLabel}
+                </label>
+                <div
+                  className={`dash-chime-username-field${
+                    usesDollarPrefix ? ' dash-chime-username-field--prefixed' : ''
+                  }`}
+                >
+                  {usesDollarPrefix ? (
+                    <span className="dash-chime-username-prefix" aria-hidden>
+                      $
+                    </span>
+                  ) : null}
+                  <input
+                    id="withdraw-destination-username"
+                    type="text"
+                    autoComplete="off"
+                    placeholder={placeholder}
+                    value={username}
+                    maxLength={isChime ? 50 : isCashapp ? 64 : undefined}
+                    onChange={(e) => {
+                      let next = e.target.value.replace(/^\$+/, '');
+                      if (isCashapp) {
+                        next = next.replace(/\s+/g, '').slice(0, 64);
+                      } else if (isChime) {
+                        next = next.slice(0, 50);
+                      }
+                      setUsername(next);
+                    }}
+                    className="dash-input-field dash-chime-withdraw-input"
+                    aria-label={fieldLabel}
+                    aria-invalid={Boolean(destError && tagBody)}
+                  />
+                </div>
+                {isCashapp ? (
+                  <p className="dash-chime-field-hint">
+                    Cash App $Cashtag, starting with $. Example: $abc123
+                  </p>
                 ) : null}
-                <input
-                  id="withdraw-destination-username"
-                  type="text"
-                  autoComplete="off"
-                  placeholder={placeholder}
-                  value={username}
-                  maxLength={isChime ? 50 : isCashapp ? 64 : undefined}
-                  onChange={(e) => {
-                    let next = e.target.value.replace(/^\$+/, '');
-                    if (isCashapp) {
-                      next = next.replace(/\s+/g, '').slice(0, 64);
-                    } else if (isChime) {
-                      next = next.slice(0, 50);
-                    }
-                    setUsername(next);
-                  }}
-                  className="dash-input-field dash-chime-withdraw-input"
-                  aria-label={fieldLabel}
-                  aria-invalid={Boolean(destError && tagBody)}
-                />
+                {isChime ? (
+                  <p className="dash-chime-field-hint">4–50 characters after $.</p>
+                ) : null}
+                {destError && tagBody ? (
+                  <p className="dash-chime-field-hint" style={{ color: '#f87171' }} role="alert">
+                    {destError}
+                  </p>
+                ) : null}
               </div>
-              {isCashapp ? (
-                <p className="dash-chime-field-hint">
-                  Cash App $Cashtag, starting with $. Example: $abc123
-                </p>
-              ) : null}
-              {isChime ? (
-                <p className="dash-chime-field-hint">4–50 characters after $.</p>
-              ) : null}
-              {destError && tagBody ? (
-                <p className="dash-chime-field-hint" style={{ color: '#f87171' }} role="alert">
-                  {destError}
-                </p>
-              ) : null}
-            </div>
-
-            {isCard ? (
-              <div className="dash-chime-modal-field">
-                <label htmlFor="withdraw-card-valid" className="dash-chime-section-label">
-                  Expiry (MM/YYYY)
-                </label>
-                <input
-                  id="withdraw-card-valid"
-                  type="text"
-                  placeholder="01/2028"
-                  value={cardValid}
-                  onChange={(e) => setCardValid(e.target.value)}
-                  className="dash-input-field dash-chime-withdraw-input"
-                />
-              </div>
-            ) : null}
-
-            {isAch ? (
-              <div className="dash-chime-modal-field">
-                <label htmlFor="withdraw-routing" className="dash-chime-section-label">
-                  Routing number (9 digits)
-                </label>
-                <input
-                  id="withdraw-routing"
-                  type="text"
-                  placeholder="026009593"
-                  value={routingNumber}
-                  onChange={(e) => setRoutingNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
-                  className="dash-input-field dash-chime-withdraw-input"
-                />
-              </div>
-            ) : null}
+            ) : (
+              <p className="dash-chime-field-hint">
+                {isCard
+                  ? 'No card number is collected on this screen. The operator completes the debit card send after approval.'
+                  : 'No bank details are collected on this screen. The operator completes the ACH send after approval.'}
+              </p>
+            )}
           </div>
 
           <footer className="dash-chime-modal-footer">

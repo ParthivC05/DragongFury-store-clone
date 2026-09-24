@@ -1,0 +1,325 @@
+/* DragonFury /promotions — club purple theme (live has no /promotions page) */
+
+.df-promo-page.dash-promotions-page {
+  --promo-mint: #66e69b;
+  --promo-green: #49df87;
+  --promo-green-deep: #1bac65;
+  --promo-ink: #06150d;
+  --promo-gold: #ffc94f;
+  --promo-muted: rgba(255, 255, 255, 0.58);
+  --promo-card: rgba(18, 10, 28, 0.92);
+  --promo-border: rgba(255, 255, 255, 0.12);
+  width: min(1120px, calc(100% - 28px));
+  margin: 24px auto 80px;
+  padding: 0;
+  gap: 16px;
+  color: #fff;
+  font-family: var(--df-body, "Baloo 2", sans-serif);
+}
+
+.df-promo-page .dash-deposit-header {
+  margin: 0;
+  padding: clamp(20px, 4vw, 28px);
+  border: 1px solid var(--promo-border);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(45, 22, 70, 0.96), rgba(13, 8, 21, 0.98));
+}
+
+.df-promo-page .dash-deposit-title {
+  margin: 4px 0 8px;
+  color: #fff;
+  font: 900 clamp(1.7rem, 4vw, 2.4rem) / 1.08 "Arial Rounded MT Bold", "Trebuchet MS",
+    var(--df-display, "Lilita One"), sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.df-promo-page .dash-deposit-sub {
+  margin: 0;
+  max-width: 48ch;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.df-promo-kicker {
+  display: inline-block;
+  margin: 0;
+  color: var(--promo-mint);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Hero */
+.df-promo-page .dash-promo-hero {
+  border: 1px solid var(--promo-border);
+  border-radius: 24px;
+  background: linear-gradient(155deg, rgba(52, 24, 88, 0.95), rgba(12, 6, 22, 0.98));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+}
+
+.df-promo-page .dash-promo-hero-bg {
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 0%, rgba(168, 72, 150, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 92% 80%, rgba(102, 230, 155, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 50% 100%, rgba(255, 201, 79, 0.1) 0%, transparent 45%);
+}
+
+.df-promo-page .dash-promo-gfx-particle {
+  filter: drop-shadow(0 0 8px rgba(232, 90, 173, 0.35));
+}
+
+.df-promo-page .dash-promo-gfx-orbit {
+  border-color: rgba(168, 72, 150, 0.28);
+}
+
+.df-promo-page .dash-promo-hero-inner {
+  padding: clamp(18px, 4vw, 28px);
+}
+
+.df-promo-page .dash-promo-live-badge {
+  color: var(--promo-mint);
+  background: rgba(72, 222, 135, 0.12);
+  border-color: rgba(72, 222, 135, 0.4);
+  box-shadow: 0 0 16px rgba(72, 222, 135, 0.18);
+}
+
+.df-promo-page .dash-promo-hero-pill {
+  color: var(--promo-gold);
+  background: rgba(255, 201, 79, 0.1);
+  border: 1px solid rgba(255, 201, 79, 0.32);
+}
+
+.df-promo-page .dash-promo-hero-icon {
+  filter: drop-shadow(0 0 18px rgba(232, 90, 173, 0.45));
+}
+
+.df-promo-page .dash-promo-hero-kicker {
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.14em;
+}
+
+.df-promo-page .dash-promo-hero-title {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", var(--df-display, "Lilita One"), sans-serif;
+  font-weight: 900;
+  color: #fff;
+}
+
+.df-promo-page .dash-promo-hero-gold {
+  background: linear-gradient(135deg, #ffe27a, #66e69b);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.df-promo-page .dash-promo-hero-sub {
+  color: var(--promo-muted);
+}
+
+.df-promo-page .dash-promo-hero-sub strong {
+  color: var(--promo-gold);
+}
+
+.df-promo-page .dash-promo-hero-countdown {
+  color: var(--promo-mint);
+}
+
+.df-promo-page .dash-promo-stat {
+  background: rgba(12, 6, 18, 0.72);
+  border: 1px solid rgba(168, 72, 150, 0.28);
+  border-radius: 16px;
+}
+
+.df-promo-page .dash-promo-stat--mid {
+  border-color: rgba(102, 230, 155, 0.35);
+  background: rgba(72, 222, 135, 0.08);
+}
+
+.df-promo-page .dash-promo-stat-val {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  font-weight: 900;
+  color: var(--promo-gold);
+}
+
+.df-promo-page .dash-promo-stat-label {
+  color: var(--promo-muted);
+}
+
+/* Quests */
+.df-promo-page .dash-section-head {
+  margin-bottom: 12px;
+}
+
+.df-promo-page .dash-section-title {
+  margin: 0;
+  color: #fff;
+  font: 900 1.2rem / 1.15 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+}
+
+.df-promo-page .dash-section-sub {
+  margin: 4px 0 0;
+  color: var(--promo-muted);
+  font-size: 0.85rem;
+}
+
+.df-promo-page .dash-promo-quests {
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid var(--promo-border);
+  border-radius: 22px;
+  background: var(--promo-card);
+}
+
+.df-promo-page .dash-promo-quest-link {
+  border: 1px solid rgba(168, 72, 150, 0.3);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(36, 16, 58, 0.95), rgba(14, 8, 24, 0.98));
+}
+
+.df-promo-page .dash-promo-quest-link:hover {
+  border-color: rgba(102, 230, 155, 0.4);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), 0 0 18px rgba(102, 230, 155, 0.1);
+}
+
+.df-promo-page .dash-promo-quest-label {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  font-weight: 800;
+  color: #fff;
+}
+
+.df-promo-page .dash-promo-quest-xp {
+  color: var(--promo-mint);
+}
+
+.df-promo-page .dash-promo-quest-go {
+  color: var(--promo-gold);
+}
+
+/* Offer cards */
+.df-promo-page .dash-promo-grid-section {
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid var(--promo-border);
+  border-radius: 22px;
+  background: var(--promo-card);
+}
+
+.df-promo-page .dash-promo-grid {
+  gap: 14px;
+}
+
+.df-promo-page .dash-promo-card {
+  border: 1px solid rgba(212, 175, 92, 0.35);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(40, 18, 68, 0.96), rgba(12, 6, 20, 0.98)) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  min-height: 0;
+}
+
+.df-promo-page .dash-promo-card-title {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  font-weight: 900;
+  color: #fff;
+}
+
+.df-promo-page .dash-promo-card-desc {
+  color: var(--promo-muted);
+}
+
+.df-promo-page .dash-promo-card-bonus {
+  color: var(--promo-mint);
+}
+
+.df-promo-page .dash-promo-card-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(var(--promo-green), var(--promo-green-deep));
+  color: var(--promo-ink);
+  font: inherit;
+  font-weight: 950;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.df-promo-page .dash-promo-card-cta:hover {
+  filter: brightness(1.05);
+  color: var(--promo-ink);
+  text-decoration: none;
+}
+
+.df-promo-page .dash-promo-card-cta-arrow {
+  color: inherit;
+}
+
+/* Empty */
+.df-promo-page .dash-promo-empty,
+.df-promo-page .dash-panel.dash-promo-empty {
+  margin: 0;
+  padding: 36px 20px;
+  border: 1px solid var(--promo-border);
+  border-radius: 22px;
+  background: var(--promo-card);
+  text-align: center;
+}
+
+.df-promo-page .dash-promo-empty .dash-panel-title {
+  color: #fff;
+  font: 900 1.2rem / 1.2 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+}
+
+.df-promo-page .dash-promo-empty-desc,
+.df-promo-page .dash-promo-empty .dash-panel-desc {
+  color: var(--promo-muted);
+}
+
+@media (max-width: 640px) {
+  .df-promo-page.dash-promotions-page {
+    width: min(calc(100% - 20px), 1120px);
+    margin-top: 12px;
+    margin-bottom: 110px;
+    gap: 12px;
+  }
+
+  .df-promo-page .dash-promo-hero-inner {
+    padding: 16px;
+  }
+
+  .df-promo-page .dash-promo-stats {
+    gap: 8px;
+  }
+
+  .df-promo-page .dash-promo-stat {
+    padding: 10px 6px;
+  }
+
+  .df-promo-page .dash-promo-stat-val {
+    font-size: 1.15rem;
+  }
+
+  .df-promo-page .dash-promo-quest-link {
+    padding: 12px 14px;
+  }
+
+  .df-promo-page .dash-promo-card-body {
+    padding: 16px;
+    padding-top: 42px;
+  }
+
+  .df-promo-page .dash-promo-card-cta {
+    width: 100%;
+  }
+
+  .df-promo-page .dash-promo-card-footer {
+    width: 100%;
+  }
+}
+
+@media (min-width: 900px) {
+  .df-promo-page .dash-promo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

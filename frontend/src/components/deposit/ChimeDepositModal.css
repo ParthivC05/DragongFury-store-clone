@@ -60,10 +60,18 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 430px;
+  width: min(376px, calc(100vw - 22px));
+  max-width: none;
   max-height: calc(100dvh - 2rem);
   animation: dash-fade-up 0.45s ease-out both;
+}
+
+@media (min-width: 768px) {
+  .dash-chime-modal-shell,
+  .dash-chime-modal-shell.df-live-modal-shell {
+    width: min(92vw, 720px);
+    max-height: min(88dvh, 860px);
+  }
 }
 
 .dash-chime-guide-banner {

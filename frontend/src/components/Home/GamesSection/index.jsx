@@ -48,17 +48,43 @@ import { useLaunchDashboardSlotGame } from '../../../hooks/useLaunchDashboardSlo
 import { fetchEnabledSlotProviders } from '../../../hooks/useEnabledSlotProviders';
 
 const LOBBY_FILTERS = [
-  { id: 'registered', label: '', icon: '/df-online/club-icons/heart.png', ariaLabel: 'My Games' },
+  { id: 'registered', label: '', icon: '/df-online/club-icons/heart.png', ariaLabel: 'Favorites' },
   { id: 'all', label: 'All' },
   { id: 'web', label: 'Web', icon: '/df-online/club-icons/gamepad.png' },
   { id: 'slots', label: 'Slots', icon: '/df-online/club-icons/slots-777.png' },
+  { id: 'fishing', label: 'Fishing', icon: '/df-online/club-icons/fish.webp' },
+  { id: 'table-games', label: 'Table', icon: '/df-online/club-icons/cards.webp' },
   { id: 'live-casino', label: 'Live', icon: '/df-online/club-icons/dice.webp' },
+  { id: 'crash-game', label: 'Crash', icon: '/df-online/club-icons/crash.svg' },
+  { id: 'instant-win', label: 'Instant', icon: '/df-online/club-icons/instant.svg' },
+  { id: 'shooting', label: 'Shooting', icon: '/df-online/club-icons/shooting.svg' },
+  { id: 'keno', label: 'Keno', icon: '/df-online/club-icons/keno.svg' },
+  { id: 'scratch-cards', label: 'Scratch', icon: '/df-online/club-icons/scratch.svg' },
+  { id: 'lottery', label: 'Lottery', icon: '/df-online/club-icons/lottery.svg' },
+  { id: 'plinko', label: 'Plinko', icon: '/df-online/club-icons/plinko.svg' },
+  { id: 'bingo', label: 'Bingo', icon: '/df-online/club-icons/bingo.svg' },
+  { id: 'casual-games', label: 'Casual', icon: '/df-online/club-icons/casual.svg' },
 ];
 
-const CASINO_FILTER_IDS = new Set(['slots', 'live-casino']);
+const CASINO_FILTER_IDS = new Set([
+  'slots',
+  'fishing',
+  'table-games',
+  'live-casino',
+  'crash-game',
+  'instant-win',
+  'shooting',
+  'keno',
+  'scratch-cards',
+  'lottery',
+  'plinko',
+  'bingo',
+  'casual-games',
+  'others',
+]);
 const PLATFORM_FILTER_IDS = new Set(['all', 'web', 'registered']);
 
-export function GamesSection() {
+export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
   const { refreshBalance: refreshScWallet, balanceSc, isAuthenticated } = useAuth();
@@ -72,7 +98,10 @@ export function GamesSection() {
   } = useDepositRequiredGate({ enabled: isAuthenticated });
   const [games, setGames] = useState([]);
   const [gamesLoading, setGamesLoading] = useState(true);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState(() => {
+    if (initialFilter && LOBBY_FILTERS.some((f) => f.id === initialFilter)) return initialFilter;
+    return 'all';
+  });
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search);
   const [casinoCatalogGames, setCasinoCatalogGames] = useState(() => getAllCachedProviderSlotGames());
@@ -188,10 +217,15 @@ export function GamesSection() {
   // Always land on the "All Games" tab when navigating to the home games view
   // (e.g. tapping Home/Platform in the mobile bottom bar) — the section stays
   // mounted across those in-page navigations, so reset the filter on each.
+  // Games page (`pageMode`) keeps the route's initial filter instead.
   useEffect(() => {
-    setFilter('all');
+    if (pageMode && initialFilter && LOBBY_FILTERS.some((f) => f.id === initialFilter)) {
+      setFilter(initialFilter);
+    } else {
+      setFilter('all');
+    }
     setSearch('');
-  }, [location.key]);
+  }, [location.key, pageMode, initialFilter]);
 
   const clearSearch = useCallback(() => setSearch(''), []);
 
@@ -306,8 +340,7 @@ export function GamesSection() {
   const isCasinoFilterEffective = CASINO_FILTER_IDS.has(filter);
   const showCasinoCatalog =
     isAuthenticated && (isCasinoFilterEffective || filter === 'all');
-  const catalogInitialTab =
-    filter === 'live-casino' ? 'live-casino' : filter === 'slots' ? 'slots' : 'all';
+  const catalogInitialTab = CASINO_FILTER_IDS.has(filter) ? filter : 'all';
   const firekirinExclusive = useFirekirinExclusiveGames({ enabled: isAuthenticated });
   const lobbyMixRows = useMemo(
     () =>
@@ -606,8 +639,11 @@ export function GamesSection() {
   }
 
   return (
-    <section id="games" className={`dash-games-section dash-animate-in dash-delay-3${!isAuthenticated ? ' dash-games-section--guest' : ' dash-games-section--auth'}`}>
-      {!isAuthenticated ? (
+    <section
+      id="games"
+      className={`dash-games-section dash-animate-in dash-delay-3${!isAuthenticated ? ' dash-games-section--guest' : ' dash-games-section--auth'}${pageMode ? ' dash-games-section--games-page' : ''}`}
+    >
+      {!isAuthenticated && !pageMode ? (
         <div className="dash-section-head">
           <h2 className="dash-section-title dash-platforms-title">
             Top <span className="dash-platforms-title-accent">Game</span> Platforms
@@ -748,7 +784,7 @@ export function GamesSection() {
 
       {showCasinoCatalog && !isCasinoFilterEffective ? (
         <div className="df-lobby-slots-block">
-          <h3 className="df-lobby-slots-title">DragonFury Slots</h3>
+          {!pageMode ? <h3 className="df-lobby-slots-title">DragonFury Slots</h3> : null}
           <SlotGamesCatalogGrid
             games={casinoCatalogGames}
             categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
@@ -824,7 +860,7 @@ export function GamesSection() {
         amount={redeemedAmount}
         onConfirm={() => {
           setWithdrawPromptOpen(false);
-          navigate('/withdraw');
+          navigate('/redeem');
         }}
       />
     </section>

@@ -9,7 +9,7 @@ const labelClass = 'dash-field-label';
 
 function returnPath(returnTo) {
   if (returnTo === 'deposit') return '/deposit';
-  if (returnTo === 'withdraw') return '/withdraw';
+  if (returnTo === 'withdraw') return '/redeem';
   return null;
 }
 

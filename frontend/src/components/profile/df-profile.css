@@ -1,0 +1,947 @@
+/* DragonFury /settings (Profile) � live dragonfury.online/profile visual language */
+
+.dragonfury-profile-page.dash-settings-page {
+  max-width: none;
+  padding: 0;
+  background: transparent;
+}
+
+.dragonfury-profile-experience {
+  --profile-emerald: #35ef9a;
+  --profile-gold: #ffc94f;
+  --profile-phone-bg: rgba(12, 6, 18, 0.92);
+  --profile-phone-border: rgba(168, 72, 150, 0.42);
+  --profile-phone-border-focus: #e85aad;
+  --profile-phone-text: #ffd89a;
+  --profile-phone-placeholder: rgba(255, 216, 154, 0.42);
+  --profile-phone-glow: rgba(232, 90, 173, 0.28);
+  position: relative;
+  width: min(100%, 860px);
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 54px) clamp(18px, 4vw, 36px) 120px;
+  color: #fff;
+  isolation: isolate;
+  font-family: var(--df-body, "Baloo 2", sans-serif);
+}
+
+.dragonfury-profile-experience::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -110px;
+  left: 50%;
+  width: min(92vw, 700px);
+  height: 410px;
+  background: radial-gradient(circle, rgba(62, 19, 116, 0.55), rgba(20, 4, 42, 0) 68%);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.dragonfury-profile-experience button,
+.dragonfury-profile-experience input {
+  font: inherit;
+}
+
+@media (min-width: 768px) {
+  .dragonfury-profile-experience {
+    width: min(100%, 1040px);
+  }
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-experience {
+    padding-inline: 16px;
+  }
+}
+
+/* ---------- kickers / section heads ---------- */
+
+.dragonfury-profile-kicker {
+  margin: 0 0 4px;
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.dragonfury-profile-section-head {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.dragonfury-profile-section-head h2 {
+  margin: 0;
+  font: 900 clamp(23px, 4vw, 31px) / 1.05 "Arial Rounded MT Bold", "Trebuchet MS", var(--df-display, "Lilita One"), sans-serif;
+  letter-spacing: -0.03em;
+  color: #fff;
+}
+
+.dragonfury-profile-section-desc {
+  margin: 0;
+  max-width: 56ch;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* ---------- identity ---------- */
+
+.dragonfury-profile-identity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 146px;
+  text-align: left;
+}
+
+.dragonfury-profile-identity-copy {
+  min-width: 0;
+}
+
+.dragonfury-profile-name {
+  margin: 0;
+  font: 900 clamp(28px, 5vw, 42px) / 1 "Arial Rounded MT Bold", "Trebuchet MS", var(--df-display, "Lilita One"), sans-serif;
+  letter-spacing: -0.035em;
+  color: #fff;
+}
+
+.dragonfury-profile-email {
+  display: block;
+  overflow: hidden;
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dragonfury-profile-avatar-wrap {
+  position: relative;
+  display: grid;
+  width: 112px;
+  height: 112px;
+  flex: none;
+  place-items: center;
+  border: 2px solid rgba(255, 207, 80, 0.78);
+  border-radius: 50%;
+  outline: 5px solid rgba(130, 49, 210, 0.16);
+  background: radial-gradient(circle at 35% 25%, rgb(111, 46, 178), rgb(36, 16, 58) 72%);
+  box-shadow: rgba(0, 0, 0, 0.38) 0 16px 42px, rgba(127, 47, 214, 0.24) 0 0 25px;
+  color: #fff;
+}
+
+.dragonfury-profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dragonfury-profile-avatar-initials {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.dragonfury-profile-avatar-camera {
+  position: absolute;
+  right: -4px;
+  bottom: 2px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 2px solid rgb(24, 10, 40);
+  border-radius: 50%;
+  background: var(--profile-emerald);
+  box-shadow: rgba(53, 239, 154, 0.3) 0 6px 18px;
+  color: rgb(8, 29, 21);
+}
+
+.dragonfury-profile-avatar-camera svg {
+  width: 17px;
+  height: 17px;
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-identity {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .dragonfury-profile-avatar-wrap {
+    width: 98px;
+    height: 98px;
+  }
+}
+
+/* ---------- verification center ---------- */
+
+.dragonfury-profile-verification-center {
+  margin: 22px 0 38px;
+  padding: clamp(18px, 3vw, 26px);
+  border: 1px solid rgba(126, 236, 255, 0.16);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(21, 14, 49, 0.94), rgba(32, 17, 61, 0.9));
+  box-shadow: rgba(255, 255, 255, 0.06) 0 1px inset, rgba(5, 3, 20, 0.22) 0 18px 40px;
+}
+
+.dragonfury-profile-verification-center > .dragonfury-profile-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(200px, 1.1fr);
+  align-items: end;
+  gap: 16px 22px;
+}
+
+.dragonfury-profile-verification-center > .dragonfury-profile-section-head > div {
+  min-width: 0;
+}
+
+.dragonfury-profile-verification-center > .dragonfury-profile-section-head .dragonfury-profile-section-desc {
+  margin: 0;
+}
+
+.dragonfury-profile-verification-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.dragonfury-profile-verification-option {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 17px;
+  background: rgba(255, 255, 255, 0.043);
+}
+
+.dragonfury-profile-verification-option--essential {
+  border-color: rgba(53, 239, 154, 0.28);
+  background: rgba(53, 239, 154, 0.055);
+}
+
+.dragonfury-profile-verification-head {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 10px 12px;
+  align-items: center;
+}
+
+.dragonfury-profile-verification-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--profile-emerald);
+}
+
+.dragonfury-profile-verification-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.dragonfury-profile-verification-head h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.dragonfury-profile-verification-desc {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.dragonfury-profile-verification-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dragonfury-profile-verification-actions input {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.dragonfury-profile-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.dragonfury-profile-badge--ok {
+  color: var(--profile-emerald);
+  background: rgba(53, 239, 154, 0.12);
+}
+
+.dragonfury-profile-badge--warn {
+  color: #ffd86a;
+  background: rgba(255, 216, 106, 0.12);
+}
+
+.dragonfury-profile-badge--danger {
+  color: #ffb3c0;
+  background: rgba(255, 120, 140, 0.12);
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-verification-center {
+    margin-bottom: 32px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .dragonfury-profile-verification-center > .dragonfury-profile-section-head {
+    grid-template-columns: 1fr;
+  }
+
+  .dragonfury-profile-verification-head {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .dragonfury-profile-verification-head .dragonfury-profile-badge {
+    grid-column: 2;
+  }
+}
+
+/* ---------- buttons ---------- */
+
+.dragonfury-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 17px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.dragonfury-profile-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dragonfury-profile-btn--primary {
+  border: 1px solid rgba(255, 218, 108, 0.74);
+  background: linear-gradient(rgb(113, 64, 164), rgb(72, 33, 111));
+  color: #fff;
+}
+
+.dragonfury-profile-verification-option--essential .dragonfury-profile-btn--primary {
+  border-color: rgba(53, 239, 154, 0.5);
+  background: linear-gradient(rgb(42, 168, 115), rgb(23, 99, 69));
+}
+
+.dragonfury-profile-btn--ghost {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.dragonfury-profile-btn-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+.dragonfury-profile-save {
+  min-width: 152px;
+  margin-top: 28px;
+  padding: 13px 20px;
+  border: 1px solid rgba(255, 218, 108, 0.86);
+  border-radius: 999px;
+  background: linear-gradient(rgb(113, 64, 164), rgb(72, 33, 111));
+  box-shadow: rgba(28, 8, 47, 0.35) 0 10px 24px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.dragonfury-profile-save:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-save {
+    width: 100%;
+  }
+}
+
+/* ---------- progress / quests ---------- */
+
+.dragonfury-profile-progress,
+.dragonfury-profile-form {
+  padding: 38px 0 42px;
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.17), transparent) 1;
+}
+
+.dragonfury-profile-progress-body {
+  display: grid;
+  gap: 18px;
+}
+
+.dragonfury-profile-progress-meter {
+  display: grid;
+  gap: 8px;
+}
+
+.dragonfury-profile-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dragonfury-profile-progress-label {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dragonfury-profile-progress-value {
+  color: var(--profile-gold);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.dragonfury-profile-progress-track {
+  display: block;
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dragonfury-profile-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #8a5cf0, var(--profile-gold));
+}
+
+.dragonfury-profile-progress-sub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+}
+
+.dragonfury-profile-quests {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dragonfury-profile-quests li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dragonfury-profile-quests li.dragonfury-profile-quest--done {
+  border-color: rgba(53, 239, 154, 0.22);
+  background: rgba(53, 239, 154, 0.06);
+}
+
+.dragonfury-profile-quest-icon {
+  font-size: 16px;
+}
+
+.dragonfury-profile-quest-label {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.dragonfury-profile-quest-status {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.dragonfury-profile-quest--done .dragonfury-profile-quest-status {
+  color: var(--profile-emerald);
+}
+
+/* ---------- form fields ---------- */
+
+.dragonfury-profile-form > .dragonfury-profile-section-head {
+  justify-items: center;
+  text-align: center;
+}
+
+.dragonfury-profile-form > .dragonfury-profile-section-head .dragonfury-profile-section-desc {
+  max-width: 48ch;
+  text-align: center;
+}
+
+.dragonfury-profile-notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 216, 106, 0.28);
+  border-radius: 14px;
+  background: rgba(255, 216, 106, 0.08);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.dragonfury-profile-notice-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  color: var(--profile-gold);
+}
+
+.dragonfury-profile-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 28px;
+}
+
+.dragonfury-profile-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.dragonfury-profile-field--wide {
+  grid-column: 1 / -1;
+}
+
+.dragonfury-profile-field > span,
+.df-profile-field-label {
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.df-profile-input,
+.dragonfury-profile-fields input.df-profile-input,
+.dragonfury-profile-fields .df-profile-input {
+  width: 100%;
+  min-width: 0;
+  padding: 8px 0 11px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+}
+
+.df-profile-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.df-profile-input:focus {
+  border-bottom-color: var(--profile-emerald);
+  box-shadow: 0 4px 0 -3px var(--profile-emerald);
+}
+
+.df-profile-input:disabled,
+.df-profile-input--readonly {
+  color: rgba(255, 255, 255, 0.66);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.df-profile-input--error {
+  border-bottom-color: #ff8aa0;
+}
+
+.df-profile-locked-input {
+  position: relative;
+  display: block;
+}
+
+.df-profile-locked-input .df-profile-input {
+  padding-right: 28px;
+}
+
+.df-profile-lock {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.df-profile-lock svg {
+  width: 16px;
+  height: 16px;
+}
+
+.df-profile-field-hint {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.df-profile-field-error {
+  color: #ffb3c0;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Phone row inside profile — purple club chrome (keep OTP / Verify logic) */
+.dragonfury-profile-field .dash-phone-verify-row,
+.dragonfury-profile-field .df-profile-phone-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.dragonfury-profile-field .phone-cc-field,
+.dragonfury-profile-field .phone-number-field,
+.dragonfury-profile-field .df-phone-field {
+  flex: 1 1 220px;
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__cc,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__cc {
+  flex: 0 0 auto;
+  min-width: 5.4rem;
+  min-height: 52px;
+  height: 52px;
+  border-radius: 14px;
+  border: 1px solid var(--profile-phone-border);
+  background: var(--profile-phone-bg);
+  color: #fff;
+  font-family: inherit;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  min-height: 52px;
+  height: 52px;
+  padding: 0 14px;
+  border-radius: 14px;
+  border: 1px solid var(--profile-phone-border);
+  background: var(--profile-phone-bg);
+  color: #fff;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 52px;
+  box-shadow: none;
+  caret-color: var(--profile-phone-border-focus);
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national::placeholder,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national::placeholder {
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national:focus,
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national:focus-visible,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national:focus,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national:focus-visible {
+  border: 1.5px solid #e85aad !important;
+  background: rgba(18, 8, 24, 0.96) !important;
+  box-shadow:
+    0 0 0 2px rgba(232, 90, 173, 0.28),
+    0 0 22px rgba(232, 90, 173, 0.18) !important;
+  outline: none;
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national.ok,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national.ok {
+  border-color: rgba(53, 239, 154, 0.7);
+  box-shadow: 0 0 0 2px rgba(53, 239, 154, 0.16);
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national.err,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national.err {
+  border-color: #ff8aa0;
+  box-shadow: 0 0 0 2px rgba(255, 138, 160, 0.18);
+}
+
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national[readonly],
+.dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national:disabled,
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national[readonly],
+.dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national:disabled {
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.df-profile-phone-btn {
+  flex: none;
+  min-height: 52px;
+  align-self: stretch;
+}
+
+.dragonfury-profile-field .dash-phone-verify-side {
+  align-items: stretch;
+}
+
+.dragonfury-profile-field .dash-phone-otp-row,
+.df-profile-otp-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: stretch;
+}
+
+.dragonfury-profile-field .dash-phone-otp-row .df-profile-input,
+.df-profile-otp-row .df-profile-input {
+  flex: 1 1 160px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--profile-phone-border);
+  border-radius: 14px;
+  background: var(--profile-phone-bg);
+  color: #fff;
+  box-shadow: none;
+}
+
+.dragonfury-profile-field .dash-phone-otp-row .df-profile-input:focus,
+.df-profile-otp-row .df-profile-input:focus {
+  border-color: var(--profile-phone-border-focus);
+  box-shadow:
+    0 0 0 2px var(--profile-phone-glow),
+    0 0 22px rgba(232, 90, 173, 0.18);
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-field .dash-phone-verify-row,
+  .dragonfury-profile-field .df-profile-phone-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dragonfury-profile-field .phone-cc-field {
+    flex: 1 1 auto;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__cc,
+  .dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__cc {
+    min-width: 4.75rem;
+    padding: 0 0.55rem;
+  }
+
+  .dragonfury-profile-experience .phone-cc-field--gate .phone-cc-field__national,
+  .dragonfury-profile-experience .phone-cc-field--dragonfury .phone-cc-field__national {
+    font-size: 16px;
+    padding: 0 12px;
+  }
+
+  .df-profile-phone-btn,
+  .dragonfury-profile-field .dash-phone-verify-side {
+    width: 100%;
+  }
+
+  .df-profile-phone-btn {
+    width: 100%;
+  }
+}
+
+.dragonfury-profile-address {
+  margin-top: 28px;
+}
+
+.dragonfury-profile-address > summary {
+  width: fit-content;
+  padding: 5px 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+  list-style: none;
+}
+
+.dragonfury-profile-address > summary::-webkit-details-marker {
+  display: none;
+}
+
+.dragonfury-profile-address[open] > summary {
+  margin-bottom: 22px;
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .dragonfury-profile-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .dragonfury-profile-field--wide {
+    grid-column: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .dragonfury-profile-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---------- password / subcard ---------- */
+
+.dragonfury-profile-subcard {
+  margin-top: 22px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.dragonfury-profile-subcard-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.dragonfury-profile-subcard-desc {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* ---------- payment section inside profile ---------- */
+
+.df-profile-payment .dash-panel,
+.df-profile-payment .dash-payment-panel {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.df-profile-payment .dash-panel-title,
+.df-profile-payment .dash-payment-connected-head .dash-panel-title {
+  color: #fff;
+  font: 800 18px / 1.2 var(--df-body, "Baloo 2", sans-serif);
+}
+
+.df-profile-payment .dash-field-label {
+  color: rgba(255, 255, 255, 0.46);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.df-profile-payment .dash-input-field {
+  width: 100%;
+  padding: 8px 0 11px;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+
+.df-profile-payment .dash-input-field:focus {
+  border-bottom-color: var(--profile-emerald);
+  box-shadow: 0 4px 0 -3px var(--profile-emerald);
+}
+
+.df-profile-payment .dash-btn-cta {
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid rgba(255, 218, 108, 0.74);
+  border-radius: 999px;
+  background: linear-gradient(rgb(113, 64, 164), rgb(72, 33, 111));
+  color: #fff;
+  box-shadow: none;
+}
+
+.df-profile-payment .dash-btn-outline {
+  min-height: 42px;
+  padding: 0 17px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.df-profile-payment .dash-settings-linked-badge {
+  color: var(--profile-emerald);
+  background: rgba(53, 239, 154, 0.12);
+  border: 0;
+}
+
+.df-profile-payment .dash-payment-how,
+.df-profile-payment .dash-payment-connected-sub,
+.df-profile-payment .dash-field-hint {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.df-profile-payment .dash-payment-how-step,
+.df-profile-payment .dash-payment-howto-item {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Soften leftover dash chrome on this page */
+.dragonfury-profile-page .dash-panel:not(.dash-payment-otp-modal) {
+  animation: none;
+}

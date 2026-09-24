@@ -435,7 +435,6 @@ function orderCasinoLobbyCategories(categories = []) {
 }
 
 export const HIDDEN_SLOT_CATEGORY_IDS = new Set([
-  'bingo',
   'virtual',
   'virtual-game',
   'virtual-games',

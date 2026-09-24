@@ -343,27 +343,28 @@
   margin-top: 0.5rem;
 }
 
-/* —— DollarPay / XXPay round-trip handoff (PlayJuwa prototype) —— */
+/* —— DollarPay / XXPay round-trip handoff — Dragon Fury premium theme —— */
 .secure-payment-modal--dollarpay {
-  --pj-bg: #0a0e18;
-  --pj-s1: #111726;
-  --pj-s2: #182034;
-  --pj-s3: #212b44;
-  --pj-line: rgba(255, 255, 255, 0.12);
-  --pj-line2: rgba(255, 255, 255, 0.22);
+  --pj-bg: #0c0618;
+  --pj-s1: #160c27;
+  --pj-s2: #201039;
+  --pj-s3: #301847;
+  --pj-line: rgba(255, 255, 255, 0.1);
+  --pj-line2: rgba(225, 186, 104, 0.42);
   --pj-gold: #ffc94a;
   --pj-gold-hi: #ffe9ac;
-  --pj-mint: #42e294;
+  --pj-mint: #60e99b;
   --pj-mint-hi: #9bf5c8;
   --pj-mint-dp: #0e4029;
   --pj-red: #ff7a63;
-  --pj-text: #ffffff;
-  --pj-t2: #d3dae8;
-  --pj-t3: #a9b3c7;
-  background: rgba(5, 7, 13, 0.94);
+  --pj-text: #fff6e5;
+  --pj-t2: #d6cddd;
+  --pj-t3: #c6b9d6;
+  background: rgba(8, 3, 16, 0.88);
+  backdrop-filter: blur(4px);
   border: none;
   box-shadow: none;
-  font-family: Nunito, Rajdhani, system-ui, sans-serif;
+  font-family: "Baloo 2", Nunito, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -386,19 +387,25 @@
 }
 
 .spm-pj-shell {
-  width: 100%;
-  max-width: 500px;
+  width: min(376px, calc(100vw - 22px));
+  max-width: none;
   max-height: calc(100dvh - 20px);
   margin-top: auto;
   margin-bottom: auto;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  background: var(--pj-s1);
-  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 50% 0, rgba(119, 66, 147, 0.28), transparent 62%),
+    linear-gradient(160deg, #301847, var(--pj-s2) 52%, #180d2a);
+  border-radius: 26px;
   overflow: hidden;
-  border: 1px solid var(--pj-line2);
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(225, 186, 104, 0.48);
+  box-shadow:
+    rgba(255, 255, 255, 0.07) 0 1px inset,
+    rgba(9, 3, 15, 0.77) 0 22px 60px,
+    rgba(210, 153, 66, 0.08) 0 0 24px;
+  color: var(--pj-text);
 }
 
 .spm-pj-header {
@@ -407,20 +414,23 @@
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--pj-line);
+  border-bottom: 1px solid rgba(225, 186, 104, 0.22);
+  background: rgba(20, 10, 35, 0.35);
 }
 
 .spm-pj-lock {
   font-size: 18px;
-  color: var(--pj-mint);
+  color: var(--pj-gold);
   line-height: 1;
 }
 
 .spm-pj-header-title {
   margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--pj-text);
+  flex: 1;
+  color: var(--pj-gold-hi);
+  font: 400 18px / 1.2 "Lilita One", "Baloo 2", system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .spm-pj-close {
@@ -428,12 +438,12 @@
   flex: none;
   width: 40px;
   height: 40px;
-  border-radius: 11px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: 17px;
-  background: var(--pj-s3);
-  border: 1px solid var(--pj-line);
-  color: #fff;
+  background: rgba(20, 10, 35, 0.8);
+  border: 1px solid rgba(225, 186, 104, 0.35);
+  color: #fff3d9;
   display: grid;
   place-items: center;
   line-height: 1;
@@ -514,7 +524,7 @@
   padding: 15px 16px;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 201, 74, 0.55) #182034;
+  scrollbar-color: rgba(255, 201, 74, 0.55) #201039;
 }
 
 .spm-pj-body::-webkit-scrollbar {
@@ -524,7 +534,7 @@
 }
 
 .spm-pj-body::-webkit-scrollbar-track {
-  background: #182034;
+  background: #201039;
   border-radius: 99px;
   margin: 10px 0;
 }
@@ -532,7 +542,7 @@
 .spm-pj-body::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #ffe9ac, #ffc94a 55%, #a87511);
   border-radius: 99px;
-  border: 1px solid rgba(10, 14, 24, 0.45);
+  border: 1px solid rgba(12, 6, 24, 0.45);
 }
 
 .spm-pj-body::-webkit-scrollbar-thumb:hover {
@@ -548,9 +558,10 @@
   align-items: center;
   gap: 14px;
   padding: 14px;
-  border-radius: 15px;
-  background: var(--pj-s2);
-  border: 1px solid var(--pj-line);
+  border-radius: 16px;
+  background: rgba(20, 10, 35, 0.55);
+  border: 1px solid rgba(225, 186, 104, 0.28);
+  box-shadow: rgba(255, 255, 255, 0.05) 0 1px inset;
 }
 
 .spm-pj-rcp-art {
@@ -581,10 +592,9 @@
 }
 
 .spm-pj-rcp-n {
-  font-size: 30px;
-  font-weight: 800;
-  color: #fff;
-  line-height: 1.1;
+  font: 400 28px / 1.1 "Lilita One", "Baloo 2", system-ui, sans-serif;
+  color: var(--pj-gold-hi);
+  letter-spacing: 0.02em;
 }
 
 .spm-pj-rcp-u {
@@ -765,7 +775,7 @@
 .spm-pj-nd.is-on .spm-pj-nd-c {
   border-color: var(--pj-gold);
   color: var(--pj-gold);
-  background: #332a10;
+  background: rgba(48, 24, 71, 0.9);
   box-shadow: 0 0 0 5px rgba(255, 201, 74, 0.14);
 }
 
@@ -845,10 +855,10 @@
   gap: 10px;
   margin-top: 12px;
   padding: 12px 13px;
-  border-radius: 12px;
+  border-radius: 14px;
   min-height: 46px;
-  background: var(--pj-s2);
-  border: 1px solid var(--pj-line);
+  background: rgba(20, 10, 35, 0.55);
+  border: 1px solid rgba(225, 186, 104, 0.22);
   font-size: 15px;
   color: var(--pj-t2);
   font-weight: 500;
@@ -885,9 +895,10 @@
 
 .spm-pj-fail h3 {
   margin: 0 0 8px;
-  font-size: 24px;
-  font-weight: 800;
-  color: #fff;
+  font: 400 24px / 1.2 "Lilita One", "Baloo 2", system-ui, sans-serif;
+  color: var(--pj-gold-hi);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .spm-pj-fail p {
@@ -907,25 +918,30 @@
 .spm-pj-pa {
   flex: none;
   padding: 13px 16px calc(13px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--pj-line);
-  background: var(--pj-s1);
+  border-top: 1px solid rgba(225, 186, 104, 0.22);
+  background: linear-gradient(transparent, rgba(25, 16, 33, 0.92) 28%);
 }
 
 .spm-pj-big {
   width: 100%;
   min-height: 74px;
-  border-radius: 15px;
-  border: 0;
+  border-radius: 16px;
+  border: 1px solid rgb(255, 227, 160);
   cursor: pointer;
-  padding: 11px;
-  color: #241900;
-  background: var(--pj-gold);
-  box-shadow: 0 12px 28px rgba(255, 201, 74, 0.3);
-  transition: 0.18s;
+  padding: 11px 18px;
+  color: rgb(41, 21, 6);
+  background: linear-gradient(rgb(255, 224, 154), rgb(244, 179, 77) 65%, rgb(233, 152, 51));
+  box-shadow:
+    rgb(255, 247, 217) 0 1px inset,
+    rgb(129, 80, 25) 0 3px,
+    rgba(16, 5, 25, 0.333) 0 6px 16px;
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  letter-spacing: 0.03em;
+  transition: 0.14s transform;
 }
 
 .spm-pj-big:active:not(:disabled) {
-  transform: scale(0.985);
+  transform: translateY(2px);
 }
 
 .spm-pj-big:disabled {
@@ -937,23 +953,31 @@
 
 .spm-pj-big-l1 {
   display: block;
-  font-size: 22px;
-  font-weight: 800;
-  line-height: 1.25;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.15;
+  text-transform: uppercase;
 }
 
 .spm-pj-big-l2 {
   display: block;
-  font-size: 15px;
-  font-weight: 600;
-  opacity: 0.82;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  letter-spacing: 0;
+  opacity: 0.85;
   line-height: 1.3;
 }
 
 .spm-pj-big.is-mint {
-  background: var(--pj-mint);
-  color: #06301c;
-  box-shadow: 0 12px 28px rgba(66, 226, 148, 0.3);
+  color: #062416;
+  border-color: rgba(155, 245, 200, 0.65);
+  background: linear-gradient(#9bf5c8, #42e294 62%, #1ea86a);
+  box-shadow:
+    rgba(255, 255, 255, 0.35) 0 1px inset,
+    #0d5d2d 0 3px,
+    rgba(66, 226, 148, 0.25) 0 8px 20px;
 }
 
 .spm-pj-big.is-gold.is-blink {
@@ -977,14 +1001,14 @@
   width: 100%;
   margin-top: 10px;
   min-height: 50px;
-  border-radius: 12px;
-  border: 1.5px solid var(--pj-line2);
-  background: var(--pj-s2);
-  color: #fff;
+  border-radius: 14px;
+  border: 1px solid rgba(225, 186, 104, 0.35);
+  background: rgba(20, 10, 35, 0.8);
+  color: #fff3d9;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  font-family: inherit;
+  font-family: "Baloo 2", system-ui, sans-serif;
 }
 
 .spm-pj-again:active:not(:disabled) {
@@ -1056,7 +1080,7 @@
   height: 100%;
   width: 40%;
   border-radius: 6px;
-  background: linear-gradient(90deg, #6bd2ff, var(--pj-mint));
+  background: linear-gradient(90deg, var(--pj-gold-hi), var(--pj-mint));
   animation: spm-pj-shimmer 1.3s ease-in-out infinite;
 }
 
@@ -1125,23 +1149,39 @@
 
 @keyframes spm-pj-blink-g {
   0%, 100% {
-    box-shadow: 0 12px 28px rgba(255, 201, 74, 0.3);
+    box-shadow:
+      rgb(255, 247, 217) 0 1px inset,
+      rgb(129, 80, 25) 0 3px,
+      rgba(16, 5, 25, 0.333) 0 6px 16px,
+      0 0 0 0 rgba(255, 201, 74, 0);
     filter: brightness(1);
   }
   50% {
-    box-shadow: 0 14px 40px rgba(255, 201, 74, 0.7), 0 0 0 6px rgba(255, 201, 74, 0.18);
-    filter: brightness(1.1);
+    box-shadow:
+      rgb(255, 247, 217) 0 1px inset,
+      rgb(129, 80, 25) 0 3px,
+      rgba(255, 201, 74, 0.45) 0 10px 28px,
+      0 0 0 6px rgba(255, 201, 74, 0.16);
+    filter: brightness(1.08);
   }
 }
 
 @keyframes spm-pj-blink-m {
   0%, 100% {
-    box-shadow: 0 12px 28px rgba(66, 226, 148, 0.3);
+    box-shadow:
+      rgba(255, 255, 255, 0.35) 0 1px inset,
+      #0d5d2d 0 3px,
+      rgba(66, 226, 148, 0.25) 0 8px 20px,
+      0 0 0 0 rgba(66, 226, 148, 0);
     filter: brightness(1);
   }
   50% {
-    box-shadow: 0 14px 40px rgba(66, 226, 148, 0.66), 0 0 0 6px rgba(66, 226, 148, 0.18);
-    filter: brightness(1.1);
+    box-shadow:
+      rgba(255, 255, 255, 0.35) 0 1px inset,
+      #0d5d2d 0 3px,
+      rgba(66, 226, 148, 0.45) 0 12px 28px,
+      0 0 0 6px rgba(66, 226, 148, 0.16);
+    filter: brightness(1.08);
   }
 }
 
@@ -1177,7 +1217,8 @@
   }
 
   .spm-pj-shell {
-    max-height: calc(100dvh - 32px);
+    width: min(92vw, 720px);
+    max-height: min(88dvh, 860px);
   }
 }
 

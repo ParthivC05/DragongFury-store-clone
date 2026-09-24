@@ -16,7 +16,7 @@ const mainLinks = [
   { to: '/', label: 'Dashboard', Icon: HomeIcon },
   { to: '/', label: 'Games', Icon: GamesIcon },
   { to: '/deposit', label: 'Deposit', Icon: DepositIcon },
-  { to: '/withdraw', label: 'Withdraw', Icon: WithdrawIcon },
+  { to: '/redeem', label: 'Redeem', Icon: WithdrawIcon },
   { to: '/promotions', label: 'Promotions', Icon: PromoIcon },
   { to: '/spinwheel', label: 'Spin Wheel', Icon: SpinIcon },
 ];

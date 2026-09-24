@@ -146,7 +146,9 @@ export function Layout({ children }) {
   const hideGuestBuyWithdraw = !authLoading && !isAuthenticated;
   const isBottomNavOnly =
     layoutPath === '/deposit' ||
+    layoutPath === '/store' ||
     layoutPath === '/withdraw' ||
+    layoutPath === '/redeem' ||
     layoutPath.startsWith('/support/tickets');
   const isSupportChat = layoutPath.startsWith('/support/tickets');
   const isBlogPage = layoutPath === '/blog' || layoutPath.startsWith('/blog/');

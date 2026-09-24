@@ -64,7 +64,7 @@ export function DashboardSidebar({
   const onVipPage = pathname === '/account/vip';
   const onAffiliatePage = pathname === '/account/affiliate';
   const onDepositPage = pathname === '/deposit';
-  const onWithdrawPage = pathname === '/withdraw';
+  const onWithdrawPage = pathname === '/redeem' || pathname === '/withdraw';
   const [slotsOpen, setSlotsOpen] = useState(onCasinoPage);
 
   useEffect(() => {
@@ -214,10 +214,10 @@ export function DashboardSidebar({
         },
         {
           id: 'cashout',
-          title: 'Withdraw SC',
+          title: 'Redeem SC',
           accent: 'red',
           Icon: WithdrawIcon,
-          to: '/withdraw',
+          to: '/redeem',
           active: onWithdrawPage,
         },
       ],

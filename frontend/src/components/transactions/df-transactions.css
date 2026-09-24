@@ -1,0 +1,516 @@
+/* DragonFury /account/transactions — live /transactions visual language */
+
+.df-tx-page.dash-tx-page {
+  --tx-mint: #66e69b;
+  --tx-green: #49df87;
+  --tx-green-deep: #1bac65;
+  --tx-ink: #06150d;
+  --tx-muted: rgba(255, 255, 255, 0.58);
+  --tx-card: rgba(18, 10, 28, 0.9);
+  --tx-border: rgba(255, 255, 255, 0.1);
+  width: min(1120px, calc(100% - 28px));
+  margin: 24px auto 80px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  color: #fff;
+  font-family: var(--df-body, "Baloo 2", sans-serif);
+}
+
+.df-tx-hero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(45, 22, 70, 0.96), rgba(13, 8, 21, 0.98));
+}
+
+.df-tx-hero-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.df-tx-kicker {
+  display: inline-block;
+  margin: 0;
+  color: var(--tx-mint);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.df-tx-title {
+  margin: 5px 0;
+  color: #fff;
+  font: 900 clamp(1.7rem, 4vw, 2.5rem) / 1.08 "Arial Rounded MT Bold", "Trebuchet MS",
+    var(--df-display, "Lilita One"), sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.df-tx-sub {
+  margin: 0;
+  max-width: 52ch;
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.df-tx-refresh {
+  flex: none;
+  min-width: 110px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(var(--tx-green), var(--tx-green-deep));
+  color: var(--tx-ink);
+  font: inherit;
+  font-weight: 950;
+  cursor: pointer;
+}
+
+.df-tx-refresh:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.df-tx-refresh:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.df-tx-card {
+  padding: clamp(16px, 3vw, 22px);
+  border: 1px solid var(--tx-border);
+  border-radius: 22px;
+  background: var(--tx-card);
+}
+
+.df-tx-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.df-tx-card-title {
+  margin: 0;
+  color: #fff;
+  font: 900 1.15rem / 1.15 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+}
+
+.df-tx-card-desc {
+  margin: 4px 0 0;
+  color: var(--tx-muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.df-tx-filters-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+@media (min-width: 900px) {
+  .df-tx-filters-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.df-tx-field {
+  min-width: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.df-tx-field-label {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.df-tx-input,
+.df-tx-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(168, 72, 150, 0.35);
+  border-radius: 12px;
+  background: rgba(12, 6, 18, 0.92);
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.df-tx-input:focus,
+.df-tx-select:focus {
+  border-color: #e85aad;
+  box-shadow: 0 0 0 2px rgba(232, 90, 173, 0.22);
+}
+
+.df-tx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.df-tx-btn-primary {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(var(--tx-green), var(--tx-green-deep));
+  color: var(--tx-ink);
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.df-tx-btn-ghost {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.df-tx-btn-primary:disabled,
+.df-tx-btn-ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.df-tx-limit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tx-muted);
+  font-size: 0.82rem;
+}
+
+.df-tx-limit-select {
+  min-height: 36px;
+  padding: 6px 10px;
+  border: 1px solid var(--tx-border);
+  border-radius: 10px;
+  background: rgba(12, 6, 18, 0.92);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+}
+
+.df-tx-list {
+  display: grid;
+  gap: 10px;
+}
+
+.df-tx-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--tx-border);
+  border-radius: 18px;
+  background: rgba(18, 10, 28, 0.9);
+}
+
+.df-tx-row__mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  background: rgba(72, 222, 135, 0.14);
+  color: rgb(99, 231, 154);
+  font-size: 1.05rem;
+  font-weight: 950;
+}
+
+.df-tx-row__mark--out {
+  background: rgba(255, 105, 105, 0.13);
+  color: #ffaaa4;
+}
+
+.df-tx-row__mark--bonus {
+  background: linear-gradient(rgba(255, 224, 106, 0.3), rgba(246, 185, 0, 0.12));
+  color: #ffd174;
+  box-shadow: rgba(255, 255, 255, 0.24) 0 1px inset, rgba(255, 201, 40, 0.18) 0 0 14px;
+}
+
+.df-tx-row__details,
+.df-tx-row__amount {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.df-tx-row__details strong {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.df-tx-row__details span,
+.df-tx-row__details small,
+.df-tx-row__amount span {
+  color: var(--tx-muted);
+  font-size: 0.78rem;
+}
+
+.df-tx-row__details small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.df-tx-row__amount {
+  justify-items: end;
+  text-align: right;
+}
+
+.df-tx-row__amount strong {
+  font-size: 0.95rem;
+  font-weight: 900;
+}
+
+.df-tx-amount--in {
+  color: var(--tx-mint);
+}
+
+.df-tx-amount--out {
+  color: #ffaaa4;
+}
+
+.df-tx-amount--bonus {
+  color: #ffd174;
+}
+
+.df-tx-type-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 194, 76, 0.14);
+  color: rgb(255, 209, 116);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.df-tx-type-pill--in {
+  background: rgba(72, 222, 135, 0.14);
+  color: rgb(106, 233, 159);
+}
+
+.df-tx-type-pill--out {
+  background: rgba(255, 105, 105, 0.13);
+  color: #ffaaa4;
+}
+
+.df-tx-empty {
+  margin-top: 4px;
+  padding: 28px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  text-align: center;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.df-tx-empty p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.df-tx-empty small {
+  color: var(--tx-muted);
+  font-size: 0.85rem;
+}
+
+.df-tx-empty a {
+  text-decoration: none;
+}
+
+.df-tx-loading {
+  padding: 36px 16px;
+  text-align: center;
+  color: var(--tx-muted);
+  font-size: 0.9rem;
+}
+
+.df-tx-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--tx-border);
+}
+
+.df-tx-pager-info {
+  margin: 0;
+  color: var(--tx-muted);
+  font-size: 0.82rem;
+}
+
+.df-tx-pager-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.df-tx-pager-btn {
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1px solid var(--tx-border);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.df-tx-pager-btn:hover:not(:disabled) {
+  border-color: rgba(102, 230, 155, 0.45);
+  color: var(--tx-mint);
+}
+
+.df-tx-pager-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.df-tx-pager-page {
+  padding: 6px 10px;
+  color: var(--tx-mint);
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+/* Desktop table (kept for wide screens; cards remain primary on mobile) */
+.df-tx-table-wrap {
+  display: none;
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--tx-border);
+  border-radius: 16px;
+}
+
+.df-tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.df-tx-table th,
+.df-tx-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.86rem;
+}
+
+.df-tx-table th {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.df-tx-table td {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.df-tx-table .text-right {
+  text-align: right;
+}
+
+.df-tx-table tbody tr:hover td {
+  background: rgba(102, 230, 155, 0.04);
+}
+
+@media (min-width: 900px) {
+  .df-tx-list--mobile {
+    display: none;
+  }
+
+  .df-tx-table-wrap {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .df-tx-page.dash-tx-page {
+    width: min(calc(100% - 20px), 1120px);
+    margin-top: 12px;
+    margin-bottom: 110px;
+  }
+
+  .df-tx-hero {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .df-tx-refresh {
+    width: 100%;
+  }
+
+  .df-tx-row {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .df-tx-row__mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .df-tx-row__amount {
+    grid-column: 2;
+    grid-template-columns: auto auto auto;
+    justify-content: start;
+    justify-items: start;
+    text-align: left;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .df-tx-filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .df-tx-btn-primary,
+  .df-tx-btn-ghost {
+    flex: 1 1 auto;
+  }
+}

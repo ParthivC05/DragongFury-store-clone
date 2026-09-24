@@ -14,7 +14,7 @@ export function AccountProfile() {
   usePageContentReady(!!user);
 
   const returnLabel = returnTo === 'withdraw' ? 'withdraw' : returnTo === 'deposit' ? 'deposit' : null;
-  const backPath = returnTo === 'withdraw' ? '/withdraw' : '/deposit';
+  const backPath = returnTo === 'withdraw' ? '/redeem' : '/deposit';
   const backLabel = returnTo === 'withdraw' ? 'Withdraw' : 'Deposit';
 
   return (

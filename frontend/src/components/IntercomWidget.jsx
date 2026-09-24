@@ -68,7 +68,7 @@ function isOnboardingTutorialActive() {
 function canShowFloatingLauncher() {
   if (window.location.pathname !== '/') return false;
   const path = window.location.pathname;
-  if (path === '/deposit' || path === '/withdraw' || path.startsWith('/deposit/')) return false;
+  if (path === '/deposit' || path === '/withdraw' || path === '/redeem' || path.startsWith('/deposit/')) return false;
   if (path.startsWith('/support/tickets')) return false;
   if (document.body.classList.contains('onboarding-tutorial-active')) return false;
   if (isOnboardingTutorialActive()) return false;

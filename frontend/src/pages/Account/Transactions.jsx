@@ -8,6 +8,8 @@ import { usePageContentReady } from '../../context/PageReadyContext';
 import { formatSc } from '../../utils/currency';
 import { getGameDisplayName } from '../../utils/gameDisplay';
 import { ArrowUpIcon, ArrowDownIcon, DollarIcon } from '../../assets/icons';
+import '../../components/transactions/df-transactions.css';
+
 const PAGE_SIZES = [10, 20, 50];
 const DEFAULT_LIMIT = 20;
 
@@ -35,54 +37,14 @@ function typeLabel(type) {
     affiliate: 'Refer & Earn',
     vip_bonus: 'VIP Bonus',
     game_deposit: 'Game Deposit',
-    game_withdraw: 'Game Withdraw'
+    game_withdraw: 'Game Withdraw',
+    admin_add: 'Admin add',
+    admin_remove: 'Admin remove'
   };
   return map[type] || type;
 }
 
-function TransactionTypeCell({ type }) {
-  const label = typeLabel(type);
-  const showArrowUp = ['deposit', 'game_withdraw'].includes(type);
-  const showArrowDown = ['withdraw', 'game_deposit'].includes(type);
-  const isBonus = [
-    'spin_wheel',
-    'welcome_signup',
-    'referral_friend_signup',
-    'promotion',
-    'bonus_code',
-    'affiliate',
-    'vip_bonus'
-  ].includes(type);
-
-  if (showArrowUp) {
-    return (
-      <span className="dash-tx-badge dash-tx-badge--in">
-        <ArrowUpIcon className="shrink-0 w-4 h-4" />
-        {label}
-      </span>
-    );
-  }
-  if (showArrowDown) {
-    return (
-      <span className="dash-tx-badge dash-tx-badge--out">
-        <ArrowDownIcon className="shrink-0 w-4 h-4" />
-        {label}
-      </span>
-    );
-  }
-  if (isBonus) {
-    return (
-      <span className="dash-tx-badge dash-tx-badge--bonus">
-        <DollarIcon className="shrink-0 w-4 h-4" />
-        {label}
-      </span>
-    );
-  }
-  return <span className="dash-tx-badge">{label}</span>;
-}
-
-/** Amount from wallet perspective: + green for deposit/game withdraw, + gold for bonus ($), - red for withdraw/deductions. Uses abs(amount) so sign is never duplicated. */
-function WalletAmount({ type, amount }) {
+function toneForType(type) {
   const walletGains = [
     'deposit',
     'game_withdraw',
@@ -92,7 +54,8 @@ function WalletAmount({ type, amount }) {
     'promotion',
     'bonus_code',
     'affiliate',
-    'vip_bonus'
+    'vip_bonus',
+    'admin_add'
   ].includes(type);
   const isBonus = [
     'spin_wheel',
@@ -103,15 +66,46 @@ function WalletAmount({ type, amount }) {
     'affiliate',
     'vip_bonus'
   ].includes(type);
-  const value = Math.abs(Number(amount));
-  const sign = walletGains ? '+' : '-';
-  let tone = 'out';
-  if (walletGains) tone = isBonus ? 'bonus' : 'in';
+  if (isBonus) return 'bonus';
+  if (walletGains) return 'in';
+  return 'out';
+}
+
+function TransactionTypeCell({ type }) {
+  const label = typeLabel(type);
+  const tone = toneForType(type);
+  const showArrowUp = ['deposit', 'game_withdraw', 'admin_add'].includes(type);
+  const showArrowDown = ['withdraw', 'game_deposit', 'admin_remove', 'admin_deduct'].includes(type);
+  const isBonus = tone === 'bonus';
+
   return (
-    <span className={`dash-tx-amount dash-tx-amount--${tone}`}>
-      {sign}{formatSc(value)}
+    <span className={`df-tx-type-pill df-tx-type-pill--${tone}`}>
+      {showArrowUp ? <ArrowUpIcon className="shrink-0 w-3.5 h-3.5" /> : null}
+      {showArrowDown ? <ArrowDownIcon className="shrink-0 w-3.5 h-3.5" /> : null}
+      {isBonus ? <DollarIcon className="shrink-0 w-3.5 h-3.5" /> : null}
+      {label}
     </span>
   );
+}
+
+function WalletAmount({ type, amount }) {
+  const tone = toneForType(type);
+  const walletGains = tone === 'in' || tone === 'bonus';
+  const value = Math.abs(Number(amount));
+  const sign = walletGains ? '+' : '-';
+  return (
+    <strong className={`df-tx-amount--${tone}`}>
+      {sign}
+      {formatSc(value)}
+    </strong>
+  );
+}
+
+function MarkForType({ type }) {
+  const tone = toneForType(type);
+  if (tone === 'bonus') return <div className="df-tx-row__mark df-tx-row__mark--bonus" aria-hidden>$</div>;
+  if (tone === 'out') return <div className="df-tx-row__mark df-tx-row__mark--out" aria-hidden>↓</div>;
+  return <div className="df-tx-row__mark" aria-hidden>↑</div>;
 }
 
 export function AccountTransactions() {
@@ -137,13 +131,13 @@ export function AccountTransactions() {
       .then((list) => {
         if (cancelled) return;
         const games = list.games || list || [];
-        const registered = games.filter(
-          (g) => g.has_account && g.account_status === 'approved'
-        );
+        const registered = games.filter((g) => g.has_account && g.account_status === 'approved');
         setRegisteredGames(registered);
       })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const fetchTransactions = useCallback(
@@ -196,6 +190,10 @@ export function AccountTransactions() {
     fetchTransactions(1, limit, { dateFrom: '', dateTo: '', category: '', gameName: '' });
   }
 
+  function handleRefresh() {
+    fetchTransactions(page, limit);
+  }
+
   function goToPage(nextPage) {
     const p = Math.max(1, Math.min(data.total_pages || 1, nextPage));
     setPage(p);
@@ -205,53 +203,53 @@ export function AccountTransactions() {
   const hasFilters = filters.dateFrom || filters.dateTo || filters.category || filters.gameName;
 
   return (
-    <div className="dash-page dash-tx-page w-full min-w-0">
-      <header className="dash-deposit-header dash-animate-in">
-        <motion.p
-          className="dash-tx-page-tag"
-          animate={{ opacity: [0.45, 1, 0.45] }}
-          transition={{ duration: 2.2, repeat: Infinity }}
-        >
-          🎮 Wallet Quest Log
-        </motion.p>
-        <h1 className="dash-deposit-title">Transactions</h1>
-        <p className="dash-deposit-sub">
-          Track deposits, withdrawals, bonuses, VIP rewards, and game moves — all in one animated ledger.
-        </p>
+    <div className="dash-page dash-tx-page df-tx-page w-full min-w-0">
+      <header className="df-tx-hero">
+        <div className="df-tx-hero-copy">
+          <p className="df-tx-kicker">Wallet activity</p>
+          <h1 className="df-tx-title">Transaction history</h1>
+          <p className="df-tx-sub">
+            Track deposits, withdrawals, bonuses, VIP rewards, game moves, and payouts — filter by date,
+            category, or game.
+          </p>
+        </div>
+        <button type="button" className="df-tx-refresh" onClick={handleRefresh} disabled={loading}>
+          {loading ? 'Refreshing…' : 'Refresh'}
+        </button>
       </header>
 
-      {/* Filters */}
-      <section className="dash-panel dash-tx-filters dash-animate-in dash-delay-1 min-w-0">
-        <div className="dash-panel-head--icon">
-          <span className="dash-panel-icon" aria-hidden>🔍</span>
-          <h2 className="dash-panel-title">Filters</h2>
+      <section className="df-tx-card" aria-label="Filters">
+        <div className="df-tx-card-head">
+          <div>
+            <h2 className="df-tx-card-title">Filters</h2>
+            <p className="df-tx-card-desc">Narrow your ledger by date, category, or game.</p>
+          </div>
         </div>
-        <p className="dash-panel-desc">Narrow your quest log by date, category, or game.</p>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-          <div className="min-w-0">
-            <label className="dash-field-label">From date</label>
+        <div className="df-tx-filters-grid">
+          <label className="df-tx-field">
+            <span className="df-tx-field-label">From date</span>
             <input
               type="date"
               value={filters.dateFrom}
               onChange={(e) => setFilters((f) => ({ ...f, dateFrom: e.target.value }))}
-              className="dash-tx-date"
+              className="df-tx-input"
             />
-          </div>
-          <div className="min-w-0">
-            <label className="dash-field-label">To date</label>
+          </label>
+          <label className="df-tx-field">
+            <span className="df-tx-field-label">To date</span>
             <input
               type="date"
               value={filters.dateTo}
               onChange={(e) => setFilters((f) => ({ ...f, dateTo: e.target.value }))}
-              className="dash-tx-date"
+              className="df-tx-input"
             />
-          </div>
-          <div className="min-w-0">
-            <label className="dash-field-label">Category</label>
+          </label>
+          <label className="df-tx-field">
+            <span className="df-tx-field-label">Category</span>
             <select
               value={filters.category}
               onChange={(e) => setFilters((f) => ({ ...f, category: e.target.value }))}
-              className="dash-tx-select"
+              className="df-tx-select"
             >
               {transactionsApi.TRANSACTION_CATEGORIES.map((opt) => (
                 <option key={opt.value || 'all'} value={opt.value}>
@@ -259,13 +257,13 @@ export function AccountTransactions() {
                 </option>
               ))}
             </select>
-          </div>
-          <div className="min-w-0">
-            <label className="dash-field-label">Game</label>
+          </label>
+          <label className="df-tx-field">
+            <span className="df-tx-field-label">Game</span>
             <select
               value={filters.gameName}
               onChange={(e) => setFilters((f) => ({ ...f, gameName: e.target.value }))}
-              className="dash-tx-select"
+              className="df-tx-select"
             >
               <option value="">All games</option>
               {registeredGames.map((g) => (
@@ -274,37 +272,28 @@ export function AccountTransactions() {
                 </option>
               ))}
             </select>
-          </div>
+          </label>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={handleApplyFilters}
-            className="dash-btn-cta w-auto px-5 py-2.5 text-sm"
-          >
+        <div className="df-tx-actions">
+          <button type="button" onClick={handleApplyFilters} className="df-tx-btn-primary">
             Apply filters
           </button>
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={handleClearFilters}
-              className="dash-btn-outline px-5 py-2.5 text-sm"
-            >
+          {hasFilters ? (
+            <button type="button" onClick={handleClearFilters} className="df-tx-btn-ghost">
               Clear
             </button>
-          )}
+          ) : null}
         </div>
       </section>
 
-      {/* Table + Pagination */}
-      <section className="dash-panel dash-animate-in dash-delay-2 min-w-0">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+      <section className="df-tx-card" aria-label="Transaction history">
+        <div className="df-tx-card-head">
           <div>
-            <h2 className="dash-panel-title m-0">Transaction history</h2>
-            <p className="dash-panel-desc m-0 mt-1">Live ledger of your wallet activity</p>
+            <h2 className="df-tx-card-title">Ledger</h2>
+            <p className="df-tx-card-desc">Date, type, description, game, and SC amount</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-[var(--dash-muted)]">Show</span>
+          <div className="df-tx-limit">
+            <span>Show</span>
             <select
               value={limit}
               onChange={(e) => {
@@ -312,7 +301,7 @@ export function AccountTransactions() {
                 setLimit(newLimit);
                 setPage(1);
               }}
-              className="dash-tx-limit-select"
+              className="df-tx-limit-select"
               aria-label="Transactions per page"
             >
               {PAGE_SIZES.map((n) => (
@@ -321,25 +310,54 @@ export function AccountTransactions() {
                 </option>
               ))}
             </select>
-            <span className="text-sm text-[var(--dash-muted)]">per page</span>
+            <span>per page</span>
           </div>
         </div>
 
         {loading ? (
-          <div className="py-12 flex justify-center text-sm text-[var(--dash-muted)]">Loading transactions…</div>
+          <div className="df-tx-loading">Loading transactions…</div>
         ) : transactions.length === 0 ? (
-          <div className="dash-empty-state dash-tx-empty">
-            <span className="dash-tx-empty-icon" aria-hidden>📜</span>
-            <p className="m-0">No transactions found.</p>
-            <p className="text-sm text-[var(--dash-muted)] m-0">Try adjusting filters or make your first move.</p>
-            <Link to="/deposit" className="dash-btn-cta w-auto px-5 py-2.5 text-sm no-underline">
+          <div className="df-tx-empty">
+            <p>No transactions found.</p>
+            <small>Try adjusting filters or make your first move.</small>
+            <Link to="/deposit" className="df-tx-btn-primary">
               Go to Deposit
             </Link>
           </div>
         ) : (
           <>
-            <div className="dash-data-table-wrap">
-              <table className="dash-data-table">
+            <div className="df-tx-list df-tx-list--mobile">
+              {transactions.map((tx, i) => (
+                <motion.article
+                  key={tx.id}
+                  className="df-tx-row"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03, duration: 0.28 }}
+                >
+                  <MarkForType type={tx.type} />
+                  <div className="df-tx-row__details">
+                    <strong>{typeLabel(tx.type)}</strong>
+                    <span>{formatDate(getTransactionDate(tx))}</span>
+                    <small>
+                      {[tx.description, tx.game_name ? getGameDisplayName(tx.game_name) : null]
+                        .filter(Boolean)
+                        .join(' · ') || '—'}
+                    </small>
+                  </div>
+                  <div className="df-tx-row__amount">
+                    <WalletAmount type={tx.type} amount={tx.amount} />
+                    <span>SC</span>
+                    <em className={`df-tx-type-pill df-tx-type-pill--${toneForType(tx.type)}`}>
+                      {typeLabel(tx.type)}
+                    </em>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+
+            <div className="df-tx-table-wrap">
+              <table className="df-tx-table">
                 <thead>
                   <tr>
                     <th>Date</th>
@@ -350,41 +368,35 @@ export function AccountTransactions() {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((tx, i) => (
-                    <motion.tr
-                      key={tx.id}
-                      className="dash-tx-table-row"
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.35 }}
-                    >
-                      <td className="whitespace-nowrap dash-td-muted">{formatDate(getTransactionDate(tx))}</td>
+                  {transactions.map((tx) => (
+                    <tr key={tx.id}>
+                      <td>{formatDate(getTransactionDate(tx))}</td>
                       <td>
                         <TransactionTypeCell type={tx.type} />
                       </td>
                       <td>{tx.description || '—'}</td>
-                      <td className="dash-td-muted">{tx.game_name ? getGameDisplayName(tx.game_name) : '—'}</td>
+                      <td>{tx.game_name ? getGameDisplayName(tx.game_name) : '—'}</td>
                       <td className="text-right">
                         <WalletAmount type={tx.type} amount={tx.amount} />
                       </td>
-                    </motion.tr>
+                    </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
             {(total > 0 || data.transactions.length > 0) && (
-              <div className="dash-tx-pager">
-                <p className="dash-tx-pager-info m-0">
+              <div className="df-tx-pager">
+                <p className="df-tx-pager-info">
                   Showing {total === 0 ? 0 : (data.page - 1) * data.limit + 1}–
                   {total === 0 ? 0 : Math.min(data.page * data.limit, total)} of {total}
                 </p>
-                <div className="dash-tx-pager-actions">
+                <div className="df-tx-pager-actions">
                   <button
                     type="button"
                     onClick={() => goToPage(1)}
                     disabled={data.page <= 1}
-                    className="dash-tx-pager-btn"
+                    className="df-tx-pager-btn"
                     aria-label="First page"
                   >
                     First
@@ -393,19 +405,19 @@ export function AccountTransactions() {
                     type="button"
                     onClick={() => goToPage(data.page - 1)}
                     disabled={data.page <= 1}
-                    className="dash-tx-pager-btn"
+                    className="df-tx-pager-btn"
                     aria-label="Previous page"
                   >
                     Previous
                   </button>
-                  <span className="dash-tx-pager-page">
+                  <span className="df-tx-pager-page">
                     Page {data.page} of {total_pages}
                   </span>
                   <button
                     type="button"
                     onClick={() => goToPage(data.page + 1)}
                     disabled={data.page >= total_pages}
-                    className="dash-tx-pager-btn"
+                    className="df-tx-pager-btn"
                     aria-label="Next page"
                   >
                     Next
@@ -414,7 +426,7 @@ export function AccountTransactions() {
                     type="button"
                     onClick={() => goToPage(total_pages)}
                     disabled={data.page >= total_pages}
-                    className="dash-tx-pager-btn"
+                    className="df-tx-pager-btn"
                     aria-label="Last page"
                   >
                     Last

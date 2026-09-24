@@ -9,7 +9,7 @@ import * as userApi from '../api/user';
 import * as kycApi from '../api/kyc';
 import * as phoneApi from '../api/phone';
 import { usePageContentReady, usePageReady } from '../context/PageReadyContext';
-import { LockIcon, EnvelopeIcon } from '../assets/icons';
+import { LockIcon, EnvelopeIcon, CameraIcon } from '../assets/icons';
 import { PaymentAccountSection } from '../components/PaymentAccount/PaymentAccountSection';
 import { KycVerificationModal } from '../components/withdraw/KycVerificationModal';
 import { PhoneNumberField } from '../components/Auth/PhoneNumberField';
@@ -21,11 +21,16 @@ import {
 } from '../utils/purchaseProfile';
 import { phoneOtpErrorMessage } from '../utils/phoneOtpErrors';
 import '../components/Auth/PhoneNumberField.css';
+import '../components/profile/df-profile.css';
 
-const inputClass = 'dash-input-field w-full';
-const inputClassError = `${inputClass} dash-input-field--error`;
-const inputClassReadonly = `${inputClass} dash-input-field--readonly pr-10`;
-const labelClass = 'dash-field-label';
+const inputClass = 'df-profile-input';
+const inputClassError = 'df-profile-input df-profile-input--error';
+const inputClassReadonly = 'df-profile-input df-profile-input--readonly';
+
+/** Returns the profile input class with the error state applied when the field is touched and invalid. */
+function fieldClass(isTouched, error) {
+  return isTouched && error ? inputClassError : inputClass;
+}
 
 function kycStatusLabel(status) {
   const s = String(status || 'not_started').toLowerCase();
@@ -38,10 +43,9 @@ function kycStatusLabel(status) {
 
 function kycBadgeClass(status) {
   const s = String(status || 'not_started').toLowerCase();
-  if (s === 'approved') return 'dash-badge dash-badge--success';
-  if (s === 'declined') return 'dash-badge dash-badge--danger';
-  if (s === 'pending' || s === 'in_review') return 'dash-badge dash-badge--warning';
-  return 'dash-badge dash-badge--warning';
+  if (s === 'approved') return 'dragonfury-profile-badge dragonfury-profile-badge--ok';
+  if (s === 'declined') return 'dragonfury-profile-badge dragonfury-profile-badge--danger';
+  return 'dragonfury-profile-badge dragonfury-profile-badge--warn';
 }
 
 const NAME_LETTERS_ONLY = /^[a-zA-Z]+$/;
@@ -177,6 +181,22 @@ function getDefaultAvatarUrl(user) {
   return `https://api.dicebear.com/9.x/dylan/png?seed=${seed}`;
 }
 
+/** Name shown in the identity header: first+last, else username, else email. */
+function getDisplayName(user) {
+  const full = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
+  if (full) return full;
+  if (user?.username) return user.username;
+  return String(user?.email || '').trim() || 'Player';
+}
+
+/** Initials used when the avatar image is missing or fails to load. */
+function getAvatarInitials(user) {
+  const first = String(user?.firstName || '').trim();
+  const last = String(user?.lastName || '').trim();
+  if (first || last) return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
+  return String(user?.username || user?.email || 'P').trim().slice(0, 2).toUpperCase();
+}
+
 const initialProfileValues = (user) => ({
   firstName: user?.firstName ?? '',
   lastName: user?.lastName ?? '',
@@ -256,6 +276,7 @@ export function Settings() {
   const [otpCode, setOtpCode] = useState('');
   const [sendingOtp, setSendingOtp] = useState(false);
   const [verifyingOtp, setVerifyingOtp] = useState(false);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   usePageContentReady(!loading);
   const { showLoader } = usePageReady();
@@ -308,6 +329,9 @@ export function Settings() {
   const profileStats = getProfileCompletion(user);
   const phoneAlreadyVerified = Boolean(user?.isPhoneVerified);
   const storeRequiresPhoneOtp = storeRequiresPhoneVerification(user);
+  const displayName = getDisplayName(user);
+  const avatarInitials = getAvatarInitials(user);
+  const avatarSrc = user?.profileImageUrl || getDefaultAvatarUrl(user);
 
 
   useEffect(() => {
@@ -420,164 +444,243 @@ export function Settings() {
   );
 
   return (
-    <div className="dash-page dash-settings-page w-full min-w-0 max-w-full">
-      <header className="dash-deposit-header dash-animate-in">
-        <h1 className="dash-deposit-title">Profile</h1>
-        <p className="dash-deposit-sub">Manage your account settings and preferences.</p>
-      </header>
+    <div className="dash-page dash-settings-page dragonfury-profile-page w-full min-w-0 max-w-full">
+      <section className="dragonfury-profile-experience">
+        <header className="dragonfury-profile-identity">
+          <div className="dragonfury-profile-avatar-wrap">
+            {avatarSrc && !avatarFailed ? (
+              <img
+                src={avatarSrc}
+                alt=""
+                className="dragonfury-profile-avatar"
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              <span className="dragonfury-profile-avatar-initials" aria-hidden>
+                {avatarInitials}
+              </span>
+            )}
+            <span className="dragonfury-profile-avatar-camera" aria-hidden>
+              <CameraIcon />
+            </span>
+          </div>
+          <div className="dragonfury-profile-identity-copy">
+            <p className="dragonfury-profile-kicker">Player Profile</p>
+            <h2 className="dragonfury-profile-name">{displayName}</h2>
+            {user?.email ? <span className="dragonfury-profile-email">{user.email}</span> : null}
+          </div>
+        </header>
 
-      {/* Email verification – when not verified */}
-      {!isVerified && (
-        <section className="dash-panel dash-animate-in dash-delay-1 min-w-0">
-          <div className="dash-panel-head--icon">
-            <span className="dash-panel-icon dash-panel-icon--warn" aria-hidden>
-              <LockIcon className="w-4 h-4" />
-            </span>
-            <h2 className="dash-panel-title min-w-0">Email Verification</h2>
-            <span className="dash-badge dash-badge--warning">Not Verified</span>
-          </div>
-          <p className="dash-panel-desc min-w-0 break-words">
-            Verify your email address to update your profile. Until then, you can view your details but cannot save changes.
-          </p>
-          <div className="dash-settings-actions min-w-0">
-            <input
-              type="text"
-              readOnly
-              value={user?.email ?? ''}
-              className={`${inputClassReadonly} flex-1 min-w-0 w-full sm:min-w-[200px] max-w-full`}
-            />
-            <button
-              type="button"
-              onClick={handleSendVerification}
-              disabled={verificationSending}
-              className="dash-btn-cta inline-flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              <EnvelopeIcon className="w-5 h-5" />
-              {verificationSending ? 'Sending…' : 'Send Verification Email'}
-            </button>
-          </div>
-        </section>
-      )}
+        {(!isVerified || kyc || storeRequiresPhoneOtp) && (
+          <section className="dragonfury-profile-verification-center">
+            <header className="dragonfury-profile-section-head">
+              <div>
+                <p className="dragonfury-profile-kicker">Account Security</p>
+                <h2>Verification</h2>
+              </div>
+              <p className="dragonfury-profile-section-desc">
+                Confirm your email, phone, and identity to unlock deposits, withdrawals and profile updates.
+              </p>
+            </header>
 
-      {/* KYC verification status */}
-      {kyc && (
-        <section className="dash-panel dash-animate-in dash-delay-1 min-w-0">
-          <div className="dash-panel-head--icon">
-            <span className="dash-panel-icon" aria-hidden>
-              <LockIcon className="w-4 h-4" />
-            </span>
-            <h2 className="dash-panel-title min-w-0">KYC Verification</h2>
-            <span className={kycBadgeClass(kyc.approved ? 'approved' : kyc.kycStatus)}>
-              {kyc.approved ? 'Verified' : kycStatusLabel(kyc.kycStatus)}
-            </span>
-          </div>
-          <p className="dash-panel-desc min-w-0 break-words">
-            {kyc.approved
-              ? `Your identity is verified${kyc.verifiedAt ? ` (since ${new Date(kyc.verifiedAt).toLocaleDateString()})` : ''}. You can withdraw when eligible.`
-              : kyc.required
-                ? kyc.kycStatus === 'pending' || kyc.kycStatus === 'in_review'
-                  ? 'Your verification is in progress. Withdrawals unlock once it’s approved.'
-                  : kyc.kycStatus === 'declined'
-                    ? (kyc.declineReason || 'Verification was declined. You can try again with a clear ID photo.')
-                    : 'Complete a one-time identity check before you can withdraw.'
-                : 'Identity verification is not currently required for withdrawals.'}
-          </p>
-          {(kyc.canStart || kyc.kycStatus === 'declined' || (kyc.required && (kyc.kycStatus === 'not_started' || !kyc.kycStatus))) && (
-            <div className="dash-settings-actions min-w-0">
-              <button
-                type="button"
-                onClick={handleStartKyc}
-                disabled={kycStarting}
-                className="dash-btn-cta disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {kycStarting
-                  ? 'Starting…'
-                  : kyc.kycStatus === 'declined'
-                    ? 'Retry verification'
-                    : 'Verify identity'}
-              </button>
+            <div className="dragonfury-profile-verification-grid">
+              {/* Email verification – when not verified */}
+              {!isVerified && (
+                <article className="dragonfury-profile-verification-option">
+                  <div className="dragonfury-profile-verification-head">
+                    <span className="dragonfury-profile-verification-icon" aria-hidden>
+                      <EnvelopeIcon />
+                    </span>
+                    <h3>Email Verification</h3>
+                    <span className="dragonfury-profile-badge dragonfury-profile-badge--warn">Not Verified</span>
+                  </div>
+                  <p className="dragonfury-profile-verification-desc">
+                    Verify your email address to update your profile. Until then, you can view your details but cannot save changes.
+                  </p>
+                  <div className="dragonfury-profile-verification-actions">
+                    <input
+                      type="text"
+                      readOnly
+                      value={user?.email ?? ''}
+                      className={inputClassReadonly}
+                      aria-label="Account email"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSendVerification}
+                      disabled={verificationSending}
+                      className="dragonfury-profile-btn dragonfury-profile-btn--primary"
+                    >
+                      <EnvelopeIcon className="dragonfury-profile-btn-icon" />
+                      {verificationSending ? 'Sending…' : 'Send Verification Email'}
+                    </button>
+                  </div>
+                </article>
+              )}
+
+              {/* Phone verification status */}
+              {storeRequiresPhoneOtp && (
+                <article className="dragonfury-profile-verification-option dragonfury-profile-verification-option--essential">
+                  <div className="dragonfury-profile-verification-head">
+                    <span className="dragonfury-profile-verification-icon" aria-hidden>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
+                        <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.8a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2.1Z" />
+                      </svg>
+                    </span>
+                    <h3>Verify phone number</h3>
+                    <span
+                      className={
+                        phoneAlreadyVerified
+                          ? 'dragonfury-profile-badge dragonfury-profile-badge--ok'
+                          : 'dragonfury-profile-badge dragonfury-profile-badge--warn'
+                      }
+                      role="status"
+                    >
+                      {phoneAlreadyVerified ? 'Verified' : 'Not verified'}
+                    </span>
+                  </div>
+                  <p className="dragonfury-profile-verification-desc">
+                    {phoneAlreadyVerified
+                      ? 'Your phone number is verified. Purchases and withdrawals that require phone confirmation are unlocked.'
+                      : 'Confirm your mobile number with a one-time code before depositing or withdrawing.'}
+                  </p>
+                  {!phoneAlreadyVerified && (
+                    <div className="dragonfury-profile-verification-actions">
+                      <button
+                        type="button"
+                        className="dragonfury-profile-btn dragonfury-profile-btn--primary"
+                        onClick={() => {
+                          const el = document.getElementById('verify-phone');
+                          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }}
+                      >
+                        Verify phone
+                      </button>
+                    </div>
+                  )}
+                </article>
+              )}
+
+              {/* KYC verification status */}
+              {kyc && (
+                <article className="dragonfury-profile-verification-option">
+                  <div className="dragonfury-profile-verification-head">
+                    <span className="dragonfury-profile-verification-icon" aria-hidden>
+                      <LockIcon />
+                    </span>
+                    <h3>KYC Verification</h3>
+                    <span className={kycBadgeClass(kyc.approved ? 'approved' : kyc.kycStatus)}>
+                      {kyc.approved ? 'Verified' : kycStatusLabel(kyc.kycStatus)}
+                    </span>
+                  </div>
+                  <p className="dragonfury-profile-verification-desc">
+                    {kyc.approved
+                      ? `Your identity is verified${kyc.verifiedAt ? ` (since ${new Date(kyc.verifiedAt).toLocaleDateString()})` : ''}. You can withdraw when eligible.`
+                      : kyc.required
+                        ? kyc.kycStatus === 'pending' || kyc.kycStatus === 'in_review'
+                          ? 'Your verification is in progress. Withdrawals unlock once it’s approved.'
+                          : kyc.kycStatus === 'declined'
+                            ? (kyc.declineReason || 'Verification was declined. You can try again with a clear ID photo.')
+                            : 'Complete a one-time identity check before you can withdraw.'
+                        : 'Identity verification is not currently required for withdrawals.'}
+                  </p>
+                  {(kyc.canStart || kyc.kycStatus === 'declined' || (kyc.required && (kyc.kycStatus === 'not_started' || !kyc.kycStatus))) && (
+                    <div className="dragonfury-profile-verification-actions">
+                      <button
+                        type="button"
+                        onClick={handleStartKyc}
+                        disabled={kycStarting}
+                        className="dragonfury-profile-btn dragonfury-profile-btn--primary"
+                      >
+                        {kycStarting
+                          ? 'Starting…'
+                          : kyc.kycStatus === 'declined'
+                            ? 'Retry verification'
+                            : 'Verify identity'}
+                      </button>
+                    </div>
+                  )}
+                  {(kyc.kycStatus === 'pending' || kyc.kycStatus === 'in_review') && (
+                    <div className="dragonfury-profile-verification-actions">
+                      <button
+                        type="button"
+                        className="dragonfury-profile-btn dragonfury-profile-btn--ghost"
+                        onClick={() => {
+                          kycApi.getKycStatus({ refresh: '1' }).then(setKyc).catch(() => {});
+                        }}
+                      >
+                        Refresh status
+                      </button>
+                    </div>
+                  )}
+                </article>
+              )}
             </div>
-          )}
-          {(kyc.kycStatus === 'pending' || kyc.kycStatus === 'in_review') && (
-            <div className="dash-settings-actions min-w-0">
-              <button
-                type="button"
-                className="dash-btn-outline"
-                onClick={() => {
-                  kycApi.getKycStatus({ refresh: '1' }).then(setKyc).catch(() => {});
-                }}
-              >
-                Refresh status
-              </button>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Profile – avatar + gamification sidebar + details in one card */}
-      <section className="dash-panel dash-profile-card dash-animate-in dash-delay-2 min-w-0">
-        <div className="dash-profile-card-head">
-          <h2 className="dash-panel-title mb-0">Profile</h2>
-        </div>
-        {!isVerified && (
-          <div className="dash-settings-notice min-w-0">
-            <LockIcon className="w-4 h-4 flex-shrink-0 mt-0.5 text-[var(--dash-gold)]" />
-            <span className="min-w-0 break-words">Email verification is needed for profile update. Verify your email above to enable the Update Profile button.</span>
-          </div>
+          </section>
         )}
 
-        <div className="dash-profile-card-layout">
-          <aside className="dash-profile-card-aside" aria-label="Player profile">
-            <div className="dash-profile-avatar-ring">
-              <img
-                src={user?.profileImageUrl || getDefaultAvatarUrl(user)}
-                alt=""
-                className="dash-profile-avatar"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = getDefaultAvatarUrl(user);
-                }}
-              />
-            </div>
-            {user?.userId != null ? (
-              <p className="dash-profile-card-username">ID {user.userId}</p>
-            ) : null}
-            {user?.username ? (
-              <p className="dash-profile-xp-sub" style={{ textAlign: 'center', marginTop: 4 }}>@{user.username}</p>
-            ) : null}
-
-            <div className="dash-profile-xp-block">
-              <div className="dash-profile-xp-head">
-                <span className="dash-profile-xp-label">Profile Power</span>
-                <span className="dash-profile-xp-value tabular-nums">{profileStats.percent}%</span>
+        {/* Profile Power + account quests */}
+        <section className="dragonfury-profile-progress">
+          <header className="dragonfury-profile-section-head">
+            <p className="dragonfury-profile-kicker">Progress</p>
+            <h2>Profile Power</h2>
+          </header>
+          <div className="dragonfury-profile-progress-body">
+            <div className="dragonfury-profile-progress-meter">
+              <div className="dragonfury-profile-progress-head">
+                <span className="dragonfury-profile-progress-label">Profile Power</span>
+                <span className="dragonfury-profile-progress-value tabular-nums">{profileStats.percent}%</span>
               </div>
-              <div className="dash-profile-progress" role="progressbar" aria-valuenow={profileStats.percent} aria-valuemin={0} aria-valuemax={100}>
+              <div
+                className="dragonfury-profile-progress-track"
+                role="progressbar"
+                aria-valuenow={profileStats.percent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <span
-                  className="dash-profile-progress-fill"
+                  className="dragonfury-profile-progress-fill"
                   style={{ width: `${profileStats.percent}%` }}
                 />
               </div>
-              <p className="dash-profile-xp-sub">
+              <p className="dragonfury-profile-progress-sub">
                 {profileStats.filled}/{profileStats.total} fields · {profileStats.questsDone}/{profileStats.quests.length} quests
               </p>
             </div>
 
-            <ul className="dash-profile-quests" aria-label="Account quests">
+            <ul className="dragonfury-profile-quests" aria-label="Account quests">
               {profileStats.quests.map((quest, index) => (
                 <li
                   key={quest.id}
-                  className={`dash-profile-quest${quest.done ? ' dash-profile-quest--done' : ''}`}
+                  className={`dragonfury-profile-quest${quest.done ? ' dragonfury-profile-quest--done' : ''}`}
                   style={{ animationDelay: `${0.08 * index}s` }}
                 >
-                  <span className="dash-profile-quest-icon" aria-hidden>{quest.icon}</span>
-                  <span className="dash-profile-quest-label">{quest.label}</span>
-                  <span className="dash-profile-quest-status">{quest.done ? '✓' : '…'}</span>
+                  <span className="dragonfury-profile-quest-icon" aria-hidden>{quest.icon}</span>
+                  <span className="dragonfury-profile-quest-label">{quest.label}</span>
+                  <span className="dragonfury-profile-quest-status">{quest.done ? '✓' : '…'}</span>
                 </li>
               ))}
             </ul>
-          </aside>
+          </div>
+        </section>
 
-          <div className="dash-profile-card-body">
+        {/* Profile details */}
+        <section className="dragonfury-profile-form">
+          <header className="dragonfury-profile-section-head">
+            <p className="dragonfury-profile-kicker">Profile Details</p>
+            <h2>Your Information</h2>
+            <p className="dragonfury-profile-section-desc">
+              Keep your details current so deposits and redeems can be processed without delays.
+            </p>
+          </header>
+
+          {!isVerified && (
+            <div className="dragonfury-profile-notice">
+              <LockIcon className="dragonfury-profile-notice-icon" />
+              <span>Email verification is needed for profile update. Verify your email above to enable the Update Profile button.</span>
+            </div>
+          )}
+
         <Formik
           initialValues={initialProfileValues(user)}
           validationSchema={PROFILE_VALIDATION}
@@ -696,300 +799,299 @@ export function Settings() {
             };
 
             return (
-            <Form>
-              <div className="dash-settings-form-grid dash-settings-form-grid--2">
-                <div className="min-w-0">
-                  <label className={labelClass}>User ID</label>
-                  <div className="relative">
+            <Form className="dragonfury-profile-form-body">
+              <div className="dragonfury-profile-fields">
+                <label className="dragonfury-profile-field dragonfury-profile-field--locked">
+                  <span>User ID</span>
+                  <span className="df-profile-locked-input">
                     <input
                       type="text"
                       readOnly
                       value={user?.userId != null ? String(user.userId) : ''}
-                      className={`${inputClassReadonly} min-w-0`}
+                      className={inputClassReadonly}
                     />
-                    <span className="dash-input-lock" title="User ID cannot be changed">
-                      <LockIcon className="w-5 h-5" />
+                    <span className="df-profile-lock" title="User ID cannot be changed">
+                      <LockIcon />
                     </span>
-                  </div>
-                  <p className="dash-field-hint break-words">Use this ID when contacting support.</p>
-                </div>
-                <div className="min-w-0">
-                  <label className={labelClass}>Username</label>
-                  <div className="relative">
+                  </span>
+                  <small className="df-profile-field-hint">Use this ID when contacting support.</small>
+                </label>
+                <label className="dragonfury-profile-field dragonfury-profile-field--locked">
+                  <span>Username</span>
+                  <span className="df-profile-locked-input">
                     <input
                       type="text"
                       readOnly
                       value={user?.username ?? ''}
-                      className={`${inputClassReadonly} min-w-0`}
+                      className={inputClassReadonly}
                     />
-                    <span className="dash-input-lock" title="Username cannot be changed">
-                      <LockIcon className="w-5 h-5" />
+                    <span className="df-profile-lock" title="Username cannot be changed">
+                      <LockIcon />
                     </span>
-                  </div>
-                  <p className="dash-field-hint break-words">Username cannot be changed.</p>
-                </div>
-                <div className="min-w-0">
-                  <label className={labelClass}>Email</label>
-                  <div className="relative">
+                  </span>
+                  <small className="df-profile-field-hint">Username cannot be changed.</small>
+                </label>
+                <label className="dragonfury-profile-field dragonfury-profile-field--locked dragonfury-profile-field--wide">
+                  <span>Email</span>
+                  <span className="df-profile-locked-input">
                     <input
                       type="email"
                       readOnly
                       value={user?.email ?? ''}
-                      className={`${inputClassReadonly} min-w-0`}
+                      className={inputClassReadonly}
                     />
-                    <span className="dash-input-lock" title="Email cannot be changed">
-                      <LockIcon className="w-5 h-5" />
+                    <span className="df-profile-lock" title="Email cannot be changed">
+                      <LockIcon />
                     </span>
-                  </div>
-                  <p className="dash-field-hint break-words">Email cannot be changed for security reasons.</p>
-                </div>
-              </div>
+                  </span>
+                  <small className="df-profile-field-hint">Email cannot be changed for security reasons.</small>
+                </label>
 
-              <div className="dash-settings-form-grid dash-settings-form-grid--2 mt-4">
-                <div className="min-w-0">
-                  <label className={labelClass}>First name</label>
+                <label className="dragonfury-profile-field">
+                  <span>First name</span>
                   <Field
                     name="firstName"
                     type="text"
                     placeholder="Letters only (e.g. John)"
                     maxLength={100}
                     disabled={!isVerified}
-                    className={touched.firstName && errors.firstName ? inputClassError : inputClass}
+                    className={fieldClass(touched.firstName, errors.firstName)}
                     autoComplete="given-name"
                   />
-                  {touched.firstName && errors.firstName && <p className="dash-field-error">{errors.firstName}</p>}
-                </div>
-                <div className="min-w-0">
-                  <label className={labelClass}>Last name</label>
+                  {touched.firstName && errors.firstName && <small className="df-profile-field-error">{errors.firstName}</small>}
+                </label>
+                <label className="dragonfury-profile-field">
+                  <span>Last name</span>
                   <Field
                     name="lastName"
                     type="text"
                     placeholder="Letters only (e.g. Doe)"
                     maxLength={100}
                     disabled={!isVerified}
-                    className={touched.lastName && errors.lastName ? inputClassError : inputClass}
+                    className={fieldClass(touched.lastName, errors.lastName)}
                     autoComplete="family-name"
                   />
-                  {touched.lastName && errors.lastName && <p className="dash-field-error">{errors.lastName}</p>}
-                </div>
-              </div>
+                  {touched.lastName && errors.lastName && <small className="df-profile-field-error">{errors.lastName}</small>}
+                </label>
 
-              <div className="mt-4" id="verify-phone">
-                <label className={labelClass}>Phone number *</label>
-                <div className="dash-phone-verify-row">
-                  <PhoneNumberField
-                    id="settings-phone"
-                    name="phone"
-                    variant="gate"
-                    value={values.phone ?? ''}
-                    onChange={(e164) => {
-                      if (phoneLocked) return;
-                      setFieldValue('phone', e164);
-                      if (otpOpen) {
-                        setOtpOpen(false);
-                        setOtpCode('');
+                <div className="dragonfury-profile-field dragonfury-profile-field--wide" id="verify-phone">
+                  <span className="df-profile-field-label">Phone number *</span>
+                  <div className="dash-phone-verify-row df-profile-phone-row">
+                    <PhoneNumberField
+                      id="settings-phone"
+                      name="phone"
+                      variant="gate"
+                      value={values.phone ?? ''}
+                      onChange={(e164) => {
+                        if (phoneLocked) return;
+                        setFieldValue('phone', e164);
+                        if (otpOpen) {
+                          setOtpOpen(false);
+                          setOtpCode('');
+                        }
+                      }}
+                      onBlur={() => setFieldTouched('phone', true)}
+                      readOnly={phoneLocked}
+                      disabled={!isVerified || sendingOtp || verifyingOtp}
+                      inputClassName={
+                        touched.phone && errors.phone
+                          ? 'err'
+                          : phoneAlreadyVerified
+                            ? 'ok'
+                            : ''
                       }
-                    }}
-                    onBlur={() => setFieldTouched('phone', true)}
-                    readOnly={phoneLocked}
-                    disabled={!isVerified || sendingOtp || verifyingOtp}
-                    inputClassName={
-                      touched.phone && errors.phone
-                        ? 'err'
-                        : phoneAlreadyVerified
-                          ? 'ok'
-                          : ''
-                    }
-                  />
-                  <div className="dash-phone-verify-side">
-                    {phoneAlreadyVerified ? (
-                      <span className="dash-phone-verified-pill" aria-label="Phone verified">
-                        Verified
-                      </span>
-                    ) : storeRequiresPhoneOtp ? (
-                      otpOpen ? (
-                        <button
-                          type="button"
-                          className="dash-btn-outline dash-phone-verify-btn"
-                          onClick={() => {
-                            setOtpOpen(false);
-                            setOtpCode('');
-                          }}
-                          disabled={sendingOtp || verifyingOtp}
-                        >
-                          Edit
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className="dash-btn-cta dash-phone-verify-btn"
-                          onClick={handleSendPhoneOtp}
-                          disabled={!isVerified || sendingOtp || !phoneReady}
-                        >
-                          {sendingOtp ? 'Sending…' : 'Verify'}
-                        </button>
-                      )
-                    ) : null}
-                  </div>
-                </div>
-                {otpOpen && storeRequiresPhoneOtp && !phoneAlreadyVerified ? (
-                  <div className="dash-phone-otp-row mt-3">
-                    <input
-                      className={inputClass}
-                      type="text"
-                      inputMode="numeric"
-                      autoComplete="one-time-code"
-                      placeholder="Enter code"
-                      value={otpCode}
-                      onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                      disabled={verifyingOtp || sendingOtp}
                     />
-                    <button
-                      type="button"
-                      className="dash-btn-cta dash-phone-verify-btn"
-                      disabled={verifyingOtp || sendingOtp || otpCode.length < 4}
-                      onClick={handleConfirmPhoneOtp}
-                    >
-                      {verifyingOtp ? 'Checking…' : 'Confirm'}
-                    </button>
-                    <button
-                      type="button"
-                      className="dash-btn-outline dash-phone-verify-btn"
-                      disabled={verifyingOtp || sendingOtp}
-                      onClick={handleSendPhoneOtp}
-                    >
-                      {sendingOtp ? 'Sending…' : 'Resend'}
-                    </button>
+                    <div className="dash-phone-verify-side">
+                      {phoneAlreadyVerified ? (
+                        <span className="dragonfury-profile-badge dragonfury-profile-badge--ok" aria-label="Phone verified">
+                          Verified
+                        </span>
+                      ) : storeRequiresPhoneOtp ? (
+                        otpOpen ? (
+                          <button
+                            type="button"
+                            className="dragonfury-profile-btn dragonfury-profile-btn--ghost df-profile-phone-btn"
+                            onClick={() => {
+                              setOtpOpen(false);
+                              setOtpCode('');
+                            }}
+                            disabled={sendingOtp || verifyingOtp}
+                          >
+                            Edit
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="dragonfury-profile-btn dragonfury-profile-btn--primary df-profile-phone-btn"
+                            onClick={handleSendPhoneOtp}
+                            disabled={!isVerified || sendingOtp || !phoneReady}
+                          >
+                            {sendingOtp ? 'Sending…' : 'Verify'}
+                          </button>
+                        )
+                      ) : null}
+                    </div>
                   </div>
-                ) : null}
-                {phoneAlreadyVerified ? (
-                  <p className="dash-field-hint mt-1 mb-0">
-                    Verified phone numbers can’t be changed for security. Contact support if you need an update.
-                  </p>
-                ) : (
-                  <p className="dash-field-hint mt-1 mb-0">
-                    Verify your phone to unlock purchases. You’ll receive a one-time code by SMS.
-                  </p>
-                )}
-                {touched.phone && errors.phone && <p className="dash-field-error">{errors.phone}</p>}
-              </div>
-
-              <div className="mt-4">
-                <label className={labelClass}>Date of birth</label>
-                <Field name="dateOfBirth">
-                  {({ field, form }) => {
-                    const maxDate = new Date().toISOString().slice(0, 10);
-                    const handleChange = (e) => {
-                      const corrected = clampToValidCalendarDate(e.target.value);
-                      form.setFieldValue('dateOfBirth', corrected);
-                    };
-                    const handleBlur = (e) => {
-                      const corrected = clampToValidCalendarDate(e.target.value);
-                      if (corrected !== e.target.value) form.setFieldValue('dateOfBirth', corrected);
-                      field.onBlur(e);
-                    };
-                    const handleKeyDown = (e) => {
-                      const val = clampToValidCalendarDate(field.value || '') || field.value || '';
-                      if (e.key === 'ArrowUp') {
-                        e.preventDefault();
-                        form.setFieldValue('dateOfBirth', val ? addDaysToDate(val, 1, maxDate) : maxDate);
-                      } else if (e.key === 'ArrowDown') {
-                        e.preventDefault();
-                        form.setFieldValue('dateOfBirth', val ? addDaysToDate(val, -1, maxDate) : DATE_MIN);
-                      }
-                    };
-                    const displayValue = clampToValidCalendarDate(field.value || '') || field.value || '';
-                    return (
+                  {otpOpen && storeRequiresPhoneOtp && !phoneAlreadyVerified ? (
+                    <div className="dash-phone-otp-row df-profile-otp-row">
                       <input
-                        type="date"
-                        {...field}
-                        value={displayValue}
-                        min="1900-01-01"
-                        max={maxDate}
-                        disabled={!isVerified}
-                        className={touched.dateOfBirth && errors.dateOfBirth ? inputClassError : inputClass}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        onKeyDown={handleKeyDown}
+                        className={inputClass}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        placeholder="Enter code"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                        disabled={verifyingOtp || sendingOtp}
                       />
-                    );
-                  }}
-                </Field>
-                <p className="dash-field-hint">Year must be between 1900 and {new Date().getFullYear()}.</p>
-                {touched.dateOfBirth && errors.dateOfBirth && <p className="dash-field-error">{errors.dateOfBirth}</p>}
+                      <button
+                        type="button"
+                        className="dragonfury-profile-btn dragonfury-profile-btn--primary df-profile-phone-btn"
+                        disabled={verifyingOtp || sendingOtp || otpCode.length < 4}
+                        onClick={handleConfirmPhoneOtp}
+                      >
+                        {verifyingOtp ? 'Checking…' : 'Confirm'}
+                      </button>
+                      <button
+                        type="button"
+                        className="dragonfury-profile-btn dragonfury-profile-btn--ghost df-profile-phone-btn"
+                        disabled={verifyingOtp || sendingOtp}
+                        onClick={handleSendPhoneOtp}
+                      >
+                        {sendingOtp ? 'Sending…' : 'Resend'}
+                      </button>
+                    </div>
+                  ) : null}
+                  {phoneAlreadyVerified ? (
+                    <small className="df-profile-field-hint">
+                      Verified phone numbers can’t be changed for security. Contact support if you need an update.
+                    </small>
+                  ) : (
+                    <small className="df-profile-field-hint">
+                      Verify your phone to unlock purchases. You’ll receive a one-time code by SMS.
+                    </small>
+                  )}
+                  {touched.phone && errors.phone && <small className="df-profile-field-error">{errors.phone}</small>}
+                </div>
+
+                <label className="dragonfury-profile-field">
+                  <span>Date of birth</span>
+                  <Field name="dateOfBirth">
+                    {({ field, form }) => {
+                      const maxDate = new Date().toISOString().slice(0, 10);
+                      const handleChange = (e) => {
+                        const corrected = clampToValidCalendarDate(e.target.value);
+                        form.setFieldValue('dateOfBirth', corrected);
+                      };
+                      const handleBlur = (e) => {
+                        const corrected = clampToValidCalendarDate(e.target.value);
+                        if (corrected !== e.target.value) form.setFieldValue('dateOfBirth', corrected);
+                        field.onBlur(e);
+                      };
+                      const handleKeyDown = (e) => {
+                        const val = clampToValidCalendarDate(field.value || '') || field.value || '';
+                        if (e.key === 'ArrowUp') {
+                          e.preventDefault();
+                          form.setFieldValue('dateOfBirth', val ? addDaysToDate(val, 1, maxDate) : maxDate);
+                        } else if (e.key === 'ArrowDown') {
+                          e.preventDefault();
+                          form.setFieldValue('dateOfBirth', val ? addDaysToDate(val, -1, maxDate) : DATE_MIN);
+                        }
+                      };
+                      const displayValue = clampToValidCalendarDate(field.value || '') || field.value || '';
+                      return (
+                        <input
+                          type="date"
+                          {...field}
+                          value={displayValue}
+                          min="1900-01-01"
+                          max={maxDate}
+                          disabled={!isVerified}
+                          className={fieldClass(touched.dateOfBirth, errors.dateOfBirth)}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          onKeyDown={handleKeyDown}
+                        />
+                      );
+                    }}
+                  </Field>
+                  <small className="df-profile-field-hint">Year must be between 1900 and {new Date().getFullYear()}.</small>
+                  {touched.dateOfBirth && errors.dateOfBirth && <small className="df-profile-field-error">{errors.dateOfBirth}</small>}
+                </label>
               </div>
 
-              <div className="mt-4">
-                <label className={labelClass}>Street address</label>
-                <Field
-                  name="streetAddress"
-                  type="text"
-                  placeholder="Enter street address"
-                  maxLength={255}
-                  disabled={!isVerified}
-                  className={touched.streetAddress && errors.streetAddress ? inputClassError : inputClass}
-                />
-                {touched.streetAddress && errors.streetAddress && (
-                  <p className="dash-field-error">{errors.streetAddress}</p>
-                )}
-              </div>
-
-              <div className="dash-settings-form-grid dash-settings-form-grid--3 mt-4">
-                <div className="min-w-0">
-                  <label className={labelClass}>City</label>
-                  <Field
-                    name="city"
-                    type="text"
-                    placeholder="Enter city"
-                    maxLength={100}
-                    disabled={!isVerified}
-                    className={touched.city && errors.city ? inputClassError : inputClass}
-                  />
-                  {touched.city && errors.city && <p className="dash-field-error">{errors.city}</p>}
+              <details className="dragonfury-profile-address" open>
+                <summary>Address</summary>
+                <div className="dragonfury-profile-fields">
+                  <label className="dragonfury-profile-field dragonfury-profile-field--wide">
+                    <span>Street address</span>
+                    <Field
+                      name="streetAddress"
+                      type="text"
+                      placeholder="Enter street address"
+                      maxLength={255}
+                      disabled={!isVerified}
+                      className={fieldClass(touched.streetAddress, errors.streetAddress)}
+                    />
+                    {touched.streetAddress && errors.streetAddress && (
+                      <small className="df-profile-field-error">{errors.streetAddress}</small>
+                    )}
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>City</span>
+                    <Field
+                      name="city"
+                      type="text"
+                      placeholder="Enter city"
+                      maxLength={100}
+                      disabled={!isVerified}
+                      className={fieldClass(touched.city, errors.city)}
+                    />
+                    {touched.city && errors.city && <small className="df-profile-field-error">{errors.city}</small>}
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>State</span>
+                    <Field
+                      name="state"
+                      type="text"
+                      placeholder="Enter state"
+                      maxLength={100}
+                      disabled={!isVerified}
+                      className={fieldClass(touched.state, errors.state)}
+                    />
+                    {touched.state && errors.state && <small className="df-profile-field-error">{errors.state}</small>}
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>Zip code</span>
+                    <Field
+                      name="zipCode"
+                      type="text"
+                      placeholder="Enter zip code"
+                      maxLength={20}
+                      disabled={!isVerified}
+                      className={fieldClass(touched.zipCode, errors.zipCode)}
+                    />
+                    {touched.zipCode && errors.zipCode && <small className="df-profile-field-error">{errors.zipCode}</small>}
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>Country</span>
+                    <Field
+                      name="country"
+                      type="text"
+                      placeholder="Enter country"
+                      maxLength={100}
+                      disabled={!isVerified}
+                      className={fieldClass(touched.country, errors.country)}
+                    />
+                    {touched.country && errors.country && <small className="df-profile-field-error">{errors.country}</small>}
+                  </label>
                 </div>
-                <div className="min-w-0">
-                  <label className={labelClass}>State</label>
-                  <Field
-                    name="state"
-                    type="text"
-                    placeholder="Enter state"
-                    maxLength={100}
-                    disabled={!isVerified}
-                    className={touched.state && errors.state ? inputClassError : inputClass}
-                  />
-                  {touched.state && errors.state && <p className="dash-field-error">{errors.state}</p>}
-                </div>
-                <div className="min-w-0 md:col-span-2 lg:col-span-1">
-                  <label className={labelClass}>Zip code</label>
-                  <Field
-                    name="zipCode"
-                    type="text"
-                    placeholder="Enter zip code"
-                    maxLength={20}
-                    disabled={!isVerified}
-                    className={touched.zipCode && errors.zipCode ? inputClassError : inputClass}
-                  />
-                  {touched.zipCode && errors.zipCode && <p className="dash-field-error">{errors.zipCode}</p>}
-                </div>
-              </div>
-
-              <div className="mt-4">
-                <label className={labelClass}>Country</label>
-                <Field
-                  name="country"
-                  type="text"
-                  placeholder="Enter country"
-                  maxLength={100}
-                  disabled={!isVerified}
-                  className={touched.country && errors.country ? inputClassError : inputClass}
-                />
-                {touched.country && errors.country && <p className="dash-field-error">{errors.country}</p>}
-              </div>
+              </details>
 
               <button
                 type="submit"
                 disabled={!isVerified || isSubmitting || !dirty}
-                className="dash-btn-cta mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="dragonfury-profile-save"
                 title={
                   !isVerified
                     ? 'Verify your email to update profile'
@@ -1004,21 +1106,16 @@ export function Settings() {
             );
           }}
         </Formik>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Password – change + reset */}
-      <section className="dash-panel dash-settings-section dash-settings-section--password dash-animate-in dash-delay-4 min-w-0">
-        <div className="dash-settings-section-head">
-          <span className="dash-settings-section-icon" aria-hidden>🔐</span>
-          <div className="min-w-0">
-            <h2 className="dash-panel-title mb-0">Update Password</h2>
-            <p className="dash-settings-section-sub">Change your password or send a reset link to your email.</p>
-          </div>
-        </div>
+        {/* Password – change + reset */}
+        <section className="dragonfury-profile-form dragonfury-profile-password">
+          <header className="dragonfury-profile-section-head">
+            <p className="dragonfury-profile-kicker">Account Access</p>
+            <h2>Update Password</h2>
+            <p className="dragonfury-profile-section-desc">Change your password or send a reset link to your email.</p>
+          </header>
 
-        <div className="dash-settings-section-body">
           <Formik
             initialValues={{ currentPassword: '', newPassword: '', confirmPassword: '' }}
             validationSchema={CHANGE_PASSWORD_VALIDATION}
@@ -1033,79 +1130,89 @@ export function Settings() {
             }}
           >
             {({ errors, touched, isSubmitting }) => (
-              <Form>
-                <div className="dash-settings-form-grid dash-settings-form-grid--3">
-                  <div className="min-w-0">
-                    <label className={labelClass}>Current password</label>
+              <Form className="dragonfury-profile-form-body">
+                <div className="dragonfury-profile-fields">
+                  <label className="dragonfury-profile-field">
+                    <span>Current password</span>
                     <Field
                       name="currentPassword"
                       type="password"
                       placeholder="Enter current password"
                       autoComplete="current-password"
-                      className={touched.currentPassword && errors.currentPassword ? inputClassError : inputClass}
+                      className={fieldClass(touched.currentPassword, errors.currentPassword)}
                     />
                     {touched.currentPassword && errors.currentPassword && (
-                      <p className="dash-field-error">{errors.currentPassword}</p>
+                      <small className="df-profile-field-error">{errors.currentPassword}</small>
                     )}
-                  </div>
-                  <div className="min-w-0">
-                    <label className={labelClass}>New password</label>
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>New password</span>
                     <Field
                       name="newPassword"
                       type="password"
                       placeholder="Min 8: upper, lower, number, special"
                       autoComplete="new-password"
-                      className={touched.newPassword && errors.newPassword ? inputClassError : inputClass}
+                      className={fieldClass(touched.newPassword, errors.newPassword)}
                     />
                     {touched.newPassword && errors.newPassword && (
-                      <p className="dash-field-error">{errors.newPassword}</p>
+                      <small className="df-profile-field-error">{errors.newPassword}</small>
                     )}
-                  </div>
-                  <div className="min-w-0">
-                    <label className={labelClass}>Confirm new password</label>
+                  </label>
+                  <label className="dragonfury-profile-field">
+                    <span>Confirm new password</span>
                     <Field
                       name="confirmPassword"
                       type="password"
                       placeholder="Confirm new password"
                       autoComplete="new-password"
-                      className={touched.confirmPassword && errors.confirmPassword ? inputClassError : inputClass}
+                      className={fieldClass(touched.confirmPassword, errors.confirmPassword)}
                     />
                     {touched.confirmPassword && errors.confirmPassword && (
-                      <p className="dash-field-error">{errors.confirmPassword}</p>
+                      <small className="df-profile-field-error">{errors.confirmPassword}</small>
                     )}
-                  </div>
+                  </label>
                 </div>
-                <button type="submit" disabled={isSubmitting} className="dash-btn-cta mt-5 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button type="submit" disabled={isSubmitting} className="dragonfury-profile-save">
                   {isSubmitting ? 'Updating…' : 'Change Password'}
                 </button>
               </Form>
             )}
           </Formik>
 
-          <div className="dash-settings-subpanel">
-            <h3 className="dash-settings-subpanel-title">
-              <EnvelopeIcon className="w-4 h-4 text-[var(--dash-gold)]" />
+          <div className="dragonfury-profile-subcard">
+            <h3 className="dragonfury-profile-subcard-title">
+              <EnvelopeIcon className="dragonfury-profile-btn-icon" />
               Forgot password?
             </h3>
-            <p className="dash-settings-subpanel-desc">Send a password reset link to your email address.</p>
+            <p className="dragonfury-profile-subcard-desc">Send a password reset link to your email address.</p>
             <button
               type="button"
               onClick={handleSendResetEmail}
               disabled={resetEmailSending}
-              className="dash-btn-outline disabled:opacity-70 disabled:cursor-not-allowed"
+              className="dragonfury-profile-btn dragonfury-profile-btn--ghost"
             >
               {resetEmailSending ? 'Sending…' : 'Send Reset Email'}
             </button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <PaymentAccountSection
-        user={user}
-        refreshUser={refreshUser}
-        toast={toast}
-        returnTo={returnTo}
-      />
+        <section className="dragonfury-profile-form df-profile-payment">
+          <header className="dragonfury-profile-section-head">
+            <p className="dragonfury-profile-kicker">Payments</p>
+            <h2>Payment Account</h2>
+            <p className="dragonfury-profile-section-desc">
+              Your payment account is used for deposits and redeems.
+            </p>
+          </header>
+
+          <PaymentAccountSection
+            user={user}
+            refreshUser={refreshUser}
+            toast={toast}
+            returnTo={returnTo}
+          />
+        </section>
+      </section>
 
       <KycVerificationModal
         open={kycModalOpen}

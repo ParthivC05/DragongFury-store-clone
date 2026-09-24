@@ -10,9 +10,18 @@
  * Security: set PAYMENT_PARTNER_CODE_HEADER_ALLOWLIST to a comma-separated list of
  * allowed header values. When set, any other header value is ignored (server env/default only).
  */
+
+/** Map white-label store codes that are not CentryOS partner codes to a real partner. */
+const PARTNER_CODE_ALIASES = {
+  dragonfury: 'goodwork'
+};
+
 const resolvePaymentPartnerCode = (explicitFromRequest) => {
   const t = typeof explicitFromRequest === 'string' ? explicitFromRequest.trim() : '';
-  if (t) return t;
+  if (t) {
+    const aliased = PARTNER_CODE_ALIASES[t.toLowerCase()];
+    return aliased || t;
+  }
   const env = process.env.PAYMENT_PARTNER_CODE;
   return (env && String(env).trim()) || 'PARTNER001';
 };

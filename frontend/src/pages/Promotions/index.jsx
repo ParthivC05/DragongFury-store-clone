@@ -4,6 +4,7 @@ import * as promotionsApi from '../../api/promotions';
 import { PromotionCard } from '../../components/Promotions/PromotionCard';
 import { PromotionsHero, PromotionsQuestStrip } from '../../components/Promotions/PromotionsHero';
 import { usePageContentReady } from '../../context/PageReadyContext';
+import '../../components/Promotions/df-promotions.css';
 
 export function Promotions() {
   const { toast } = useToast();
@@ -54,8 +55,9 @@ export function Promotions() {
   );
 
   return (
-    <div className="dash-page dash-promotions-page w-full min-w-0">
+    <div className="dash-page dash-promotions-page df-promo-page w-full min-w-0">
       <header className="dash-deposit-header dash-animate-in">
+        <p className="df-promo-kicker">Rewards</p>
         <h1 className="dash-deposit-title">Promotions</h1>
         <p className="dash-deposit-sub">
           Bonuses and special offers. Claim rewards and unlock exclusive deals.

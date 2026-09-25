@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+// import { useAuth } from '../../context/AuthContext';
 import { useSpinWheelStatus } from '../../context/SpinWheelStatusContext';
 import {
   GamesIcon,
@@ -12,12 +12,12 @@ import {
   DepositIcon,
   WithdrawIcon,
   ChatIcon,
-  PlayIcon,
+  // PlayIcon,
   BlogIcon,
   DownloadIcon,
 } from '../../assets/icons';
 import { openSupportWidget } from '../intercomApi';
-import { startOnboardingTutorial } from '../../utils/onboardingTutorial';
+// import { startOnboardingTutorial } from '../../utils/onboardingTutorial';
 import * as dailyBonusApi from '../../api/dailyBonus';
 import { useEnabledSlotProviders } from '../../hooks/useEnabledSlotProviders';
 import { warmupCasino } from '../../utils/preloadCasino';
@@ -46,7 +46,7 @@ export function DashboardSidebar({
 }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { user } = useAuth();
+  // const { user } = useAuth();
   const { canSpin } = useSpinWheelStatus();
   const onCasinoPage = pathname === '/casino' || pathname.startsWith('/casino/');
   const { providers, loaded: providersLoaded } = useEnabledSlotProviders({
@@ -227,21 +227,22 @@ export function DashboardSidebar({
       label: null,
       divider: true,
       items: [
-        {
-          id: 'howtoplay',
-          title: 'How to play?',
-          accent: 'teal',
-          Icon: PlayIcon,
-          quiet: true,
-          authOnly: true,
-          onClick: () => {
-            if (!isAuthenticated) {
-              navigate('/register');
-              return;
-            }
-            startOnboardingTutorial({ navigate, userId: user?.userId });
-          },
-        },
+        // Tutorial hidden
+        // {
+        //   id: 'howtoplay',
+        //   title: 'How to play?',
+        //   accent: 'teal',
+        //   Icon: PlayIcon,
+        //   quiet: true,
+        //   authOnly: true,
+        //   onClick: () => {
+        //     if (!isAuthenticated) {
+        //       navigate('/register');
+        //       return;
+        //     }
+        //     startOnboardingTutorial({ navigate, userId: user?.userId });
+        //   },
+        // },
         {
           id: 'support-chat',
           title: 'Support',

@@ -109,13 +109,18 @@ export function AuthProvider({ children }) {
         clearBalances();
         return;
       }
-      if (me && me.onboardingCompleted === false) {
-        const alreadyPending = localStorage.getItem('onboarding_pending') === 'true';
-        localStorage.setItem('onboarding_pending', 'true');
-        // Only kick off onboarding once — re-firing on every refreshUser causes UI loops.
-        if (!alreadyPending) {
-          window.dispatchEvent(new CustomEvent('onboarding:start'));
-        }
+      // Tutorial hidden — do not start the walkthrough.
+      // if (me && me.onboardingCompleted === false) {
+      //   const alreadyPending = localStorage.getItem('onboarding_pending') === 'true';
+      //   localStorage.setItem('onboarding_pending', 'true');
+      //   if (!alreadyPending) {
+      //     window.dispatchEvent(new CustomEvent('onboarding:start'));
+      //   }
+      // }
+      try {
+        localStorage.removeItem('onboarding_pending');
+      } catch (_) {
+        /* ignore */
       }
       // Don't let a stale /me overwrite a phone we just verified in this session.
       setUser((prev) => {

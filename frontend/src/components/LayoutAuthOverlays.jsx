@@ -9,9 +9,10 @@ import * as affiliateApi from '../api/affiliate';
 import * as depositBonusesApi from '../api/depositBonuses';
 import * as promotionsApi from '../api/promotions';
 
-const OnboardingTutorial = lazy(() =>
-  import('./Onboarding/OnboardingTutorial').then((m) => ({ default: m.OnboardingTutorial }))
-);
+// Tutorial hidden — keep the walkthrough component, do not mount it.
+// const OnboardingTutorial = lazy(() =>
+//   import('./Onboarding/OnboardingTutorial').then((m) => ({ default: m.OnboardingTutorial }))
+// );
 const FirstDepositBonusModal = lazy(() =>
   import('./Home/FirstDepositBonusModal').then((m) => ({ default: m.FirstDepositBonusModal }))
 );
@@ -165,9 +166,11 @@ export function LayoutAuthOverlays({ isAuthPage }) {
 
   return (
     <>
+      {/* Tutorial hidden
       <Suspense fallback={null}>
         <OnboardingTutorial />
       </Suspense>
+      */}
       {!isAuthPage && (
         <Suspense fallback={null}>
           <DailyBonusModalHost

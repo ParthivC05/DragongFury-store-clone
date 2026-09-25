@@ -293,9 +293,11 @@ export function Navbar() {
                 </button>
               </div>
 
+              {/* Tutorial hidden
               <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Website tour">
                 <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
               </Link>
+              */}
               <button type="button" className="df-header-logout" aria-label="Log out" title="Log out" onClick={handleLogout}>
                 <img src="/df-online/menu/logout.webp" alt="" width={44} height={44} draggable="false" />
               </button>
@@ -395,9 +397,11 @@ export function Navbar() {
             </Link>
             <HeaderPageLinks pathname={location.pathname} />
             <div className="dash-nav-actions">
+              {/* Tutorial hidden
               <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Help">
                 <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
               </Link>
+              */}
               <div className="dash-nav-auth">
                 <Link to={registerPath} className="dash-btn-signup">
                   Sign Up

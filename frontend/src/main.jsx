@@ -11,6 +11,7 @@ import { detectStandalone } from './utils/mobileGameImmersive'
 import { startIdleTabRecovery } from './utils/idleTabRecovery'
 import { startTabResumeRepaint } from './utils/forceUiRepaint'
 import { lockAppZoom } from './utils/lockPlayPageZoom'
+import { startClubClickSounds } from './lib/clubClickSounds'
 
 scheduleDashboardStyles()
 registerPwaInstallPromptCapture()
@@ -110,6 +111,8 @@ if (site?.faviconUrl) {
   }
   favicon.href = site.faviconUrl
 }
+
+startClubClickSounds()
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>

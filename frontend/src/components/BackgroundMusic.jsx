@@ -20,6 +20,7 @@ import {
   writeBgMusicStorage,
 } from './backgroundMusicTracks';
 import { lockBodyScroll } from '../utils/bodyScrollLock';
+import { areClickSoundsEnabled, setClickSoundsEnabled } from '../lib/clubClickSounds';
 import './BackgroundMusic.css';
 
 const MUSIC_TARGET_PATHS = ['/', '/link2play', '/casino', '/firekirin-exclusive'];
@@ -209,6 +210,7 @@ export function BackgroundMusic({ hideControls = false }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [needsGesture, setNeedsGesture] = useState(false);
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [clickSoundsOn, setClickSoundsOn] = useState(areClickSoundsEnabled);
   const [isTabVisible, setIsTabVisible] = useState(
     () => typeof document === 'undefined' || document.visibilityState === 'visible',
   );
@@ -915,6 +917,25 @@ export function BackgroundMusic({ hideControls = false }) {
             />
           </div>
         )}
+
+        <div className="bgm-shuffle">
+          <div>
+            <b>Click sounds</b>
+            <span>Buttons, tabs, and popups</span>
+          </div>
+          <button
+            type="button"
+            className="bgm-switch"
+            role="switch"
+            aria-checked={clickSoundsOn}
+            aria-label="Click sounds"
+            onClick={() => {
+              const next = !clickSoundsOn;
+              setClickSoundsEnabled(next);
+              setClickSoundsOn(next);
+            }}
+          />
+        </div>
 
         <ul className="bgm-list">
           {BG_MUSIC_TRACKS.map((track) => {

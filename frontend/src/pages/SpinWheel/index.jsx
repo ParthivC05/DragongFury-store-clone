@@ -20,6 +20,7 @@ import {
   startSpinLoop,
   stopSpinSounds,
 } from '../../components/SpinWheel/spinWheelSound';
+import '../../components/SpinWheel/df-spinwheel.css';
 
 function formatCountdown(ms) {
   if (ms <= 0) return null;
@@ -187,7 +188,8 @@ export function SpinWheel() {
   }, [status?.next_spin_at, status?.can_spin, refreshSpinStatus, load]);
 
   const segments = config?.segments ?? [];
-  const segmentColors = segments.map((seg) => (seg?.color && /^#[0-9A-Fa-f]{6}$/.test(seg.color) ? seg.color : '#6b7280'));
+  const clubSliceColors = ['#3b0764', '#6d28d9', '#1e1033', '#7e22ce', '#312e81', '#9333ea', '#4c1d95', '#581c87'];
+  const segmentColors = segments.map((_, index) => clubSliceColors[index % clubSliceColors.length]);
   const segmentLabelColors = segmentColors.map(getContrastLabelColor);
   const n = segments.length;
   const spinLocked = status?.spin_locked === true;
@@ -439,7 +441,7 @@ export function SpinWheel() {
 
     wheelRef.current = new Wheel(el, buildProps(null, null));
 
-    Promise.all([loadImage('/overlay.svg'), loadSegmentIcons()]).then(([overlayImage, icons]) => {
+    Promise.all([loadImage('/df-wheel-overlay.svg?v=2'), loadSegmentIcons()]).then(([overlayImage, icons]) => {
       if (!mounted || !wheelRef.current) return;
       wheelRef.current.init(buildProps(overlayImage, icons));
     });
@@ -576,7 +578,7 @@ export function SpinWheel() {
   const btnSize = Math.round(88 * (wheelSize / WHEEL_SIZE_DESKTOP));
 
   return (
-    <div className="spinwheel-page w-full max-w-3xl mx-auto min-h-full pb-6 px-3 sm:px-5 md:px-6">
+    <div className="spinwheel-page df-spin-page w-full min-h-full">
       <div className="spinwheel-page-stack flex flex-col">
       <motion.section
         initial={{ opacity: 0, y: 16 }}

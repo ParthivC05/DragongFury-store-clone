@@ -1,24 +1,15 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useVipStatus } from '../context/VipStatusContext';
 import { SiteLogo } from './SiteLogo';
 import { lockBodyScroll } from '../utils/bodyScrollLock';
 import { PhoneVerifyGateModal } from './Auth/PhoneVerifyGateModal';
 import { DfWalletHud } from './DfWalletHud';
 import { DfQuickMenu } from './DfQuickMenu';
+import { DfProfilePopup } from './DfProfilePopup';
 import * as notificationsApi from '../api/notifications';
 import { OPEN_MOBILE_MENU_EVENT } from '../utils/navEvents';
 import { AUTH_LOBBY_LINKS } from '../constants/authLobbyLinks';
-
-const profileDropdownLinks = [
-  { to: '/settings', label: 'Profile' },
-  { to: '/account/transactions', label: 'Transactions' },
-  { to: '/account/vip', label: 'VIP Rewards' },
-  { to: '/account/affiliate', label: 'Refer & Earn' },
-  { to: '/blog', label: 'Blog' },
-  { to: '/help', label: 'Help Center' }
-];
 
 const HEADER_PAGE_LINKS = [
   { to: '/casino', label: 'Play', match: (path) => path === '/casino' || path.startsWith('/casino/') },
@@ -78,6 +69,7 @@ export function Navbar() {
     isAuthenticated,
     loading: authLoading,
     logout,
+    refreshUser,
     balanceSc,
     pscWalletUsable,
     bscWalletUsable,
@@ -85,14 +77,12 @@ export function Navbar() {
     lockedBalanceSc,
     balanceLoading
   } = useAuth();
-  const { vipStatus } = useVipStatus();
   const navigate = useNavigate();
   const location = useLocation();
   const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const profileRef = useRef(null);
   const notifRef = useRef(null);
   const menuBtnRef = useRef(null);
   const prevUnreadRef = useRef(0);
@@ -203,7 +193,6 @@ export function Navbar() {
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
       if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
       if (scBreakdownOpen && !e.target.closest?.('.df-wallet-hud')) setScBreakdownOpen(false);
     }
@@ -283,7 +272,7 @@ export function Navbar() {
             <DesktopAuthNav pathname={location.pathname} />
 
             <div className="dash-nav-end df-lobby-header-actions">
-              <div className="relative" ref={profileRef}>
+              <div className="relative">
                 <button
                   type="button"
                   onClick={() => setProfileOpen((o) => !o)}
@@ -302,37 +291,14 @@ export function Navbar() {
                     }}
                   />
                 </button>
-                {profileOpen && (
-                  <div className="dash-dropdown py-1 w-48">
-                    {profileDropdownLinks.map(({ to, label }) => (
-                      <Link
-                        key={to}
-                        to={to}
-                        className="dash-dropdown-link"
-                        onClick={() => setProfileOpen(false)}
-                      >
-                        {label}
-                      </Link>
-                    ))}
-                    {vipStatus?.level_name ? (
-                      <span className="dash-dropdown-link df-vip-chip" aria-hidden>
-                        VIP · {vipStatus.level_name}
-                      </span>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="dash-dropdown-link w-full border-0 border-t border-[var(--dash-border)] mt-1 pt-2 text-[var(--dash-red)]"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
               </div>
 
               <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Website tour">
                 <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
               </Link>
+              <button type="button" className="df-header-logout" aria-label="Log out" title="Log out" onClick={handleLogout}>
+                <img src="/df-online/menu/logout.webp" alt="" width={44} height={44} draggable="false" />
+              </button>
 
               <div className="relative df-notif-wrap" ref={notifRef}>
                 <button
@@ -445,7 +411,19 @@ export function Navbar() {
         )}
       </div>
       {isAuthenticated ? (
-        <PhoneVerifyGateModal open={phoneUnlockOpen} onClose={() => setPhoneUnlockOpen(false)} />
+        <>
+          <DfProfilePopup
+            open={profileOpen}
+            onClose={() => setProfileOpen(false)}
+            user={user}
+            balanceSc={balanceSc}
+            rsc={rscWalletUsable}
+            bsc={bscWalletUsable}
+            onLogout={handleLogout}
+            refreshUser={refreshUser}
+          />
+          <PhoneVerifyGateModal open={phoneUnlockOpen} onClose={() => setPhoneUnlockOpen(false)} />
+        </>
       ) : null}
     </header>
   );

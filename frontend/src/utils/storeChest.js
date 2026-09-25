@@ -87,6 +87,16 @@ export function resolveLimitedChestFile(pkg) {
   return 'legendary';
 }
 
+/** Same art file the store card renders for this package. */
+export function chestFileForPackage(pkg) {
+  if (!pkg) return null;
+  const key = String(pkg.group_key || '').toLowerCase();
+  if (key === 'flash_sale' || key.includes('flash') || key === 'limited_time' || key.includes('limited')) {
+    return resolveLimitedChestFile(pkg);
+  }
+  return resolveChestTier(pkg).file;
+}
+
 export function chestImageProps(file, { eager = false } = {}) {
   const base = `${CHEST_BASE}/${file}`;
   return {

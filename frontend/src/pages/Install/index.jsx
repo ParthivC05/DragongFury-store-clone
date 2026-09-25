@@ -10,6 +10,7 @@ import {
 } from '../../lib/pwaInstallPrompt';
 import { detectAndroid, detectIOS, detectStandalone } from '../../utils/mobileGameImmersive';
 import './install.css';
+import './df-install.css';
 
 const SIM_OPTIONS = [
   { id: 'android', label: 'Android · Chrome' },

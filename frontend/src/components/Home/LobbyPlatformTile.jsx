@@ -3,6 +3,8 @@ import { useToast } from '../../context/ToastContext';
 import * as gamesApi from '../../api/games';
 import { GameImage } from '../Games/GameImage';
 import { getGameDisplayName } from '../../utils/gameDisplay';
+import { platformFavoriteId } from '../../utils/gameFavorites';
+import { GameFavoriteButton } from './GameFavoriteButton';
 
 /**
  * Live lobby “Try Other Games” platform tile.
@@ -77,9 +79,6 @@ export function LobbyPlatformTile({
             height={151}
           />
           {game?.isNew ? <span className="df-lobby-platform__new">NEW</span> : null}
-          <span className="df-lobby-platform__fav" aria-hidden>
-            ♡
-          </span>
         </span>
         <span
           className={`df-lobby-platform__badge${hasAccount ? ' df-lobby-platform__badge--active' : ''}${isPending ? ' df-lobby-platform__badge--pending' : ''}`}
@@ -88,6 +87,11 @@ export function LobbyPlatformTile({
         </span>
         <span className="df-lobby-platform__title">{name}</span>
       </button>
+      <GameFavoriteButton
+        id={platformFavoriteId(game)}
+        name={name}
+        className="df-lobby-platform__fav"
+      />
       {hasAccount ? (
         <div className="df-lobby-platform__actions">
           <button type="button" className="df-lobby-platform__link" onClick={() => onOpenDeposit?.(game)}>

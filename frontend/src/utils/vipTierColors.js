@@ -102,7 +102,7 @@ export const VIP_TIER_IMAGES = {
   Platinum: '/vip/platinum.webp',
   Sapphire: '/vip/sapphire.webp',
   Emerald: '/vip/emerald.webp',
-  Diamond: '/vip/emerald.webp',
+  Diamond: '/vip/diamond.webp',
 };
 
 export function getVipTierImage(levelName) {

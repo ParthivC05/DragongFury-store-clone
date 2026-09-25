@@ -2906,6 +2906,10 @@ body.welcome-modal-open {
 
 .df-lobby-header-actions .df-tour-btn { order: 2; }
 
+.df-header-logout {
+  display: none;
+}
+
 .df-lobby-header-actions .df-notif-wrap { display: none !important; }
 
 .df-lobby-header-actions .df-menu-btn {
@@ -3061,6 +3065,31 @@ body.welcome-modal-open {
   .df-lobby-header-actions .df-tour-btn {
     display: grid !important;
     order: 0;
+  }
+
+  .df-lobby-header-actions .df-header-logout {
+    display: grid;
+    place-items: center;
+    order: 1;
+    width: 44px;
+    height: 44px;
+    margin-left: 2px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .df-lobby-header-actions .df-header-logout img {
+    display: block;
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+  }
+
+  .df-lobby-header-actions .df-header-logout:hover img {
+    filter: drop-shadow(0 0 8px rgba(255, 214, 122, 0.6)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
   }
 }
 
@@ -3337,10 +3366,20 @@ html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-h
   }
 }
 
-/* Clear fixed HUD */
-.dash-root:not(.dash-root--guest-landing) .dash-footer,
+/* Live keeps the centered shop bar on desktop. Pad content so it clears the bar.
+   When a footer is present, pad the footer only so the gap is not doubled. */
 .dash-root:not(.dash-root--guest-landing) .dash-shell-main {
-  padding-bottom: calc(var(--hud-h, 84px) + 18px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(128px + env(safe-area-inset-bottom, 0px));
+}
+
+.dash-root:not(.dash-root--guest-landing) .dash-shell-main:has(.premium-footer),
+.dash-root:not(.dash-root--guest-landing) .dash-shell-main:has(.dash-footer) {
+  padding-bottom: 0;
+}
+
+.dash-root:not(.dash-root--guest-landing) .dash-footer,
+.dash-root:not(.dash-root--guest-landing) .premium-footer {
+  padding-bottom: calc(128px + env(safe-area-inset-bottom, 0px));
 }
 
 .dash-menu-drawer-close img {
@@ -4058,13 +4097,34 @@ body:has(.dash-nav--authenticated) {
   width: 44px;
   height: 44px;
   place-items: center;
+  padding: 0;
   border: 0;
   background: transparent;
   color: rgba(255, 228, 119, 0.82);
+  font-size: 0;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.df-lobby-platform__fav::before,
+.df-game-card-wrap .df-game-card__fav::before {
+  content: "♡";
+  color: currentColor;
   font-size: 24px;
   line-height: 1;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.68);
-  pointer-events: none;
+}
+
+.df-lobby-platform__fav.is-on,
+.df-game-card-wrap .df-game-card__fav.is-on {
+  color: #ffe25d;
+}
+
+.df-lobby-platform__fav.is-on::before,
+.df-game-card-wrap .df-game-card__fav.is-on::before {
+  content: "♥";
+  text-shadow: 0 0 9px rgba(255, 207, 43, 0.58), 0 2px 4px rgba(0, 0, 0, 0.62);
 }
 
 .df-lobby-platform__actions {

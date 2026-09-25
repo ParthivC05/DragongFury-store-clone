@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import * as affiliateApi from '../../api/affiliate';
 import { usePageContentReady } from '../../context/PageReadyContext';
-import { CopyIcon, ShareIcon } from '../../assets/icons';
+import { ShareIcon } from '../../assets/icons';
 import { ReferralShareModal } from '../../components/ReferralShareModal';
 import { formatSc } from '../../utils/currency';
 import { buildReferralLink } from '../../utils/referralLink';
@@ -16,6 +16,7 @@ import {
   shareOptionsFromAffiliateStats,
 } from '../../utils/socialShare';
 import './AffiliateReferPage.css';
+import './df-refer.css';
 
 function formatDate(d) {
   if (!d) return '—';
@@ -46,28 +47,6 @@ function statusLabel(status) {
     default:
       return status || '—';
   }
-}
-
-function GiftIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8M12 22V7M2 7h20v5H2V7ZM7.5 7a2.5 2.5 0 1 1 0-5C9.5 2 12 7 12 7S14.5 2 16.5 2a2.5 2.5 0 0 1 0 5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M12 2l2.9 6.6L22 10.3l-5 4.6 1.4 7.1L12 18.5 5.6 22l1.4-7.1-5-4.6 7.1-1.7L12 2z" />
-    </svg>
-  );
 }
 
 function ShareOutlineIcon() {
@@ -248,6 +227,21 @@ export function AccountAffiliate() {
     window.setTimeout(() => setCopiedToast(''), 2500);
   }
 
+  function copyCode() {
+    const code = data?.referral_code;
+    if (!code) {
+      toast.error('Referral code is not ready yet.');
+      return;
+    }
+    navigator.clipboard.writeText(code).then(
+      () => {
+        showCopied('Code copied!');
+        toast.success('Referral code copied.');
+      },
+      () => toast.error('Could not copy.')
+    );
+  }
+
   function copyLink() {
     if (!referralLink) {
       toast.error('Referral link is not ready yet.');
@@ -336,109 +330,56 @@ export function AccountAffiliate() {
 
   return (
     <div className="dash-page w-full min-w-0">
-      <div className="rae-page">
-        <div className="rae-particles" aria-hidden>
-          <span className="rae-particle" />
-          <span className="rae-particle" />
-          <span className="rae-particle" />
-          <span className="rae-particle" />
-          <span className="rae-particle" />
-        </div>
+      <div className="rae-page df-refer-page">
+        <p className="df-refer-kicker">Referral Control Panel</p>
 
-        <div className="rae-hero">
-          <div className="rae-hero-label">Refer &amp; Earn</div>
-          {isGiveGet ? (
-            <>
-              <h1>
-                Give <span className="rae-num">{friendBonus}</span>, Get{' '}
-                <span className="rae-num">{referrerBonus}</span>
-              </h1>
-              <p>Share with a friend. When they join and play, you both win {friendBonus} SC.</p>
-            </>
-          ) : (
-            <>
-              <h1>
-                Earn <span className="rae-num">{commissionPct}%</span> on first{' '}
-                <span className="rae-num">{maxDeposits}</span> deposits
-              </h1>
-              <p>
-                Your friend gets {friendBonus} SC on signup. You earn {commissionPct}% of their first{' '}
-                {maxDeposits} deposits — only when they deposit.
-              </p>
-            </>
-          )}
-        </div>
+        <section className="df-refer-hero" aria-labelledby="df-refer-title">
+          <img src="/df-online/referral-invite.webp" alt="" width={240} height={210} decoding="async" />
+          <div>
+            <small>Refer &amp; Earn</small>
+            <h1 id="df-refer-title">Invite Friends</h1>
+            <p>
+              {isGiveGet
+                ? 'Share your link or code.'
+                : `Your friend gets ${friendBonus} SC on signup. You earn ${commissionPct}% of their first ${maxDeposits} deposits.`}
+            </p>
+          </div>
+          <span className="df-refer-reward">
+            <img src="/df-online/sc-coin.webp" alt="" width={68} height={68} decoding="async" />
+            <strong>{isGiveGet ? referrerBonus : `${commissionPct}%`}</strong>
+          </span>
+        </section>
 
-        <div className="rae-illustration-wrap">
-          <div className="rae-illustration-glow">
-            <img
-              className="rae-friends-illustration rae-friends-photo"
-              src="/refer-earn.png"
-              alt="You and your friend earning Sweepstakes Coins together"
-              width={640}
-              height={340}
-              decoding="async"
-            />
-          </div>
+        <div className="df-refer-invite">
+          <button type="button" onClick={copyCode}>
+            <small>Your code</small>
+            <strong>{data?.referral_code || '—'}</strong>
+          </button>
+          <button type="button" onClick={copyLink}>Copy link</button>
+          <button type="button" onClick={handleMoreShare}>Share</button>
         </div>
-        <div className="rae-illustration-caption">
-          {isGiveGet ? (
-            <>
-              You + your friend = <b>{friendBonus + referrerBonus} SC</b>, split evenly, every time
-            </>
-          ) : (
-            <>
-              Friend gets <b>{friendBonus} SC</b> on signup. You get <b>{commissionPct}%</b> of their
-              first <b>{maxDeposits}</b> deposits.
-            </>
-          )}
-        </div>
+        <div className="df-refer-copied" aria-live="polite">{copiedToast}</div>
 
-        <div className="rae-mirror" aria-label="Give and get reward amounts">
-          <div className="rae-mirror-in">
-            <div className="rae-mirror-side">
-              <div className="rae-mirror-icon" style={{ color: '#ffe08a' }}>
-                <GiftIcon />
-              </div>
-              <div className="rae-mirror-who">Your Friend</div>
-              <div className="rae-mirror-amt">
-                {friendBonus} <span>SC</span>
-              </div>
-            </div>
-            <div className="rae-mirror-divider" />
-            <div className="rae-mirror-side">
-              <div className="rae-mirror-icon" style={{ color: '#f5c451' }}>
-                <StarIcon />
-              </div>
-              <div className="rae-mirror-who">You</div>
-              <div className="rae-mirror-amt">
-                {isGiveGet ? (
-                  <>
-                    {referrerBonus} <span>SC</span>
-                  </>
-                ) : (
-                  <>
-                    {commissionPct}% <span>×{maxDeposits}</span>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className="df-refer-stats" aria-label="Referral totals">
+          <span>
+            <strong>{formatSc(weeklyEarned)} / {formatSc(weeklyCap)} {currency}</strong>
+            <small>Weekly cap</small>
+          </span>
+          <span>
+            <strong>{totalReferrals}</strong>
+            <small>Total referrals</small>
+          </span>
+          <span>
+            <strong>{pendingRewards.length}</strong>
+            <small>Pending rewards</small>
+          </span>
+          <span>
+            <strong>{formatSc(totalEarnedSc)} {currency}</strong>
+            <small>Total earned</small>
+          </span>
         </div>
-
-        <div className="rae-linkbox">
-          <label htmlFor="rae-ref-link">Your Referral Link</label>
-          <div className="rae-link-row">
-            <div className="rae-link-field" id="rae-ref-link" title={referralLink}>
-              {referralLink || 'Loading link…'}
-            </div>
-            <button type="button" className="rae-icon-btn" onClick={copyLink} title="Copy link" aria-label="Copy referral link">
-              <CopyIcon />
-            </button>
-          </div>
-          <div className="rae-copied-toast" aria-live="polite">
-            {copiedToast}
-          </div>
+        <div className="df-refer-cap" aria-label={`${formatSc(weeklyEarned)} of ${formatSc(weeklyCap)} weekly referral ${currency} used`}>
+          <span style={{ width: `${weeklyPct}%` }} />
         </div>
 
         <div className="rae-section">

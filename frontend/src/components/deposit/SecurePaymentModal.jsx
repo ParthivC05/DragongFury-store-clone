@@ -5,6 +5,7 @@ import { notifyDepositEligibilityChanged } from '../../utils/depositRequired';
 import { lockBodyScroll } from '../../utils/bodyScrollLock';
 import { formatSc } from '../../utils/currency';
 import { getDepositPackageImageProps } from '../../utils/depositPackageImage';
+import { chestImageProps } from '../../utils/storeChest';
 import { PaymentQRCode } from './PaymentQRCode';
 import { ChimeLogo } from '../payment/ChimeLogo';
 import {
@@ -141,13 +142,16 @@ function ConfettiBurst({ active }) {
   );
 }
 
-function ReceiptArt({ sc }) {
+function ReceiptArt({ sc, chestFile }) {
   const n = Number(sc);
   const idx = Number.isFinite(n) && n >= 100 ? 2 : Number.isFinite(n) && n >= 40 ? 1 : 0;
+  const art = chestFile
+    ? chestImageProps(chestFile, { eager: true })
+    : getDepositPackageImageProps(idx);
   return (
     <div className="spm-pj-rcp-art">
       <span className="spm-pj-rcp-glow" aria-hidden="true" />
-      <img {...getDepositPackageImageProps(idx)} alt="" />
+      <img {...art} alt="" />
     </div>
   );
 }
@@ -166,6 +170,7 @@ function DollarPayHandoff({
   discountPct = 0,
   payingWithLabel = '—',
   payingWithKey = '',
+  chestFile = null,
   status,
   statusMessage,
   handedOff,
@@ -313,7 +318,7 @@ function DollarPayHandoff({
           {!isFailed && (
             <>
               <div className="spm-pj-rcp">
-                <ReceiptArt sc={creditSc} />
+                <ReceiptArt sc={creditSc} chestFile={chestFile} />
                 <div className="spm-pj-rcp-tx">
                   <div className="spm-pj-rcp-n">{scText != null ? scText : '—'}</div>
                   <div className="spm-pj-rcp-u">SWEEPS COINS</div>
@@ -818,6 +823,7 @@ export function SecurePaymentModal({
   saveLabel = null,
   payingWithLabel = null,
   payingWithKey = null,
+  chestFile = null,
   onOpenTerms,
 }) {
   const [status, setStatus] = useState(sessionPayload?.status || 'pending');
@@ -1168,6 +1174,7 @@ export function SecurePaymentModal({
             discountPct={sessionPayload?.discountPct ?? 0}
             payingWithLabel={sessionPayload?.payingWithLabel || payingWithLabel || '—'}
             payingWithKey={sessionPayload?.payingWithKey || payingWithKey || ''}
+            chestFile={sessionPayload?.chestFile || chestFile || null}
             status={status}
             statusMessage={statusMessage}
             handedOff={dollarpayHandedOff}

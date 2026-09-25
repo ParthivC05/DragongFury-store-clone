@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { GuestSlotSpinWheelModal } from '../SpinWheel/GuestSlotSpinWheelModal';
 import { canGuestLandingSpin } from '../SpinWheel/guestLandingSpinCooldown';
+import { slotFavoriteId } from '../../utils/gameFavorites';
+import { GameFavoriteButton } from './GameFavoriteButton';
 import { useGuestLandingScrollCount, isWelcomeLandingBlocked } from '../../hooks/useGuestLandingScrollCount';
 
 const PREVIEW_ROWS = 3;
@@ -219,6 +221,7 @@ export function SlotGamesCatalogGrid({
   hideIntro = false,
   showCategoryTabs = false,
   lobbyMode = false,
+  favoritesOnly = false,
 }) {
   const gridRef = useRef(null);
   const [activeTab, setActiveTab] = useState(initialTab || 'all');
@@ -273,8 +276,8 @@ export function SlotGamesCatalogGrid({
   }, [tabCounts]);
 
   const filteredGames = useMemo(
-    () => gamesForTab(activeTab, categoryList, allGames),
-    [activeTab, allGames, categoryList]
+    () => (favoritesOnly ? uniqueGames(allGames) : gamesForTab(activeTab, categoryList, allGames)),
+    [activeTab, allGames, categoryList, favoritesOnly]
   );
 
   const pageSize = Math.max(cols * PREVIEW_ROWS, PREVIEW_ROWS);
@@ -361,7 +364,7 @@ export function SlotGamesCatalogGrid({
         </>
       ) : null}
 
-      {tabs.length > 1 && (!embedded || showCategoryTabs) ? (
+      {tabs.length > 1 && (!embedded || showCategoryTabs) && !favoritesOnly ? (
         <div
           className={`df-games-tabs${embedded ? ' df-games-tabs--embedded' : ''}`}
           role="tablist"
@@ -451,14 +454,10 @@ export function SlotGamesCatalogGrid({
                         {game.title}
                       </span>
                     </button>
-                    <button
-                      type="button"
+                    <GameFavoriteButton
+                      id={slotFavoriteId(game)}
+                      name={game.title}
                       className="df-game-card__fav"
-                      aria-label={`Add ${game.title} to favorites`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }}
                     />
                   </article>
                 ) : (

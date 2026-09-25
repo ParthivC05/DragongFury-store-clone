@@ -15,7 +15,7 @@ import {
 import { useDepositBonusCountdown, depositTierLabel, formatBonusHighlight } from '../../hooks/useDepositBonusEligibility';
 import { DfStoreDepositView } from '../../components/deposit/DfStoreDepositView';
 import { usePageContentReady } from '../../context/PageReadyContext';
-import { preloadStoreChestImages } from '../../utils/storeChest';
+import { chestFileForPackage, preloadStoreChestImages } from '../../utils/storeChest';
 import { SecurePaymentModal } from '../../components/deposit/SecurePaymentModal';
 import { PaymentSuccessScreen } from '../../components/deposit/PaymentSuccessScreen';
 import { ChimeDepositModal } from '../../components/deposit/ChimeDepositModal';
@@ -1667,6 +1667,7 @@ export function Deposit() {
         discountPct: packSavePct,
         payingWithLabel: depositPayingWithLabel,
         payingWithKey: selectedRail?.key || selectedRail?.railKey || selectedPaymentType || '',
+        chestFile: usingPackageAmount ? chestFileForPackage(selectedPackage) : null,
       });
       // Voucher is marked used when the payment session/request is created.
       if (selectedVoucher?.id) {
@@ -2040,6 +2041,7 @@ export function Deposit() {
         saveLabel={depositSaveLabel}
         payingWithLabel={depositPayingWithLabel}
         payingWithKey={selectedRail?.key || selectedRail?.railKey || selectedPaymentType || ''}
+        chestFile={usingPackageAmount ? chestFileForPackage(selectedPackage) : null}
         onOpenTerms={() => setTermsPolicyModalOpen(true)}
       />
 

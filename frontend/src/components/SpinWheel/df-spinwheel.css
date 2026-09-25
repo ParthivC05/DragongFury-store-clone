@@ -1,0 +1,161 @@
+/* DragonFury /spinwheel — club purple theme (live has no spin-wheel page) */
+
+.df-spin-page.spinwheel-page {
+  --spin-mint: #66e69b;
+  --spin-emerald: #35ef9a;
+  --spin-green: #49df87;
+  --spin-green-deep: #1bac65;
+  --spin-ink: #06150d;
+  --spin-gold: #ffc94f;
+  --spin-muted: rgba(255, 255, 255, 0.58);
+  --spin-border: rgba(255, 255, 255, 0.12);
+  width: min(760px, calc(100% - 28px));
+  max-width: 760px;
+  margin: 24px auto 80px;
+  padding: 0;
+  color: #fff;
+  font-family: var(--df-body, "Baloo 2", sans-serif);
+}
+
+.df-spin-page .spinwheel-page-stack {
+  gap: 16px;
+}
+
+.df-spin-page .spinwheel-page-hero {
+  border: 1px solid var(--spin-border);
+  border-radius: 24px;
+  background: linear-gradient(155deg, rgba(52, 24, 88, 0.95), rgba(12, 6, 22, 0.98));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+}
+
+.df-spin-page .spinwheel-hero-glow {
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 0%, rgba(168, 72, 150, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 90% 80%, rgba(53, 239, 154, 0.12) 0%, transparent 50%);
+  animation: none;
+}
+
+.df-spin-page .spinwheel-page-hero h1 {
+  margin: 0;
+  color: #fff !important;
+  font: 900 clamp(1.7rem, 4vw, 2.4rem) / 1.08 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.df-spin-page .spinwheel-page-hero p {
+  color: var(--spin-muted);
+}
+
+.df-spin-page .spinwheel-badge {
+  letter-spacing: 0.12em;
+  background: rgba(12, 6, 18, 0.55);
+}
+
+.df-spin-page .spinwheel-badge--daily {
+  color: var(--spin-emerald);
+  border-color: rgba(53, 239, 154, 0.45);
+}
+
+.df-spin-page .spinwheel-badge--ready {
+  color: var(--spin-gold);
+  border-color: rgba(255, 201, 79, 0.45);
+}
+
+.df-spin-page .spinwheel-crown-float {
+  filter: drop-shadow(0 0 12px rgba(255, 201, 79, 0.45));
+}
+
+.df-spin-page .spinwheel-text-pulse,
+.df-spin-page .text-\[var\(--dash-gold\)\] {
+  color: var(--spin-gold) !important;
+}
+
+.df-spin-page .spinwheel-wheel-section {
+  padding: 8px 4px 12px;
+}
+
+.df-spin-page .spinwheel-wheel-frame {
+  padding: 1.25rem 0.5rem;
+}
+
+.df-spin-page .spinwheel-wheel-core > .rounded-full {
+  box-shadow:
+    0 0 0 3px rgba(255, 201, 79, 0.55),
+    0 18px 40px rgba(0, 0, 0, 0.45);
+  --tw-ring-shadow: 0 0 #0000;
+}
+
+.df-spin-page .spinwheel-sparkle {
+  background: var(--spin-gold);
+  box-shadow: 0 0 8px rgba(255, 201, 79, 0.7);
+}
+
+.df-spin-page .spinwheel-button-ready,
+.df-spin-page .spinwheel-spin-btn--spinning {
+  background: linear-gradient(var(--spin-green), var(--spin-green-deep)) !important;
+  color: var(--spin-ink) !important;
+  border: 0 !important;
+  box-shadow: 0 8px 22px rgba(73, 223, 135, 0.28) !important;
+}
+
+.df-spin-page .spinwheel-spin-btn:not(.spinwheel-button-ready):not(.spinwheel-spin-btn--spinning) {
+  background: linear-gradient(#3a2a4a, #241833) !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: none !important;
+}
+
+.df-spin-page .spinwheel-lock-card,
+.df-spin-page .spinwheel-limit-banner,
+.df-spin-page .spinwheel-coupons-banner {
+  border: 1px solid rgba(212, 175, 92, 0.35);
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(40, 18, 68, 0.96), rgba(12, 6, 20, 0.98));
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.df-spin-page .spinwheel-lock-card__badge {
+  color: var(--spin-emerald);
+  border-color: rgba(53, 239, 154, 0.4);
+  background: rgba(53, 239, 154, 0.1);
+}
+
+.df-spin-page .spinwheel-lock-card__title,
+.df-spin-page .spinwheel-limit-banner__title,
+.df-spin-page .spinwheel-coupons-banner__title,
+.df-spin-page .spinwheel-coupons-banner__item code {
+  color: var(--spin-gold);
+  text-shadow: none;
+}
+
+.df-spin-page .spinwheel-lock-card__copy,
+.df-spin-page .spinwheel-lock-card__fine,
+.df-spin-page .spinwheel-limit-banner__copy,
+.df-spin-page .spinwheel-limit-banner__meta,
+.df-spin-page .spinwheel-coupons-banner__copy {
+  color: var(--spin-muted);
+}
+
+.df-spin-page .spinwheel-lock-cta,
+.df-spin-page .spinwheel-coupons-banner__cta {
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(var(--spin-green), var(--spin-green-deep));
+  color: var(--spin-ink);
+  box-shadow: none;
+  animation: none;
+}
+
+.df-spin-page .spinwheel-lock-cta__icon {
+  background: rgba(6, 21, 13, 0.18);
+  color: var(--spin-ink);
+  box-shadow: none;
+}
+
+@media (max-width: 640px) {
+  .df-spin-page.spinwheel-page {
+    width: min(calc(100% - 20px), 760px);
+    margin-top: 12px;
+    margin-bottom: 110px;
+  }
+}

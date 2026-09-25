@@ -46,6 +46,12 @@ import {
 import { prefetchLobbySlotGames } from '../DashboardSlotGamesSection';
 import { useLaunchDashboardSlotGame } from '../../../hooks/useLaunchDashboardSlotGame';
 import { fetchEnabledSlotProviders } from '../../../hooks/useEnabledSlotProviders';
+import {
+  favoriteUserId,
+  platformFavoriteId,
+  slotFavoriteId,
+  useGameFavorites,
+} from '../../../utils/gameFavorites';
 
 const LOBBY_FILTERS = [
   { id: 'registered', label: '', icon: '/df-online/club-icons/heart.png', ariaLabel: 'Favorites' },
@@ -87,7 +93,7 @@ const PLATFORM_FILTER_IDS = new Set(['all', 'web', 'registered']);
 export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { refreshBalance: refreshScWallet, balanceSc, isAuthenticated } = useAuth();
+  const { refreshBalance: refreshScWallet, balanceSc, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const {
     requireDeposit,
@@ -129,6 +135,8 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   const [redeemedAmount, setRedeemedAmount] = useState(null);
   const gamesLoadedOnceRef = useRef(false);
   const gamesFetchInFlightRef = useRef(false);
+  const favoriteUser = favoriteUserId(user);
+  const { ids: favoriteIds } = useGameFavorites(favoriteUser);
 
   const loadGames = useCallback(async () => {
     if (gamesFetchInFlightRef.current) return;
@@ -308,11 +316,11 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
     /* Auth lobby platforms: curated static list (live dragonfury.online/lobby). */
     const platformList = buildGuestPlatformGames(games);
     if (filter === 'registered') {
-      return platformList.filter((g) => g.has_account && g.account_status === 'approved');
+      return platformList.filter((g) => favoriteIds.includes(platformFavoriteId(g)));
     }
     if (filter === 'web' || filter === 'all') return platformList;
     return platformList;
-  }, [games, filter]);
+  }, [games, filter, favoriteIds]);
 
   const searchQuery = normalizePlatformSearch(deferredSearch);
   const isSearchActive =
@@ -338,8 +346,13 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   const lobbyFilterItems = useMemo(() => LOBBY_FILTERS, []);
 
   const isCasinoFilterEffective = CASINO_FILTER_IDS.has(filter);
+  const showingFavorites = filter === 'registered';
+  const favoriteSlotGames = useMemo(
+    () => casinoCatalogGames.filter((game) => favoriteIds.includes(slotFavoriteId(game))),
+    [casinoCatalogGames, favoriteIds]
+  );
   const showCasinoCatalog =
-    isAuthenticated && (isCasinoFilterEffective || filter === 'all');
+    isAuthenticated && (isCasinoFilterEffective || filter === 'all' || showingFavorites);
   const catalogInitialTab = CASINO_FILTER_IDS.has(filter) ? filter : 'all';
   const firekirinExclusive = useFirekirinExclusiveGames({ enabled: isAuthenticated });
   const lobbyMixRows = useMemo(
@@ -735,18 +748,18 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
             ) : null}
           </div>
         </div>
-      ) : filteredGames.length === 0 && isAuthenticated ? (
+      ) : filteredGames.length === 0 && isAuthenticated && !(showingFavorites && (favoriteSlotGames.length > 0 || casinoLoading)) ? (
         <div className="dash-games-empty">
           <span className="dash-games-empty-icon" aria-hidden>🎮</span>
           <p className="dash-games-empty-title">
-            {filter === 'registered' ? 'No games yet' : 'No games available'}
+            {showingFavorites ? 'No favorites yet' : 'No games available'}
           </p>
           <p className="dash-games-empty-sub">
-            {filter === 'registered'
-              ? 'Register a game from All Games to see it here.'
+            {showingFavorites
+              ? 'Tap the heart on a game to save it here.'
               : 'Check back soon — new titles are added regularly.'}
           </p>
-          {filter === 'registered' && (
+          {showingFavorites && (
             <button type="button" className="dash-btn-outline mt-3" onClick={() => setFilter('all')}>
               Browse All Games
             </button>
@@ -784,11 +797,11 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
 
       {showCasinoCatalog && !isCasinoFilterEffective ? (
         <div className="df-lobby-slots-block">
-          {!pageMode ? <h3 className="df-lobby-slots-title">DragonFury Slots</h3> : null}
+          {!pageMode && !showingFavorites ? <h3 className="df-lobby-slots-title">DragonFury Slots</h3> : null}
           <SlotGamesCatalogGrid
-            games={casinoCatalogGames}
+            games={showingFavorites ? favoriteSlotGames : casinoCatalogGames}
             categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
-            loading={casinoLoading}
+            loading={showingFavorites ? false : casinoLoading}
             onPlay={handleCasinoPlay}
             playingGameId={casinoLaunchingId}
             embedded
@@ -796,6 +809,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
             showCategoryTabs={false}
             lobbyMode
             initialTab="slots"
+            favoritesOnly={showingFavorites}
           />
         </div>
       ) : null}

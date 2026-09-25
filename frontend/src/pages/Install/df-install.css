@@ -1,0 +1,104 @@
+/* How to Install — DragonFury club theme. Keeps the step guide, updates the look. */
+
+.inst-page,
+.inst-coach,
+.inst-aim {
+  --navy-900: #12061f;
+  --navy-800: #1b0c33;
+  --navy-700: #2a1150;
+  --navy-600: #3b1a6a;
+  --line: rgba(255, 255, 255, 0.12);
+  --gold: #ffc94f;
+  --gold-lt: #ffe08a;
+  --gold-dk: #c9a227;
+  --emerald: #35ef9a;
+  --teal: #66e69b;
+  --violet: #c084fc;
+  --sys-blue: #c084fc;
+  --ink: #fff;
+  --ink-dim: rgba(255, 255, 255, 0.62);
+}
+
+.inst-page {
+  max-width: 520px;
+  margin: 12px auto 28px;
+  padding: 8px 16px 40px;
+  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
+  background: transparent;
+  border-radius: 0;
+}
+
+.inst-pv {
+  border: 1px solid rgba(255, 216, 92, 0.35);
+  background: rgba(42, 17, 80, 0.72);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.inst-sim button {
+  border-radius: 13px;
+  background: linear-gradient(#3a1768, #241048);
+  color: rgba(255, 255, 255, 0.72);
+  font-family: "Baloo 2", "Trebuchet MS", sans-serif;
+}
+
+.inst-sim button[aria-pressed='true'] {
+  border-color: rgba(255, 216, 92, 0.7);
+  background: linear-gradient(#6d28d9, #3b0764);
+  color: #fff2a0;
+}
+
+.inst-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(74, 22, 130, 0.92), rgba(18, 8, 36, 0.96));
+  box-shadow: inset 0 1px rgba(238, 170, 255, 0.28), 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.inst-card::before {
+  background: linear-gradient(90deg, transparent, #ffc94f, #66e69b, transparent);
+}
+
+.inst-title {
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  font-weight: 900;
+}
+
+.inst-cta,
+.inst-coach .inst-cta,
+.inst-coach button.inst-cta {
+  border-radius: 16px;
+  color: #06150d !important;
+  -webkit-text-fill-color: #06150d !important;
+  background: linear-gradient(180deg, #49df87, #1bac65) !important;
+  background-color: #2ec978 !important;
+  box-shadow:
+    0 10px 24px -10px rgba(27, 172, 101, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+  font-family: "Baloo 2", "Trebuchet MS", sans-serif !important;
+}
+
+.inst-cta:hover,
+.inst-coach .inst-cta:hover {
+  color: #06150d !important;
+  -webkit-text-fill-color: #06150d !important;
+  background: linear-gradient(180deg, #6aef9d, #18a05c) !important;
+}
+
+.inst-perk i svg {
+  stroke: #66e69b;
+}
+
+@media (max-width: 640px) {
+  .inst-page {
+    width: min(100% - 8px, 520px);
+    margin-bottom: 24px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .inst-sim button,
+  .inst-cta,
+  .inst-coach .inst-cta {
+    width: 100%;
+  }
+}

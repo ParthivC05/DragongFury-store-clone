@@ -1,0 +1,278 @@
+/* Refer & Earn — live DragonFury referral control panel layout */
+
+.df-refer-page.rae-page {
+  --rae-bg: transparent;
+  --rae-panel: rgba(18, 10, 28, 0.92);
+  --rae-panel-2: rgba(36, 16, 58, 0.95);
+  --rae-line: rgba(255, 255, 255, 0.12);
+  --rae-gold: #fff2a0;
+  --rae-muted: rgba(255, 255, 255, 0.6);
+  --rae-text: #fff;
+  max-width: 760px;
+  width: min(760px, calc(100% - 28px));
+  margin: 18px auto 80px;
+  padding: 8px 0 28px;
+  font-family: var(--df-body, "Baloo 2", sans-serif);
+}
+
+.df-refer-kicker {
+  margin: 0 0 8px;
+  text-align: center;
+  color: #fff;
+  font: 900 0.72rem / 1 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.df-refer-hero {
+  position: relative;
+  display: grid;
+  min-height: 210px;
+  grid-template-columns: minmax(140px, 220px) minmax(0, 1fr) 76px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 8px;
+}
+
+.df-refer-hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -24px;
+  left: 50%;
+  width: min(780px, 100%);
+  height: 320px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(87, 38, 148, 0.26), rgba(37, 181, 107, 0.08) 42%, transparent 70%);
+}
+
+.df-refer-hero > img {
+  width: min(220px, 36vw);
+  height: 190px;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 18px rgba(77, 224, 148, 0.15));
+}
+
+.df-refer-hero small {
+  color: #dff270;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.df-refer-hero h1 {
+  margin: 4px 0 0;
+  color: #fff;
+  font: 900 clamp(1.8rem, 6vw, 3rem) / 0.94 "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.df-refer-hero p {
+  margin: 10px 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+}
+
+.df-refer-reward {
+  display: grid;
+  justify-items: center;
+  color: #fff2a0;
+}
+
+.df-refer-reward img {
+  width: 68px;
+  height: 68px;
+  margin-bottom: -12px;
+  object-fit: contain;
+}
+
+.df-refer-reward strong {
+  font-size: 20px;
+  text-shadow: 0 2px 0 #562d00;
+}
+
+.df-refer-invite {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 0.8fr;
+  gap: 8px;
+  width: min(620px, 100%);
+  margin: 8px auto 0;
+}
+
+.df-refer-invite button {
+  min-height: 44px;
+  border: 1px solid rgba(255, 216, 92, 0.38);
+  border-radius: 13px;
+  background: linear-gradient(#51227d, #2b114a);
+  color: #fff;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.df-refer-invite button:first-child {
+  display: grid;
+  place-content: center;
+  color: #fff2a0;
+}
+
+.df-refer-invite button:first-child small {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+}
+
+.df-refer-invite button:first-child strong {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.df-refer-copied {
+  min-height: 1.2em;
+  margin-top: 8px;
+  text-align: center;
+  color: #e5f36c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.df-refer-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 28px;
+  padding: 18px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.df-refer-stats span {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  gap: 5px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.df-refer-stats span + span {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.df-refer-stats strong {
+  overflow: hidden;
+  color: #fff;
+  font-size: clamp(13px, 2.4vw, 18px);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+}
+
+.df-refer-stats small {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.df-refer-cap {
+  height: 5px;
+  margin: 12px 0 24px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.df-refer-cap span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #41db86, #e8ef67);
+  box-shadow: 0 0 12px rgba(79, 226, 145, 0.36);
+}
+
+.df-refer-page .rae-stat-row,
+.df-refer-page .rae-ladder {
+  display: none;
+}
+
+.df-refer-page .rae-section,
+.df-refer-page .rae-panel,
+.df-refer-page .rae-note,
+.df-refer-page .rae-empty-card {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(18, 10, 28, 0.72);
+}
+
+.df-refer-page .rae-section h2,
+.df-refer-page .rae-panel h3,
+.df-refer-page .rae-how-title {
+  color: #fff;
+  font-family: "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+}
+
+.df-refer-page .rae-more-share-btn,
+.df-refer-page .rae-social-btn {
+  border-radius: 13px;
+}
+
+@media (max-width: 640px) {
+  .df-refer-page.rae-page {
+    width: min(calc(100% - 20px), 760px);
+    margin-top: 8px;
+    margin-bottom: 110px;
+  }
+
+  .df-refer-hero {
+    grid-template-columns: minmax(0, 1fr) 72px;
+    grid-template-areas:
+      "art art"
+      "copy reward";
+    justify-items: stretch;
+    text-align: left;
+    min-height: 0;
+  }
+
+  .df-refer-hero > img {
+    grid-area: art;
+    justify-self: center;
+  }
+
+  .df-refer-hero > div {
+    grid-area: copy;
+  }
+
+  .df-refer-reward {
+    grid-area: reward;
+    align-self: center;
+  }
+
+  .df-refer-hero > img {
+    width: min(200px, 62vw);
+    height: 160px;
+  }
+
+  .df-refer-invite {
+    grid-template-columns: 1fr;
+  }
+
+  .df-refer-stats {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 14px;
+  }
+
+  .df-refer-stats span:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .df-refer-stats span:nth-child(3),
+  .df-refer-stats span:nth-child(4) {
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

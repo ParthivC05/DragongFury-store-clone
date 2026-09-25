@@ -155,9 +155,7 @@ export function PhoneVerifyGateModal({ open, onClose, onVerified }) {
           <div className="pj-shine" aria-hidden />
 
           {closable ? (
-            <button type="button" className="pj-verify-close" onClick={onClose} aria-label="Close">
-              &#215;
-            </button>
+            <button type="button" className="pj-verify-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
           ) : null}
 
           <div className="pj-verify-body">

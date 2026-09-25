@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppLoader } from '../AppLoader';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { GuestSlotSpinWheelModal } from '../SpinWheel/GuestSlotSpinWheelModal';
@@ -245,18 +246,28 @@ export function SlotGamesCatalogGrid({
     if (initialTab) setActiveTab(initialTab);
   }, [initialTab]);
 
-  const tabCounts = useMemo(() => {
-    const counts = { all: allGames.length };
-    const ids = new Set([
-      ...TAB_ORDER,
-      ...FALLBACK_TABS,
-      ...categoryList.map((c) => c.id).filter((id) => id && id !== 'recently-played'),
-    ]);
-    for (const id of ids) {
-      if (id === 'all') continue;
-      counts[id] = gamesForTab(id, categoryList, allGames).length;
-    }
-    return counts;
+  const [tabCounts, setTabCounts] = useState(() => ({ all: 0 }));
+
+  useEffect(() => {
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      if (cancelled) return;
+      const counts = { all: allGames.length };
+      const ids = new Set([
+        ...TAB_ORDER,
+        ...FALLBACK_TABS,
+        ...categoryList.map((c) => c.id).filter((id) => id && id !== 'recently-played'),
+      ]);
+      for (const id of ids) {
+        if (id === 'all') continue;
+        counts[id] = gamesForTab(id, categoryList, allGames).length;
+      }
+      if (!cancelled) setTabCounts(counts);
+    }, 0);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, [allGames, categoryList]);
 
   const tabs = useMemo(() => {
@@ -417,15 +428,11 @@ export function SlotGamesCatalogGrid({
           role="list"
           aria-label={`${tabLabel(activeTab)} inside Dragon Fury`}
         >
-          {loading && visibleGames.length === 0
-            ? Array.from({ length: 12 }, (_, i) => (
-                <div
-                  key={`sk-${i}`}
-                  className={`df-game-card df-game-card--skel${lobbyMode ? ' df-game-card--lobby' : ''}`}
-                  aria-hidden
-                />
-              ))
-            : visibleGames.map((game, index) => {
+          {loading && visibleGames.length === 0 ? (
+            <div className="df-games-grid__loader">
+              <AppLoader fillPage={false} message="Loading games" />
+            </div>
+          ) : visibleGames.map((game, index) => {
                 const catId = gameCategoryId(game, categoryList);
                 const hot = !lobbyMode && index < Math.min(6, cols);
                 return lobbyMode ? (

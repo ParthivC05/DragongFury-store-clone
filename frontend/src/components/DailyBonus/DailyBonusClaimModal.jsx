@@ -102,7 +102,7 @@ export function DailyBonusClaimModal({ reward, dayIndex, balanceSc, onClose }) {
           className="fdb-modal swr-modal swr-result-modal swr-result-modal--win fdb-modal-enter"
           onClick={(e) => e.stopPropagation()}
         >
-          <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+          <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
           <div className="fdb-sparkles" aria-hidden>
             <span className="fdb-spark fdb-spark-1">✦</span>

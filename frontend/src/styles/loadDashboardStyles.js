@@ -13,6 +13,7 @@ export function loadDashboardStyles() {
       .then(() => import('./dashboard-fury-layout.css'))
       .then(() => import('./dashboard-df-online.css'))
       .then(() => import('../components/Auth/auth-df-modal.css'))
+      .then(() => import('./club-promo-modals.css'))
       .catch(() => {
         /* Still resolve so UI never waits forever if a CSS chunk fails. */
       });

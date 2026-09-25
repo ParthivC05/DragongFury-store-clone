@@ -12,6 +12,10 @@ const CACHE_TTL_MS = 15 * 60 * 1000;
 const cacheByStore = new Map();
 const inflightByStore = new Map();
 
+function normalizeMediaUrl(url) {
+  return String(url || '').replace(/\u0445/g, 'x').replace(/\u0425/g, 'X');
+}
+
 function pickThumbnails(game) {
   const media = game?.media || {};
   const thumbs = media.thumbnails || {};
@@ -27,7 +31,7 @@ function pickThumbnails(game) {
     game?.thumbnail,
     game?.image
   ]
-    .map((url) => (typeof url === 'string' ? url.trim() : ''))
+    .map((url) => normalizeMediaUrl(typeof url === 'string' ? url.trim() : ''))
     .filter((url) => url && url.startsWith('http'));
 }
 
@@ -84,6 +88,18 @@ function hydrateFromDisk(storeCode) {
   return fromDisk;
 }
 
+function normalizeCachedCatalog(data) {
+  if (!data?.games?.length) return data;
+  return {
+    ...data,
+    games: data.games.map((game) => ({
+      ...game,
+      image: normalizeMediaUrl(game.image),
+      iconUrls: Array.isArray(game.iconUrls) ? game.iconUrls.map(normalizeMediaUrl) : game.iconUrls
+    }))
+  };
+}
+
 function mapCatalog(rawGames) {
   return (rawGames || [])
     .filter((game) => !isBlockedBrand(game) && !isHiddenBrokenProviderGame(game))
@@ -131,7 +147,7 @@ async function getGamesList(storeCode) {
     if (Date.now() - cached.at >= CACHE_TTL_MS) {
       loadGamesList(storeCode).catch(() => {});
     }
-    return cached.data;
+    return normalizeCachedCatalog(cached.data);
   }
 
   return loadGamesList(storeCode);

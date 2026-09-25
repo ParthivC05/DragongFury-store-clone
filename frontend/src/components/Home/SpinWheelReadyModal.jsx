@@ -30,7 +30,7 @@ export function SpinWheelReadyModal({ open, onClose, onSpinNow }) {
         aria-labelledby="swr-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+        <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
         <div className="fdb-glow-ring swr-glow-ring" aria-hidden />
 

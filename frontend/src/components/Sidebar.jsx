@@ -24,7 +24,6 @@ const mainLinks = [
 const accountLinks = [
   { to: '/settings', label: 'Profile' },
   { to: '/account/transactions', label: 'Transactions' },
-  { to: '/account/vip', label: 'VIP' },
   { to: '/account/affiliate', label: 'Refer & Earn' },
 ];
 

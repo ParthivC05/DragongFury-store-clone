@@ -166,7 +166,7 @@ export function InviteFriendsEarnModal({ open, onClose, affiliateData }) {
               exit={reduceMotion ? undefined : modalMotion.exit}
               transition={reduceMotion ? instant : modalMotion.transition}
             >
-              <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+              <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
               <div className="rfx-aura" aria-hidden />
               <div className="rfx-confetti" aria-hidden>

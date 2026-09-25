@@ -131,7 +131,7 @@ export function SpinWheelResultModal({
           className={`fdb-modal swr-modal swr-result-modal fdb-modal-enter ${isWin ? 'swr-result-modal--win' : 'swr-result-modal--lose'}`}
           onClick={(e) => e.stopPropagation()}
         >
-          <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+          <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
           <div className="fdb-sparkles" aria-hidden>
             <span className="fdb-spark fdb-spark-1">✦</span>

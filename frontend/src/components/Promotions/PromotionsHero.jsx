@@ -42,7 +42,7 @@ function PromoGfxParticles() {
 const QUESTS = [
   { id: 'deposit', icon: '💰', label: 'Deposit', xp: 'Bonus XP', to: '/deposit' },
   { id: 'spin', icon: '🛞', label: 'Daily Spin', xp: 'Free rewards', to: '/spinwheel' },
-  { id: 'vip', icon: '👑', label: 'VIP Tiers', xp: 'Rank up', to: '/account/vip' },
+  { id: 'vip', icon: '👑', label: 'VIP Tiers', xp: 'Rank up', to: '/settings' },
 ];
 
 export function PromotionsHero({ offerCount, bonusCount, countdownSeconds, featuredTitle }) {

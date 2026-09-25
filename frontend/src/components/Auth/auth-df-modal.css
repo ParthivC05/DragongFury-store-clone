@@ -1,8 +1,8 @@
 html body .pj-auth-root.pj-auth-root--overlay.dragonfury-auth-modal,
 html body .dragonfury-auth-modal {
-  --auth-cyan: #57d8ff;
-  --auth-cyan-soft: rgba(87, 216, 255, 0.55);
-  --auth-ink: #0d1b3d;
+  --auth-cyan: #ffc94f;
+  --auth-cyan-soft: rgba(255, 201, 79, 0.55);
+  --auth-ink: #120824;
   --auth-gold: #ffe27a;
   --auth-card-w: min(376px, calc(100vw - 24px));
   --auth-scene-w: min(720px, calc(100vw - 4px));
@@ -17,8 +17,8 @@ html body .dragonfury-auth-modal {
   --auth-field-h: 46px;
   --auth-btn-h: 52px;
   --auth-field-r: 16px;
-  --auth-line: 1.6px solid rgba(87, 216, 255, 0.34);
-  --auth-line-card: 1.6px solid rgba(87, 216, 255, 0.55);
+  --auth-line: 1.6px solid rgba(255, 216, 92, 0.34);
+  --auth-line-card: 1.6px solid rgba(255, 216, 92, 0.55);
   position: fixed;
   inset: 0;
   z-index: 120;
@@ -129,8 +129,8 @@ html body .dragonfury-auth-card {
   border: var(--auth-line-card) !important;
   border-radius: 26px !important;
   background:
-    radial-gradient(120% 70% at 50% -8%, rgba(96, 226, 255, 0.2), transparent 56%),
-    linear-gradient(180deg, #24366e 0%, #1d2d64 48%, #182456 100%) !important;
+    radial-gradient(120% 70% at 50% -8%, rgba(124, 58, 237, 0.42), transparent 56%),
+    linear-gradient(180deg, rgba(74, 22, 130, 0.98) 0%, rgba(28, 10, 58, 0.98) 48%, rgba(14, 6, 28, 0.98) 100%) !important;
   box-shadow:
     inset 0 1px rgba(255, 255, 255, 0.18),
     0 22px 56px rgba(4, 6, 24, 0.62) !important;
@@ -179,8 +179,8 @@ html body .dragonfury-auth-card #dragonfury-auth-title {
   white-space: nowrap;
   text-align: center !important;
   text-transform: uppercase !important;
-  color: #eaf6ff !important;
-  -webkit-text-fill-color: #eaf6ff !important;
+  color: #fff2a0 !important;
+  -webkit-text-fill-color: #fff2a0 !important;
   background: none !important;
   -webkit-text-stroke: 0 !important;
   paint-order: stroke;
@@ -494,11 +494,11 @@ html body .pj-auth-root--overlay .pj-btn-login {
   height: var(--auth-btn-h);
   min-height: var(--auth-btn-h) !important;
   margin: 0 !important;
-  border: 1.6px solid rgba(180, 240, 255, 0.9) !important;
-  border-radius: 22px !important;
-  background: linear-gradient(#6fd8ff, #3db6ff 55%, #2b8fff) !important;
-  box-shadow: none !important;
-  color: #fff !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #49df87, #1bac65) !important;
+  box-shadow: 0 5px 0 #0e7a48 !important;
+  color: #062015 !important;
   font-family: "Baloo 2", system-ui, sans-serif !important;
   font-size: 1.2rem !important;
   font-weight: 800 !important;

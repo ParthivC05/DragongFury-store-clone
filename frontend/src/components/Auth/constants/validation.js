@@ -19,7 +19,6 @@ const passwordRule = Yup.string()
   .matches(PASSWORD_PATTERN, PASSWORD_MESSAGE);
 
 export const LOGIN_VALIDATION = Yup.object().shape({
-  terms: Yup.boolean().oneOf([true], 'You must agree to the terms and conditions and privacy policy.'),
   email: Yup.string()
     .trim()
     .required('Email or phone number is required.')

@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
+import { AppLoader } from '../../components/AppLoader';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { isHiddenSlotCategoryId } from '../../utils/gitslotparkLandingGames';
@@ -61,7 +62,7 @@ export function AllSlotGames() {
           </header>
 
           {!loading ? (
-            <Suspense fallback={null}>
+            <Suspense fallback={<AppLoader fillPage={false} message="Loading games" />}>
               <GamesSection
                 pageMode
                 initialFilter={isAuthenticated ? initialFilter : undefined}

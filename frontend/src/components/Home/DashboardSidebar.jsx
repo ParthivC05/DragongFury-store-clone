@@ -61,7 +61,7 @@ export function DashboardSidebar({
   const onDailyBonusPage = pathname === '/daily-bonus';
   const onSpinPage = pathname === '/spinwheel';
   const onPromotionsPage = pathname === '/promotions';
-  const onVipPage = pathname === '/account/vip';
+  const onVipPage = pathname === '/settings' || pathname === '/account/vip';
   const onAffiliatePage = pathname === '/account/affiliate';
   const onDepositPage = pathname === '/deposit';
   const onWithdrawPage = pathname === '/redeem' || pathname === '/withdraw';
@@ -201,7 +201,7 @@ export function DashboardSidebar({
           title: 'VIP',
           accent: 'gold',
           Icon: CrownIcon,
-          to: '/account/vip',
+          to: '/settings',
           active: onVipPage,
         },
         {

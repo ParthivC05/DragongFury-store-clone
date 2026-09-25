@@ -88,7 +88,7 @@ export default function DeviceBlockModal({ open, onClose, registeredEmail = '' }
         <div className="device-block-modal__card">
           <button
             type="button"
-            className="device-block-modal__close"
+            className="device-block-modal__close dragonfury-close-button"
             onClick={onClose}
             aria-label="Close"
           >

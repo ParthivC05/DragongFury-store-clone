@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Field } from 'formik';
 import { submitOrRevealErrors } from './submitOrRevealErrors';
 
@@ -47,7 +46,7 @@ export function DragonFuryLoginForm({
   shakeBtn,
   onEmptySubmit
 }) {
-  const { values, errors, touched, handleChange, handleBlur, setFieldValue } = formik;
+  const { values, errors, touched, handleChange, handleBlur } = formik;
 
   const emailVal = values.email ?? '';
   const emailLen = emailVal.length;
@@ -62,38 +61,6 @@ export function DragonFuryLoginForm({
 
   return (
     <form className="dragonfury-auth-form" onSubmit={onSubmit} noValidate>
-      <label
-        className={`dragonfury-auth-check${touched.terms && errors.terms ? ' dragonfury-auth-check--err' : ''}`}
-        htmlFor="pj-login-terms"
-      >
-        <input
-          id="pj-login-terms"
-          name="terms"
-          type="checkbox"
-          checked={!!values.terms}
-          onChange={(e) => setFieldValue('terms', e.target.checked)}
-          onBlur={handleBlur}
-          aria-invalid={touched.terms && errors.terms ? 'true' : undefined}
-          aria-describedby={touched.terms && errors.terms ? 'pj-login-terms-err' : undefined}
-        />
-        <span>
-          I agree to the{' '}
-          <Link to="/terms" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link to="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
-            Privacy Policy
-          </Link>
-          .
-        </span>
-      </label>
-      {touched.terms && errors.terms && (
-        <p className="dragonfury-auth-consent-error" id="pj-login-terms-err" role="alert">
-          {errors.terms}
-        </p>
-      )}
-
       <div className="dragonfury-auth-field">
         <label htmlFor="pj-email">Email</label>
         <Field

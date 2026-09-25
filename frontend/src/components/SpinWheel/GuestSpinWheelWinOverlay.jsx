@@ -156,7 +156,7 @@ export function GuestSpinWheelWinOverlay({ open, winLabel, winAmount, onClose })
               transition={{ type: 'spring', stiffness: 320, damping: 26 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+              <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
               <div className="fdb-glow-ring" aria-hidden />
               <div className="swr-result-win-shimmer" aria-hidden />
 

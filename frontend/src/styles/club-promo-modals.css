@@ -1,0 +1,334 @@
+/* Club promo shells — purple cards, gold titles, mint accents, green actions. Copy stays the same. */
+
+html body button.fdb-close.dragonfury-close-button,
+html body button.rsm-close.dragonfury-close-button,
+html body button.db-close.dragonfury-close-button,
+html body button.lprm-close.dragonfury-close-button,
+html body button.pj-verify-close.dragonfury-close-button,
+html body button.device-block-modal__close.dragonfury-close-button {
+  top: 10px !important;
+  right: 10px !important;
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: url("/df-online/wallet-close.webp") center / contain no-repeat transparent !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  box-shadow: none !important;
+}
+
+html body button.fdb-close.dragonfury-close-button::before,
+html body button.fdb-close.dragonfury-close-button::after,
+html body button.rsm-close.dragonfury-close-button::before,
+html body button.rsm-close.dragonfury-close-button::after,
+html body button.lprm-close.dragonfury-close-button::before,
+html body button.lprm-close.dragonfury-close-button::after {
+  content: none !important;
+  display: none !important;
+}
+
+html body button.device-block-modal__close.dragonfury-close-button svg {
+  display: none !important;
+}
+
+html body button.fdb-close.dragonfury-close-button:enabled:hover,
+html body button.rsm-close.dragonfury-close-button:enabled:hover,
+html body button.db-close.dragonfury-close-button:enabled:hover,
+html body button.lprm-close.dragonfury-close-button:enabled:hover,
+html body button.pj-verify-close.dragonfury-close-button:enabled:hover,
+html body button.device-block-modal__close.dragonfury-close-button:enabled:hover,
+html body button.fdb-close.dragonfury-close-button:enabled:active,
+html body button.rsm-close.dragonfury-close-button:enabled:active,
+html body button.db-close.dragonfury-close-button:enabled:active,
+html body button.lprm-close.dragonfury-close-button:enabled:active,
+html body button.pj-verify-close.dragonfury-close-button:enabled:active,
+html body button.device-block-modal__close.dragonfury-close-button:enabled:active,
+html body button.fdb-close.dragonfury-close-button:focus-visible,
+html body button.rsm-close.dragonfury-close-button:focus-visible,
+html body button.db-close.dragonfury-close-button:focus-visible {
+  background: url("/df-online/wallet-close.webp") center / contain no-repeat transparent !important;
+}
+
+html body .fdb-backdrop,
+html body .rfx-backdrop,
+html body .rsm-backdrop,
+html body .db-backdrop,
+html body .phone-otp-overlay {
+  background: rgba(9, 6, 18, 0.72) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+html body .fdb-modal,
+html body .rfx-modal,
+html body .rsm-modal,
+html body .db-modal,
+html body .phone-otp-modal,
+html body .device-block-modal__card,
+html body .lprm-modal {
+  border-radius: 28px !important;
+  border: 1px solid rgba(255, 216, 92, 0.32) !important;
+  color: #fff !important;
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  background:
+    radial-gradient(ellipse 90% 46% at 50% -8%, rgba(124, 58, 237, 0.48), transparent 58%),
+    linear-gradient(165deg, rgba(74, 22, 130, 0.96) 0%, rgba(22, 8, 46, 0.98) 54%, rgba(9, 6, 18, 0.98) 100%) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 22px 56px rgba(6, 2, 18, 0.62) !important;
+}
+
+html body .fdb-title,
+html body .swr-title,
+html body .rfx-title,
+html body .rsm-title,
+html body .db-header-title,
+html body .pj-verify-title,
+html body .rfx-hero-pct {
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif !important;
+  font-weight: 400 !important;
+  color: #fff2a0 !important;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35) !important;
+  letter-spacing: 0.02em !important;
+  animation: none !important;
+}
+
+html body .fdb-eyebrow,
+html body .fdb-desc,
+html body .fdb-promo-name,
+html body .fdb-dismiss,
+html body .fdb-perks,
+html body .swr-eyebrow,
+html body .swr-desc,
+html body .rfx-sub,
+html body .rfx-steps-head,
+html body .rfx-step-title,
+html body .rfx-link-label,
+html body .rfx-stat-label,
+html body .rfx-dismiss,
+html body .rsm-badge,
+html body .rsm-subtitle,
+html body .rsm-link-label,
+html body .rsm-share-heading,
+html body .rsm-platform-name,
+html body .db-weekly-title,
+html body .db-weekly-sub,
+html body .db-ready-title,
+html body .db-ready-sub,
+html body .pj-verify-status-label,
+html body .pj-verify-status-text,
+html body .pj-verify-footnote {
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+}
+
+html body .fdb-eyebrow,
+html body .swr-eyebrow,
+html body .rsm-badge,
+html body .rfx-steps-head,
+html body .rfx-link-label {
+  color: #ffc94f !important;
+}
+
+html body .fdb-desc,
+html body .swr-desc,
+html body .fdb-perks,
+html body .rfx-sub,
+html body .rsm-subtitle,
+html body .pj-verify-status-text,
+html body .pj-verify-footnote {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+html body .fdb-badge,
+html body .rfx-badge,
+html body .swr-badge {
+  color: #1a0b33 !important;
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.12em !important;
+  background: linear-gradient(90deg, #fff2a0, #ffc94f) !important;
+  border: 0 !important;
+  box-shadow: 0 0 16px rgba(255, 201, 79, 0.28) !important;
+}
+
+html body .fdb-highlight-value {
+  color: #fff2a0 !important;
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif !important;
+}
+
+html body .fdb-highlight-label {
+  color: #66e69b !important;
+}
+
+html body .fdb-cta,
+html body .swr-cta,
+html body .rfx-cta,
+html body .phone-otp-modal .pj-btn-login,
+html body .db-claim-btn.ready {
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: none !important;
+  color: #062015 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, #49df87, #1bac65) !important;
+  box-shadow: 0 5px 0 #0e7a48 !important;
+  animation: none !important;
+}
+
+html body .fdb-inner,
+html body .rfx-inner,
+html body .rsm-body {
+  padding-bottom: 22px !important;
+}
+
+html body .rfx-modal {
+  --rfx-teal: #66e69b;
+  --rfx-teal-soft: #d8ffee;
+}
+
+html body .rfx-aura {
+  background: radial-gradient(ellipse at center, rgba(255, 201, 79, 0.22) 0%, transparent 68%) !important;
+}
+
+html body .rfx-hero-coin {
+  background: radial-gradient(circle at 35% 30%, #fff6c8 0%, #ffc94f 46%, #c48912 100%) !important;
+}
+
+html body .rfx-stat,
+html body .rfx-steps,
+html body .rfx-link-input {
+  border-color: rgba(255, 216, 92, 0.22) !important;
+  background: rgba(9, 6, 18, 0.4) !important;
+  color: #fff2a0 !important;
+}
+
+html body .rfx-stat--hero {
+  border-color: rgba(53, 239, 154, 0.45) !important;
+  background: rgba(53, 239, 154, 0.1) !important;
+  box-shadow: none !important;
+}
+
+html body .rfx-stat-val,
+html body .rfx-hero-cap,
+html body .rfx-sub b {
+  color: #66e69b !important;
+}
+
+html body .rfx-step-icon,
+html body .rfx-copy {
+  border-color: rgba(53, 239, 154, 0.4) !important;
+  background: rgba(53, 239, 154, 0.12) !important;
+  color: #66e69b !important;
+}
+
+html body .rfx-step-num {
+  color: #062015 !important;
+  background: linear-gradient(180deg, #49df87, #1bac65) !important;
+}
+
+html body .rfx-step:not(:last-child)::after {
+  background: linear-gradient(90deg, rgba(53, 239, 154, 0.7), rgba(255, 201, 79, 0.15)) !important;
+}
+
+html body .rfx-secondary {
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  color: #fff2a0 !important;
+  border-color: rgba(255, 216, 92, 0.28) !important;
+  background: rgba(18, 8, 36, 0.45) !important;
+}
+
+html body .rfx-dismiss,
+html body .fdb-dismiss {
+  color: rgba(255, 255, 255, 0.62) !important;
+}
+
+html body .rsm-link-row {
+  border: 1px solid rgba(255, 216, 92, 0.28) !important;
+  background: rgba(9, 6, 18, 0.45) !important;
+  border-radius: 14px !important;
+}
+
+html body .rsm-link-input {
+  color: #fff !important;
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+}
+
+html body .rsm-copy-btn {
+  font-family: "Baloo 2", system-ui, sans-serif !important;
+  font-weight: 800 !important;
+  color: #062015 !important;
+  background: linear-gradient(180deg, #49df87, #1bac65) !important;
+  border: 0 !important;
+}
+
+html body .rsm-share-accent {
+  background: linear-gradient(180deg, #ffc94f, #35ef9a) !important;
+}
+
+html body .rsm-platform-btn {
+  border: 1px solid rgba(255, 216, 92, 0.22) !important;
+  border-radius: 16px !important;
+  background: rgba(18, 8, 36, 0.55) !important;
+}
+
+html body .rsm-platform-name {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+html body .db-backdrop {
+  --db-g: #ffc94f;
+  --db-g2: #fff2a0;
+  --db-g3: #66e69b;
+  --db-teal: #35ef9a;
+  --db-teal2: #66e69b;
+  --db-felt: #241046;
+  --db-felt2: #3a1870;
+}
+
+html body .db-modal-topline {
+  background: linear-gradient(90deg, transparent, #ffc94f, #35ef9a, #ffc94f, transparent) !important;
+}
+
+html body .db-header,
+html body .db-left {
+  border-color: rgba(255, 216, 92, 0.18) !important;
+}
+
+html body .db-left {
+  background: rgba(9, 6, 18, 0.28) !important;
+}
+
+html body .db-day.today,
+html body .db-7banner {
+  border-color: rgba(255, 201, 79, 0.4) !important;
+  background: rgba(255, 201, 79, 0.1) !important;
+}
+
+html body .db-day.done {
+  border-color: rgba(53, 239, 154, 0.35) !important;
+  background: rgba(53, 239, 154, 0.08) !important;
+}
+
+html body .phone-otp-modal .pj-corner,
+html body .phone-otp-modal .pj-shine {
+  display: none !important;
+}
+
+html body .phone-otp-modal {
+  padding: 28px 22px 22px !important;
+}
+
+html body .device-block-modal__footer,
+html body .device-block-modal__message {
+  border-color: rgba(255, 216, 92, 0.28) !important;
+  background: rgba(9, 6, 18, 0.55) !important;
+}
+
+html body .lprm-modal {
+  overflow: visible !important;
+}

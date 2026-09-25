@@ -95,7 +95,7 @@ export function FirstDepositBonusModal({
         aria-labelledby="fdb-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+        <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
         <div className="fdb-glow-ring" aria-hidden />
 

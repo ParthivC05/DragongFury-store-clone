@@ -133,6 +133,60 @@ function fetchProviderSlotGames(provider) {
 }
 
 let hubGamesInflight = null;
+let hubBackgroundRefreshStarted = false;
+
+async function loadOneGameHubSlotGamesFromNetwork() {
+  if (hubGamesInflight) return hubGamesInflight;
+
+  hubGamesInflight = (async () => {
+    try {
+      const res = await onegamehubApi.getOneGameHubGames();
+      if (res?.enabled === false) {
+        clearCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY);
+        return [];
+      }
+      const list = Array.isArray(res?.games)
+        ? res.games
+        : Array.isArray(res?.data?.games)
+          ? res.data.games
+          : Array.isArray(res?.data)
+            ? res.data
+            : [];
+      const mapped = [];
+      let published = false;
+      const CHUNK = 250;
+      for (let i = 0; i < list.length; i += CHUNK) {
+        const batch = list
+          .slice(i, i + CHUNK)
+          .filter((game) => !isBlockedOneGameHubBrand(game))
+          .map(mapOneGameHubToCarouselGame)
+          .filter((g) => g.gameid);
+        mapped.push(...batch);
+        if (!published && mapped.length) {
+          published = true;
+          setCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY, mapped.slice());
+          window.dispatchEvent(new CustomEvent('df-slot-catalog-updated'));
+        }
+        if (i + CHUNK < list.length) {
+          await new Promise((resolve) => window.setTimeout(resolve, 0));
+        }
+      }
+      if (mapped.length) {
+        setCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY, mapped);
+      }
+      if (!mapped.length) {
+        clearCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY);
+      }
+      return mapped;
+    } catch {
+      return getCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY) || [];
+    }
+  })().finally(() => {
+    hubGamesInflight = null;
+  });
+
+  return hubGamesInflight;
+}
 
 function applyLobbyGamesToState(
   nextGames,
@@ -158,40 +212,17 @@ function applyLobbyGamesToState(
 }
 
 async function fetchOneGameHubSlotGames() {
-  if (hubGamesInflight) return hubGamesInflight;
-
-  hubGamesInflight = (async () => {
-    try {
-      const res = await onegamehubApi.getOneGameHubGames();
-      if (res?.enabled === false) {
-        clearCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY);
-        return [];
-      }
-      const list = Array.isArray(res?.games)
-        ? res.games
-        : Array.isArray(res?.data?.games)
-          ? res.data.games
-          : Array.isArray(res?.data)
-            ? res.data
-            : [];
-      const mapped = list
-        .filter((game) => !isBlockedOneGameHubBrand(game))
-        .map(mapOneGameHubToCarouselGame)
-        .filter((g) => g.gameid);
-      if (mapped.length) {
-        setCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY, mapped);
-      } else {
-        clearCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY);
-      }
-      return mapped;
-    } catch {
-      return getCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY) || [];
+  const cached = getCachedProviderSlotGames(ONEGAMEHUB_CACHE_KEY);
+  if (cached?.length) {
+    if (!hubBackgroundRefreshStarted) {
+      hubBackgroundRefreshStarted = true;
+      window.setTimeout(() => {
+        loadOneGameHubSlotGamesFromNetwork().catch(() => {});
+      }, 2500);
     }
-  })().finally(() => {
-    hubGamesInflight = null;
-  });
-
-  return hubGamesInflight;
+    return cached;
+  }
+  return loadOneGameHubSlotGamesFromNetwork();
 }
 
 async function fetchBonaSlotGames() {
@@ -271,18 +302,25 @@ function mergeProviderGames(gamesByProvider) {
   return [...hub, ...bona, ...scorpio, ...rest];
 }
 
-export async function prefetchLobbySlotGames() {
+export async function prefetchLobbySlotGames(onUpdate) {
   try {
     const providers = await fetchEnabledSlotProviders();
     const tasks = [];
-    if (providers.onegamehub) tasks.push(fetchOneGameHubSlotGames());
-    if (providers.bona) tasks.push(fetchBonaSlotGames());
+    const watch = (promise) => {
+      tasks.push(
+        Promise.resolve(promise).finally(() => {
+          onUpdate?.();
+        })
+      );
+    };
+    if (providers.onegamehub) watch(fetchOneGameHubSlotGames());
+    if (providers.bona) watch(fetchBonaSlotGames());
     if (providers.gitslotpark) {
       for (const provider of getSlotProvidersLoadOrder(true)) {
-        tasks.push(fetchProviderSlotGames(provider));
+        watch(fetchProviderSlotGames(provider));
       }
     }
-    if (providers.scorpio) tasks.push(fetchScorpioSlotGames());
+    if (providers.scorpio) watch(fetchScorpioSlotGames());
     if (!tasks.length) return [];
     return Promise.all(tasks);
   } catch {

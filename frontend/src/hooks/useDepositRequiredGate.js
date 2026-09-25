@@ -14,6 +14,15 @@ let eligibilityCache = {
   activationBonusType: null
 };
 
+function isLocalDepositGateSkipped() {
+  if (!import.meta.env.DEV) return false;
+  try {
+    return localStorage.getItem('dragonfury:skip-deposit-gate') === '1';
+  } catch {
+    return false;
+  }
+}
+
 function resolveAuthUserId(user) {
   if (!user) return null;
   const id = user.userId ?? user.id;
@@ -261,7 +270,7 @@ export function useDepositRequiredGate({ enabled = true } = {}) {
 
   const requireDeposit = useCallback(
     async (action) => {
-      if (!enabled) {
+      if (!enabled || isLocalDepositGateSkipped()) {
         if (typeof action === 'function') action();
         return true;
       }

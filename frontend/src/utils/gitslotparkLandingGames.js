@@ -18,6 +18,11 @@ import { GIT_SLOTPARK_PROVIDERS } from '../config/gitslotpark';
 import { getSlotLocalIcon } from '../config/slotLocalIcons';
 
 const GAME_PLACEHOLDER = '/logo.webp';
+
+/** 1GameHub sometimes ships Cyrillic "х" (U+0445) in filenames. The CDN file uses a Latin x. */
+export function normalizeSlotImageUrl(url) {
+  return String(url || '').replace(/\u0445/g, 'x').replace(/\u0425/g, 'X');
+}
 const IMAGE_SHAPE_TOLERANCE = 0.12;
 const BLOCKED_ONEGAMEHUB_BRANDS = ['mrslotty', 'netgame', '7777gaming', 'spinoro'];
 const HIDDEN_BROKEN_GAME_KEYS = new Set([
@@ -368,7 +373,7 @@ export function mapOneGameHubToCarouselGame(game) {
     game.icon,
     game.thumbnail,
   ]
-    .map((url) => (typeof url === 'string' ? url.trim() : ''))
+    .map((url) => normalizeSlotImageUrl(typeof url === 'string' ? url.trim() : ''))
     .filter((url) => url && url !== '/' && !isGenericGameImage(url));
 
   const title = game.name || game.title || game.alias || '1GameHub Game';

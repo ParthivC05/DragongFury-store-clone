@@ -6,6 +6,7 @@ import { GUEST_LANDING_SPIN_WIN_SC } from './guestSpinWheelConfig';
 import { lockBodyScroll } from '../../utils/bodyScrollLock';
 import '../../pages/Landing/landing-dragonfury.css';
 import './guest-spin-fury.css';
+import '../../styles/club-promo-modals.css';
 
 const PRIZE_CHIPS = [
   { id: 'sc', label: '2–5 SC', glow: 'sc' },

@@ -223,9 +223,7 @@ export function DailyBonusTrackerModal({
       <div className="db-modal" onClick={(e) => e.stopPropagation()}>
         <div className="db-modal-topline" aria-hidden />
 
-        <button type="button" className="db-close" onClick={onClose} aria-label="Close">
-          ×
-        </button>
+        <button type="button" className="db-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
         <div className="db-header">
           <StarIcon size={18} className="db-header-star" />

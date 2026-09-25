@@ -7,7 +7,7 @@ const HERO_BOXES = [
   { id: 'blog', emoji: '📰', label: 'Blog', to: '/blog' },
   { id: 'promotions', emoji: '🎁', label: 'Promotions', to: '/promotions' },
   { id: 'spinwheel', label: 'Spin Wheel', to: '/spinwheel' },
-  { id: 'vip', emoji: '👑', label: 'VIP', to: '/account/vip' },
+  { id: 'vip', emoji: '👑', label: 'VIP', to: '/settings' },
   { id: 'refer', emoji: '🎯', label: 'Refer & Earn', to: '/account/affiliate' },
 ];
 

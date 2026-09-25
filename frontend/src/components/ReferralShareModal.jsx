@@ -260,7 +260,7 @@ export function ReferralShareModal({ open, onClose, referralLink, shareOptions =
             exit={reduceMotion ? undefined : modalMotion.exit}
             transition={reduceMotion ? instant : modalMotion.transition}
           >
-            <button type="button" className="rsm-close fdb-close" onClick={onClose} aria-label="Close" />
+            <button type="button" className="rsm-close fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
             <div className="rsm-glow rsm-glow--pulse fdb-glow-ring" aria-hidden />
 

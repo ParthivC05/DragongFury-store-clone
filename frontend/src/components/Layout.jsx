@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 /* Above-fold shell. Full theme is scheduled after first paint on `/`. */
 import '../styles/dashboard-critical.css';
 import '../styles/dashboard-df-online.css';
+import '../styles/club-promo-modals.css';
 import './Auth/auth-df-modal.css';
 import { loadDashboardStyles, scheduleDashboardStyles } from '../styles/loadDashboardStyles';
 import { warmupDeposit } from '../utils/preloadDeposit';

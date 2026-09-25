@@ -382,7 +382,7 @@ export function AccountAffiliate() {
           <span style={{ width: `${weeklyPct}%` }} />
         </div>
 
-        <div className="rae-section">
+        <div className="rae-section rae-share">
           <h2>Share With Friends</h2>
           <p className="rae-sub">Tap where you want to send it</p>
           <div className="rae-social-grid" role="group" aria-label="Share referral link">

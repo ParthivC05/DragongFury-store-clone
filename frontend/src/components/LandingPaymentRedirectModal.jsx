@@ -153,7 +153,7 @@ export function LandingPaymentRedirectModal({
           aria-label="Opening payment link"
           onClick={(e) => e.stopPropagation()}
         >
-          <button type="button" className="lprm-close" onClick={dismissCurrent} aria-label="Close" />
+          <button type="button" className="lprm-close dragonfury-close-button" onClick={dismissCurrent} aria-label="Close" />
           <div className="lprm-image-wrap">
             {!revealed ? <span className="lprm-image-placeholder" aria-hidden /> : null}
             <img

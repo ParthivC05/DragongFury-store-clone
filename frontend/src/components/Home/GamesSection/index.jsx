@@ -6,7 +6,7 @@ import { STORE_CODE } from '../../../config/site';
 import { buildGuestPlatformGames } from '../../../config/featuredPlatformGames';
 import * as gamesApi from '../../../api/games';
 import { GameCard } from '../../Games/GameCard';
-import { GamesGridSkeleton } from '../GamesGridSkeleton';
+import { AppLoader } from '../../AppLoader';
 import { SlotGamesSearchBar } from '../../SlotGames/SlotGamesSearchBar';
 import { LobbyPlatformTile } from '../LobbyPlatformTile';
 import { isGoldenDragonGameName, isFirekirinGameName, isIntegerScAmount, GAME_DEPOSIT_AMOUNT_ERROR, GAME_WITHDRAW_AMOUNT_ERROR } from '../../../utils/goldenDragon';
@@ -93,7 +93,7 @@ const PLATFORM_FILTER_IDS = new Set(['all', 'web', 'registered']);
 export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { refreshBalance: refreshScWallet, balanceSc, isAuthenticated, user } = useAuth();
+  const { refreshBalance: refreshScWallet, balanceSc, pscWalletUsable, isAuthenticated, user } = useAuth();
   const { toast } = useToast();
   const {
     requireDeposit,
@@ -178,16 +178,34 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   useEffect(() => {
     if (!isAuthenticated) return undefined;
     let cancelled = false;
-    setCasinoLoading(true);
+    if (!getAllCachedProviderSlotGames().length) setCasinoLoading(true);
 
-    const refreshCasino = (providerFlags = {}) => {
-      const all = getAllCachedProviderSlotGames();
+    let categoryTimer = null;
+    let latestFlags = {};
+
+    const showCachedGames = () => {
       if (cancelled) return;
+      const all = getAllCachedProviderSlotGames();
       setCasinoCatalogGames(all);
-      setCasinoCatalogCategories(
-        appendBonaToSlotCategories(buildOrionstarSlotCategories(all, providerFlags), all)
-      );
+      if (all.length) setCasinoLoading(false);
     };
+
+    const refreshCasino = (providerFlags = latestFlags) => {
+      if (cancelled) return;
+      latestFlags = providerFlags;
+      showCachedGames();
+      window.clearTimeout(categoryTimer);
+      categoryTimer = window.setTimeout(() => {
+        if (cancelled) return;
+        const all = getAllCachedProviderSlotGames();
+        setCasinoCatalogCategories(
+          appendBonaToSlotCategories(buildOrionstarSlotCategories(all, latestFlags), all)
+        );
+      }, 250);
+    };
+
+    const onCatalog = () => showCachedGames();
+    window.addEventListener('df-slot-catalog-updated', onCatalog);
 
     fetchEnabledSlotProviders()
       .then((providers) => {
@@ -201,9 +219,12 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
       })
       .then((flags) => {
         if (cancelled || !flags) return;
-        return prefetchLobbySlotGames().then(() => {
+        const paint = () => {
           if (!cancelled) refreshCasino(flags);
-        });
+        };
+        paint();
+        if (getAllCachedProviderSlotGames().length) setCasinoLoading(false);
+        return prefetchLobbySlotGames(paint);
       })
       .finally(() => {
         if (!cancelled) setCasinoLoading(false);
@@ -211,6 +232,8 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(categoryTimer);
+      window.removeEventListener('df-slot-catalog-updated', onCatalog);
     };
   }, [isAuthenticated]);
 
@@ -313,14 +336,14 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   }
 
   const tabFilteredGames = useMemo(() => {
-    /* Auth lobby platforms: curated static list (live dragonfury.online/lobby). */
-    const platformList = buildGuestPlatformGames(games);
+    /* Guests see the curated landing list. Signed-in players only see store games. */
+    const platformList = isAuthenticated ? games : buildGuestPlatformGames(games);
     if (filter === 'registered') {
       return platformList.filter((g) => favoriteIds.includes(platformFavoriteId(g)));
     }
     if (filter === 'web' || filter === 'all') return platformList;
     return platformList;
-  }, [games, filter, favoriteIds]);
+  }, [games, filter, favoriteIds, isAuthenticated]);
 
   const searchQuery = normalizePlatformSearch(deferredSearch);
   const isSearchActive =
@@ -398,6 +421,9 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
           onOpenDeposit={handleOpenDeposit}
           onOpenWithdraw={handleOpenWithdraw}
           onOpenPlay={handleOpenPlay}
+          balanceSc={balanceSc}
+          paidSc={pscWalletUsable}
+          onWalletRefresh={refreshScWallet}
         />
       );
     }
@@ -724,7 +750,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
           initialTab={catalogInitialTab}
         />
       ) : gamesLoading && games.length === 0 && isAuthenticated ? (
-        <GamesGridSkeleton threeColumns={filter === 'all' || filter === 'web'} />
+        <AppLoader fillPage={false} message="Loading games" />
       ) : isSearchActive && searchResultCount === 0 ? (
         <div className="dash-games-empty dash-slot-search-empty">
           <span className="dash-games-empty-icon" aria-hidden>🔍</span>

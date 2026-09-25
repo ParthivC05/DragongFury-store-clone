@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../context/AuthContext';
+import { useVipStatus } from '../context/VipStatusContext';
 import { useToast } from '../context/ToastContext';
 import * as authApi from '../api/auth';
 import * as userApi from '../api/user';
@@ -16,9 +17,9 @@ import { PhoneNumberField } from '../components/Auth/PhoneNumberField';
 import { isCompleteNational, parseE164 } from '../components/Auth/phoneCountry';
 import {
   isPurchaseProfileComplete,
-  needsPhoneVerification,
   storeRequiresPhoneVerification
 } from '../utils/purchaseProfile';
+import { ProfilePlayerTiers } from '../components/Vip/ProfilePlayerTiers';
 import { phoneOtpErrorMessage } from '../utils/phoneOtpErrors';
 import '../components/Auth/PhoneNumberField.css';
 import '../components/profile/df-profile.css';
@@ -209,55 +210,9 @@ const initialProfileValues = (user) => ({
   zipCode: user?.zipCode ?? ''
 });
 
-const PROFILE_COMPLETION_KEYS = [
-  'firstName',
-  'lastName',
-  'phone',
-  'dateOfBirth',
-  'streetAddress',
-  'city',
-  'state',
-  'country',
-  'zipCode'
-];
-
-function getProfileCompletion(user) {
-  const filled = PROFILE_COMPLETION_KEYS.filter((k) => String(user?.[k] ?? '').trim()).length;
-  const total = PROFILE_COMPLETION_KEYS.length;
-  const storeRequiresPhone = storeRequiresPhoneVerification(user);
-  const phoneVerified = Boolean(user?.isPhoneVerified) || !storeRequiresPhone;
-  const fieldsFilled = filled === total;
-  const profileComplete = isPurchaseProfileComplete(user);
-  const phoneSlot = storeRequiresPhone ? 1 : 0;
-  const percent = total
-    ? Math.round(((filled + (storeRequiresPhone && phoneVerified ? 1 : 0)) / (total + phoneSlot)) * 100)
-    : 0;
-  const isVerified = user?.isEmailVerified === true;
-  const hasPayment = user?.hasPaymentAccount === true;
-
-  const quests = [
-    { id: 'email', label: 'Verify email', done: isVerified, icon: '✉️' },
-    { id: 'profile', label: 'Complete profile', done: fieldsFilled, icon: '📝' },
-    ...(storeRequiresPhone
-      ? [{ id: 'phone', label: 'Verify phone', done: phoneVerified, icon: '📱' }]
-      : []),
-    { id: 'payment', label: 'Link payment account', done: hasPayment, icon: '💳' }
-  ];
-
-  return {
-    filled,
-    total,
-    percent,
-    profileComplete,
-    isVerified,
-    hasPayment,
-    quests,
-    questsDone: quests.filter((q) => q.done).length
-  };
-}
-
 export function Settings() {
   const { user, refreshUser } = useAuth();
+  const { vipStatus } = useVipStatus();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -326,7 +281,6 @@ export function Settings() {
   }, [loading, showLoader, returnToDeposit]);
 
   const isVerified = user?.isEmailVerified === true;
-  const profileStats = getProfileCompletion(user);
   const phoneAlreadyVerified = Boolean(user?.isPhoneVerified);
   const storeRequiresPhoneOtp = storeRequiresPhoneVerification(user);
   const displayName = getDisplayName(user);
@@ -619,50 +573,7 @@ export function Settings() {
           </section>
         )}
 
-        {/* Profile Power + account quests */}
-        <section className="dragonfury-profile-progress">
-          <header className="dragonfury-profile-section-head">
-            <p className="dragonfury-profile-kicker">Progress</p>
-            <h2>Profile Power</h2>
-          </header>
-          <div className="dragonfury-profile-progress-body">
-            <div className="dragonfury-profile-progress-meter">
-              <div className="dragonfury-profile-progress-head">
-                <span className="dragonfury-profile-progress-label">Profile Power</span>
-                <span className="dragonfury-profile-progress-value tabular-nums">{profileStats.percent}%</span>
-              </div>
-              <div
-                className="dragonfury-profile-progress-track"
-                role="progressbar"
-                aria-valuenow={profileStats.percent}
-                aria-valuemin={0}
-                aria-valuemax={100}
-              >
-                <span
-                  className="dragonfury-profile-progress-fill"
-                  style={{ width: `${profileStats.percent}%` }}
-                />
-              </div>
-              <p className="dragonfury-profile-progress-sub">
-                {profileStats.filled}/{profileStats.total} fields · {profileStats.questsDone}/{profileStats.quests.length} quests
-              </p>
-            </div>
-
-            <ul className="dragonfury-profile-quests" aria-label="Account quests">
-              {profileStats.quests.map((quest, index) => (
-                <li
-                  key={quest.id}
-                  className={`dragonfury-profile-quest${quest.done ? ' dragonfury-profile-quest--done' : ''}`}
-                  style={{ animationDelay: `${0.08 * index}s` }}
-                >
-                  <span className="dragonfury-profile-quest-icon" aria-hidden>{quest.icon}</span>
-                  <span className="dragonfury-profile-quest-label">{quest.label}</span>
-                  <span className="dragonfury-profile-quest-status">{quest.done ? '✓' : '…'}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        <ProfilePlayerTiers levels={vipStatus?.levels} />
 
         {/* Profile details */}
         <section className="dragonfury-profile-form">
@@ -874,7 +785,7 @@ export function Settings() {
                   {touched.lastName && errors.lastName && <small className="df-profile-field-error">{errors.lastName}</small>}
                 </label>
 
-                <div className="dragonfury-profile-field dragonfury-profile-field--wide" id="verify-phone">
+                <div className="dragonfury-profile-field" id="verify-phone">
                   <span className="df-profile-field-label">Phone number *</span>
                   <div className="dash-phone-verify-row df-profile-phone-row">
                     <PhoneNumberField

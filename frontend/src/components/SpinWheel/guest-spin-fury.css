@@ -179,6 +179,12 @@
   z-index: 1;
 }
 
+/* The wheel section clips overflow, so the CTA’s downward shadow was sliced flat. */
+.fury-spin-wheel .lp-guest-spin-wheel.spinwheel-wheel-section {
+  overflow: visible !important;
+  padding-bottom: 18px !important;
+}
+
 .fury-spin-wheel .spinwheel-wheel-core > .rounded-full {
   filter: none;
 }
@@ -200,10 +206,12 @@
 }
 
 .fury-spin-wheel .lp-spin-btn-outer,
-.fury-spin-wheel .lp-spin-btn-outer--guest {
-  width: 100%;
+.fury-spin-wheel .lp-spin-btn-outer--guest,
+.fury-spin-wheel .lp-spin-btn-outer--guest:hover,
+.fury-spin-wheel .lp-spin-btn-outer--guest:active {
+  width: calc(100% - 8px);
   min-height: 52px;
-  margin-top: 12px;
+  margin: 14px auto 2px !important;
   border-radius: 999px;
   border: 2px solid #ffe08a;
   background:
@@ -215,7 +223,10 @@
   font-weight: 400;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  box-shadow: 0 6px 0 #a83c00, 0 0 0 3px #2a0f4a, 0 14px 26px #00000073;
+  overflow: hidden;
+  animation: none !important;
+  transform: none !important;
+  box-shadow: 0 6px 0 #b45309 !important;
 }
 
 .fury-spin-hint,

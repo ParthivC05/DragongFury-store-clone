@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { SpinWheelStatusProvider } from './context/SpinWheelStatusContext';
 import { VipStatusProvider } from './context/VipStatusContext';
@@ -101,9 +101,6 @@ const Bonus = lazy(() =>
 const AccountProfile = lazy(() =>
   import('./pages/Account').then((m) => ({ default: m.AccountProfile }))
 );
-const AccountVip = lazy(() =>
-  import('./pages/Account').then((m) => ({ default: m.AccountVip }))
-);
 const AccountTransactions = lazy(() =>
   import('./pages/Account').then((m) => ({ default: m.AccountTransactions }))
 );
@@ -158,23 +155,8 @@ const GoogleAuthCallback = lazy(() =>
 const IntercomWidget = lazy(() =>
   import('./components/IntercomWidget').then((m) => ({ default: m.IntercomWidget }))
 );
-const LiveWinPopup = lazy(() =>
-  import('./components/Home/LiveWinPopup').then((m) => ({ default: m.LiveWinPopup }))
-);
-
 function RouteFallback() {
   return <AppLoader fillPage message="Loading page" />;
-}
-
-/** Avoid downloading the live-win chunk until a signed-in session exists. */
-function AuthenticatedLiveWinPopup() {
-  const { isAuthenticated, loading } = useAuth();
-  if (loading || !isAuthenticated) return null;
-  return (
-    <Suspense fallback={null}>
-      <LiveWinPopup />
-    </Suspense>
-  );
 }
 
 /** Chat after first tap, 8s, or an explicit support/chat open so Contact/FAQ buttons work. */
@@ -465,7 +447,7 @@ function App() {
                 {/* Account: profile redirects to settings; rest placeholders */}
                 <Route path="/account" element={<Navigate to="/settings" replace />} />
                 <Route path="/account/profile" element={<ProtectedRoute><AccountProfile /></ProtectedRoute>} />
-                <Route path="/account/vip" element={<ProtectedRoute><AccountVip /></ProtectedRoute>} />
+                <Route path="/account/vip" element={<Navigate to="/settings" replace />} />
                 <Route path="/account/transactions" element={<ProtectedRoute><AccountTransactions /></ProtectedRoute>} />
                 <Route path="/account/affiliate" element={<ProtectedRoute><AccountAffiliate /></ProtectedRoute>} />
 
@@ -492,7 +474,6 @@ function App() {
                 <Toaster />
                 <DeviceBlockModalHost />
                 <PushPermissionHost />
-                <AuthenticatedLiveWinPopup />
                 <DeferredIntercom />
               </>
             </PageReadyProvider>

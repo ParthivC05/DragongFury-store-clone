@@ -51,13 +51,6 @@ export const AUTH_LOBBY_LINKS = [
     match: (path) => path === '/spinwheel' || path.startsWith('/spin')
   },
   {
-    id: 'vip',
-    to: '/account/vip',
-    label: 'VIP',
-    art: '/df-online/menu/menu-vip.webp',
-    match: (path) => path.startsWith('/account/vip')
-  },
-  {
     id: 'refer',
     to: '/account/affiliate',
     label: 'Refer',

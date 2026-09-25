@@ -46,7 +46,7 @@ export function DepositRequiredModal({ open, onClose, activationBonusType = 'wel
         aria-labelledby="deposit-required-modal-title"
         onClick={(e) => e.stopPropagation()}
       >
-        <button type="button" className="fdb-close" onClick={onClose} aria-label="Close" />
+        <button type="button" className="fdb-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
         <div className="fdb-glow-ring" aria-hidden />
 
@@ -100,6 +100,22 @@ export function DepositRequiredModal({ open, onClose, activationBonusType = 'wel
             <button type="button" className="fdb-dismiss" onClick={onClose}>
               Maybe later
             </button>
+            {import.meta.env.DEV ? (
+              <button
+                type="button"
+                className="fdb-dismiss"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('dragonfury:skip-deposit-gate', '1');
+                  } catch {
+                    /* ignore */
+                  }
+                  onClose();
+                }}
+              >
+                Skip for local testing
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

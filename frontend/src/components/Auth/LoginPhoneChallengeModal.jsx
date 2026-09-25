@@ -115,9 +115,7 @@ export function LoginPhoneChallengeModal({
           </div>
           <div className="pj-shine" aria-hidden />
 
-          <button type="button" className="pj-verify-close" onClick={onClose} aria-label="Close">
-            &#215;
-          </button>
+          <button type="button" className="pj-verify-close dragonfury-close-button" onClick={onClose} aria-label="Close" />
 
           <div className="pj-verify-body">
             <div className="pj-verify-icon" aria-hidden>

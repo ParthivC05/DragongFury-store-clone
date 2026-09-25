@@ -1,6 +1,18 @@
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function normalizeSlotImageUrl(url) {
+  return String(url || '').replace(/\u0445/g, 'x').replace(/\u0425/g, 'X');
+}
 const STORAGE_KEY = 'partner-slot-catalog-v5';
 const providerCache = new Map();
+
+function withPlayableImage(game) {
+  if (!game || typeof game !== 'object') return game;
+  const image = normalizeSlotImageUrl(game.image);
+  const iconUrls = Array.isArray(game.iconUrls) ? game.iconUrls.map(normalizeSlotImageUrl) : game.iconUrls;
+  if (image === game.image && iconUrls === game.iconUrls) return game;
+  return { ...game, image, iconUrls };
+}
 
 function slimGames(games) {
   return (games || []).map((game) => ({
@@ -9,8 +21,8 @@ function slimGames(games) {
     provider: game.provider,
     symbol: game.symbol,
     title: game.title,
-    image: game.image,
-    iconUrls: Array.isArray(game.iconUrls) ? game.iconUrls.slice(0, 1) : [],
+    image: normalizeSlotImageUrl(game.image),
+    iconUrls: Array.isArray(game.iconUrls) ? game.iconUrls.slice(0, 1).map(normalizeSlotImageUrl) : [],
     brand: game.brand || '',
     categories: Array.isArray(game.categories) ? game.categories.slice(0, 1) : [],
     providerId: game.providerId ?? null,
@@ -71,7 +83,7 @@ hydrateCache();
 export function getCachedProviderSlotGames(provider) {
   const entry = providerCache.get(provider);
   if (!entry?.games?.length) return null;
-  return entry.games;
+  return entry.games.map(withPlayableImage);
 }
 
 export function getAllCachedProviderSlotGames() {
@@ -82,7 +94,7 @@ export function getAllCachedProviderSlotGames() {
       const id = String(game?.gameid || game?.id || game?.title || '');
       if (!id || seen.has(id)) continue;
       seen.add(id);
-      out.push(game);
+      out.push(withPlayableImage(game));
     }
   }
   return out;

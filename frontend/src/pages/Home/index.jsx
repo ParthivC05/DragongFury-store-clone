@@ -4,9 +4,8 @@ import { scrollToGamesSection } from '../../utils/scrollToGames';
 import { useAuth } from '../../context/AuthContext';
 import * as welcomeSignupBonusApi from '../../api/welcomeSignupBonus';
 import { DashboardSidebar } from '../../components/Home/DashboardSidebar';
-import { GamesGridSkeleton } from '../../components/Home/GamesGridSkeleton';
+import { AppLoader } from '../../components/AppLoader';
 import { GuestHomePlatforms } from '../../components/Home/GuestHomePlatforms';
-import { GuestPlatformsGridSkeleton } from '../../components/Home/GamesSection/GuestPlatformsGrid';
 import { DragonFuryOnlineHero } from '../../components/Home/DragonFuryOnlineHero';
 import { WelcomeBonusModal } from '../../components/Home/WelcomeBonusModal';
 import { useWelcomeBonusScrollModal } from '../../hooks/useWelcomeBonusScrollModal';
@@ -36,30 +35,8 @@ const DashboardSlotGamesSection = lazy(() =>
   }))
 );
 
-function GamesLoading({ isGuest }) {
-  if (isGuest) {
-    return (
-      <section className="df-other-games" id="games" aria-busy="true">
-        <p className="df-games-eyebrow">Also on your account</p>
-        <h2 className="df-games-title">TRY OTHER GAMES</h2>
-        <GuestPlatformsGridSkeleton count={12} priorityLobby />
-      </section>
-    );
-  }
-
-  return (
-    <section id="games" className="dash-games-section dash-games-section--auth dash-animate-in">
-      <div className="dash-section-head">
-        <p className="dash-priority-lobby-kick">Try Other Games</p>
-        <h2 className="dash-section-title">Try Other Games</h2>
-      </div>
-      <div className="dash-games-tabs">
-        <span className="dashboard-games-tab active">All Games</span>
-        <span className="dashboard-games-tab">My Games</span>
-      </div>
-      <GamesGridSkeleton />
-    </section>
-  );
+function GamesLoading() {
+  return <AppLoader fillPage={false} message="Loading games" />;
 }
 
 export function Home() {
@@ -178,13 +155,13 @@ export function Home() {
           ) : null}
 
           {!loading && isAuthenticated ? (
-            <Suspense fallback={<GamesLoading isGuest={false} />}>
+            <Suspense fallback={<GamesLoading />}>
               <GamesSection />
             </Suspense>
           ) : !loading && !isAuthenticated ? (
             <GuestHomePlatforms />
           ) : (
-            <GamesLoading isGuest />
+            <GamesLoading />
           )}
 
           {showGuestSections && belowFoldReady && (

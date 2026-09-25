@@ -7,25 +7,28 @@
   <title>Quick upgrade in progress</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Lilita+One&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #060911; --slab: #0E1422; --slab2: #151E31; --line: #222E47;
-      --gold: #F2B33D; --goldHi: #FFD470; --goldDp: #8A5A0C;
-      --emerald: #14E08A; --teal: #2DD4BF; --text: #EEF2F9; --mute: #8592AC;
+      --ink: #090612; --slab: rgba(18, 8, 36, 0.96); --slab2: rgba(74, 22, 130, 0.42); --line: rgba(255, 216, 92, 0.32);
+      --gold: #ffc94f; --goldHi: #fff2a0; --goldDp: #0e7a48;
+      --emerald: #35ef9a; --teal: #66e69b; --text: #ffffff; --mute: rgba(255, 255, 255, 0.68);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Archivo', -apple-system, sans-serif;
+      font-family: 'Baloo 2', 'Trebuchet MS', system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
       color: var(--text);
-      background: #03060C;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% 0%, rgba(124, 58, 237, 0.42), transparent 58%),
+        radial-gradient(ellipse 50% 40% at 80% 100%, rgba(53, 239, 154, 0.08), transparent 55%),
+        linear-gradient(165deg, #1a0b33 0%, #12081f 48%, #090612 100%);
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 14px;
     }
-    .mt-d { font-family: 'Archivo Black', sans-serif; letter-spacing: -.025em; line-height: .95; }
+    .mt-d { font-family: 'Lilita One', 'Baloo 2', system-ui, sans-serif; letter-spacing: 0.02em; line-height: 1.05; font-weight: 400; color: var(--goldHi); }
     @keyframes m-orbit { to { transform: rotate(360deg); } }
     @keyframes m-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
     @keyframes m-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
@@ -39,11 +42,10 @@
     @keyframes m-fade { from{opacity:0} to{opacity:1} }
     .m-rise { animation: m-rise .45s cubic-bezier(.2,.85,.3,1) both; }
     .card {
-      width: 100%; max-width: 400px; border-radius: 26px; overflow: hidden; position: relative;
-      border: 1px solid var(--line); box-shadow: 0 30px 80px rgba(0,0,0,.6);
-      background:
-        radial-gradient(110% 60% at 50% 0%, rgba(242,179,61,.13), transparent 58%),
-        linear-gradient(175deg, var(--slab), var(--ink) 72%);
+      width: 100%; max-width: 420px; border-radius: 28px; overflow: hidden; position: relative;
+      border: 1px solid var(--line);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset, 0 18px 48px rgba(6, 2, 18, 0.55);
+      background: linear-gradient(145deg, rgba(74, 22, 130, 0.92), rgba(18, 8, 36, 0.96));
     }
     .m-url {
       position: relative; border-radius: 18px; padding: 14px 14px 14px 17px; overflow: hidden;
@@ -58,8 +60,8 @@
     .m-copy:active { background: rgba(20,224,138,.22); }
     .m-cta {
       position: relative; overflow: hidden; width: 100%; border: 0; border-radius: 15px; cursor: pointer;
-      font-family: 'Archivo Black', sans-serif; font-size: 16px; color: #180F02; padding: 15px;
-      background: linear-gradient(180deg, var(--goldHi), var(--gold));
+      font-family: 'Baloo 2', system-ui, sans-serif; font-weight: 800; font-size: 16px; color: #062015; padding: 15px;
+      background: linear-gradient(180deg, #49df87, #1bac65);
       box-shadow: 0 4px 0 var(--goldDp); transition: transform .1s, box-shadow .1s;
     }
     .m-cta:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--goldDp); }
@@ -121,6 +123,7 @@
           </div>
         </div>
         <div style="flex:1;min-width:0">
+          <p class="mt-d" style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">Maintenance</p>
           <h1 class="mt-d" style="font-size:23px">Quick upgrade<br />in progress</h1>
           <p style="font-size:13.5px;color:var(--mute);margin-top:7px;line-height:1.4">Your account and every coin are safe.</p>
         </div>

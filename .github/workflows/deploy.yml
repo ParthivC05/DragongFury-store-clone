@@ -62,18 +62,44 @@ jobs:
             ETA_FILE="$DEPLOY_PATH/frontend/maintenance/eta.json"
             DEPLOY_ETA_SECONDS="${DEPLOY_ETA_SECONDS:-300}"
 
+            can_write() {
+              if [ -e "$1" ]; then
+                [ -w "$1" ]
+              else
+                [ -w "$(dirname "$1")" ]
+              fi
+            }
+
             enable_maintenance() {
-              mkdir -p "$DEPLOY_PATH/frontend/maintenance"
+              mkdir -p "$DEPLOY_PATH/frontend/maintenance" 2>/dev/null || sudo mkdir -p "$DEPLOY_PATH/frontend/maintenance"
               START_MS=$(($(date +%s) * 1000))
               END_MS=$((START_MS + DEPLOY_ETA_SECONDS * 1000))
-              printf '{"startedAt":%s,"endsAt":%s,"durationSec":%s}\n' "$START_MS" "$END_MS" "$DEPLOY_ETA_SECONDS" > "$ETA_FILE"
-              touch "$MAINT_FLAG"
+              payload=$(printf '{"startedAt":%s,"endsAt":%s,"durationSec":%s}' "$START_MS" "$END_MS" "$DEPLOY_ETA_SECONDS")
+              if can_write "$ETA_FILE"; then
+                printf '%s\n' "$payload" > "$ETA_FILE"
+              else
+                printf '%s\n' "$payload" | sudo tee "$ETA_FILE" >/dev/null
+              fi
+              if can_write "$MAINT_FLAG"; then
+                touch "$MAINT_FLAG"
+              else
+                sudo touch "$MAINT_FLAG"
+              fi
               echo ">>> Maintenance ON (ETA ${DEPLOY_ETA_SECONDS}s)"
             }
 
             cleanup() {
               echo ">>> Clearing maintenance mode..."
-              rm -f "$MAINT_FLAG" "$ETA_FILE"
+              if [ -e "$MAINT_FLAG" ] && [ ! -w "$MAINT_FLAG" ]; then
+                sudo rm -f "$MAINT_FLAG"
+              else
+                rm -f "$MAINT_FLAG"
+              fi
+              if [ -e "$ETA_FILE" ] && [ ! -w "$ETA_FILE" ]; then
+                sudo rm -f "$ETA_FILE"
+              else
+                rm -f "$ETA_FILE"
+              fi
             }
             trap cleanup EXIT
 

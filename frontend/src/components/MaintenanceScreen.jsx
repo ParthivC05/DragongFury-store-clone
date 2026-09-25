@@ -12,6 +12,7 @@ export function MaintenanceScreen() {
           <img src={site.logoUrl} alt={title} decoding="async" />
         </div>
 
+        <p className="maint-screen__kicker">Maintenance</p>
         <h1 className="maint-screen__title">Be right back</h1>
         <p className="maint-screen__copy">
           Something unexpected happened and we are working to get {title} back for you.

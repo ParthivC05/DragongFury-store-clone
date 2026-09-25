@@ -7,99 +7,91 @@
   justify-content: center;
   padding: 24px 16px;
   background:
-    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212, 175, 55, 0.18), transparent 55%),
-    linear-gradient(165deg, #0a0c12 0%, #12161f 45%, #0d1018 100%);
-  color: #f5f0e6;
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(124, 58, 237, 0.42), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 80% 100%, rgba(53, 239, 154, 0.08), transparent 55%),
+    linear-gradient(165deg, #1a0b33 0%, #12081f 48%, #090612 100%);
+  color: #fff;
+  font-family: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
 }
 
 .maint-screen__glow {
   position: absolute;
-  inset: auto 10% 12% 10%;
-  height: 40%;
-  background: radial-gradient(ellipse at center, rgba(212, 175, 55, 0.12), transparent 70%);
+  inset: auto 8% 8% 8%;
+  height: 36%;
+  background: radial-gradient(ellipse at center, rgba(255, 201, 79, 0.14), transparent 70%);
   pointer-events: none;
 }
 
 .maint-screen__card {
   position: relative;
-  width: min(460px, 100%);
+  width: min(480px, 100%);
+  padding: 32px 28px 28px;
   text-align: center;
+  border: 1px solid rgba(255, 216, 92, 0.32);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(74, 22, 130, 0.92), rgba(18, 8, 36, 0.96));
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 18px 48px rgba(6, 2, 18, 0.55);
 }
 
 .maint-screen__logo {
   display: flex;
   justify-content: center;
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .maint-screen__logo img {
-  max-height: 72px;
+  max-height: 78px;
   width: auto;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
 }
 
-.maint-screen__header-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.maint-screen__header-ring {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(145deg, rgba(247, 231, 176, 0.35), rgba(212, 175, 55, 0.15));
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.35);
-  flex-shrink: 0;
-}
-
-.maint-screen__header-inner {
-  font-size: 1.45rem;
-  line-height: 1;
-}
-
-.maint-screen__header-name {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(1.25rem, 3.5vw, 1.6rem);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #f7e7b0;
-  text-align: left;
+.maint-screen__kicker {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #ffc94f;
 }
 
 .maint-screen__title {
   margin: 0 0 12px;
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: clamp(1.65rem, 4vw, 2.1rem);
-  font-weight: 700;
+  font-family: "Lilita One", "Baloo 2", system-ui, sans-serif;
+  font-size: clamp(1.8rem, 5vw, 2.35rem);
+  font-weight: 400;
   letter-spacing: 0.02em;
-  color: #f7e7b0;
+  color: #fff2a0;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .maint-screen__copy {
-  margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.55;
-  color: rgba(245, 240, 230, 0.78);
+  margin: 0 auto;
+  max-width: 38ch;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .maint-screen__copy--second {
-  margin-top: 14px;
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.58);
 }
 
 .maint-screen__support {
   margin: 22px 0 0;
-  font-size: 0.85rem;
-  color: rgba(245, 240, 230, 0.55);
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .maint-screen__support a {
-  color: #e8c96a;
+  color: #66e69b;
+  font-weight: 700;
   text-decoration: none;
 }
 
 .maint-screen__support a:hover {
+  color: #35ef9a;
   text-decoration: underline;
 }

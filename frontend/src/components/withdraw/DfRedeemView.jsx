@@ -133,21 +133,48 @@ function MethodMark({ methodKey }) {
  * every admin-enabled supported method is shown. Card/bank never collect destination fields.
  */
 export function buildRedeemMethods(paymentTypes, { withdrawMin, withdrawMax, xxpayMin }) {
-  return (Array.isArray(paymentTypes) ? paymentTypes : [])
-    .filter((pt) => SUPPORTED_PAYOUT_KEYS.has(String(pt?.key || '').toLowerCase()))
-    .map((pt) => {
-      const key = String(pt.key).toLowerCase();
-      const providerCode = String(pt.providers?.[0]?.providerCode || '').toLowerCase();
-      const min = providerCode === 'xxpay' ? Math.max(withdrawMin, xxpayMin) : withdrawMin;
-      return {
-        key,
-        label: (pt.label || '').trim() || METHOD_FALLBACK_LABEL[key] || key,
-        providerCode: providerCode || null,
-        min,
+  const rows = [];
+  for (const pt of Array.isArray(paymentTypes) ? paymentTypes : []) {
+    const key = String(pt?.key || '').toLowerCase();
+    if (!SUPPORTED_PAYOUT_KEYS.has(key)) continue;
+    const providers = Array.isArray(pt.providers) ? pt.providers : [];
+    if (key === 'chime') {
+      const automatic = providers.find((p) => String(p.providerCode || '').toLowerCase() !== 'manual');
+      rows.push({
+        id: 'chime-manual',
+        key: 'chime',
+        label: 'Chime Manual',
+        providerCode: 'manual',
+        min: withdrawMin,
         max: withdrawMax,
-        needsRecipient: methodNeedsRecipient(key)
-      };
+        needsRecipient: true
+      });
+      if (automatic) {
+        const providerCode = String(automatic.providerCode || '').toLowerCase();
+        rows.push({
+          id: `chime-${providerCode}`,
+          key: 'chime',
+          label: 'Chime',
+          providerCode,
+          min: providerCode === 'xxpay' ? Math.max(withdrawMin, xxpayMin) : withdrawMin,
+          max: withdrawMax,
+          needsRecipient: true
+        });
+      }
+      continue;
+    }
+    const providerCode = String(providers[0]?.providerCode || '').toLowerCase();
+    rows.push({
+      id: key,
+      key,
+      label: (pt.label || '').trim() || METHOD_FALLBACK_LABEL[key] || key,
+      providerCode: providerCode || null,
+      min: providerCode === 'xxpay' ? Math.max(withdrawMin, xxpayMin) : withdrawMin,
+      max: withdrawMax,
+      needsRecipient: methodNeedsRecipient(key)
     });
+  }
+  return rows;
 }
 
 /**
@@ -392,12 +419,13 @@ export function DfRedeemView({
   const [rulesOpen, setRulesOpen] = useState(false);
 
   const method = useMemo(
-    () => methods.find((m) => m.key === selectedMethod) || null,
+    () => methods.find((m) => (m.id || m.key) === selectedMethod) || null,
     [methods, selectedMethod]
   );
-  const needsRecipient = methodNeedsRecipient(selectedMethod);
+  const methodKey = method?.key || '';
+  const needsRecipient = methodNeedsRecipient(methodKey);
   const copy = needsRecipient
-    ? RECIPIENT_COPY[selectedMethod] || {
+    ? RECIPIENT_COPY[methodKey] || {
         label: 'Recipient',
         placeholder: 'Account',
         prefix: null,
@@ -409,7 +437,7 @@ export function DfRedeemView({
   const methodMin = method?.min ?? withdrawMin;
   const maxAllowed = Math.min(withdrawMax, availableNow);
   const destError = needsRecipient
-    ? recipientError(selectedMethod, recipient, { cardValid, routingNumber })
+    ? recipientError(methodKey, recipient, { cardValid, routingNumber })
     : null;
 
   const gateMessage = !profileComplete
@@ -453,9 +481,9 @@ export function DfRedeemView({
   const completedToday = showDaily ? Math.max(0, dailyMax - dailyRemaining - (Number(pendingToday) || 0)) : 0;
   const resetLabel = nextAllowanceResetLabel();
   const noRecipientHint =
-    selectedMethod === 'card'
+    methodKey === 'card'
       ? 'Debit card payout — no card number needed here. The operator completes the send after review.'
-      : selectedMethod === 'bank_transfer'
+      : methodKey === 'bank_transfer'
         ? 'Bank (ACH) payout — no account details needed here. The operator completes the send after review.'
         : null;
 
@@ -688,7 +716,7 @@ export function DfRedeemView({
                 inputMode="text"
                 placeholder={copy.placeholder}
                 value={
-                  selectedMethod === 'cashapp' && recipient
+                  methodKey === 'cashapp' && recipient
                     ? recipient.startsWith('$')
                       ? recipient
                       : `$${recipient}`
@@ -697,7 +725,7 @@ export function DfRedeemView({
                 disabled={Boolean(gateMessage) || !method}
                 onChange={(e) => {
                   let next = e.target.value.replace(/^\$+/, '');
-                  if (selectedMethod === 'cashapp') {
+                  if (methodKey === 'cashapp') {
                     next = next.replace(/\s+/g, '').slice(0, 64);
                   } else {
                     next = next.slice(0, 64);
@@ -745,15 +773,15 @@ export function DfRedeemView({
           ) : (
             <div className="redeem-method-grid" role="group" aria-label="Payout methods">
               {methods.map((m) => {
-                const active = m.key === selectedMethod;
+                const active = (m.id || m.key) === selectedMethod;
                 return (
                   <button
-                    key={m.key}
+                    key={m.id || m.key}
                     type="button"
                     className={`redeem-method-option${active ? ' redeem-method-option--active' : ''}`}
                     aria-pressed={active}
                     disabled={Boolean(gateMessage)}
-                    onClick={() => onSelectMethod?.(m.key)}
+                    onClick={() => onSelectMethod?.(m.id || m.key)}
                   >
                     <MethodMark methodKey={m.key} />
                     <strong>{m.label}</strong>

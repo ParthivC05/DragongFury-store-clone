@@ -46,8 +46,8 @@ function makeRail(pt, extra) {
 
 /**
  * Expand admin paymentTypes into selectable rails.
- * - XXPay Chime enabled → Chime Auto + Chime Manual
- * - Chime manual only → Chime Manual
+ * - XXPay Chime enabled → Chime (automatic) + Chime Manual
+ * - Chime Manual is always shown, even when automatic Chime is off
  */
 export function expandDepositRails(paymentTypes = []) {
   const rails = [];
@@ -60,7 +60,7 @@ export function expandDepositRails(paymentTypes = []) {
       if (hasXxpay) {
         rails.push(makeRail(pt, {
           railKey: 'chime-auto',
-          label: 'Chime Auto',
+          label: 'Chime',
           providerCode: 'xxpay',
           speed: 'Instant',
           dark: false,

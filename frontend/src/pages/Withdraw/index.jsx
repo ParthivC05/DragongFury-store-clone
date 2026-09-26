@@ -122,7 +122,10 @@ export function Withdraw() {
     [paymentTypes, withdrawMin, withdrawMax, dailyWithdrawRemaining]
   );
 
-  const selectedMethod = useMemo(() => methods.find((m) => m.key === payoutType) || null, [methods, payoutType]);
+  const selectedMethod = useMemo(
+    () => methods.find((m) => (m.id || m.key) === payoutType) || null,
+    [methods, payoutType]
+  );
 
   const amountNum = parseFloat(amount) || 0;
   const availableSc = balance?.available_to_withdraw_sc != null ? Number(balance.available_to_withdraw_sc) : 0;
@@ -243,8 +246,8 @@ export function Withdraw() {
   // Drop a selection that is no longer offered by the API; auto-pick the first when empty.
   useEffect(() => {
     setPayoutType((prev) => {
-      if (prev && methods.some((m) => m.key === prev)) return prev;
-      return methods[0]?.key || null;
+      if (prev && methods.some((m) => (m.id || m.key) === prev)) return prev;
+      return methods[0]?.id || methods[0]?.key || null;
     });
   }, [methods]);
 
@@ -353,7 +356,7 @@ export function Withdraw() {
 
   async function handleModalSubmit(destinationUsername, destinationMeta) {
     const pendingDest = Boolean(destinationMeta?.destinationPending);
-    const isCardOrBank = payoutType === 'card' || payoutType === 'bank_transfer';
+    const isCardOrBank = selectedMethod?.key === 'card' || selectedMethod?.key === 'bank_transfer';
     if (!pendingDest && (!destinationUsername || destinationUsername.length < 2)) {
       toast.error('Enter a valid account.');
       return;
@@ -372,7 +375,8 @@ export function Withdraw() {
     setSubmitting(true);
     try {
       await walletApi.createChimeCashappWithdrawal({
-        payoutType,
+        payoutType: selectedMethod.key,
+        providerCode: selectedMethod.providerCode,
         amount: roundTo2(amountNum),
         destinationUsername: destinationUsername || (isCardOrBank ? 'Pending' : ''),
         ...(Object.keys(meta).length ? { destinationMeta: meta } : {}),
@@ -662,7 +666,7 @@ export function Withdraw() {
         className="df-redeem-modal"
         onClose={() => setModalOpen(false)}
         payoutLabel={selectedMethod?.label || ''}
-        payoutType={payoutType}
+        payoutType={selectedMethod?.key || payoutType}
         currency={currency}
         withdrawMin={effectiveWithdrawMin}
         amountNum={amountNum}

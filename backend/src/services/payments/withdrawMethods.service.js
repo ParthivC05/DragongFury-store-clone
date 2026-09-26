@@ -68,6 +68,11 @@ async function getActiveWithdrawMethods(storeContext = null) {
         storeRow?.withdrawMethodsEnabled
       );
     }
+    if (code === 'dollarpay' && typeKey === 'chime') {
+      const storeOn = storeRow?.withdrawMethodsEnabled?.chime === true;
+      const masterOn = !provider.withdrawMethodsEnabled || provider.withdrawMethodsEnabled.chime !== false;
+      return storeOn && masterOn;
+    }
     let withdrawTypes = Array.isArray(meta?.supportedWithdrawPaymentTypes)
       ? meta.supportedWithdrawPaymentTypes
       : Array.isArray(meta?.supportedPaymentTypes)
@@ -111,18 +116,30 @@ async function getActiveWithdrawMethods(storeContext = null) {
         return a.displayOrder - b.displayOrder;
       });
 
-    // Prefer a single active provider per type for the user UI (admin picks one).
-    // If XXPay/DollarPay/Manual are on, sorted rank wins.
-    const providersForTypeDeduped =
+    // One automatic provider per wallet method, except Chime: manual is always listed
+    // and automatic Chime is added only when admin enabled it.
+    let providersForTypeDeduped = providersForType;
+    if (typeKey === 'chime') {
+      const automatic = providersForType.find((p) => p.providerCode !== 'manual') || null;
+      providersForTypeDeduped = [];
+      if (automatic) providersForTypeDeduped.push(automatic);
+      providersForTypeDeduped.push({
+        providerCode: 'manual',
+        providerName: 'Manual',
+        badgeLabel: 'Manual',
+        displayOrder: 50,
+        flow: FLOW_BY_CODE.manual
+      });
+    } else if (
       typeKey === 'cashapp' ||
-      typeKey === 'chime' ||
       typeKey === 'paypal' ||
       typeKey === 'venmo' ||
       typeKey === 'zelle' ||
       typeKey === 'card' ||
       typeKey === 'bank_transfer'
-        ? providersForType.slice(0, 1)
-        : providersForType;
+    ) {
+      providersForTypeDeduped = providersForType.slice(0, 1);
+    }
 
     if (providersForTypeDeduped.length > 0) {
       paymentTypes.push({

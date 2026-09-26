@@ -241,6 +241,8 @@ async function getActiveDepositMethods(storeContext = null) {
     }
   }
 
+  ensureManualChimeDeposit(paymentTypes, bestDealSet);
+
   /** Methods: providers that appear in at least one payment type (so UX can use either flow). */
   const providerCodesInPaymentTypes = new Set(paymentTypes.flatMap((pt) => pt.providers.map((pr) => pr.providerCode)));
   const methods = filteredProviders
@@ -311,6 +313,31 @@ async function getActiveDepositMethods(storeContext = null) {
     .sort((a, b) => a.displayOrder - b.displayOrder);
 
   return { paymentTypes, methods, bestDealMethods: [...bestDealSet] };
+}
+
+/** Chime Manual is always offered. Automatic Chime (XXPay) is included only when admin enabled it. */
+function ensureManualChimeDeposit(paymentTypes, bestDealSet) {
+  const manual = {
+    providerCode: 'manual',
+    providerName: 'Manual',
+    badgeLabel: 'Manual',
+    displayOrder: 50
+  };
+  let chime = paymentTypes.find((pt) => pt.key === 'chime');
+  if (!chime) {
+    chime = {
+      key: 'chime',
+      label: getPaymentTypeLabel('chime'),
+      bestDeal: false,
+      bestDealDirect: false,
+      bestDealManual: bestDealSet.has('chime_manual'),
+      providers: []
+    };
+    paymentTypes.push(chime);
+  }
+  if (!chime.providers.some((pr) => pr.providerCode === 'manual')) {
+    chime.providers.push(manual);
+  }
 }
 
 /**

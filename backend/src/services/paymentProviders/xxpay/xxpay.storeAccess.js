@@ -33,10 +33,10 @@ const XXPAY_APPLE_GOOGLE_STORE_CODES = new Set([
 const XXPAY_METHOD_KEYS = new Set(['cashapp', 'chime']);
 
 /** Deposit extras: missing key = OFF (do not steal from Orion/DollarPay). */
-const XXPAY_OPT_IN_DEPOSIT_KEYS = new Set(['apple_pay', 'google_pay', 'card']);
+const XXPAY_OPT_IN_DEPOSIT_KEYS = new Set(['apple_pay', 'google_pay', 'card', 'chime']);
 
 /** Withdraw extras: missing key = OFF. */
-const XXPAY_OPT_IN_WITHDRAW_KEYS = new Set(['paypal']);
+const XXPAY_OPT_IN_WITHDRAW_KEYS = new Set(['paypal', 'chime']);
 
 /** @deprecated apple/google-only name; prefer XXPAY_OPT_IN_DEPOSIT_KEYS */
 const XXPAY_APPLE_GOOGLE_DEPOSIT_EXTRA_KEYS = new Set(['apple_pay', 'google_pay']);
@@ -98,8 +98,8 @@ function isXxpayDepositTypeAllowedForStore(storeCode, paymentType) {
 
 /**
  * Master + store method maps for XXPay deposit.
- * Cash App / Chime: missing key = ON (legacy).
- * Card / Apple Pay / Google Pay: missing key = OFF.
+ * Cash App: missing key = ON (legacy).
+ * Card / Apple Pay / Google Pay / Chime: missing key = OFF.
  */
 function isXxpayDepositMethodEnabledInMaps(storeCode, typeKey, masterMap, storeMap) {
   const key = String(typeKey || '').trim().toLowerCase();
@@ -116,8 +116,8 @@ function isXxpayDepositMethodEnabledInMaps(storeCode, typeKey, masterMap, storeM
 
 /**
  * Master + store method maps for XXPay withdraw.
- * Cash App / Chime: missing key = ON.
- * PayPal: missing key = OFF.
+ * Cash App: missing key = ON.
+ * Chime / PayPal: missing key = OFF.
  */
 function isXxpayWithdrawMethodEnabledInMaps(typeKey, masterMap, storeMap) {
   const key = String(typeKey || '').trim().toLowerCase();

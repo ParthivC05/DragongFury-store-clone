@@ -48,14 +48,16 @@ const METHOD_MATRIX = {
     { key: 'cashapp', label: 'Cash App', providers: ['orionstarspay', 'dollarpay', 'xxpay'] },
     { key: 'apple_pay', label: 'Apple Pay', providers: ['orionstarspay', 'dollarpay', 'xxpay'] },
     { key: 'google_pay', label: 'Google Pay', providers: ['orionstarspay', 'dollarpay', 'xxpay'] },
-    { key: 'chime', label: 'Chime', providers: ['manual', 'xxpay'] },
+    { key: 'chime_manual', methodFlag: 'chime', label: 'Chime Manual', providers: ['manual'], lockedOn: true },
+    { key: 'chime', label: 'Chime', providers: ['xxpay'] },
     { key: 'crypto', label: 'Crypto (Speed)', providers: ['scrypto'] },
     { key: 'crypto_direct', methodFlag: 'crypto', label: 'Crypto (Direct)', providers: ['selfcrypto'] }
   ],
   withdraw: [
     { key: 'card', label: 'Card', providers: ['orionstarspay'] },
     { key: 'cashapp', label: 'Cash App', providers: ['manual', 'dollarpay', 'xxpay'] },
-    { key: 'chime', label: 'Chime', providers: ['manual', 'dollarpay', 'xxpay'] },
+    { key: 'chime_manual', methodFlag: 'chime', label: 'Chime Manual', providers: ['manual'], lockedOn: true },
+    { key: 'chime', label: 'Chime', providers: ['dollarpay', 'xxpay'] },
     { key: 'paypal', label: 'PayPal', providers: ['dollarpay', 'xxpay'] },
     { key: 'crypto', label: 'Crypto', providers: ['scrypto'] }
   ]
@@ -170,13 +172,16 @@ function buildMethodRows(list, direction, storeCode = '') {
               if (direction === 'deposit') {
                 if (
                   code === 'xxpay' &&
-                  (def.key === 'apple_pay' || def.key === 'google_pay' || def.key === 'card')
+                  (def.key === 'apple_pay' || def.key === 'google_pay' || def.key === 'card' || def.key === 'chime')
                 ) {
+                  return p.depositMethodsEnabled?.[flag] === true
+                }
+                if (code === 'dollarpay' && def.key === 'chime') {
                   return p.depositMethodsEnabled?.[flag] === true
                 }
                 return p.depositMethodsEnabled?.[flag] !== false
               }
-              if (direction === 'withdraw' && code === 'xxpay' && def.key === 'paypal') {
+              if (direction === 'withdraw' && (def.key === 'paypal' || def.key === 'chime') && (code === 'xxpay' || code === 'dollarpay')) {
                 return p.withdrawMethodsEnabled?.[flag] === true
               }
               return p.withdrawMethodsEnabled?.[flag] !== false
@@ -200,8 +205,9 @@ function buildMethodRows(list, direction, storeCode = '') {
         label: def.label,
         direction,
         providers: candidates,
-        selectedCode: active?.code || candidates[0].code,
-        enabled: Boolean(active)
+        selectedCode: def.lockedOn ? 'manual' : (active?.code || candidates[0].code),
+        enabled: def.lockedOn ? true : Boolean(active),
+        lockedOn: Boolean(def.lockedOn)
       }
     })
     .filter(Boolean)
@@ -484,9 +490,12 @@ export default function PaymentProviders() {
                   <Switch
                     id={`pp-${row.direction}-${row.key}`}
                     className="pp-switch--power"
-                    checked={row.enabled}
-                    disabled={busy}
-                    onChange={(on) => applyMethodChoice(row, row.selectedCode, on)}
+                    checked={row.lockedOn ? true : row.enabled}
+                    disabled={busy || row.lockedOn}
+                    onChange={(on) => {
+                      if (row.lockedOn) return
+                      applyMethodChoice(row, row.selectedCode, on)
+                    }}
                   />
                 </div>
                 {chimeManualDeal ? (

@@ -112,7 +112,14 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
   const { getActiveWithdrawMethods } = require('../payments/withdrawMethods.service');
   const { paymentTypes } = await getActiveWithdrawMethods(storeContext);
   const pt = (paymentTypes || []).find((p) => p.key === payoutType);
-  const activeProvider = String(pt?.providers?.[0]?.providerCode || '').toLowerCase();
+  const requestedProvider = String(body?.providerCode ?? body?.provider_code ?? '').trim().toLowerCase();
+  const enabledCodes = new Set((pt?.providers || []).map((p) => String(p.providerCode || '').toLowerCase()));
+  const activeProvider =
+    payoutType === 'chime' && requestedProvider === 'manual'
+      ? 'manual'
+      : requestedProvider && enabledCodes.has(requestedProvider)
+        ? requestedProvider
+        : String(pt?.providers?.[0]?.providerCode || '').toLowerCase();
   const usesXxpay = activeProvider === 'xxpay';
   const usesDollarpay = activeProvider === 'dollarpay';
 

@@ -408,7 +408,7 @@ export function AccountAffiliate() {
           </button>
         </div>
 
-        <div className="rae-section">
+        <div className="rae-section rae-how">
           <h2 className="rae-how-title">How it works</h2>
           <p className="rae-sub">Three easy steps</p>
           <div className="rae-flow">

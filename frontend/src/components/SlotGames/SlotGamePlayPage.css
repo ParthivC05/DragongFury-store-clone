@@ -3,6 +3,12 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 10px;
+  background:
+    radial-gradient(ellipse 70% 140% at 50% -40%, rgba(148, 72, 255, 0.45), transparent 60%),
+    linear-gradient(180deg, #5b22c4 0%, #3a147c 100%);
+  border-bottom: 1px solid rgba(255, 201, 79, 0.35);
+  box-shadow: 0 8px 24px rgba(20, 6, 40, 0.45);
+  font-family: "Baloo 2", system-ui, sans-serif;
 }
 
 .spm-iframe-header--play .spm-iframe-header-actions {
@@ -20,13 +26,13 @@
   justify-content: center;
   gap: 6px;
   padding: 8px 16px;
-  border-radius: 12px;
-  border: 1.5px solid rgba(255, 215, 0, 0.4);
-  background: rgba(255, 215, 0, 0.06);
-  color: var(--dash-gold, #ffd700);
-  font-family: Rajdhani, system-ui, sans-serif;
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 201, 79, 0.55);
+  background: rgba(26, 11, 51, 0.72);
+  color: #ffe14a;
+  font-family: "Baloo 2", system-ui, sans-serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.03em;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
@@ -56,10 +62,10 @@
   width: 40px;
   height: 40px;
   padding: 0;
-  border-radius: 12px;
-  border: 1.5px solid rgba(255, 215, 0, 0.4);
-  background: rgba(255, 215, 0, 0.06);
-  color: var(--dash-gold, #ffd700);
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 201, 79, 0.55);
+  background: rgba(26, 11, 51, 0.72);
+  color: #ffe14a;
   cursor: pointer;
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s;
 }
@@ -99,9 +105,9 @@
   justify-self: center;
   padding: 6px 14px;
   border-radius: 999px;
-  background: rgba(13, 19, 32, 0.92);
-  border: 1px solid rgba(255, 215, 0, 0.28);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 10px rgba(0, 0, 0, 0.35);
+  background: #12081f;
+  border: 1px solid rgba(255, 201, 79, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 10px rgba(0, 0, 0, 0.35);
 }
 
 .spm-play-wallet-coin {
@@ -117,21 +123,21 @@
 }
 
 .spm-play-wallet-amount {
-  font-family: 'Russo One', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
   letter-spacing: 0.02em;
-  color: var(--dash-gold, #ffd700);
+  color: #ffe14a;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
 .spm-play-wallet-label {
-  font-family: Rajdhani, sans-serif;
+  font-family: "Baloo 2", system-ui, sans-serif;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.04em;
-  color: var(--dash-muted, #8a98b0);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 @media (max-width: 560px) {
@@ -202,6 +208,21 @@
     padding: 7px 12px;
     font-size: 13px;
   }
+}
+
+.spm-iframe-header--play .spm-iframe-header-close {
+  border-radius: 999px;
+  border: 1.5px solid rgba(255, 201, 79, 0.55);
+  background: rgba(26, 11, 51, 0.72);
+  color: #ffe14a;
+  font-family: "Baloo 2", system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.spm-iframe-header--play .spm-iframe-header-close:hover {
+  background: rgba(255, 201, 79, 0.14);
+  border-color: rgba(255, 201, 79, 0.8);
+  color: #ffe14a;
 }
 
 /* Full-page slot play — hide support chat and other floating widgets */

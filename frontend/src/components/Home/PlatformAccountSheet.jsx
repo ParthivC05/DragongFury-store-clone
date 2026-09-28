@@ -12,7 +12,7 @@ import { DepositRequiredModal } from '../Games/DepositRequiredModal';
 import { GameFavoriteButton } from './GameFavoriteButton';
 import { platformFavoriteId } from '../../utils/gameFavorites';
 
-const QUICK_AMOUNTS = [10, 25, 50, 100, 250];
+const QUICK_PRESETS = [10, 25, 50, 100, 250];
 const CREATE_STEPS = [
   'Initializing Game Account',
   'Connecting to Game Server',
@@ -24,14 +24,25 @@ const CREATE_STEPS = [
 const RETURN_RULES =
   'Platform returns follow the load tiers: 10–14.99 SC needs 50 SC; 15–39.99 SC uses stepped minimums; 40–49.99 SC needs 3×; 50+ SC needs 4×. The return cap is 10× the load. Platform redeems use 5 SC steps, such as 50, 55 or 60 SC. Any remainder below 5 SC stays in the game.';
 
-function standardLoadQuote(amount) {
-  const load = Number(amount);
-  if (!Number.isFinite(load) || load < 10) return null;
-  let reach = null;
-  if (load < 15) reach = 50;
-  else if (load >= 50) reach = load * 4;
-  else if (load >= 40) reach = load * 3;
-  return { load, reach, cap: load * 10 };
+function positiveLimit(value) {
+  const n = Number(value);
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function lowestLimit(values) {
+  const nums = values.filter((value) => value != null);
+  if (!nums.length) return null;
+  return Math.min(...nums);
+}
+
+function quickAmountsFor(min, max) {
+  const lo = Number.isFinite(min) && min > 0 ? min : 1;
+  const hi = max != null && Number.isFinite(max) ? max : Infinity;
+  const within = QUICK_PRESETS.filter((value) => value >= lo && value <= hi);
+  if (within.length) return within;
+  const fallback = [Math.ceil(lo)];
+  if (Number.isFinite(hi) && hi >= lo) fallback.push(Math.floor(hi));
+  return [...new Set(fallback.filter((value) => value >= lo && value <= hi && value > 0))];
 }
 
 function CopyIcon() {
@@ -198,18 +209,39 @@ export function PlatformAccountSheet({
       setError('Enter a whole-number amount.');
       return;
     }
-    if (mode === 'transfer' && Number.isFinite(paid) && n > paid + 0.01) {
-      setError('This amount exceeds your paid SC. Choose a smaller amount or add paid SC.');
-      return;
+    const minDep = positiveLimit(game?.minDepositLimit) ?? 1;
+    const maxDep = positiveLimit(game?.maxDepositLimit);
+    const minW = positiveLimit(game?.minWithdrawalLimit) ?? 1;
+    const maxW = lowestLimit([
+      positiveLimit(game?.maxWithdrawalLimit),
+      balanceChecked && gameBalance != null ? gameBalance : null
+    ]);
+    if (mode === 'transfer') {
+      if (Number.isFinite(paid) && n > paid + 0.01) {
+        setError('This amount exceeds your paid SC. Choose a smaller amount or add paid SC.');
+        return;
+      }
+      if (n < minDep) {
+        setError(`The minimum load for this game is ${formatSc(minDep)} SC.`);
+        return;
+      }
+      if (maxDep != null && n > maxDep) {
+        setError(`The maximum load for this game is ${formatSc(maxDep)} SC.`);
+        return;
+      }
     }
     if (mode === 'withdraw') {
       if (!balanceChecked || gameBalance == null) return;
-      if (n > gameBalance) {
-        setError(`Your game balance is ${formatSc(gameBalance)} SC.`);
+      if (n < minW) {
+        setError(`The minimum withdraw for this game is ${formatSc(minW)} SC.`);
+        return;
+      }
+      if (maxW != null && n > maxW) {
+        setError(`The maximum withdraw for this game is ${formatSc(maxW)} SC.`);
         return;
       }
       if (n % 5 !== 0) {
-        setError('Platform redeems use 5 SC steps, such as 50, 55 or 60 SC.');
+        setError('Withdraw in 5 SC steps. Any remainder below 5 SC stays in the game.');
         return;
       }
     }
@@ -221,10 +253,10 @@ export function PlatformAccountSheet({
           mode === 'transfer'
             ? await gamesApi.gameTopup(game.id, n)
             : await gamesApi.gameRedeem(game.id, n);
-        toast.success(res?.message_extra || res?.message || (mode === 'transfer' ? 'Transfer complete' : 'Redeem complete'));
+        toast.success(res?.message_extra || res?.message || (mode === 'transfer' ? 'Transfer complete' : 'Withdraw complete'));
         await onWalletRefresh?.();
+        await refreshBalance();
         onRegistered?.();
-        if (mode === 'transfer') setBalanceChecked(false);
       } catch (err) {
         if (isDepositRequiredError(err)) {
           openDepositRequiredModal();
@@ -240,12 +272,19 @@ export function PlatformAccountSheet({
   }
 
   const amountN = parseInt(String(amount).trim(), 10);
-  const quote = mode === 'transfer' ? standardLoadQuote(amountN) : null;
   const overPaid = mode === 'transfer' && Number.isFinite(paid) && Number.isInteger(amountN) && amountN > paid + 0.01;
-  const minTransfer = Math.max(10, Number(game?.minDepositLimit) || 0);
-  const maxTransfer = Number(game?.maxDepositLimit) > 0 ? Number(game.maxDepositLimit) : null;
-  const minWithdraw = Math.max(0, Number(game?.minWithdrawalLimit) || 0);
-  const maxWithdraw = balanceChecked && gameBalance != null ? gameBalance : (Number(game?.maxWithdrawalLimit) > 0 ? Number(game.maxWithdrawalLimit) : null);
+  const minTransfer = positiveLimit(game?.minDepositLimit) ?? 1;
+  const gameMaxTransfer = positiveLimit(game?.maxDepositLimit);
+  const maxTransfer = gameMaxTransfer;
+  const minWithdraw = positiveLimit(game?.minWithdrawalLimit) ?? 1;
+  const maxWithdraw = lowestLimit([
+    positiveLimit(game?.maxWithdrawalLimit),
+    balanceChecked && gameBalance != null ? gameBalance : null
+  ]);
+  const quickAmounts = quickAmountsFor(
+    mode === 'transfer' ? minTransfer : minWithdraw,
+    mode === 'transfer' ? maxTransfer : maxWithdraw
+  );
   const transferBlocked =
     !Number.isInteger(amountN) ||
     amountN < minTransfer ||
@@ -257,14 +296,14 @@ export function PlatformAccountSheet({
     !Number.isInteger(amountN) ||
     amountN <= 0 ||
     amountN % 5 !== 0 ||
-    (minWithdraw > 0 && amountN < minWithdraw) ||
-    amountN > gameBalance;
+    amountN < minWithdraw ||
+    (maxWithdraw != null && amountN > maxWithdraw);
   const confirmDisabled = busy || (mode === 'transfer' ? transferBlocked : withdrawBlocked);
   const confirmLabel =
     mode === 'withdraw'
       ? balanceChecked
-        ? 'Confirm Transfer Back'
-        : 'Check Balance to Transfer Back'
+        ? 'Confirm Withdraw'
+        : 'Check Balance to Withdraw'
       : 'Confirm Transfer';
 
   const launch = !hasAccount;
@@ -330,6 +369,8 @@ export function PlatformAccountSheet({
 
             {detailsOpen ? (
               <div className="df-game-sheet__body">
+                <div className="df-game-sheet__workspace">
+                <div className="df-game-sheet__details">
                 <div className="df-game-sheet__balance">
                   <div className="df-game-sheet__balance-head">
                     <span>Balance</span>
@@ -374,47 +415,9 @@ export function PlatformAccountSheet({
                 >
                   Copy Login &amp; Play
                 </button>
+                </div>
 
-                {quote ? (
-                  <div className="df-game-quote">
-                    <div className="df-game-quote__head">
-                      <strong>Verified load quote</strong>
-                      <small>{Number.isFinite(paid) ? `${formatSc(paid)} paid SC available` : 'Paid SC unavailable'}</small>
-                    </div>
-                    <dl>
-                      <div>
-                        <dt>Load SC</dt>
-                        <dd>{formatSc(quote.load)}</dd>
-                      </div>
-                      <div>
-                        <dt>Reach in game</dt>
-                        <dd>{quote.reach == null ? 'Stepped' : formatSc(quote.reach)}</dd>
-                      </div>
-                      <div>
-                        <dt>Wallet cap</dt>
-                        <dd>{formatSc(quote.cap)}</dd>
-                      </div>
-                    </dl>
-                    <div className="df-game-quote__badges">
-                      <span>Full game return</span>
-                      <span>Excess over cap removed</span>
-                    </div>
-                    {overPaid ? (
-                      <p className="df-game-sheet__alert" role="alert">
-                        This amount exceeds your paid SC. Choose a smaller amount or add paid SC.
-                      </p>
-                    ) : null}
-                    <details>
-                      <summary>Load &amp; return details</summary>
-                      <p>
-                        {quote.reach == null
-                          ? `Load ${formatSc(quote.load)} SC. 15–39.99 SC uses stepped minimums. Up to ${formatSc(quote.cap)} SC can reach your wallet.`
-                          : `Load ${formatSc(quote.load)} SC under normal rules. Reach ${formatSc(quote.reach)} SC in this game before returning the eligible balance in 5 SC steps. Any remainder below 5 SC stays in the game. Up to ${formatSc(quote.cap)} SC can reach your wallet; excess credits are removed.`}
-                      </p>
-                    </details>
-                  </div>
-                ) : null}
-
+                <div className="df-game-sheet__transfer">
                 <div className="df-game-sheet__wallet">
                   <strong>Game wallet</strong>
                   <span>Withdraw → wallet</span>
@@ -438,7 +441,7 @@ export function PlatformAccountSheet({
                 </div>
                 {amountMode === 'quick' ? (
                   <div className="df-game-sheet__quick" aria-label="Quick transfer amounts">
-                    {QUICK_AMOUNTS.map((value) => (
+                    {quickAmounts.map((value) => (
                       <button
                         key={value}
                         type="button"
@@ -461,17 +464,24 @@ export function PlatformAccountSheet({
                   </label>
                 )}
                 {mode === 'withdraw' ? (
-                  <small className="df-game-sheet__limits">5 SC steps · 50, 55, 60 SC · Any remainder below 5 SC stays in the game.</small>
+                  <small className="df-game-sheet__limits">
+                    Withdraw in 5 SC steps. Any remainder below 5 SC stays in the game.
+                  </small>
                 ) : null}
                 <small className="df-game-sheet__limits">
-                  Min {mode === 'transfer' ? minTransfer : (minWithdraw || 10)} SC
+                  Min {formatSc(mode === 'transfer' ? minTransfer : minWithdraw)} SC
                   {(mode === 'transfer' ? maxTransfer : maxWithdraw) != null
                     ? ` · Max ${formatSc(mode === 'transfer' ? maxTransfer : maxWithdraw)} SC`
                     : ''}
                   {mode === 'withdraw'
-                    ? ' · Limits come from your latest live balance check'
-                    : ' · Review the accepted load-tier limits before confirming'}
+                    ? ' · This game’s withdraw limit, capped by the live balance'
+                    : ' · This game’s load limit'}
                 </small>
+                {overPaid ? (
+                  <p className="df-game-sheet__alert" role="alert">
+                    This amount exceeds your paid SC. Choose a smaller amount or add paid SC.
+                  </p>
+                ) : null}
                 {error ? <p className="df-game-sheet__alert" role="alert">{error}</p> : null}
                 <button
                   type="button"
@@ -487,6 +497,8 @@ export function PlatformAccountSheet({
                 >
                   {busy ? 'Working…' : confirmLabel}
                 </button>
+                </div>
+                </div>
               </div>
             ) : null}
           </>

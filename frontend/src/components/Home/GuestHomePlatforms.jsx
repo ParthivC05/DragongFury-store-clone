@@ -50,8 +50,8 @@ export function GuestHomePlatforms() {
                     game={game}
                     className="df-other-games__art"
                     fetchPriority={index < 8 ? 'high' : 'auto'}
-                    width={160}
-                    height={160}
+                    width={112}
+                    height={151}
                   />
                 </span>
                 <span className="df-other-games__name">{name}</span>

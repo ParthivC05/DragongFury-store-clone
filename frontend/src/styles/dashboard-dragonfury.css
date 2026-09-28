@@ -11299,7 +11299,7 @@ body.guest-landing-active {
   position: fixed;
   top: calc(var(--dash-nav-h, 56px) + 12px);
   right: 16px;
-  z-index: 26000;
+  z-index: 32000;
   display: flex;
   flex-direction: column;
   align-items: flex-end;

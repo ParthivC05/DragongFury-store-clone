@@ -400,7 +400,7 @@ export function Settings() {
   return (
     <div className="dash-page dash-settings-page dragonfury-profile-page w-full min-w-0 max-w-full">
       <section className="dragonfury-profile-experience">
-        <header className="dragonfury-profile-identity">
+        <header className="dragonfury-profile-identity" data-tour="profile">
           <div className="dragonfury-profile-avatar-wrap">
             {avatarSrc && !avatarFailed ? (
               <img

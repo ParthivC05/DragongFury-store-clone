@@ -691,7 +691,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
       ) : null}
 
       {isAuthenticated ? (
-        <div className="dash-platform-search-wrap lobby-search">
+        <div className="dash-platform-search-wrap lobby-search" data-tour="search">
           <SlotGamesSearchBar
             value={search}
             onChange={setSearch}
@@ -707,7 +707,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
       ) : null}
 
       {isAuthenticated ? (
-        <div className="df-lobby-filter-bar" role="tablist" aria-label="Lobby filters">
+        <div className="df-lobby-filter-bar" role="tablist" aria-label="Lobby filters" data-tour="filters">
           {lobbyFilterItems.map((item) => (
             <button
               key={item.id}
@@ -745,7 +745,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
           playingGameId={casinoLaunchingId}
           embedded
           hideIntro
-          showCategoryTabs
+          showCategoryTabs={false}
           lobbyMode
           initialTab={catalogInitialTab}
         />
@@ -815,7 +815,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
             ))}
           </div>
         ) : (
-        <div className="df-lobby-platforms" aria-label="Platform games">
+        <div className="df-lobby-platforms" aria-label="Platform games" data-tour="catalog">
           {filteredGames.map((game, i) => renderPlatformGameCard(game, i))}
         </div>
         )

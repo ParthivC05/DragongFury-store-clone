@@ -1,0 +1,448 @@
+.df-website-tour {
+  position: fixed;
+  inset: 0;
+  z-index: 28000;
+  pointer-events: none;
+}
+
+.mascot-guide,
+.mascot-guide__panel {
+  overflow: visible;
+}
+
+.df-website-tour__blocker {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  background: transparent;
+}
+
+.tour-frost {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tour-frost-pane,
+.tour-spotlight-edge {
+  position: absolute;
+  pointer-events: none;
+}
+
+.tour-frost-pane {
+  backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.tour-spotlight-edge {
+  border: 1px solid rgba(255, 255, 255, 0.314);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.mascot-guide {
+  --guide-accent: #ffd84d;
+  --guide-surface: #241b18;
+  position: fixed;
+  z-index: 3;
+  box-sizing: border-box;
+  width: min(348px, calc(100vw - 24px));
+  padding-top: 42px;
+  background: none;
+  color: #fff;
+  font: 400 15px / 1.5 system-ui, sans-serif;
+  text-align: left;
+  pointer-events: auto;
+}
+
+.mascot-guide__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  padding: 54px 20px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: var(--guide-surface);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  max-height: calc(100dvh - 72px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: visible;
+}
+
+.mascot-guide h2 {
+  margin: 0;
+  color: #fff;
+  font: 700 20px / 1.25 system-ui, sans-serif;
+}
+
+.mascot-guide p {
+  margin: 0;
+  color: #d1d5db;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.mascot-guide__mascot {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 50%;
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  transform: translateX(-50%);
+  pointer-events: none;
+  filter: drop-shadow(0 8px 9px rgba(0, 0, 0, 0.33));
+}
+
+.mascot-guide__text p {
+  margin-top: 6px;
+}
+
+.mascot-guide__progress {
+  font-size: 12px;
+  color: #bac0ca;
+  font-variant-numeric: tabular-nums;
+}
+
+.mascot-guide__actions {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.mascot-guide button {
+  box-sizing: border-box;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #e4e7ec;
+  font: 600 14px / 1.3 system-ui, sans-serif;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.mascot-guide button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mascot-guide button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.mascot-guide .mascot-guide__primary {
+  flex: 1 0 auto;
+  min-height: 46px;
+  color: #211900;
+  background: linear-gradient(#ffe57a, #ffd34a);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.27);
+}
+
+.mascot-guide .mascot-guide__primary:hover:enabled {
+  background: linear-gradient(#ffeb96, #ffdc61);
+  transform: translateY(-1px);
+}
+
+.df-tour-preview {
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  width: min(320px, calc(100vw - 24px));
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: #1b1228;
+  color: #fff;
+  font: 500 14px / 1.4 system-ui, sans-serif;
+  pointer-events: none;
+}
+
+.df-tour-preview h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.df-tour-preview p {
+  margin: 0 0 10px;
+  color: #d1d5db;
+}
+
+.df-tour-preview label {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+  color: #bac0ca;
+  font-size: 12px;
+}
+
+.df-tour-preview input,
+.df-tour-preview button {
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  padding: 0 12px;
+}
+
+.df-tour-preview__row {
+  display: flex;
+  gap: 8px;
+}
+
+.df-tour-preview__row button {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .mascot-guide {
+    padding-top: 24px;
+  }
+
+  .mascot-guide__mascot {
+    width: 64px;
+    height: 64px;
+    left: 44px;
+    transform: none;
+  }
+
+  .mascot-guide__panel {
+    padding: 32px 16px 14px;
+    gap: 8px;
+  }
+
+  .mascot-guide h2 {
+    font-size: 19px;
+    line-height: 1.2;
+  }
+
+  .mascot-guide p {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .mascot-guide__text p {
+    margin-top: 4px;
+  }
+
+  .mascot-guide__progress {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .mascot-guide {
+    padding-top: 20px;
+  }
+
+  .mascot-guide__mascot {
+    width: 56px;
+    height: 56px;
+  }
+
+  .mascot-guide__panel {
+    padding: 24px 14px 12px;
+    gap: 6px;
+  }
+}
+
+@media (max-height: 480px) {
+  .mascot-guide {
+    padding-top: 24px;
+    width: min(340px, calc(100vw - 24px));
+  }
+
+  .mascot-guide__mascot {
+    width: 60px;
+    height: 60px;
+  }
+
+  .mascot-guide__panel {
+    padding: 26px 16px 12px;
+    gap: 8px;
+  }
+}
+
+.df-tour-preview-host {
+  width: min(440px, calc(100% - 24px));
+  margin: 18px auto;
+}
+
+.df-tour-card {
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  background: #1b1228;
+  color: #fff;
+  font: 500 14px / 1.45 system-ui, sans-serif;
+}
+
+.df-tour-demo {
+  margin: 0 0 10px;
+  color: #ffd84d;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.df-tour-game__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.df-tour-game__head img {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+.df-tour-game__head h3,
+.df-tour-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.df-tour-game__head span,
+.df-tour-card p {
+  color: #d1d5db;
+}
+
+.df-tour-field {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 10px;
+  color: #bac0ca;
+  font-size: 12px;
+}
+
+.df-tour-field input,
+.df-tour-card button {
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.28);
+  color: #fff;
+  padding: 0 12px;
+  font: inherit;
+}
+
+.df-tour-card button {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.df-tour-dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 12px;
+  margin: 8px 0 12px;
+}
+
+.df-tour-dl dt {
+  color: #bac0ca;
+}
+
+.df-tour-dl dd {
+  margin: 0;
+  text-align: right;
+}
+
+.df-tour-card__figure {
+  margin: 8px 0 4px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.df-tour-card--payment .df-tour-demo {
+  color: #d7a441;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.df-tour-card__line {
+  margin: 0 0 6px;
+  color: #d1d5db;
+}
+
+.df-tour-pay {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 12px;
+  min-height: 58px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #00c244;
+  color: #fff;
+}
+
+.df-tour-pay__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #fff;
+  flex: 0 0 auto;
+}
+
+.df-tour-pay__mark svg {
+  width: 30px;
+  height: 30px;
+}
+
+.df-tour-pay__name {
+  flex: 1;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.df-tour-pay__check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #f5c451;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.df-tour-card button.df-tour-card__ghost {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+body.website-tour-active .pj-intercom-launcher,
+body.website-tour-active .df-help-desk,
+body.website-tour-active .bgm-widget,
+body.website-tour-active .df-promo-modal,
+body.website-tour-active:not(.website-tour-show-help) .df-help-launcher {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+body.website-tour-active.website-tour-show-help .df-help-launcher {
+  visibility: visible !important;
+  pointer-events: none !important;
+}

@@ -293,11 +293,15 @@ export function Navbar() {
                 </button>
               </div>
 
-              {/* Tutorial hidden
-              <Link to="/help" className="df-tour-btn" aria-label="Website tour" title="Website tour">
+              <button
+                type="button"
+                className="df-tour-btn"
+                aria-label="Website tour"
+                title="Website tour"
+                onClick={() => window.dispatchEvent(new CustomEvent('website-tour:start'))}
+              >
                 <img src="/df-online/tour.webp" width="44" height="44" alt="" draggable="false" />
-              </Link>
-              */}
+              </button>
               <button type="button" className="df-header-logout" aria-label="Log out" title="Log out" onClick={handleLogout}>
                 <img src="/df-online/menu/logout.webp" alt="" width={44} height={44} draggable="false" />
               </button>

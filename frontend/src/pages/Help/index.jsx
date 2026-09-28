@@ -98,7 +98,7 @@ export function Help() {
   );
 
   return (
-    <div className="df-content-page df-help-page">
+    <div className="df-content-page df-help-page" data-tour="help">
       <div className="df-content-card">
         <nav className="df-content-crumbs" aria-label="Breadcrumb">
           <Link to="/">Home</Link>

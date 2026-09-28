@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router-dom';
 import { usePinAppChromeToVisualViewport } from '../hooks/usePinAppChromeToVisualViewport';
 import { DragonFuryHelpLauncher } from './Home/DragonFuryHelpLauncher';
+import { WebsiteTour } from './WebsiteTour/WebsiteTour';
 import { Navbar } from './Navbar';
 import { BottomBar } from './BottomBar';
 import { useAuth } from '../context/AuthContext';
@@ -257,6 +258,7 @@ export function Layout({ children }) {
           <BottomBar />
         </>
       )}
+      {isAuthenticated ? <WebsiteTour /> : null}
       {isAuthenticated && (
         <Suspense fallback={null}>
           <LayoutAuthOverlays isAuthPage={isAuthPage} />

@@ -378,6 +378,7 @@ export function SlotGamesCatalogGrid({
       {tabs.length > 1 && (!embedded || showCategoryTabs) && !favoritesOnly ? (
         <div
           className={`df-games-tabs${embedded ? ' df-games-tabs--embedded' : ''}`}
+          data-tour="slots"
           role="tablist"
           aria-label="Game categories"
         >

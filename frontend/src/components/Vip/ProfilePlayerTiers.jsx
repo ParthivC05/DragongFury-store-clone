@@ -88,7 +88,7 @@ export function ProfilePlayerTiers({ levels }) {
   }
 
   return (
-    <section className="df-vip-tiers" aria-labelledby="df-vip-tier-title">
+    <section className="df-vip-tiers" aria-labelledby="df-vip-tier-title" data-tour="progress">
       <header>
         <div>
           <p className="df-vip-tiers-kicker">Progress</p>

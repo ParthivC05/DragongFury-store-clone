@@ -602,7 +602,7 @@ export function Withdraw() {
     ) : null;
 
   return (
-    <div className="dash-page dash-withdraw-page w-full min-w-0">
+    <div className="dash-page dash-withdraw-page w-full min-w-0" data-tour="wallet">
       <DfRedeemView
         currency={currency}
         loading={loading}

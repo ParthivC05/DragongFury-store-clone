@@ -28,7 +28,7 @@ export function DfWalletHud({
   const display = formatWalletAmount(amount);
 
   return (
-    <div className="df-wallet-hud" data-open={open ? 'true' : 'false'}>
+    <div className="df-wallet-hud" data-open={open ? 'true' : 'false'} data-tour="balances">
       <div className="df-wallet-hud__bar">
         <img
           className="df-wallet-hud__holder"

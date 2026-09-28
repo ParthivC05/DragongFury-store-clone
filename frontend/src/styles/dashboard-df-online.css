@@ -4661,8 +4661,9 @@ body:has(.dash-nav--authenticated) {
 
 .df-game-sheet__quick {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   margin-top: 10px;
+  padding: 3px 2px 4px;
   overflow-x: auto;
 }
 
@@ -4670,12 +4671,13 @@ body:has(.dash-nav--authenticated) {
   flex: 0 0 auto;
   background: #fff;
   color: #1a0b33;
+  box-shadow: inset 0 0 0 2px transparent;
 }
 
 .df-game-sheet__quick button[aria-pressed='true'] {
   background: #111;
   color: #fff;
-  box-shadow: 0 0 0 2px #35ef9a;
+  box-shadow: inset 0 0 0 2px #35ef9a;
 }
 
 .df-game-sheet__custom {

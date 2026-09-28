@@ -142,6 +142,41 @@ export function PlatformAccountSheet({
   }, [onClose]);
 
   useEffect(() => {
+    if (!hasAccount || !game?.id) return undefined;
+    let cancel = false;
+    setGameBalance(null);
+    setBalanceChecked(false);
+    setChecking(true);
+    setBalanceNote('Checking live balance...');
+    (async () => {
+      try {
+        const res = await gamesApi.getGameBalance(game.id);
+        if (cancel) return;
+        const value = res?.balance != null ? Number(res.balance) : null;
+        if (!Number.isFinite(value)) {
+          setBalanceChecked(false);
+          setGameBalance(null);
+          setBalanceNote(res?.message || 'Check required to transfer back');
+          return;
+        }
+        setGameBalance(value);
+        setBalanceChecked(true);
+        setBalanceNote('Live game balance');
+      } catch (err) {
+        if (cancel) return;
+        setBalanceChecked(false);
+        const msg = typeof err?.message === 'string' ? err.message.trim() : '';
+        setBalanceNote(msg || 'Check required to transfer back');
+      } finally {
+        if (!cancel) setChecking(false);
+      }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [game?.id, hasAccount]);
+
+  useEffect(() => {
     if (!busy || hasAccount) return undefined;
     setCreateStep(0);
     const timer = window.setInterval(() => {
@@ -379,7 +414,13 @@ export function PlatformAccountSheet({
                     </button>
                   </div>
                   <div className="df-game-sheet__balance-row">
-                    <strong>{gameBalance != null ? `${formatSc(gameBalance)} SC` : '0.00 SC'}</strong>
+                    <strong>
+                      {checking && gameBalance == null
+                        ? 'Checking…'
+                        : gameBalance != null
+                          ? `${formatSc(gameBalance)} SC`
+                          : '—'}
+                    </strong>
                     <button type="button" className="df-game-sheet__refresh" aria-label="Check live game balance" aria-busy={checking} disabled={checking} onClick={refreshBalance}>
                       <RefreshIcon spinning={checking} />
                     </button>

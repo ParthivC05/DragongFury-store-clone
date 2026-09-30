@@ -628,6 +628,68 @@
   font-weight: 700;
 }
 
+.df-profile-password,
+.df-payment-password {
+  position: relative;
+  width: 100%;
+}
+
+.df-payment-password {
+  max-width: 280px;
+}
+
+.df-profile-password .df-profile-input,
+.df-payment-password .dash-input-field {
+  width: 100%;
+  max-width: none;
+  padding-right: 36px;
+}
+
+.df-profile-payment .df-payment-password {
+  max-width: none;
+}
+
+.df-profile-payment .df-payment-password .dash-input-field {
+  padding: 8px 36px 11px 0;
+}
+
+.df-profile-password__toggle,
+.df-payment-password__toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 1;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.df-payment-password__toggle {
+  right: 6px;
+}
+
+.df-profile-password__toggle:hover,
+.df-payment-password__toggle:hover,
+.df-profile-password__toggle:focus-visible,
+.df-payment-password__toggle:focus-visible {
+  color: #ffe14a;
+  outline: none;
+}
+
+.df-profile-password__toggle svg,
+.df-payment-password__toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Phone row inside profile — purple club chrome (keep OTP / Verify logic) */
 .dragonfury-profile-field .dash-phone-verify-row,
 .dragonfury-profile-field .df-profile-phone-row {

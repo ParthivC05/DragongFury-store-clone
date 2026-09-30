@@ -10,7 +10,7 @@ import * as userApi from '../api/user';
 import * as kycApi from '../api/kyc';
 import * as phoneApi from '../api/phone';
 import { usePageContentReady, usePageReady } from '../context/PageReadyContext';
-import { LockIcon, EnvelopeIcon, CameraIcon } from '../assets/icons';
+import { LockIcon, EnvelopeIcon, CameraIcon, EyeIcon, EyeOffIcon } from '../assets/icons';
 import { PaymentAccountSection } from '../components/PaymentAccount/PaymentAccountSection';
 import { KycVerificationModal } from '../components/withdraw/KycVerificationModal';
 import { PhoneNumberField } from '../components/Auth/PhoneNumberField';
@@ -31,6 +31,30 @@ const inputClassReadonly = 'df-profile-input df-profile-input--readonly';
 /** Returns the profile input class with the error state applied when the field is touched and invalid. */
 function fieldClass(isTouched, error) {
   return isTouched && error ? inputClassError : inputClass;
+}
+
+function ProfilePasswordField({ name, placeholder, autoComplete, className }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="df-profile-password">
+      <Field
+        name={name}
+        type={visible ? 'text' : 'password'}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        className={className}
+      />
+      <button
+        type="button"
+        className="df-profile-password__toggle"
+        aria-label={visible ? 'Hide password' : 'Show password'}
+        aria-pressed={visible}
+        onClick={() => setVisible((open) => !open)}
+      >
+        {visible ? <EyeOffIcon /> : <EyeIcon />}
+      </button>
+    </div>
+  );
 }
 
 function kycStatusLabel(status) {
@@ -1045,9 +1069,8 @@ export function Settings() {
                 <div className="dragonfury-profile-fields">
                   <label className="dragonfury-profile-field">
                     <span>Current password</span>
-                    <Field
+                    <ProfilePasswordField
                       name="currentPassword"
-                      type="password"
                       placeholder="Enter current password"
                       autoComplete="current-password"
                       className={fieldClass(touched.currentPassword, errors.currentPassword)}
@@ -1058,9 +1081,8 @@ export function Settings() {
                   </label>
                   <label className="dragonfury-profile-field">
                     <span>New password</span>
-                    <Field
+                    <ProfilePasswordField
                       name="newPassword"
-                      type="password"
                       placeholder="Min 8: upper, lower, number, special"
                       autoComplete="new-password"
                       className={fieldClass(touched.newPassword, errors.newPassword)}
@@ -1071,9 +1093,8 @@ export function Settings() {
                   </label>
                   <label className="dragonfury-profile-field">
                     <span>Confirm new password</span>
-                    <Field
+                    <ProfilePasswordField
                       name="confirmPassword"
-                      type="password"
                       placeholder="Confirm new password"
                       autoComplete="new-password"
                       className={fieldClass(touched.confirmPassword, errors.confirmPassword)}

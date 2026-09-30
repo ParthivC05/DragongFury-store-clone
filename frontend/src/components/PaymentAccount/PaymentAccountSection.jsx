@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as Dialog from '../ui/Dialog';
 import * as walletApi from '../../api/wallet';
+import { EyeIcon, EyeOffIcon } from '../../assets/icons';
 
 const inputClass = 'dash-input-field w-full';
 const inputClassReadonly = `${inputClass} dash-input-field--readonly pr-10`;
@@ -28,6 +29,7 @@ function LinkPaymentAccountForm({
 }) {
   const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const [otp, setOtp] = useState('');
@@ -174,15 +176,26 @@ function LinkPaymentAccountForm({
                   {requestingOtp ? 'Sending…' : 'Forgot password?'}
                 </button>
               </div>
-              <input
-                id="payment-link-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your payment password"
-                className={inputClass}
-                autoComplete="new-password"
-              />
+              <div className="df-payment-password">
+                <input
+                  id="payment-link-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your payment password"
+                  className={inputClass}
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  className="df-payment-password__toggle"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  aria-pressed={showPassword}
+                  onClick={() => setShowPassword((open) => !open)}
+                >
+                  {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                </button>
+              </div>
             </div>
           )}
         </div>

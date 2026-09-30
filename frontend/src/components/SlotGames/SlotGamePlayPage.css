@@ -3,6 +3,9 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   gap: 10px;
+  position: relative;
+  z-index: 6;
+  overflow: visible;
   background:
     radial-gradient(ellipse 70% 140% at 50% -40%, rgba(148, 72, 255, 0.45), transparent 60%),
     linear-gradient(180deg, #5b22c4 0%, #3a147c 100%);
@@ -99,45 +102,31 @@
 }
 
 .spm-play-wallet {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  justify-self: center;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: #12081f;
-  border: 1px solid rgba(255, 201, 79, 0.4);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 10px rgba(0, 0, 0, 0.35);
-}
-
-.spm-play-wallet-coin {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  background: rgba(8, 12, 18, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  justify-self: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 4;
 }
 
-.spm-play-wallet-amount {
-  font-family: "Baloo 2", system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  color: #ffe14a;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+.spm-play-wallet .df-wallet-hud {
+  --w-bar: min(168px, 42vw);
+  --w-plus: 42px;
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  transform: none;
+  z-index: 5;
 }
 
-.spm-play-wallet-label {
-  font-family: "Baloo 2", system-ui, sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.72);
+.spm-play-wallet .df-wallet-hud__sheet {
+  z-index: 8;
 }
 
 @media (max-width: 560px) {
@@ -162,18 +151,18 @@
     justify-self: center;
     width: max-content;
     max-width: 100%;
-    min-width: 0;
-    padding: 5px 11px;
-    gap: 5px;
-    overflow: hidden;
+    overflow: visible;
   }
 
-  .spm-play-wallet-amount {
-    font-size: 14px;
+  .spm-play-wallet .df-wallet-hud {
+    --w-bar: min(118px, 34vw);
+    --w-plus: 32px;
+    gap: 4px;
   }
 
-  .spm-play-wallet-label {
-    display: none;
+  .spm-play-wallet .df-wallet-hud__amount {
+    min-height: 0;
+    font-size: 12px;
   }
 
   .spm-iframe-header--play .spm-iframe-header-actions {
@@ -207,6 +196,18 @@
   .spm-iframe-header--play .spm-iframe-header-close {
     padding: 7px 12px;
     font-size: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .spm-play-wallet .df-wallet-hud {
+    --w-bar: min(96px, 30vw);
+    --w-plus: 28px;
+    gap: 2px;
+  }
+
+  .spm-play-wallet .df-wallet-hud__amount {
+    font-size: 11px;
   }
 }
 

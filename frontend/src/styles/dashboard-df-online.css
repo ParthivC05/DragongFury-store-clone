@@ -4525,6 +4525,10 @@ body:has(.dash-nav--authenticated) {
   text-transform: uppercase;
 }
 
+.df-game-sheet__balance-row {
+  margin-top: 14px;
+}
+
 .df-game-sheet__balance-head button {
   padding: 4px 12px;
   border: 1px solid #ffe14a;

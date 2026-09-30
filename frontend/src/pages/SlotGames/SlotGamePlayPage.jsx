@@ -10,9 +10,11 @@ import { WIN568_GAMES_SLUG, isWin568PlayProvider } from '../../config/win568';
 import { SCORPIO_GAMES_SLUG, isScorpioPlayProvider } from '../../config/scorpio';
 import { useAuth } from '../../context/AuthContext';
 import { AppLoader } from '../../components/AppLoader';
-import { HomeIcon, SCCoinIcon } from '../../assets/icons';
+import { HomeIcon } from '../../assets/icons';
 import { site } from '../../config/site';
 import { SiteLogo } from '../../components/SiteLogo';
+import { DfWalletHud } from '../../components/DfWalletHud';
+import { PhoneVerifyGateModal } from '../../components/Auth/PhoneVerifyGateModal';
 import { isMessageFromGameFrame, isSlotGameExitMessage } from '../../components/SlotGames/slotGameExitMessages';
 import { useSlotGameImmersive } from './useSlotGameImmersive';
 import { SlotGameSwipeUpOverlay } from '../../components/SlotGames/SlotGameSwipeUpOverlay';
@@ -36,14 +38,6 @@ import { useDepositRequiredGate } from '../../hooks/useDepositRequiredGate';
 import { isDepositRequiredError } from '../../utils/depositRequired';
 import '../../components/deposit/SecurePaymentModal.css';
 import '../../components/SlotGames/SlotGamePlayPage.css';
-
-function formatWalletSc(value) {
-  if (value == null) return '0.00';
-  return Number(value).toLocaleString('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 function sanitizeWin568PlayUrl(rawUrl) {
   const raw = String(rawUrl || '').trim();
@@ -79,7 +73,12 @@ export function SlotGamePlayPage() {
   const location = useLocation();
   const { gameId } = useParams();
   const [searchParams] = useSearchParams();
-  const { balanceSc } = useAuth();
+  const { balanceSc, balanceLoading, pscWalletUsable, bscWalletUsable, rscWalletUsable, lockedBalanceSc } = useAuth();
+  const [walletOpen, setWalletOpen] = useState(false);
+  const [phoneUnlockOpen, setPhoneUnlockOpen] = useState(false);
+  const lockedSc = Number(lockedBalanceSc) || 0;
+  const unlockedTotal = Number(balanceSc) || 0;
+  const pillAmount = unlockedTotal > 0 ? unlockedTotal : lockedSc;
   const {
     hasDeposit,
     loading: depositGateLoading,
@@ -479,6 +478,15 @@ export function SlotGamePlayPage() {
   }, [isIOS, isIOSChrome, isPortrait, immersiveDevice, handleClose]);
 
   useEffect(() => {
+    if (!walletOpen) return undefined;
+    const onPointerDown = (event) => {
+      if (!event.target?.closest?.('.spm-play-wallet')) setWalletOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [walletOpen]);
+
+  useEffect(() => {
     if (!gameUrl) return undefined;
 
     const onKeyDown = (event) => {
@@ -528,12 +536,22 @@ export function SlotGamePlayPage() {
           <SiteLogo variant="nav" className="spm-play-logo-img" />
         </div>
 
-        <div className="spm-play-wallet" aria-live="polite" title="Your Sweepstakes Coins balance">
-          <span className="spm-play-wallet-coin" aria-hidden>
-            <SCCoinIcon className="w-full h-full" />
-          </span>
-          <span className="spm-play-wallet-amount">{formatWalletSc(balanceSc)}</span>
-          <span className="spm-play-wallet-label">SC</span>
+        <div className="spm-play-wallet" aria-live="polite">
+          <DfWalletHud
+            amount={pillAmount}
+            balanceLoading={balanceLoading}
+            open={walletOpen}
+            onToggle={() => setWalletOpen((open) => !open)}
+            onClose={() => setWalletOpen(false)}
+            psc={pscWalletUsable}
+            bsc={bscWalletUsable}
+            rsc={rscWalletUsable}
+            lockedSc={lockedSc}
+            onUnlockPhone={() => {
+              setWalletOpen(false);
+              setPhoneUnlockOpen(true);
+            }}
+          />
         </div>
 
         <div className="spm-iframe-header-actions">
@@ -556,6 +574,8 @@ export function SlotGamePlayPage() {
           </button>
         </div>
       </header>
+
+      <PhoneVerifyGateModal open={phoneUnlockOpen} onClose={() => setPhoneUnlockOpen(false)} />
 
       {showBonaPortraitGate ? <BonaPortraitRequiredOverlay /> : null}
       {showFishingLandscapeGate ? <FishingLandscapeRequiredOverlay /> : null}

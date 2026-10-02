@@ -11,6 +11,7 @@ const paymentProviders = require('../paymentProviders');
 const { getWalletLimitsForUser } = require('./getWalletLimits.service');
 const { getCurrencySetting } = require('./getCurrencySetting.service');
 const { paymentLog, paymentErrorLog } = require('../../libs/logger');
+const { markPaymentProviderError } = require('../../utils/playerFacingMessage');
 const { resolveDepositPackageForUser } = require('../depositPackages/resolveDepositPackage.service');
 const {
   applyActivePayDiscountForUser,
@@ -122,16 +123,22 @@ async function requestDeposit(userId, options) {
       paymentErrorLog('requestDeposit: Speed provider not configured');
       const err = new Error('Speed payment is not available. Please use another method.');
       err.statusCode = 503;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
-    const result = await scryptoProvider.createDepositLink({
-      userId,
-      amount,
-      currency,
-      metadata: options?.metadata || {},
-      title: options?.name || 'Wallet Deposit'
-    });
+    let result;
+    try {
+      result = await scryptoProvider.createDepositLink({
+        userId,
+        amount,
+        currency,
+        metadata: options?.metadata || {},
+        title: options?.name || 'Wallet Deposit'
+      });
+    } catch (err) {
+      paymentErrorLog('requestDeposit: Speed createDepositLink failed', err.message);
+      throw markPaymentProviderError(err);
+    }
 
     const pending = await db.PaymentPendingDeposit.create({
       userId,
@@ -197,7 +204,7 @@ async function requestDeposit(userId, options) {
     );
   } catch (err) {
     paymentErrorLog('requestDeposit: createPayinLink failed', err.message, err.response || err.statusCode);
-    throw err;
+    throw markPaymentProviderError(err);
   }
 
   paymentLog('--- requestDeposit: Payment API createPayin response (shape only) ---');
@@ -211,7 +218,7 @@ async function requestDeposit(userId, options) {
     paymentErrorLog('requestDeposit: no paymentLink (url) in response', data);
     const err = new Error('Payment API did not return a payment link');
     err.statusCode = 502;
-    throw err;
+    throw markPaymentProviderError(err);
   }
 
   const linkObj = rawLink && typeof rawLink === 'object' ? rawLink : null;

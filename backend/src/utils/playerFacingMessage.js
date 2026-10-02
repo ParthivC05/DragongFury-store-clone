@@ -3,6 +3,18 @@
 const AMOUNT_UNAVAILABLE_MESSAGE = "This amount isn't available. Please choose a different amount.";
 const GENERIC_PAYMENT_ERROR = 'Something went wrong. Please try again.';
 const UNAVAILABLE_MESSAGE = 'This payment method is not available right now. Please try again.';
+const PAYMENT_PROVIDER_PLAYER_MESSAGE =
+  'Please use Chime manual or another payment method.';
+
+function markPaymentProviderError(err) {
+  if (!err || typeof err !== 'object') return err;
+  const status = err.statusCode ?? err.response?.status;
+  if (status === 401 || status === 403) return err;
+  err.code = 'PAYMENT_PROVIDER_ERROR';
+  if (status == null) err.statusCode = 502;
+  return err;
+}
+
 
 function providerNamePattern() {
   return /\b(?:xxpay|xpay|dollarpay|dpay|orionstarspay|orion\s*stars?\s*pay)\b/gi;
@@ -51,5 +63,7 @@ function sanitizePlayerFacingMessage(message, options = {}) {
 
 module.exports = {
   AMOUNT_UNAVAILABLE_MESSAGE,
-  sanitizePlayerFacingMessage
+  PAYMENT_PROVIDER_PLAYER_MESSAGE,
+  sanitizePlayerFacingMessage,
+  markPaymentProviderError
 };

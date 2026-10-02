@@ -26,7 +26,7 @@ const {
   getXxpayCredentialsFromRequest
 } = require('../../services/paymentProviders/xxpay/xxpay.credentials');
 const { paymentTypeToOrionAcceptedOption } = require('../../constants/paymentTypes');
-const { sanitizePlayerFacingMessage } = require('../../utils/playerFacingMessage');
+const { sanitizePlayerFacingMessage, PAYMENT_PROVIDER_PLAYER_MESSAGE } = require('../../utils/playerFacingMessage');
 
 function safeMessage(err, defaultMsg) {
   if (!err) return defaultMsg;
@@ -130,11 +130,23 @@ async function attachOrionDepositCredentials(req, userId, params, mode = 'requir
         data: { emailExists, paymentEmail }
       };
     }
-    const message = loginErr.response?.message || loginErr.message || 'Payment login failed. Please contact support.';
-    return { ok: false, status: rawStatus, message };
+    const realMessage = loginErr.response?.message || loginErr.message || 'Payment login failed. Please contact support.';
+    paymentLog('createDepositSession: payment provider login failed', realMessage);
+    return {
+      ok: false,
+      status: rawStatus,
+      message: PAYMENT_PROVIDER_PLAYER_MESSAGE,
+      code: 'PAYMENT_PROVIDER_ERROR'
+    };
   }
   if (!paymentToken) {
-    return { ok: false, status: 502, message: 'Payment login did not return a token.' };
+    paymentLog('createDepositSession: payment login did not return a token');
+    return {
+      ok: false,
+      status: 502,
+      message: PAYMENT_PROVIDER_PLAYER_MESSAGE,
+      code: 'PAYMENT_PROVIDER_ERROR'
+    };
   }
   params.paymentToken = paymentToken;
   params.paymentLogin = {
@@ -280,10 +292,6 @@ async function createDepositSessionHandler(req, res) {
   } catch (err) {
     const status = err.statusCode || 500;
     // For 503 (e.g. provider not available), expose the specific message so user sees "Crypto payment is not available" etc.
-    const message = status === 503 && (err.message || '').trim()
-      ? sanitizePlayerFacingMessage(String(err.message).trim())
-      : safeMessage(err, 'Could not create deposit session.');
-    // Surface Orion account requirement when DollarPay fell back without credentials.
     if (err.code === 'ORION_PAYMENT_ACCOUNT_REQUIRED') {
       return sendError(
         res,
@@ -291,6 +299,12 @@ async function createDepositSessionHandler(req, res) {
         status || 400
       );
     }
+    if (err.code === 'PAYMENT_PROVIDER_ERROR') {
+      return sendError(res, PAYMENT_PROVIDER_PLAYER_MESSAGE, status, 'PAYMENT_PROVIDER_ERROR');
+    }
+    const message = status === 503 && (err.message || '').trim()
+      ? sanitizePlayerFacingMessage(String(err.message).trim())
+      : safeMessage(err, 'Could not create deposit session.');
     return sendError(res, message, status);
   }
 }

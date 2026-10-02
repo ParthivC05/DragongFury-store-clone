@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import * as Dialog from '../../components/ui/Dialog';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { PAYMENT_PROVIDER_PLAYER_MESSAGE } from '../../utils/paymentProviderFallback';
 import * as walletApi from '../../api/wallet';
 import * as depositBonusesApi from '../../api/depositBonuses';
 import { fetchDepositPageData } from '../../api/depositPage';
@@ -1728,6 +1729,8 @@ export function Deposit() {
         }
       } else if (err.message?.toLowerCase().includes('payment account') || err.message?.toLowerCase().includes('profile')) {
         toast.error(err.message);
+      } else if (err.code === 'PAYMENT_PROVIDER_ERROR') {
+        toast.info(PAYMENT_PROVIDER_PLAYER_MESSAGE);
       } else {
         toast.error(err.message || 'Could not start deposit. Please try again or use another method.');
       }

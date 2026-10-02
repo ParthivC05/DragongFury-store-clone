@@ -16,6 +16,7 @@ const {
   isPaymentPasswordEncryptionConfigured
 } = require('../../utils/paymentPasswordEncryption');
 const { isCryptoOptionAllowed } = require('../../constants/cryptoDepositRails');
+const { markPaymentProviderError } = require('../../utils/playerFacingMessage');
 
 const PROVIDER_META = {
   selfcrypto: {
@@ -104,14 +105,14 @@ async function createOrionstarsPayinSession(userId, {
   } catch (err) {
     paymentErrorLog('createDepositSession Orionstar Pay createPayinLink failed', err.message);
     err.statusCode = err.statusCode || 502;
-    throw err;
+    throw markPaymentProviderError(err);
   }
   const rawLink = data.paymentLink || data.payment_link;
   const paymentLink = typeof rawLink === 'string' ? rawLink : (rawLink && (rawLink.url || rawLink.payment_url));
   if (!paymentLink || typeof paymentLink !== 'string') {
     const err = new Error('Payment API did not return a payment link.');
     err.statusCode = 502;
-    throw err;
+    throw markPaymentProviderError(err);
   }
   const linkObj = rawLink && typeof rawLink === 'object' ? rawLink : null;
   const centryosApplicationId = linkObj?.applicationId != null ? String(linkObj.applicationId).trim() : null;
@@ -389,7 +390,7 @@ async function createDepositSession(userId, params) {
     if (!scryptoProvider || typeof scryptoProvider.createPayment !== 'function') {
       const err = new Error('Crypto payment is not available. Please try another method.');
       err.statusCode = 503;
-      throw err;
+      throw markPaymentProviderError(err);
     }
     let result;
     try {
@@ -403,7 +404,7 @@ async function createDepositSession(userId, params) {
     } catch (err) {
       paymentErrorLog('createDepositSession Speed createPayment failed', err.message);
       err.statusCode = err.statusCode || 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
     const providerPaymentId = result.providerPaymentId || result.id || null;
@@ -488,7 +489,7 @@ async function createDepositSession(userId, params) {
     if (!selfProvider || typeof selfProvider.createPayment !== 'function' || !selfcryptoConfig.isConfigured()) {
       const err = new Error('Direct crypto is not available. Please try Speed Crypto or another method.');
       err.statusCode = 503;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
     let result;
@@ -503,7 +504,7 @@ async function createDepositSession(userId, params) {
     } catch (err) {
       paymentErrorLog('createDepositSession selfcrypto createPayment failed', err.message);
       err.statusCode = err.statusCode || 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
     const providerPaymentId = result.providerPaymentId || result.id || null;
@@ -655,13 +656,13 @@ async function createDepositSession(userId, params) {
     } catch (err) {
       paymentErrorLog('createDepositSession DollarPay failed', err.message);
       err.statusCode = err.statusCode || 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
     const paymentLink = data.pay_url || data.payment_url || data.payUrl || null;
     if (!paymentLink) {
       const err = new Error('DollarPay did not return a payment URL.');
       err.statusCode = 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
     // Pending until webhook/cron confirms success/fail (or auto-expires after 3h).
     // Store encrypted key when possible so webhooks can verify signatures.
@@ -789,14 +790,14 @@ async function createDepositSession(userId, params) {
     } catch (err) {
       paymentErrorLog('createDepositSession XXPay failed', err.message);
       err.statusCode = err.statusCode || 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
     const paymentLink = data?.data?.cashierUrl || data?.data?.payUrl || data?.cashierUrl || null;
     if (!paymentLink) {
       const err = new Error('XXPay did not return a cashier URL.');
       err.statusCode = 502;
-      throw err;
+      throw markPaymentProviderError(err);
     }
 
     let xxpayKeyEncrypted = null;

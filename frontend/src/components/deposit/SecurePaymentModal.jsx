@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useId, useMemo } from 'react'
 import { createPortal } from 'react-dom';
 import * as walletApi from '../../api/wallet';
 import { notifyDepositEligibilityChanged } from '../../utils/depositRequired';
+import { PAYMENT_PROVIDER_PLAYER_MESSAGE } from '../../utils/paymentProviderFallback';
 import { lockBodyScroll } from '../../utils/bodyScrollLock';
 import { formatSc } from '../../utils/currency';
 import { getDepositPackageImageProps } from '../../utils/depositPackageImage';
@@ -438,21 +439,8 @@ function DollarPayHandoff({
 
           {isFailed && (
             <div className="spm-pj-fail">
-              <h3>
-                {status === 'closed'
-                  ? 'Payment closed'
-                  : status === 'expired'
-                    ? 'Payment expired'
-                    : 'Payment failed'}
-              </h3>
-              <p>
-                {statusMessage ||
-                  (status === 'closed'
-                    ? 'This payment was closed. Please start a new deposit.'
-                    : status === 'expired'
-                      ? 'This payment timed out. Please start a new deposit.'
-                      : 'Something went wrong. Please try again.')}
-              </p>
+              <h3>Try another way to pay</h3>
+              <p>{PAYMENT_PROVIDER_PLAYER_MESSAGE}</p>
             </div>
           )}
 
@@ -702,17 +690,8 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
 
         {/* Expired / closed / failed */}
         {(status === 'failed' || status === 'expired' || status === 'closed') && (
-          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5 space-y-4">
-            <p className="text-red-200 font-medium text-center">
-              {status === 'closed'
-                ? 'This payment was closed.'
-                : status === 'expired'
-                  ? 'This payment session has expired.'
-                  : 'Payment failed.'}
-            </p>
-            {statusMessage && (
-              <p className="text-sm text-gray-400 text-center">{statusMessage}</p>
-            )}
+          <div className="rounded-xl border border-gray-500 bg-white/5 p-5 space-y-4">
+            <p className="text-gray-200 font-medium text-center">{PAYMENT_PROVIDER_PLAYER_MESSAGE}</p>
             <div className="flex flex-col gap-2">
               <button
                 type="button"

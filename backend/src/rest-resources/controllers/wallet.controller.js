@@ -6,7 +6,7 @@ const { sendSuccess, sendError } = require('../../helpers/response.helpers');
 const { assertKycForWithdraw } = require('../../services/kyc/assertKycForWithdraw.service');
 const { paymentLog, logger } = require('../../libs/logger');
 const { sendPaymentAccountCreatedEmail } = require('../../utils/email');
-const { sanitizePlayerFacingMessage } = require('../../utils/playerFacingMessage');
+const { sanitizePlayerFacingMessage, PAYMENT_PROVIDER_PLAYER_MESSAGE } = require('../../utils/playerFacingMessage');
 
 const DEPOSIT_DEFAULT_ERROR = 'Deposit could not be completed. Please try again later.';
 
@@ -123,8 +123,9 @@ async function deposit(req, res) {
           { data: { emailExists, paymentEmail } }
         );
       }
-      const message = loginErr.response?.message || loginErr.message || 'Payment login failed. Please contact support.';
-      return sendError(res, message, rawStatus);
+      const realMessage = loginErr.response?.message || loginErr.message || 'Payment login failed. Please contact support.';
+      paymentLog('deposit: payment provider login failed', realMessage);
+      return sendError(res, PAYMENT_PROVIDER_PLAYER_MESSAGE, rawStatus, 'PAYMENT_PROVIDER_ERROR');
     }
     const depositOptions = {
       amount: req.body?.amount,
@@ -156,6 +157,9 @@ async function deposit(req, res) {
     sendSuccess(res, data, 201);
   } catch (err) {
     const status = err.statusCode || 500;
+    if (err.code === 'PAYMENT_PROVIDER_ERROR') {
+      return sendError(res, PAYMENT_PROVIDER_PLAYER_MESSAGE, status, 'PAYMENT_PROVIDER_ERROR');
+    }
     const message = safeMessage(err, DEPOSIT_DEFAULT_ERROR);
     sendError(res, message, status);
   }

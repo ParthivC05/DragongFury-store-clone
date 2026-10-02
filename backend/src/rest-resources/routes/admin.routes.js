@@ -250,6 +250,7 @@ router.get('/automation-usage/errors', requireMasterAdmin, adminAutomationUsageC
 router.get('/games/manual-mode-logs', adminGamesController.listManualModeLogs);
 router.get('/games/bot-failure-logs', adminGamesController.listBotFailureLogs);
 router.get('/games/history', adminGamesController.listGameHistory);
+router.post('/games/fast-api/agent-login', adminGamesController.fastApiAgentLogin);
 router.get('/games', adminGamesController.list);
 router.get('/games/:id', adminGamesController.get);
 router.post(

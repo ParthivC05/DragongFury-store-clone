@@ -23,7 +23,7 @@ const ALPHANUMERIC_6_20_REGEX = /^[a-zA-Z0-9]{6,20}$/;
 const SHORT_UNDERSCORE_REGEX = /^[a-zA-Z][a-zA-Z0-9]{0,12}$/;
 
 /** Vblink / UltraPanda / Egame99: 7–16 characters (letters and numbers). */
-const VBLINK_FAMILY_GAME_KEYS = new Set(['vblink', 'ultrapanda', 'egame99']);
+const VBLINK_FAMILY_GAME_KEYS = new Set(['vblink', 'ultrapanda', 'egame99', 'ultathunder', 'estar', 'dragonfury']);
 
 /** VegasX agent API: alphanumeric plus underscore, dash, dot. */
 const VEGASX_USERNAME_REGEX = /^[A-Za-z0-9_.-]+$/;

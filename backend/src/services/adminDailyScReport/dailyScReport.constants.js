@@ -48,6 +48,9 @@ const PRODUCT_LABELS = {
   PANDA_MASTER: 'Panda Master',
   VBLINK: 'VBlink',
   MILKYWAY: 'Milky Way',
+  ULTA_THUNDER: 'Ulta Thunder',
+  ESTAR: 'Estar',
+  DRAGON_FURY: 'Dragon Fury',
   ULTRA_PANDA: 'Ultra Panda',
   CASH_MACHINE_777: 'Cash Machine 777',
   RIVER_SWEEPS: 'River Sweeps',
@@ -256,6 +259,9 @@ function platformGameFamily(row) {
   if (blob.includes('orionstar')) return 'ORIONSTARS';
   if (blob.includes('egame')) return 'EGAME99';
   if (blob.includes('firekirin')) return 'FIRE_KIRIN';
+  if (blob.includes('ultathunder')) return 'ULTA_THUNDER';
+  if (blob.includes('dragonfury')) return 'DRAGON_FURY';
+  if (blob.includes('estar')) return 'ESTAR';
   if (blob.includes('ultrapanda')) return 'ULTRA_PANDA';
   if (blob.includes('pandamaster')) return 'PANDA_MASTER';
   if (blob.includes('panda')) return 'PANDA';
@@ -299,6 +305,9 @@ function platformGameSql(ledgerAlias = 'l', gameAlias = 'g') {
       WHEN ${blob} LIKE '%orionstar%' OR ${product} = 'ORIONSTARS' THEN 'ORIONSTARS'
       WHEN ${blob} LIKE '%egame%' OR ${product} = 'EGAME99' THEN 'EGAME99'
       WHEN ${blob} LIKE '%firekirin%' OR ${product} = 'FIRE_KIRIN' THEN 'FIRE_KIRIN'
+      WHEN ${blob} LIKE '%ultathunder%' OR ${product} = 'ULTA_THUNDER' THEN 'ULTA_THUNDER'
+      WHEN ${blob} LIKE '%dragonfury%' OR ${product} = 'DRAGON_FURY' THEN 'DRAGON_FURY'
+      WHEN ${blob} LIKE '%estar%' OR ${product} = 'ESTAR' THEN 'ESTAR'
       WHEN ${blob} LIKE '%ultrapanda%' OR ${product} = 'ULTRA_PANDA' THEN 'ULTRA_PANDA'
       WHEN ${blob} LIKE '%pandamaster%' OR ${product} = 'PANDA_MASTER' THEN 'PANDA_MASTER'
       WHEN ${blob} LIKE '%panda%' OR ${product} = 'PANDA' THEN 'PANDA'

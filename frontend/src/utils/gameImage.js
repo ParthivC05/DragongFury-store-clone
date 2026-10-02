@@ -17,6 +17,7 @@ const IMAGE_SLUG_ALIASES = {
   milkywaybot: 'milkyway',
   milkywayautomation: 'milkyway',
   milkywaylegacy: 'milkyway',
+  ultrathunder: 'ultathunder',
 };
 
 /** Live portrait covers (320×432). Used instead of older square or circular art. */
@@ -38,7 +39,9 @@ const PLATFORM_PORTRAIT = {
   cashmachine777: '/df-online/platforms/cash-machine.webp',
   megaspin: '/df-online/platforms/mega-spin.webp',
   joker: '/df-online/platforms/joker.webp',
-  dragonfury: '/df-online/platforms/dragon-fury.webp'
+  dragonfury: '/df-online/platforms/dragon-fury.webp',
+  ultathunder: '/optimized/games/ultathunder.webp',
+  estar: '/optimized/games/estar.webp',
 };
 
 /**

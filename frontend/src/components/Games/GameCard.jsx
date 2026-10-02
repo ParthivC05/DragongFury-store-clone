@@ -24,6 +24,12 @@ function isVegasXGameName(gameName) {
   return String(gameName || '').trim().toLowerCase().replace(/[\s_.-]+/g, '') === 'vegasx';
 }
 
+function isFastApiFamilyGameName(gameName) {
+  const key = String(gameName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  return key === 'ultathunder' || key === 'estar' || key === 'dragonfury';
+}
+
+
 function allowsFiveCharLinkUsername(gameName) {
   const key = String(gameName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
   if (key.includes('gameroom')) return true;
@@ -69,6 +75,12 @@ function linkUsernameClientValidationError(username, gameName) {
   const isVegasX = isVegasXGameName(gameName);
   if (!isVegasX && !/^[a-zA-Z]/.test(t)) {
     return 'Game username must start with a letter, not a number.';
+  }
+  if (isFastApiFamilyGameName(gameName)) {
+    if (!/^[a-zA-Z][a-zA-Z0-9]{6,15}$/.test(t)) {
+      return 'Username must start with a letter, can only contain letters and numbers, and must be between 7 and 16 characters.';
+    }
+    return null;
   }
   if (!isVegasX && allowsFiveCharLinkUsername(gameName) && t.length < 5) {
     return 'Please enter a valid game username with at least 5 characters.';
@@ -224,9 +236,11 @@ function LinkAccountModal({ gameName, onClose, onLinked }) {
               <p id="link-game-username-hint" className="gtm-field-hint">
                 {isVegasXGameName(gameName)
                   ? 'Use the same username you log in with on this game.'
-                  : (allowsFiveCharLinkUsername(gameName)
+                  : (isFastApiFamilyGameName(gameName)
+                    ? 'Must start with a letter, use only letters and numbers, and be 7 to 16 characters.'
+                    : (allowsFiveCharLinkUsername(gameName)
                     ? 'Must start with a letter and be at least 5 characters.'
-                    : 'Must start with a letter and be at least 6 characters.')}
+                    : 'Must start with a letter and be at least 6 characters.'))}
               </p>
               <input
                 id="link-game-username"

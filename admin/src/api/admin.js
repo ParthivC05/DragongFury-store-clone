@@ -285,6 +285,15 @@ export function getGameBotFailureLogs(params = {}) {
   return request(`${ADMIN}/games/bot-failure-logs${q ? `?${q}` : ''}`)
 }
 
+
+/** Fast API agent login. Returns the provider request, response, and decrypted app secret. */
+export function fastApiAgentLogin(data) {
+  return request(`${ADMIN}/games/fast-api/agent-login`, {
+    method: 'POST',
+    body: JSON.stringify(data || {})
+  })
+}
+
 /** Game configuration history — technical staff only (GET /api/admin/games/history). */
 export function getGameHistory(params = {}) {
   const clean = Object.fromEntries(Object.entries(withDateRangeTimezone(params)).filter(([, v]) => v != null && v !== ''))

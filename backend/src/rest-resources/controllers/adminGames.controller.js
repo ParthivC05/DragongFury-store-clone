@@ -68,6 +68,7 @@ const { changeGamePassword: changeGamePasswordService } = require('../../service
 const { getGameManualModeLogs } = require('../../services/games/getGameManualModeLogs.service');
 const { getGameBotAutomationFailureLogs } = require('../../services/games/getGameBotAutomationFailureLogs.service');
 const { getGameHistory } = require('../../services/games/getGameHistory.service');
+const { loginFastApiAgent } = require('../../services/games/fastApiAgentLogin.service');
 const { recordGameManualModeLog } = require('../../services/games/recordGameManualModeLog.service');
 const { clearGameBotAutomationFailures } = require('../../services/games/recordBotAutomationFailure.service');
 const {
@@ -2581,6 +2582,31 @@ async function listBotFailureLogs(req, res) {
   }
 }
 
+/**
+ * POST /api/admin/games/fast-api/agent-login
+ * Calls Fast API agent login and returns the outbound body, provider response, and decrypted app secret.
+ * Platform technical staff only. The client message must not name that role.
+ */
+async function fastApiAgentLogin(req, res) {
+  try {
+    if (!can(req, STORE_FEATURE_KEYS.GAMES)) {
+      return sendError(res, 'You don\'t have access to Games.', 403);
+    }
+    if (!isPlatformTechnicalStaff(req)) {
+      return sendError(res, 'You don\'t have access to this page.', 403);
+    }
+    const body = req.body || {};
+    const data = await loginFastApiAgent({
+      apiBaseUrl: body.apiBaseUrl,
+      account: body.account,
+      passwd: body.passwd
+    });
+    sendSuccess(res, data);
+  } catch (err) {
+    sendError(res, err.message || 'Agent login failed', err.statusCode || 500);
+  }
+}
+
 module.exports = {
   listGameTemplates,
   listAllGameTemplates,
@@ -2591,6 +2617,7 @@ module.exports = {
   listGameHistory,
   listManualModeLogs,
   listBotFailureLogs,
+  fastApiAgentLogin,
   get,
   create,
   createCustom,

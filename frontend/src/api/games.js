@@ -103,6 +103,23 @@ export function getGameForgotPasswordValidationError(gameName, trimmedPassword) 
     }
     return null;
   }
+  const fastApiKey = String(gameName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (fastApiKey === 'ultathunder' || fastApiKey === 'estar' || fastApiKey === 'dragonfury') {
+    const len = trimmedPassword.length;
+    if (len < 6 || len > 16) {
+      return 'New game password must be between 6 and 16 characters.';
+    }
+    if (!/^[A-Za-z0-9!@#$()%^/.,]+$/.test(trimmedPassword)) {
+      return 'New game password contains invalid characters. Allowed symbols: !@#$()%^/.,';
+    }
+    if (!/[A-Za-z]/.test(trimmedPassword)) {
+      return 'New game password must include at least one letter.';
+    }
+    if (!/\d/.test(trimmedPassword)) {
+      return 'New game password must include at least one number.';
+    }
+    return null;
+  }
   if (trimmedPassword.length < MIN_GAME_NEW_PASSWORD_LENGTH) {
     return `New password must be at least ${MIN_GAME_NEW_PASSWORD_LENGTH} characters.`;
   }

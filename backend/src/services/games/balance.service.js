@@ -57,7 +57,7 @@ function milkywayPasswordStaleBalanceResult() {
 }
 
 /** Game names that use third-party fast/user/balance API (VBLink / UltraPanda / Egame99). */
-const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99'];
+const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
 
 /** Same copy as linkGameAccount when the provider has no account for this username. */
 const VBLINK_LINK_USER_NOT_FOUND_MESSAGE =

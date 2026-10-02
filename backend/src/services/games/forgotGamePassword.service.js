@@ -86,7 +86,7 @@ const STRICT_FORGOT_PASSWORD_GAMES = {
 };
 
 /** Game names that use third-party fast/user/updatePasswd API (VBLink / UltraPanda / Egame99). */
-const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99'];
+const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
 
 function isVblinkOrUltrapanda(gameName) {
   const name = String(gameName || '').trim();

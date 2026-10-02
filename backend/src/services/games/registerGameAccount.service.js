@@ -108,7 +108,7 @@ const MIN_BOT_CREATE_USER_ACCOUNT_LENGTH = MIN_GAME_USERNAME_LENGTH;
 const MIN_PANDAMASTER_NICKNAME_LENGTH = MIN_BOT_CREATE_USER_ACCOUNT_LENGTH;
 
 /** Game names that use third-party fast/user/create API (VBLink / UltraPanda / Egame99). */
-const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99'];
+const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
 const VBLINK_ACCOUNT_MIN = MIN_VBLINK_FAMILY_LENGTH;
 const VBLINK_ACCOUNT_MAX = MAX_VBLINK_FAMILY_LENGTH;
 const VBLINK_PASSWORD_MIN = 6;

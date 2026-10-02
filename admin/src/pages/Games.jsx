@@ -14,6 +14,7 @@ import {
   getGameManualModeLogs,
   getGameBotFailureLogs,
   getGameHistory,
+  fastApiAgentLogin,
   getAllGameTemplates,
   getGameTemplate,
   createGameTemplate,
@@ -333,7 +334,12 @@ export default function Games() {
     return !isFullPlatformSuperAdmin
   }
 
-  const [activeTab, setActiveTab] = useState('games') // 'games' | 'configs' | 'manualLogs' | 'gameHistory' | 'failureLogs'
+  const [activeTab, setActiveTab] = useState('games') // 'games' | 'configs' | 'manualLogs' | 'gameHistory' | 'failureLogs' | 'agentLogin'
+  const [agentLoginForm, setAgentLoginForm] = useState({ apiBaseUrl: '', account: '', passwd: '' })
+  const [agentLoginLoading, setAgentLoginLoading] = useState(false)
+  const [agentLoginResult, setAgentLoginResult] = useState(null)
+  const [showAgentLoginPassword, setShowAgentLoginPassword] = useState(false)
+  const [showDecryptedSecret, setShowDecryptedSecret] = useState(false)
 
   const [list, setList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -1565,11 +1571,11 @@ export default function Games() {
     const goldenDragon = selectedTemplate && isGoldenDragonTemplate(selectedTemplate)
     if (simpleGame) {
       if (!(form.appId || '').trim()) {
-        toast.error('App ID is required for Vblink, UltraPanda, and Egame99.')
+        toast.error('App ID is required for Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury.')
         return
       }
       if (!(form.appSecret || '').trim()) {
-        toast.error('App Secret is required for Vblink, UltraPanda, and Egame99.')
+        toast.error('App Secret is required for Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury.')
         return
       }
     }
@@ -1926,6 +1932,25 @@ export default function Games() {
     }
   }
 
+  const handleAgentLogin = async (e) => {
+    e.preventDefault()
+    setAgentLoginLoading(true)
+    setAgentLoginResult(null)
+    setShowDecryptedSecret(false)
+    try {
+      const data = await fastApiAgentLogin({
+        apiBaseUrl: agentLoginForm.apiBaseUrl.trim(),
+        account: agentLoginForm.account.trim(),
+        passwd: agentLoginForm.passwd
+      })
+      setAgentLoginResult(data)
+    } catch (err) {
+      toast.error(err.message || 'Agent login failed.')
+    } finally {
+      setAgentLoginLoading(false)
+    }
+  }
+
   const formatDate = (d) => {
     if (!d) return '—'
     try {
@@ -1990,6 +2015,17 @@ export default function Games() {
               onClick={() => setActiveTab('gameHistory')}
             >
               Game history
+            </button>
+          )}
+          {isTechnicalStaff && (
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === 'agentLogin'}
+              className={`games-tab ${activeTab === 'agentLogin' ? 'games-tab-active' : ''}`}
+              onClick={() => setActiveTab('agentLogin')}
+            >
+              Agent login
             </button>
           )}
         </div>
@@ -2836,6 +2872,124 @@ export default function Games() {
                 )}
               </div>
             </>
+          )}
+        </>
+      )}
+
+      {activeTab === 'agentLogin' && isTechnicalStaff && (
+        <>
+          <div className="page-header">
+            <div className="games-config-header-text">
+              <h2>Agent login</h2>
+              <p className="page-description" style={{ marginTop: '0.25rem', color: '#6b7280', fontSize: '0.875rem' }}>
+                Enter the Fast API domain, agent account, and agent password. The result shows the request sent, the provider response, and the decrypted App Secret when one is returned.
+              </p>
+            </div>
+          </div>
+          <form className="games-agent-login-form" onSubmit={handleAgentLogin}>
+            <div className="games-modal-field">
+              <label htmlFor="agent-login-domain">API domain</label>
+              <input
+                id="agent-login-domain"
+                className="store-features-input"
+                value={agentLoginForm.apiBaseUrl}
+                onChange={(e) => setAgentLoginForm((f) => ({ ...f, apiBaseUrl: e.target.value }))}
+                placeholder="https://papi.example.com"
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="games-modal-field">
+              <label htmlFor="agent-login-account">Agent account</label>
+              <input
+                id="agent-login-account"
+                className="store-features-input"
+                value={agentLoginForm.account}
+                onChange={(e) => setAgentLoginForm((f) => ({ ...f, account: e.target.value }))}
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="games-modal-field">
+              <label htmlFor="agent-login-password">Agent password</label>
+              <div className="games-password-input-wrap">
+                <input
+                  id="agent-login-password"
+                  type={showAgentLoginPassword ? 'text' : 'password'}
+                  className="store-features-input games-password-input"
+                  value={agentLoginForm.passwd}
+                  onChange={(e) => setAgentLoginForm((f) => ({ ...f, passwd: e.target.value }))}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className="games-password-eye-btn"
+                  onClick={() => setShowAgentLoginPassword((v) => !v)}
+                  aria-label={showAgentLoginPassword ? 'Hide password' : 'Show password'}
+                >
+                  <PasswordEyeIcon visible={showAgentLoginPassword} />
+                </button>
+              </div>
+            </div>
+            <button type="submit" className="admin-btn admin-btn-primary" disabled={agentLoginLoading}>
+              {agentLoginLoading ? 'Calling Fast API…' : 'Call agent login'}
+            </button>
+          </form>
+
+          {agentLoginResult && (
+            <div className="games-agent-login-result">
+              <div className="games-agent-login-block">
+                <h3>Request</h3>
+                <p className="games-agent-login-meta">
+                  {agentLoginResult.request?.method || 'POST'} {agentLoginResult.request?.url || ''}
+                </p>
+                <pre className="games-manual-log-reason-block">
+                  {formatBotApiResponse(agentLoginResult.request?.body)}
+                </pre>
+              </div>
+              <div className="games-agent-login-block">
+                <h3>Response</h3>
+                <p className="games-agent-login-meta">
+                  HTTP {agentLoginResult.response?.httpStatus ?? '—'}
+                  {agentLoginResult.providerCode != null ? ` · code ${agentLoginResult.providerCode}` : ''}
+                </p>
+                <pre className="games-manual-log-reason-block">
+                  {formatBotApiResponse(agentLoginResult.response?.body)}
+                </pre>
+              </div>
+              <div className="games-agent-login-block">
+                <h3>Credentials</h3>
+                <div className="games-agent-login-cred">
+                  <span>App ID</span>
+                  <code>{agentLoginResult.appId || '—'}</code>
+                </div>
+                <div className="games-agent-login-cred">
+                  <span>Decrypted secret</span>
+                  {agentLoginResult.appSecret ? (
+                    <div className="games-agent-login-secret">
+                      <code>{showDecryptedSecret ? agentLoginResult.appSecret : '••••••••'}</code>
+                      <button
+                        type="button"
+                        className="games-password-eye-btn"
+                        onClick={() => setShowDecryptedSecret((v) => !v)}
+                        aria-label={showDecryptedSecret ? 'Hide secret' : 'Show secret'}
+                      >
+                        <PasswordEyeIcon visible={showDecryptedSecret} />
+                      </button>
+                    </div>
+                  ) : (
+                    <code>{agentLoginResult.decryptError || '—'}</code>
+                  )}
+                </div>
+                {agentLoginResult.balance != null && (
+                  <div className="games-agent-login-cred">
+                    <span>Balance</span>
+                    <code>{String(agentLoginResult.balance)}</code>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </>
       )}
@@ -4551,7 +4705,7 @@ export default function Games() {
               )}
               {isSimpleGame(configForm.name) && (
                 <p className="games-modal-hint" style={{ marginBottom: '0.5rem' }}>
-                  For Vblink, UltraPanda, and Egame99 only Name, Bot base URL, and Game link are required. Game key and Streamlit token are not used.
+                  For Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury only Name, Bot base URL, and Game link are required. Game key and Streamlit token are not used.
                 </p>
               )}
               {isAgentCredentialGame(configForm) && (

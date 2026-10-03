@@ -141,6 +141,15 @@ export function getDepositStatus(depositId) {
   );
 }
 
+/** Attach the MetaMask transaction hash so status can move to confirming, then paid. */
+export function submitDepositTx(depositId, body) {
+  return postRequest(
+    `${PAYMENTS_BASE}/deposits/${encodeURIComponent(depositId)}/tx`,
+    body,
+    withPaymentPartner()
+  );
+}
+
 /**
  * Sync deposit status from Payment API (polls CentryOS for completed transactions).
  * Use after user pays in the iframe or to refresh pending deposits. Returns { processed, errors, deposits, depositRefresh? }.

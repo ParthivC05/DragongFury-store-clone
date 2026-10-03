@@ -208,6 +208,8 @@ async function getDepositStatus(depositId, userId, options = {}) {
       });
       if (fresh) {
         const result = await checkPending(fresh);
+        const { persistWatcherProgress } = require('../paymentProviders/selfcrypto/selfcrypto.match');
+        await persistWatcherProgress(fresh, result);
         if (result.paid) {
           await completeDepositFromSelfcrypto({
             transactionId: fresh.providerSessionId,

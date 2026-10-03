@@ -3,6 +3,7 @@
 const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { checkPending } = require('../paymentProviders/selfcrypto/selfcrypto.watchers');
+const { persistWatcherProgress } = require('../paymentProviders/selfcrypto/selfcrypto.match');
 const { completeDepositFromSelfcrypto } = require('../wallet/completeDepositFromSelfcrypto.service');
 const { paymentLog, paymentErrorLog } = require('../../libs/logger');
 
@@ -41,8 +42,9 @@ async function syncSelfcryptoDeposits() {
   for (const pending of rows) {
     summary.checked += 1;
     try {
+      const result = await checkPending(pending);
+      await persistWatcherProgress(pending, result);
       if (pending.expiresAt && new Date(pending.expiresAt).getTime() < now.getTime()) {
-        const result = await checkPending(pending);
         if (result.paid) {
           const out = await creditIfPaid(pending, result);
           if (out.credited) summary.credited += 1;
@@ -53,7 +55,6 @@ async function syncSelfcryptoDeposits() {
         continue;
       }
 
-      const result = await checkPending(pending);
       if (result.expired) {
         await pending.update({ status: 'expired' });
         summary.expired += 1;

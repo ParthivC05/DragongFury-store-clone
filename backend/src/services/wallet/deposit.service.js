@@ -111,7 +111,10 @@ async function deposit(userId, body) {
       const fromMeta = packageMeta ? packageMetaToTransactionMetadata(packageMeta) : {};
       const depositMetadata = {
         ...fromMeta,
-        ...(providerTransactionId ? { provider_transaction_id: providerTransactionId } : {})
+        ...(providerTransactionId ? { provider_transaction_id: providerTransactionId } : {}),
+        ...(cryptoCurrency ? { crypto_currency: cryptoCurrency } : {}),
+        ...(txHash ? { tx_hash: txHash } : {}),
+        ...(provider ? { provider } : {})
       };
       const hasMetaKeys = Object.keys(depositMetadata).some(
         (k) => depositMetadata[k] != null && depositMetadata[k] !== ''

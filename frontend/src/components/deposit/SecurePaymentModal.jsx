@@ -6,7 +6,6 @@ import { PAYMENT_PROVIDER_PLAYER_MESSAGE } from '../../utils/paymentProviderFall
 import { lockBodyScroll } from '../../utils/bodyScrollLock';
 import { formatSc } from '../../utils/currency';
 import { getDepositPackageImageProps } from '../../utils/depositPackageImage';
-import { chestImageProps } from '../../utils/storeChest';
 import { PaymentQRCode } from './PaymentQRCode';
 import { ChimeLogo } from '../payment/ChimeLogo';
 import {
@@ -18,6 +17,7 @@ import {
   PayPalIcon
 } from '../../assets/icons';
 import { cryptoUsualWait } from '../../utils/depositRails';
+import { payWithMetaMask } from '../../utils/metamaskPay';
 import './SecurePaymentModal.css';
 
 const POLL_INTERVAL_MS = 4000;
@@ -143,16 +143,13 @@ function ConfettiBurst({ active }) {
   );
 }
 
-function ReceiptArt({ sc, chestFile }) {
+function ReceiptArt({ sc }) {
   const n = Number(sc);
   const idx = Number.isFinite(n) && n >= 100 ? 2 : Number.isFinite(n) && n >= 40 ? 1 : 0;
-  const art = chestFile
-    ? chestImageProps(chestFile, { eager: true })
-    : getDepositPackageImageProps(idx);
   return (
     <div className="spm-pj-rcp-art">
       <span className="spm-pj-rcp-glow" aria-hidden="true" />
-      <img {...art} alt="" />
+      <img {...getDepositPackageImageProps(idx)} alt="" />
     </div>
   );
 }
@@ -171,7 +168,6 @@ function DollarPayHandoff({
   discountPct = 0,
   payingWithLabel = '—',
   payingWithKey = '',
-  chestFile = null,
   status,
   statusMessage,
   handedOff,
@@ -319,7 +315,7 @@ function DollarPayHandoff({
           {!isFailed && (
             <>
               <div className="spm-pj-rcp">
-                <ReceiptArt sc={creditSc} chestFile={chestFile} />
+                <ReceiptArt sc={creditSc} />
                 <div className="spm-pj-rcp-tx">
                   <div className="spm-pj-rcp-n">{scText != null ? scText : '—'}</div>
                   <div className="spm-pj-rcp-u">SWEEPS COINS</div>
@@ -608,6 +604,8 @@ function CopyInvoiceButton({ value, label = 'Copy Lightning Invoice' }) {
 /** Speed in-app payment content – fintech-style layout */
 function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose }) {
   const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState('');
   const expiresAt = sessionPayload?.expiresAt ?? null;
   const ttl = sessionPayload?.ttl ?? null;
   const remaining = useCountdown(expiresAt, ttl);
@@ -618,10 +616,34 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
   const isLightning = paymentMethod === 'lightning';
   const isOnchain = paymentMethod === 'onchain';
   const targetCurrency = sessionPayload?.targetCurrency ?? '';
+  const metamask = sessionPayload?.providerCode === 'selfcrypto' ? sessionPayload?.metamask : null;
   const targetAmount = sessionPayload?.targetAmount != null ? Number(sessionPayload.targetAmount) : null;
+  const exactText = metamask?.exactAmount || sessionPayload?.exactAmount || (targetAmount != null ? String(targetAmount) : '');
   const btcAmount = targetCurrency === 'SATS' && targetAmount != null ? formatSatsToBtc(targetAmount) : null;
 
   const wait = cryptoUsualWait({ currency: targetCurrency, paymentMethod });
+
+  async function payFromMetaMask() {
+    if (!metamask?.expectedBaseUnits || !address) return;
+    setPayError('');
+    setPaying(true);
+    try {
+      const sent = await payWithMetaMask({
+        chain: metamask.chain,
+        to: address,
+        expectedBaseUnits: metamask.expectedBaseUnits
+      });
+      await walletApi.submitDepositTx(sessionPayload.depositId, {
+        txHash: sent.txHash,
+        fromAddress: sent.fromAddress || ''
+      });
+    } catch (err) {
+      if (err?.code === 4001) setPayError('You rejected the payment in MetaMask.');
+      else setPayError(err?.message || 'MetaMask payment failed.');
+    } finally {
+      setPaying(false);
+    }
+  }
 
   const pageTitle = isLightning
     ? 'Pay with Bitcoin Lightning'
@@ -631,9 +653,11 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
 
   const instructionText = isLightning
     ? 'Scan the QR code with your Lightning wallet or copy the payment invoice.'
-    : address
-      ? 'Scan the QR code with your wallet or copy the address below.'
-      : 'Scan the QR code with your wallet to complete the payment.';
+    : metamask
+      ? 'Send the exact amount from MetaMask to the one receive address for this coin. Do not round it.'
+      : address
+        ? 'Scan the QR code with your wallet or copy the address below.'
+        : 'Scan the QR code with your wallet to complete the payment.';
 
   const statusConfig = {
     completed: { label: 'Payment Received', emoji: '✅', className: 'spm-status-completed' },
@@ -664,7 +688,7 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
             <div className="spm-amount-crypto">
               {targetAmount != null && (
                 <>
-                  Send {formatCryptoAmount(targetAmount)} {targetCurrency}
+                  Send {exactText || formatCryptoAmount(targetAmount)} {targetCurrency}
                   {btcAmount != null && (
                     <span className="block spm-btc mt-0.5">≈ {btcAmount} BTC</span>
                   )}
@@ -687,6 +711,9 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
             <span>{statusInfo.label}</span>
           </span>
         </div>
+        {statusMessage ? (
+          <p className="spm-instruction">{statusMessage}</p>
+        ) : null}
 
         {/* Expired / closed / failed */}
         {(status === 'failed' || status === 'expired' || status === 'closed') && (
@@ -759,6 +786,33 @@ function SpeedPaymentContent({ sessionPayload, status, statusMessage, onClose })
                 <p className="spm-qr-label">Wallet address</p>
                 <p className="spm-invoice-full">{address}</p>
                 <CopyInvoiceButton value={address} label="Copy Address" />
+                {exactText ? (
+                  <div className="mt-3">
+                    <CopyInvoiceButton value={String(exactText)} label={`Copy exact ${targetCurrency} amount`} />
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            {metamask && address && showPaymentFlow && (
+              <div className="mb-4 spm-help-card">
+                <h3 className="spm-help-title">Pay with MetaMask</h3>
+                <p className="spm-instruction">
+                  {metamask.chain === 'eth' || metamask.chain === 'sol'
+                    ? 'This uses the same receive address for every payment of this coin.'
+                    : 'MetaMask does not send this coin from the site. Open MetaMask and send the exact amount to the address above.'}
+                </p>
+                {(metamask.chain === 'eth' || metamask.chain === 'sol') && (
+                  <button
+                    type="button"
+                    className="spm-btn-primary"
+                    disabled={paying || !metamask.expectedBaseUnits}
+                    onClick={payFromMetaMask}
+                  >
+                    {paying ? 'Waiting for MetaMask…' : 'Pay with MetaMask'}
+                  </button>
+                )}
+                {payError ? <p className="spm-instruction text-amber-300">{payError}</p> : null}
               </div>
             )}
 
@@ -802,7 +856,6 @@ export function SecurePaymentModal({
   saveLabel = null,
   payingWithLabel = null,
   payingWithKey = null,
-  chestFile = null,
   onOpenTerms,
 }) {
   const [status, setStatus] = useState(sessionPayload?.status || 'pending');
@@ -1153,7 +1206,6 @@ export function SecurePaymentModal({
             discountPct={sessionPayload?.discountPct ?? 0}
             payingWithLabel={sessionPayload?.payingWithLabel || payingWithLabel || '—'}
             payingWithKey={sessionPayload?.payingWithKey || payingWithKey || ''}
-            chestFile={sessionPayload?.chestFile || chestFile || null}
             status={status}
             statusMessage={statusMessage}
             handedOff={dollarpayHandedOff}

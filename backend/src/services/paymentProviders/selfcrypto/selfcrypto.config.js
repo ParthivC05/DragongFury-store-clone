@@ -79,20 +79,28 @@ function lightningConfigured() {
   return btcpayConfigured() || lndConfigured();
 }
 
+function hasTreasuryEnv() {
+  return !!(
+    env('METAMASK_BTC_ADDRESS') ||
+    env('METAMASK_ETH_ADDRESS') ||
+    env('METAMASK_TRX_ADDRESS') ||
+    env('METAMASK_SOL_ADDRESS')
+  );
+}
+
 function isConfigured() {
-  return hasMnemonic() || lightningConfigured();
+  return hasMnemonic() || hasTreasuryEnv() || lightningConfigured();
 }
 
 function paymentMethodsByTargetCurrency() {
+  const { treasuryAddress } = require('./selfcrypto.treasury');
   const map = {};
-  if (hasMnemonic()) {
-    map.BTC = lightningConfigured() ? ['onchain', 'lightning'] : ['onchain'];
-    map.ETH = ['ethereum'];
-    map.TRX = ['tron'];
-    map.SOL = ['solana'];
-  } else if (lightningConfigured()) {
-    map.BTC = ['lightning'];
-  }
+  const btc = treasuryAddress('btc');
+  if (btc) map.BTC = lightningConfigured() ? ['onchain', 'lightning'] : ['onchain'];
+  else if (lightningConfigured()) map.BTC = ['lightning'];
+  if (treasuryAddress('eth')) map.ETH = ['ethereum'];
+  if (treasuryAddress('trx')) map.TRX = ['tron'];
+  if (treasuryAddress('sol')) map.SOL = ['solana'];
   return map;
 }
 
@@ -159,6 +167,7 @@ module.exports = {
   btcpayConfigured,
   lndConfigured,
   lightningConfigured,
+  hasTreasuryEnv,
   isConfigured,
   paymentMethodsByTargetCurrency,
   targetCurrencies,

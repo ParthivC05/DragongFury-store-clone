@@ -7,6 +7,7 @@ const router = express.Router();
 router.get('/deposit-methods', authMiddleware, paymentsController.getDepositMethods);
 router.get('/withdraw-methods', authMiddleware, paymentsController.getWithdrawMethods);
 router.post('/deposits/session', authMiddleware, paymentsController.createDepositSessionHandler);
+router.post('/deposits/:depositId/tx', authMiddleware, paymentsController.submitDepositTxHandler);
 router.get('/deposits/:depositId/status', authMiddleware, paymentsController.getDepositStatusHandler);
 router.post('/scrypto/withdraw-request', authMiddleware, paymentsController.createSpeedWithdrawRequest);
 router.post('/linked-accounts/withdraw', authMiddleware, paymentsController.createWithdrawal);

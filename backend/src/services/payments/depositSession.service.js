@@ -508,32 +508,48 @@ async function createDepositSession(userId, params) {
     }
 
     const providerPaymentId = result.providerPaymentId || result.id || null;
-    const qrPayload = result.qrPayload || result.address || result.paymentRequest || '';
     const paymentLinkPlaceholder = providerPaymentId ? `selfcrypto:${providerPaymentId}` : 'selfcrypto:in-app';
+    const shared = pm !== 'lightning' && result.extraMetadata?.treasury === true;
+    const { createSharedPending } = require('../paymentProviders/selfcrypto/selfcrypto.treasury');
 
-    const pending = await db.PaymentPendingDeposit.create({
-      userId,
-      amount,
-      paymentLink: paymentLinkPlaceholder,
-      status: 'pending',
-      provider: 'selfcrypto',
-      providerSessionId: providerPaymentId,
-      targetCurrency: result.targetCurrency || tc,
-      paymentMethod: result.paymentMethod || pm,
-      targetAmount: result.targetAmount ?? null,
-      walletAddress: result.address || null,
-      paymentRequest: result.paymentRequest || null,
-      paymentUri: result.qrPayload || result.paymentRequest || result.address || null,
-      expiresAt: result.expiresAt || null,
-      ttl: result.ttl ?? null,
-      rawProviderResponse: result.rawResponse ? { ...result.rawResponse } : null,
-      providerMetadata: {
-        providerPaymentId: providerPaymentId || null,
-        paymentType: 'crypto',
-        ...(result.extraMetadata || {}),
-        ...(packageMeta || {})
-      }
-    });
+    const buildPending = (exact, transaction) => {
+      const exactAmount = exact?.exactAmount || (result.targetAmount != null ? String(result.targetAmount) : null);
+      const qrPayload = pm === 'onchain' && result.address && exactAmount
+        ? `bitcoin:${result.address}?amount=${exactAmount}`
+        : (result.paymentRequest || result.address || '');
+      return db.PaymentPendingDeposit.create({
+        userId,
+        amount,
+        paymentLink: paymentLinkPlaceholder,
+        status: 'pending',
+        provider: 'selfcrypto',
+        providerSessionId: providerPaymentId,
+        targetCurrency: result.targetCurrency || tc,
+        paymentMethod: result.paymentMethod || pm,
+        targetAmount: exactAmount,
+        walletAddress: result.address || null,
+        paymentRequest: result.paymentRequest || null,
+        paymentUri: qrPayload || null,
+        expiresAt: result.expiresAt || null,
+        ttl: result.ttl ?? null,
+        rawProviderResponse: result.rawResponse ? { ...result.rawResponse } : null,
+        providerMetadata: {
+          providerPaymentId: providerPaymentId || null,
+          paymentType: 'crypto',
+          ...(result.extraMetadata || {}),
+          ...(exact ? {
+            expectedBaseUnits: exact.expectedBaseUnits,
+            exactAmount: exact.exactAmount,
+            treasury: true
+          } : {}),
+          ...(packageMeta || {})
+        }
+      }, transaction ? { transaction } : undefined);
+    };
+
+    const pending = shared
+      ? await createSharedPending(result.extraMetadata.chain, result.targetAmount, buildPending)
+      : await buildPending(null);
     paymentLog('createDepositSession selfcrypto pending created', {
       depositId: pending.id,
       userId,
@@ -542,6 +558,10 @@ async function createDepositSession(userId, params) {
       paymentMethod: pm
     });
 
+    const meta = pending.providerMetadata && typeof pending.providerMetadata === 'object'
+      ? pending.providerMetadata
+      : {};
+    const exactAmount = meta.exactAmount || (pending.targetAmount != null ? String(pending.targetAmount) : null);
     return {
       depositId: pending.id,
       providerCode: 'selfcrypto',
@@ -551,14 +571,20 @@ async function createDepositSession(userId, params) {
       amount: Number(result.amount) || Number(amount),
       currency: result.currency || currency,
       targetCurrency: result.targetCurrency || tc,
-      targetAmount: result.targetAmount ?? null,
+      targetAmount: exactAmount != null ? Number(exactAmount) : (result.targetAmount ?? null),
+      exactAmount,
       paymentMethod: result.paymentMethod || pm,
       address: result.address || null,
       paymentRequest: result.paymentRequest || null,
       expiresAt: result.expiresAt || null,
       ttl: result.ttl ?? null,
-      qrPayload: qrPayload || null,
+      qrPayload: pending.paymentUri || result.address || result.paymentRequest || null,
       embeddedFormConfig: null,
+      metamask: pm === 'lightning' ? null : {
+        chain: meta.chain || null,
+        exactAmount,
+        expectedBaseUnits: meta.expectedBaseUnits || null
+      },
       displayData: { networkLabel: selfcryptoConfig.networkLabelFor(pm, tc) }
     };
   }
@@ -582,7 +608,7 @@ async function createDepositSession(userId, params) {
     const apiKey = params?.dollarpayApiKey;
     if (!merchantId || !apiKey) {
       const err = new Error(
-        'DollarPay credentials missing. Set VITE_DOLLARPAY_MERCHANT_ID and VITE_DOLLARPAY_KEY on the store frontend.'
+        'DollarPay credentials missing. Set DOLLARPAY_MERCHANT_ID and DOLLARPAY_KEY on the backend (optional _STORECODE suffix).'
       );
       err.statusCode = 400;
       throw err;
@@ -735,7 +761,7 @@ async function createDepositSession(userId, params) {
     const xxpayBaseUrl = params?.xxpayBaseUrl || null;
     if (!mchNo || !apiKey) {
       const err = new Error(
-        'XXPay credentials missing. Set VITE_XXPAY_MCH_NO and VITE_XXPAY_API_KEY on the store frontend.'
+        'XXPay credentials missing. Set XXPAY_MCH_NO and XXPAY_API_KEY on the backend (optional _STORECODE suffix).'
       );
       err.statusCode = 400;
       throw err;

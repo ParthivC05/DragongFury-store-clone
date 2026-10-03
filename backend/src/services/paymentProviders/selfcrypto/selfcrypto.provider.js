@@ -4,13 +4,12 @@ const crypto = require('crypto');
 const {
   PROVIDER_CODE,
   isConfigured,
-  hasMnemonic,
   lightningConfigured,
   invoiceTtlSeconds,
   resolveRail
 } = require('./selfcrypto.config');
 const { usdToCrypto } = require('./selfcrypto.prices');
-const { nextAddress } = require('./selfcrypto.addresses');
+const { treasuryAddress } = require('./selfcrypto.treasury');
 const { createLightningInvoice } = require('./selfcrypto.lightning');
 const { checkPending } = require('./selfcrypto.watchers');
 
@@ -93,15 +92,17 @@ function create() {
         };
       }
 
-      if (!hasMnemonic()) {
-        const err = new Error('Direct crypto wallets are not configured (missing SELFCRYPTO_MNEMONIC).');
+      const address = treasuryAddress(rail.hdChain);
+      if (!address) {
+        const err = new Error(
+          `Set METAMASK_${rail.code}_ADDRESS on the API server. Direct crypto uses one MetaMask address per coin.`
+        );
         err.statusCode = 503;
         throw err;
       }
 
       const decimals = rail.displayDecimals != null ? rail.displayDecimals : Math.min(rail.decimals, 8);
       const quoted = await usdToCrypto(amount, rail.code, decimals);
-      const { address, derivationIndex } = await nextAddress(rail.hdChain);
       const uri = paymentUri({
         scheme: rail.uriScheme,
         address,
@@ -124,13 +125,15 @@ function create() {
         qrPayload: uri || address,
         rawResponse: {
           usdRate: quoted.usdRate,
-          derivationIndex,
-          chain: rail.hdChain
+          chain: rail.hdChain,
+          treasury: true
         },
         extraMetadata: {
-          derivationIndex,
           chain: rail.hdChain,
-          usdRate: quoted.usdRate
+          usdRate: quoted.usdRate,
+          treasury: true,
+          displayDecimals: decimals,
+          nativeDecimals: rail.decimals
         }
       };
     },

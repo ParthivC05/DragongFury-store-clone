@@ -452,10 +452,10 @@ export function getStoreWalletSummary(params = {}) {
   return request(`${ADMIN}/store-wallet-summary${q ? `?${q}` : ''}`)
 }
 
-/** master_admin / store admin: Direct Crypto on-chain treasury (BTC/ETH/TRX/SOL). */
+/** master_admin / store admin: Crypto wallet (BTC/ETH/TRX/SOL). Supports store + date filters. */
 export function getDirectCryptoTreasury(params = {}) {
   const clean = Object.fromEntries(
-    Object.entries(params).filter(([, v]) => v != null && v !== '' && v !== 'all')
+    Object.entries(withDateRangeTimezone(params)).filter(([, v]) => v != null && v !== '' && v !== 'all')
   )
   const q = new URLSearchParams(clean).toString()
   return request(`${ADMIN}/direct-crypto-treasury${q ? `?${q}` : ''}`)

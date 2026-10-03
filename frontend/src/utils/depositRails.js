@@ -46,8 +46,8 @@ function makeRail(pt, extra) {
 
 /**
  * Expand admin paymentTypes into selectable rails.
- * - XXPay Chime enabled → Chime (automatic) + Chime Manual
- * - Chime Manual is always shown, even when automatic Chime is off
+ * - XXPay Chime enabled → Chime Auto + Chime Manual
+ * - Chime manual only → Chime Manual
  */
 export function expandDepositRails(paymentTypes = []) {
   const rails = [];
@@ -60,7 +60,7 @@ export function expandDepositRails(paymentTypes = []) {
       if (hasXxpay) {
         rails.push(makeRail(pt, {
           railKey: 'chime-auto',
-          label: 'Chime',
+          label: 'Chime Auto',
           providerCode: 'xxpay',
           speed: 'Instant',
           dark: false,
@@ -313,7 +313,7 @@ export function railNote(rail) {
     return `${rail.label} uses fixed price points. We only show packs this method can actually buy.`;
   }
   if (code === 'selfcrypto' || rail.railKey === 'crypto-direct') {
-    return 'Direct crypto is self-hosted: Bitcoin, Lightning, Ethereum, Tron, and Solana go straight to our wallets. No Speed fee.';
+    return 'Pay with MetaMask in BTC, ETH, SOL, or TRX. Each coin has one receive address. Lightning is a separate invoice.';
   }
   if (code === 'scrypto' || rail.railKey === 'crypto-speed' || key === 'crypto') {
     return 'Pick a network after the pack or amount. Speed and Direct Crypto are separate rails.';

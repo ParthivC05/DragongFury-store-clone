@@ -27,6 +27,7 @@ const {
 } = require('../../services/paymentProviders/xxpay/xxpay.credentials');
 const { paymentTypeToOrionAcceptedOption } = require('../../constants/paymentTypes');
 const { sanitizePlayerFacingMessage, PAYMENT_PROVIDER_PLAYER_MESSAGE } = require('../../utils/playerFacingMessage');
+const { recordPlayjuwaDepositProviderError } = require('../../services/userErrors/userErrorLog.service');
 
 function safeMessage(err, defaultMsg) {
   if (!err) return defaultMsg;
@@ -132,6 +133,7 @@ async function attachOrionDepositCredentials(req, userId, params, mode = 'requir
     }
     const realMessage = loginErr.response?.message || loginErr.message || 'Payment login failed. Please contact support.';
     paymentLog('createDepositSession: payment provider login failed', realMessage);
+    recordPlayjuwaDepositProviderError(req, { message: realMessage, statusCode: rawStatus });
     return {
       ok: false,
       status: rawStatus,
@@ -141,6 +143,7 @@ async function attachOrionDepositCredentials(req, userId, params, mode = 'requir
   }
   if (!paymentToken) {
     paymentLog('createDepositSession: payment login did not return a token');
+    recordPlayjuwaDepositProviderError(req, { message: 'Payment login did not return a token.', statusCode: 502 });
     return {
       ok: false,
       status: 502,
@@ -300,12 +303,50 @@ async function createDepositSessionHandler(req, res) {
       );
     }
     if (err.code === 'PAYMENT_PROVIDER_ERROR') {
+      recordPlayjuwaDepositProviderError(req, err);
       return sendError(res, PAYMENT_PROVIDER_PLAYER_MESSAGE, status, 'PAYMENT_PROVIDER_ERROR');
     }
     const message = status === 503 && (err.message || '').trim()
       ? sanitizePlayerFacingMessage(String(err.message).trim())
       : safeMessage(err, 'Could not create deposit session.');
     return sendError(res, message, status);
+  }
+}
+
+/** POST /api/payments/deposits/:depositId/tx - Store the MetaMask transaction hash for this deposit. */
+async function submitDepositTxHandler(req, res) {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) return sendError(res, 'Unauthorized', 401);
+    const depositId = parseInt(req.params?.depositId, 10);
+    const txHash = String(req.body?.txHash || req.body?.tx_hash || '').trim();
+    const fromAddress = String(req.body?.fromAddress || req.body?.from_address || '').trim().slice(0, 128);
+    if (!Number.isInteger(depositId) || depositId < 1) return sendError(res, 'Deposit session not found.', 404);
+    if (!txHash || txHash.length > 128) return sendError(res, 'Transaction hash is required.', 400);
+
+    const pending = await db.PaymentPendingDeposit.findOne({ where: { id: depositId, userId } });
+    if (!pending) return sendError(res, 'Deposit session not found.', 404);
+    if (String(pending.provider || '').toLowerCase() !== 'selfcrypto') {
+      return sendError(res, 'This deposit does not accept a wallet transaction.', 400);
+    }
+    const status = String(pending.status || '').toLowerCase();
+    if (status === 'completed') return sendSuccess(res, { depositId, status: 'completed', message: 'Payment received.' });
+    if (status !== 'pending' && status !== 'confirming') {
+      return sendSuccess(res, { depositId, status });
+    }
+
+    const meta = pending.providerMetadata && typeof pending.providerMetadata === 'object'
+      ? { ...pending.providerMetadata }
+      : {};
+    meta.txHash = txHash;
+    if (fromAddress) meta.fromAddress = fromAddress;
+    await pending.update({ providerMetadata: meta, status: 'confirming' });
+
+    const result = await getDepositStatus(depositId, userId);
+    return sendSuccess(res, result || { depositId, status: 'confirming' });
+  } catch (err) {
+    const status = err.statusCode || 500;
+    return sendError(res, safeMessage(err, 'Could not save the transaction.'), status);
   }
 }
 
@@ -646,6 +687,7 @@ module.exports = {
   getWithdrawMethods,
   createDepositSessionHandler,
   getDepositStatusHandler,
+  submitDepositTxHandler,
   createSpeedWithdrawRequest,
   createWithdrawal,
   listWithdrawalRequests,

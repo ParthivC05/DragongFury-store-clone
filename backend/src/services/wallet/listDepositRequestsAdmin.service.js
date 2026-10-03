@@ -15,17 +15,19 @@ const {
   completedFeeSql
 } = require('./transactionFees.service');
 
-function methodDisplayLabel(method, provider) {
+function methodDisplayLabel(method, provider, cryptoCurrency) {
   const key = (method || '').toString().toLowerCase().trim();
   const providerKey = (provider || '').toString().toLowerCase().trim();
+  const coin = (cryptoCurrency || '').toString().trim().toUpperCase();
+  const withCoin = (base) => (coin ? `${base} · ${coin}` : base);
   if (providerKey === 'chime' || key === 'chime') return 'Chime';
-  if (providerKey === 'selfcrypto' || key === 'selfcrypto') return 'Direct Crypto';
+  if (providerKey === 'selfcrypto' || key === 'selfcrypto') return withCoin('Direct Crypto');
   if (providerKey === 'dollarpay' || providerKey === 'xxpay') {
     return getPaymentTypeLabel(key) || getPaymentProviderDisplayLabel(providerKey);
   }
   const label = getPaymentTypeLabel(key);
   if (label) return label;
-  if (providerKey === 'scrypto' || key === 'scrypto') return 'Crypto';
+  if (providerKey === 'scrypto' || key === 'scrypto') return withCoin('Crypto');
   if (providerKey === 'orionstarspay' || key === 'orionstarspay' || key === 'payment') return 'Card';
   return key || '—';
 }
@@ -218,12 +220,12 @@ function serializeMergedRow(row, txMetaById = new Map(), role = null, feeMap = n
     providerFeeCharged: txMeta ? txMeta.feeCharged : null,
     currencyCode: 'SC',
     method,
-    methodDisplayLabel: methodDisplayLabel(method, provider),
+    methodDisplayLabel: methodDisplayLabel(method, provider, row.crypto_currency),
     status: row.status,
     provider,
     providerDisplayLabel: providerDisplayLabel(provider),
     providerTransactionId: row.provider_transaction_id || null,
-    cryptoCurrency: row.crypto_currency || null,
+    cryptoCurrency: row.crypto_currency ? String(row.crypto_currency).trim().toUpperCase() : null,
     txHash: row.tx_hash || null,
     createdAt: row.created_at,
     originalPayAmount,

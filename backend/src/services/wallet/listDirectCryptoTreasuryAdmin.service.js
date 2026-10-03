@@ -4,12 +4,7 @@ const db = require('../../db/models');
 const { QueryTypes } = require('sequelize');
 const { ROLES } = require('../../constants/roles');
 const { hasMnemonic } = require('../paymentProviders/selfcrypto/selfcrypto.config');
-const {
-  checkBitcoin,
-  checkEthereum,
-  checkTron,
-  checkSolana
-} = require('../paymentProviders/selfcrypto/selfcrypto.watchers');
+const { treasuryAddresses, treasuryConfigured } = require('../paymentProviders/selfcrypto/selfcrypto.treasury');
 const { buildDateTimeRangeFilterParts } = require('../../utils/dateRangeFilters');
 const { stripPlayerEmailFields } = require('../../utils/playerEmailVisibility');
 const {
@@ -19,6 +14,11 @@ const {
   rowNetworkLabel,
   ONCHAIN_METHODS
 } = require('./directCryptoTreasury.helpers');
+const {
+  fetchTreasuryBalance,
+  usdValue,
+  loadUsdRatesSafe
+} = require('./directCryptoBalances.helpers');
 
 function buildScopeSql(req, query, replacements) {
   const clauses = [];
@@ -48,19 +48,21 @@ function buildScopeSql(req, query, replacements) {
   return clauses.length ? `AND ${clauses.join(' AND ')}` : '';
 }
 
-function buildFilters(query, replacements) {
+function buildFilters(query, replacements, { includeStatus = true, includeCurrency = true } = {}) {
   const parts = [
     `LOWER(COALESCE(ppd.provider, '')) = 'selfcrypto'`,
     `LOWER(COALESCE(ppd.payment_method, '')) IN (${ONCHAIN_METHODS.map((m) => `'${m}'`).join(', ')})`
   ];
 
-  const currency = normalizeCurrency(query.currency);
-  if (currency) {
-    parts.push('UPPER(COALESCE(ppd.target_currency, \'\')) = :filterCurrency');
-    replacements.filterCurrency = currency;
+  if (includeCurrency) {
+    const currency = normalizeCurrency(query.currency);
+    if (currency) {
+      parts.push('UPPER(COALESCE(ppd.target_currency, \'\')) = :filterCurrency');
+      replacements.filterCurrency = currency;
+    }
   }
 
-  if (query.status && String(query.status).trim()) {
+  if (includeStatus && query.status && String(query.status).trim()) {
     const s = normalizeStatus(query.status);
     if (s === 'completed') {
       parts.push(`LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success')`);
@@ -85,39 +87,13 @@ function buildFilters(query, replacements) {
   return parts.length ? `AND ${parts.join(' AND ')}` : '';
 }
 
-async function fetchOnChainBalance(row) {
-  const address = row.wallet_address;
-  const method = String(row.payment_method || '').toLowerCase();
-  const expected = Number(row.target_amount);
-  if (!address) return null;
-  try {
-    if (method === 'onchain') {
-      const r = await checkBitcoin({ address, expectedAmount: expected > 0 ? expected : 0.00000001 });
-      return r.received != null ? Number(r.received) : null;
-    }
-    if (method === 'ethereum') {
-      const r = await checkEthereum({ address, expectedAmount: expected > 0 ? expected : 0.00000001, minConfirmations: 1 });
-      return r.received != null ? Number(r.received) : null;
-    }
-    if (method === 'tron') {
-      const r = await checkTron({ address, expectedAmount: expected > 0 ? expected : 0.00000001, minConfirmations: 1 });
-      return r.received != null ? Number(r.received) : null;
-    }
-    if (method === 'solana') {
-      const r = await checkSolana({ address, expectedAmount: expected > 0 ? expected : 0.00000001 });
-      return r.received != null ? Number(r.received) : null;
-    }
-  } catch (_) {
-    return null;
-  }
-  return null;
-}
-
-function mapRow(row) {
+function mapRow(row, rates) {
   const currency = normalizeCurrency(row.target_currency) || String(row.target_currency || '').toUpperCase();
   const status = normalizeStatus(row.status);
-  const links = explorerLinks(currency, row.wallet_address, row.tx_hash);
+  const txHash = row.tx_hash || (row.provider_metadata && row.provider_metadata.txHash) || null;
+  const links = explorerLinks(currency, row.wallet_address, txHash);
   const meta = row.provider_metadata && typeof row.provider_metadata === 'object' ? row.provider_metadata : {};
+  const cryptoAmount = row.target_amount != null ? Number(row.target_amount) : null;
   return {
     id: row.id,
     userId: row.user_id,
@@ -128,7 +104,8 @@ function mapRow(row) {
     storeCode: row.store_code || null,
     distributorCode: row.distributor_code || null,
     scAmount: row.sc_amount != null ? Number(row.sc_amount) : null,
-    cryptoAmount: row.target_amount != null ? Number(row.target_amount) : null,
+    cryptoAmount,
+    cryptoUsd: usdValue(cryptoAmount, currency, rates),
     currency,
     paymentMethod: row.payment_method || null,
     networkLabel: rowNetworkLabel(row.payment_method, currency),
@@ -136,50 +113,55 @@ function mapRow(row) {
     status,
     createdAt: row.created_at,
     providerSessionId: row.provider_session_id || null,
-    txHash: row.tx_hash || null,
+    txHash: txHash || null,
+    fromAddress: meta.fromAddress || null,
+    centralWallet: meta.treasury === true,
     derivationIndex: meta.derivationIndex != null ? Number(meta.derivationIndex) : null,
     chain: meta.chain || null,
     explorerAddressUrl: links.addressUrl,
-    explorerTxUrl: links.txUrl,
-    onChainBalance: null
+    explorerTxUrl: links.txUrl
+  };
+}
+
+function emptyPayload() {
+  return {
+    configured: treasuryConfigured() || hasMnemonic(),
+    title: 'Crypto wallet',
+    receiveAddresses: [],
+    list: [],
+    total: 0,
+    page: 1,
+    limit: 20,
+    totalsByCurrency: [],
+    statusCounts: { pending: 0, confirming: 0, completed: 0, expired: 0, failed: 0 },
+    usdRates: {},
+    uniqueAddresses: 0,
+    walletUsdTotal: null
   };
 }
 
 /**
- * Direct Crypto on-chain treasury view for admin (BTC / ETH / TRX / SOL — not Lightning).
+ * Crypto wallet admin view: one receive address per coin, live balances + USD, deposit ledger.
  */
 async function listDirectCryptoTreasuryAdmin(req, query = {}) {
-  if (req.role === ROLES.STORE_ADMIN && !req.storeCode) {
-    return {
-      configured: hasMnemonic(),
-      list: [],
-      total: 0,
-      page: 1,
-      limit: 20,
-      totalsByCurrency: [],
-      uniqueAddresses: 0
-    };
-  }
-  if (req.role === ROLES.DISTRIBUTOR_ADMIN && !req.distributorCode) {
-    return {
-      configured: hasMnemonic(),
-      list: [],
-      total: 0,
-      page: 1,
-      limit: 20,
-      totalsByCurrency: [],
-      uniqueAddresses: 0
-    };
-  }
+  if (req.role === ROLES.STORE_ADMIN && !req.storeCode) return emptyPayload();
+  if (req.role === ROLES.DISTRIBUTOR_ADMIN && !req.distributorCode) return emptyPayload();
 
   const page = Math.max(1, parseInt(query.page, 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(query.limit, 10) || 25));
   const offset = (page - 1) * limit;
   const replacements = { limit, offset };
   const scopeSql = buildScopeSql(req, query, replacements);
-  const filterSql = buildFilters(query, replacements);
-  const refreshBalances = String(query.refreshBalances || '').toLowerCase() === 'true'
-    || String(query.refreshBalances || '') === '1';
+  const filterSql = buildFilters(query, replacements, { includeStatus: true, includeCurrency: true });
+  const overviewReplacements = { ...replacements };
+  delete overviewReplacements.limit;
+  delete overviewReplacements.offset;
+  const overviewFilterSql = buildFilters(query, overviewReplacements, {
+    includeStatus: false,
+    includeCurrency: false
+  });
+  const skipBalances = String(query.refreshBalances || '').toLowerCase() === 'false'
+    || String(query.refreshBalances || '') === '0';
 
   const baseFrom = `
     FROM payment_pending_deposits ppd
@@ -191,95 +173,157 @@ async function listDirectCryptoTreasuryAdmin(req, query = {}) {
     ${filterSql}
   `;
 
-  const countRow = await db.sequelize.query(
-    `SELECT COUNT(*)::int AS count ${baseFrom}`,
-    { replacements, type: QueryTypes.SELECT }
-  );
-  const total = countRow[0]?.count || 0;
+  const overviewFrom = `
+    FROM payment_pending_deposits ppd
+    INNER JOIN users u ON u.user_id = ppd.user_id
+    WHERE 1 = 1
+    ${scopeSql}
+    ${overviewFilterSql}
+  `;
 
-  const totalsByCurrency = await db.sequelize.query(
-    `SELECT
-      UPPER(COALESCE(ppd.target_currency, '')) AS currency,
-      COUNT(*)::int AS deposit_count,
-      COALESCE(SUM(ppd.target_amount::numeric), 0) AS crypto_total,
-      COALESCE(SUM(ppd.amount::numeric), 0) AS sc_total
-    ${baseFrom}
-      AND LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success')
-    GROUP BY UPPER(COALESCE(ppd.target_currency, ''))
-    ORDER BY currency ASC`,
-    { replacements, type: QueryTypes.SELECT }
-  );
+  const rates = await loadUsdRatesSafe();
 
-  const uniqueRow = await db.sequelize.query(
-    `SELECT COUNT(DISTINCT ppd.wallet_address)::int AS count
-    ${baseFrom}
-      AND ppd.wallet_address IS NOT NULL
-      AND TRIM(ppd.wallet_address) <> ''
-      AND LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success')`,
-    { replacements, type: QueryTypes.SELECT }
-  );
+  const [countRow, totalsByCurrency, statusRows, uniqueRow, rows] = await Promise.all([
+    db.sequelize.query(`SELECT COUNT(*)::int AS count ${baseFrom}`, {
+      replacements,
+      type: QueryTypes.SELECT
+    }),
+    db.sequelize.query(
+      `SELECT
+        UPPER(COALESCE(ppd.target_currency, '')) AS currency,
+        COUNT(*)::int AS deposit_count,
+        COALESCE(SUM(ppd.target_amount::numeric), 0) AS crypto_total,
+        COALESCE(SUM(ppd.amount::numeric), 0) AS sc_total
+      ${overviewFrom}
+        AND LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success')
+      GROUP BY UPPER(COALESCE(ppd.target_currency, ''))
+      ORDER BY currency ASC`,
+      { replacements: overviewReplacements, type: QueryTypes.SELECT }
+    ),
+    db.sequelize.query(
+      `SELECT
+        CASE
+          WHEN LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success') THEN 'completed'
+          WHEN LOWER(COALESCE(ppd.status, '')) IN ('pending', 'processing') THEN 'pending'
+          WHEN LOWER(COALESCE(ppd.status, '')) = 'confirming' THEN 'confirming'
+          WHEN LOWER(COALESCE(ppd.status, '')) = 'expired' THEN 'expired'
+          WHEN LOWER(COALESCE(ppd.status, '')) IN ('failed', 'rejected') THEN 'failed'
+          ELSE 'other'
+        END AS status_key,
+        COUNT(*)::int AS count
+      ${overviewFrom}
+      GROUP BY 1`,
+      { replacements: overviewReplacements, type: QueryTypes.SELECT }
+    ),
+    db.sequelize.query(
+      `SELECT COUNT(DISTINCT ppd.wallet_address)::int AS count
+      ${overviewFrom}
+        AND ppd.wallet_address IS NOT NULL
+        AND TRIM(ppd.wallet_address) <> ''
+        AND LOWER(COALESCE(ppd.status, '')) IN ('completed', 'success')`,
+      { replacements: overviewReplacements, type: QueryTypes.SELECT }
+    ),
+    db.sequelize.query(
+      `SELECT
+        ppd.id,
+        ppd.user_id,
+        ppd.amount::numeric AS sc_amount,
+        ppd.target_amount::numeric,
+        ppd.target_currency,
+        ppd.payment_method,
+        ppd.wallet_address,
+        ppd.status,
+        ppd.provider_session_id,
+        ppd.provider_metadata,
+        ppd.created_at,
+        dr.tx_hash,
+        u.username,
+        u.email,
+        u.first_name,
+        u.last_name,
+        u.store_code,
+        u.distributor_code
+      ${baseFrom}
+      ORDER BY ppd.created_at DESC
+      LIMIT :limit OFFSET :offset`,
+      { replacements, type: QueryTypes.SELECT }
+    )
+  ]);
 
-  const rows = await db.sequelize.query(
-    `SELECT
-      ppd.id,
-      ppd.user_id,
-      ppd.amount::numeric AS sc_amount,
-      ppd.target_amount::numeric,
-      ppd.target_currency,
-      ppd.payment_method,
-      ppd.wallet_address,
-      ppd.status,
-      ppd.provider_session_id,
-      ppd.provider_metadata,
-      ppd.created_at,
-      dr.tx_hash,
-      u.username,
-      u.email,
-      u.first_name,
-      u.last_name,
-      u.store_code,
-      u.distributor_code
-    ${baseFrom}
-    ORDER BY ppd.created_at DESC
-    LIMIT :limit OFFSET :offset`,
-    { replacements, type: QueryTypes.SELECT }
-  );
+  const addresses = treasuryAddresses();
+  const receiveAddresses = [
+    { currency: 'BTC', chain: 'btc', name: 'Bitcoin', address: addresses.btc },
+    { currency: 'ETH', chain: 'eth', name: 'Ethereum', address: addresses.eth },
+    { currency: 'TRX', chain: 'trx', name: 'Tron', address: addresses.trx },
+    { currency: 'SOL', chain: 'sol', name: 'Solana', address: addresses.sol }
+  ].map((item) => ({
+    ...item,
+    balance: null,
+    balanceUsd: null,
+    usdRate: rates[item.currency] != null ? Number(rates[item.currency]) : null,
+    explorerAddressUrl: item.address ? explorerLinks(item.currency, item.address, null).addressUrl : null
+  }));
 
-  let list = rows.map(mapRow);
-  if (refreshBalances) {
-    const toCheck = list.filter((r) => r.walletAddress && r.status === 'completed').slice(0, 40);
-    await Promise.all(toCheck.map(async (item) => {
-      const raw = rows.find((r) => r.id === item.id);
-      if (!raw) return;
-      const bal = await fetchOnChainBalance(raw);
-      item.onChainBalance = bal;
+  if (!skipBalances) {
+    await Promise.all(receiveAddresses.map(async (item) => {
+      if (!item.address) return;
+      item.balance = await fetchTreasuryBalance(item.chain, item.address);
+      item.balanceUsd = usdValue(item.balance, item.currency, rates);
     }));
   }
 
+  const totals = totalsByCurrency.map((t) => {
+    const currency = String(t.currency || '').toUpperCase();
+    const cryptoTotal = Number(t.crypto_total);
+    return {
+      currency,
+      depositCount: t.deposit_count,
+      cryptoTotal,
+      cryptoUsd: usdValue(cryptoTotal, currency, rates),
+      scTotal: Number(t.sc_total),
+      usdRate: rates[currency] != null ? Number(rates[currency]) : null
+    };
+  });
+
+  const statusCounts = { pending: 0, confirming: 0, completed: 0, expired: 0, failed: 0, other: 0 };
+  for (const row of statusRows) {
+    const key = row.status_key;
+    if (Object.prototype.hasOwnProperty.call(statusCounts, key)) {
+      statusCounts[key] = row.count;
+    }
+  }
+
+  const walletUsdTotal = receiveAddresses.reduce((sum, item) => {
+    if (item.balanceUsd == null) return sum;
+    return (sum == null ? 0 : sum) + item.balanceUsd;
+  }, null);
+
+  let list = rows.map((row) => mapRow(row, rates));
   list = list.map((row) => stripPlayerEmailFields(row, req.role));
 
   return {
-    configured: hasMnemonic(),
+    configured: treasuryConfigured() || hasMnemonic(),
+    title: 'Crypto wallet',
+    receiveAddresses,
     list,
-    total,
+    total: countRow[0]?.count || 0,
     page,
     limit,
-    totalsByCurrency: totalsByCurrency.map((t) => ({
-      currency: t.currency,
-      depositCount: t.deposit_count,
-      cryptoTotal: Number(t.crypto_total),
-      scTotal: Number(t.sc_total)
-    })),
+    totalsByCurrency: totals,
+    statusCounts,
+    usdRates: rates,
     uniqueAddresses: uniqueRow[0]?.count || 0,
+    walletUsdTotal,
+    balancesLoaded: !skipBalances,
     withdrawGuide: {
-      summary: 'Crypto stays on each deposit address until you move it. The site does not auto-send to your bank or exchange.',
+      summary: 'Each coin has one receive address. Player payments land there. This page shows balances, USD value, and which player was credited SC.',
       steps: [
-        'Use the receive address in the table (or open it on the block explorer).',
-        'Import the company Direct Crypto seed (SELFCRYPTO_MNEMONIC) into a wallet that supports the coin, or sweep from that address.',
-        'Send funds to your exchange or cold wallet, then sell or hold there.',
-        'Player SC in the database is separate — crediting a player does not move this crypto.'
+        'Balances above are the live amount on each receive address.',
+        'Open deposits stay pending or confirming until the chain confirms the exact transfer.',
+        'Completed means SC was credited to the player wallet.',
+        'Lightning is separate and does not use these MetaMask addresses.'
       ],
-      note: 'Each deposit uses a unique address. You may need to sweep multiple addresses to collect everything.'
+      note: 'MetaMask shows transfers only. Player name and SC credit status are on this page.'
     }
   };
 }

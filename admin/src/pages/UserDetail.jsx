@@ -256,6 +256,12 @@ function formatWalletActivityDetails(row) {
       if (meta.provider_transaction_id != null && String(meta.provider_transaction_id).trim() !== '') {
         pushExtra('provider_transaction_id', `Provider transaction: ${meta.provider_transaction_id}`)
       }
+      if (meta.crypto_currency != null && String(meta.crypto_currency).trim() !== '') {
+        pushExtra('crypto_currency', `Paid with: ${String(meta.crypto_currency).trim().toUpperCase()}`)
+      }
+      if (meta.tx_hash != null && String(meta.tx_hash).trim() !== '') {
+        pushExtra('tx_hash', `Tx: ${meta.tx_hash}`)
+      }
     }
   } else if (row.type === 'spin_wheel') {
     if (desc) primary.push(desc)
@@ -580,12 +586,20 @@ function formatDepositProviderLabel(row) {
   if (key === 'xxpay') return 'Xpay'
   if (key === 'orionstarspay') return 'OrionStarPay'
   if (key === 'chime') return 'Manual Chime'
+  if (key === 'selfcrypto') return 'Direct Crypto'
+  if (key === 'scrypto') return 'Crypto'
   return row?.provider || '—'
 }
 
 /** Deposit-tab details: package buy + daily bonus voucher discount. */
 function formatDepositBuyDetails(row) {
   const lines = []
+  if (row.cryptoCurrency) {
+    lines.push(`Coin: ${String(row.cryptoCurrency).toUpperCase()}`)
+  }
+  if (row.txHash) {
+    lines.push(`Tx: ${row.txHash}`)
+  }
   if (row.packageTitle || row.packageId != null) {
     lines.push(
       row.packageTitle

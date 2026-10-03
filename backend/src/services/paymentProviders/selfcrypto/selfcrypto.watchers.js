@@ -10,6 +10,8 @@ const {
 } = require('./selfcrypto.config');
 const { toBaseUnits } = require('./selfcrypto.prices');
 const { getBtcpayInvoice, getLndInvoice, mapLightningStatus } = require('./selfcrypto.lightning');
+const { isSharedReceiveAddress } = require('./selfcrypto.treasury');
+const { matchSharedDeposit } = require('./selfcrypto.match');
 
 const WATCH_TIMEOUT_MS = 8000;
 const BTC_API_FALLBACKS = ['https://mempool.space/api', 'https://blockstream.info/api'];
@@ -179,6 +181,7 @@ async function checkPending(pending) {
   const address = pending.walletAddress;
   const expected = Number(pending.targetAmount);
   if (method === 'lightning') return checkLightning(pending);
+  if (isSharedReceiveAddress(method, address)) return matchSharedDeposit(pending);
   if (!address || !(expected > 0)) return { paid: false, confirming: false, txHash: null };
 
   if (method === 'onchain') return checkBitcoin({ address, expectedAmount: expected });

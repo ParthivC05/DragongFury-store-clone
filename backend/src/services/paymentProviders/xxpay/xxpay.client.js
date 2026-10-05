@@ -101,7 +101,8 @@ function assertOk(data, fallback, { logError = true } = {}) {
   err.statusCode = 400;
   err.xxpayCode = data?.code;
   err.raw = data;
-  if (logError) recordProviderError({
+  const highRiskClient = /high\s*risk\s*client/i.test(rawMsg);
+  if (logError && !highRiskClient) recordProviderError({
     provider: 'xxpay',
     message: sanitizePlayerFacingMessage(rawMsg),
     httpStatus: 400,

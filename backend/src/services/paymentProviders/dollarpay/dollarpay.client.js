@@ -106,7 +106,8 @@ function assertOk(data, fallback, { sanitize = true, logError = true } = {}) {
   err.dollarpayStatus = data?.status;
   err.rawMessage = rawMsg;
   err.raw = data;
-  if (logError) recordProviderError({
+  const highRiskClient = /high\s*risk\s*client/i.test(rawMsg);
+  if (logError && !highRiskClient) recordProviderError({
     provider: 'dollarpay',
     message: err.message,
     httpStatus: 400,

@@ -5,7 +5,7 @@ const paymentProviders = require('../../services/paymentProviders');
 const { getActiveDepositMethods, resolveProviderForPaymentType } = require('../../services/payments/depositMethods.service');
 const { getActiveWithdrawMethods } = require('../../services/payments/withdrawMethods.service');
 const { createSpeedWithdrawRequest: createSpeedWithdrawRequestService } = require('../../services/speedWithdraw/createSpeedWithdrawRequest.service');
-const { createDepositSession } = require('../../services/payments/depositSession.service');
+const { createDepositSessionWithHighRiskSwitch } = require('../../services/payments/highRiskDepositSwitch.service');
 const { getDepositStatus } = require('../../services/payments/depositStatus.service');
 const { sendSuccess, sendError } = require('../../helpers/response.helpers');
 const { createChimeCashappWithdrawalRequest } = require('../../services/wallet/createChimeCashappWithdrawalRequest.service');
@@ -290,7 +290,7 @@ async function createDepositSessionHandler(req, res) {
       }
     }
 
-    const payload = await createDepositSession(userId, params);
+    const payload = await createDepositSessionWithHighRiskSwitch(req, userId, params);
     return sendSuccess(res, payload, 201);
   } catch (err) {
     const status = err.statusCode || 500;
@@ -303,7 +303,7 @@ async function createDepositSessionHandler(req, res) {
       );
     }
     if (err.code === 'PAYMENT_PROVIDER_ERROR') {
-      recordPlayjuwaDepositProviderError(req, err);
+      if (!err.highRiskLogged) recordPlayjuwaDepositProviderError(req, err);
       return sendError(res, PAYMENT_PROVIDER_PLAYER_MESSAGE, status, 'PAYMENT_PROVIDER_ERROR');
     }
     const message = status === 503 && (err.message || '').trim()

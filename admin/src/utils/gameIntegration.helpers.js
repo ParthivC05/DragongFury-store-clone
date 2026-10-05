@@ -1,4 +1,4 @@
-const SIMPLE_GAME_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury']
+const SIMPLE_GAME_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ultra Thunder', 'UltraThunder', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury']
 
 /** Internal keys for games that use the external agent API. */
 const AGENT_API_GAME_KEYS = new Set(['gamevaultagent', 'gamevault2', 'juwa20agent', 'juwaagent'])

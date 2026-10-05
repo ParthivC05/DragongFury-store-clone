@@ -29,7 +29,7 @@ export const FEATURED_PLATFORM_GAMES = [
   { name: 'Ultra Panda', image_url: '/optimized/games/ultrapanda.webp' },
   { name: 'Egame99', image_url: '/optimized/games/egame99.webp', isNew: true },
   { name: 'Vblink', image_url: '/optimized/games/vblink.webp' },
-  { name: 'Ulta Thunder', image_url: '/optimized/games/ultathunder.webp' },
+  { name: 'Ultra Thunder', image_url: '/optimized/games/ultathunder.webp' },
   { name: 'Estar', image_url: '/optimized/games/estar.webp' },
   { name: 'Dragon Fury', image_url: '/optimized/games/dragonfury.webp' },
   { name: 'Juwa', image_url: '/optimized/games/juwa.webp', isNew: true },

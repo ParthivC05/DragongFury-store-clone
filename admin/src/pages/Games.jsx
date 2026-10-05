@@ -1571,11 +1571,11 @@ export default function Games() {
     const goldenDragon = selectedTemplate && isGoldenDragonTemplate(selectedTemplate)
     if (simpleGame) {
       if (!(form.appId || '').trim()) {
-        toast.error('App ID is required for Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury.')
+        toast.error('App ID is required for Vblink, UltraPanda, Egame99, Ultra Thunder, Estar, and Dragon Fury.')
         return
       }
       if (!(form.appSecret || '').trim()) {
-        toast.error('App Secret is required for Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury.')
+        toast.error('App Secret is required for Vblink, UltraPanda, Egame99, Ultra Thunder, Estar, and Dragon Fury.')
         return
       }
     }
@@ -4705,7 +4705,7 @@ export default function Games() {
               )}
               {isSimpleGame(configForm.name) && (
                 <p className="games-modal-hint" style={{ marginBottom: '0.5rem' }}>
-                  For Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury only Name, Bot base URL, and Game link are required. Game key and Streamlit token are not used.
+                  For Vblink, UltraPanda, Egame99, Ultra Thunder, Estar, and Dragon Fury only Name, Bot base URL, and Game link are required. Game key and Streamlit token are not used.
                 </p>
               )}
               {isAgentCredentialGame(configForm) && (

@@ -19,7 +19,7 @@ function productSql(nameExpr) {
       WHEN LOWER(${nameExpr}) LIKE '%orion%' THEN 'ORIONSTARS'
       WHEN LOWER(${nameExpr}) LIKE '%egame%' THEN 'EGAME99'
       WHEN LOWER(${nameExpr}) LIKE '%fire kirin%' OR LOWER(${nameExpr}) LIKE '%firekirin%' THEN 'FIRE_KIRIN'
-      WHEN LOWER(${nameExpr}) LIKE '%ulta thunder%' OR LOWER(${nameExpr}) LIKE '%ultathunder%' THEN 'ULTA_THUNDER'
+      WHEN LOWER(${nameExpr}) LIKE '%ultra thunder%' OR LOWER(${nameExpr}) LIKE '%ultrathunder%' OR LOWER(${nameExpr}) LIKE '%ulta thunder%' OR LOWER(${nameExpr}) LIKE '%ultathunder%' THEN 'ULTA_THUNDER'
       WHEN LOWER(${nameExpr}) LIKE '%dragon fury%' OR LOWER(${nameExpr}) LIKE '%dragonfury%' THEN 'DRAGON_FURY'
       WHEN LOWER(${nameExpr}) LIKE '%estar%' THEN 'ESTAR'
       WHEN LOWER(${nameExpr}) LIKE '%ultra panda%' OR LOWER(${nameExpr}) LIKE '%ultrapanda%' THEN 'ULTRA_PANDA'

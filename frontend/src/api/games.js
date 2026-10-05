@@ -104,7 +104,7 @@ export function getGameForgotPasswordValidationError(gameName, trimmedPassword) 
     return null;
   }
   const fastApiKey = String(gameName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-  if (fastApiKey === 'ultathunder' || fastApiKey === 'estar' || fastApiKey === 'dragonfury') {
+  if (fastApiKey === 'ultrathunder' || fastApiKey === 'ultathunder' || fastApiKey === 'estar' || fastApiKey === 'dragonfury') {
     const len = trimmedPassword.length;
     if (len < 6 || len > 16) {
       return 'New game password must be between 6 and 16 characters.';

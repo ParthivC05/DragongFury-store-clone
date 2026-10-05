@@ -424,7 +424,7 @@ const PRODUCT_LABELS = {
   PANDA_MASTER: 'Panda Master',
   VBLINK: 'VBlink',
   MILKYWAY: 'Milky Way',
-  ULTA_THUNDER: 'Ulta Thunder',
+  ULTA_THUNDER: 'Ultra Thunder',
   ESTAR: 'Estar',
   DRAGON_FURY: 'Dragon Fury',
   ULTRA_PANDA: 'Ultra Panda',

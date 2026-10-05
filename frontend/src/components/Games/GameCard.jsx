@@ -26,7 +26,7 @@ function isVegasXGameName(gameName) {
 
 function isFastApiFamilyGameName(gameName) {
   const key = String(gameName || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-  return key === 'ultathunder' || key === 'estar' || key === 'dragonfury';
+  return key === 'ultrathunder' || key === 'ultathunder' || key === 'estar' || key === 'dragonfury';
 }
 
 

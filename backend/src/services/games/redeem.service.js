@@ -51,7 +51,7 @@ const { getRedeemPercentageValue } = require('./getRedeemPercentage.service');
 const HTTP_TIMEOUT_MS = THIRD_PARTY_HTTP_TIMEOUT_MS;
 
 /** Game names that use third-party fast/user/withdrawal API (VBLink / UltraPanda / Egame99). */
-const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
+const VBLINK_ULTRAPANDA_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ultra Thunder', 'UltraThunder', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
 
 function isVblinkOrUltrapanda(gameName) {
   const name = String(gameName || '').trim();

@@ -32,7 +32,7 @@ const {
 const GAME_PROVIDER_BOT_TYPE = 'external';
 
 /** Game names that use store credentials only (no game_key, streamlit_token, no third-party API calls). */
-const SIMPLE_GAME_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
+const SIMPLE_GAME_NAMES = ['Vblink', 'UltraPanda', 'Egame99', 'Ultra Thunder', 'UltraThunder', 'Ulta Thunder', 'UltaThunder', 'Estar', 'Dragon Fury', 'DragonFury'];
 
 /** Axios request timeout (ms) for game provider admin APIs */
 const PROVIDER_HTTP_TIMEOUT_MS = THIRD_PARTY_HTTP_TIMEOUT_MS;

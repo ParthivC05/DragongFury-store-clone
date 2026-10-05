@@ -41,6 +41,8 @@ const GAME_DISPLAY_NAMES = {
   pandamaster: 'Panda Master',
   pandamaster2: 'Panda Master',
   pandamasternewbot: 'Panda Master',
+  ultrathunder: 'Ultra Thunder',
+  ultathunder: 'Ultra Thunder',
   dragonfury: 'Dragon Fury',
   estar: 'Estar',
 };

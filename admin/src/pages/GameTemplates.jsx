@@ -558,7 +558,7 @@ export default function GameTemplates() {
               )}
               {isSimpleGame(form.name) && (
                 <p className="games-modal-hint" style={{ marginBottom: '0.5rem' }}>
-                  For Vblink, UltraPanda, Egame99, Ulta Thunder, Estar, and Dragon Fury you only need Name, Bot base URL, and Game link. Game key and Streamlit token are not used.
+                  For Vblink, UltraPanda, Egame99, Ultra Thunder, Estar, and Dragon Fury you only need Name, Bot base URL, and Game link. Game key and Streamlit token are not used.
                 </p>
               )}
               {isAgentCredentialGame(form) && (

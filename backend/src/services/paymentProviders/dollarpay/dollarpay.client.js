@@ -3,6 +3,7 @@
 const { signParams } = require('./dollarpay.sign');
 const { sanitizeDollarpayClientMessage } = require('./dollarpay.amounts');
 const { paymentLog, paymentErrorLog } = require('../../../libs/logger');
+const { recordProviderError } = require('../../userErrors/userErrorLog.service');
 
 const DEFAULT_BASE = 'https://mh.dollarpaywallet.com';
 const IS_PAY = { cashapp: '1', apple_pay: '2', google_pay: '3', card: '4', credit_card: '4' };
@@ -21,7 +22,7 @@ function formatAmount(amount) {
   return Number.isFinite(n) ? n.toFixed(2) : null;
 }
 
-async function postForm(path, params, apiKey) {
+async function postForm(path, params, apiKey, { logError = true } = {}) {
   const bodyParams = { ...params, sign: signParams(params, apiKey) };
   const body = new URLSearchParams();
   Object.entries(bodyParams).forEach(([k, v]) => {
@@ -52,6 +53,12 @@ async function postForm(path, params, apiKey) {
   } catch (err) {
     console.log('[DollarPayWallet] NETWORK ERROR', { path, message: err.message });
     paymentErrorLog('DollarPay network error', path, err.message);
+    if (logError) recordProviderError({
+      provider: 'dollarpay',
+      message: err.message || 'DollarPay request failed',
+      apiPath: path,
+      httpMethod: 'POST'
+    });
     const e = new Error('DollarPay request failed. Please try again.');
     e.statusCode = 502;
     throw e;
@@ -68,6 +75,14 @@ async function postForm(path, params, apiKey) {
       raw: text?.slice?.(0, 500)
     });
     paymentErrorLog('DollarPay bad response', path, text?.slice?.(0, 200));
+    if (logError) recordProviderError({
+      provider: 'dollarpay',
+      message: 'DollarPay returned an invalid response.',
+      httpStatus: res.status,
+      apiPath: path,
+      httpMethod: 'POST',
+      response: text
+    });
     const e = new Error('DollarPay returned an invalid response.');
     e.statusCode = 502;
     throw e;
@@ -82,7 +97,7 @@ async function postForm(path, params, apiKey) {
   return data;
 }
 
-function assertOk(data, fallback, { sanitize = true } = {}) {
+function assertOk(data, fallback, { sanitize = true, logError = true } = {}) {
   if (String(data?.status) === '00000') return data;
   console.log('[DollarPayWallet] API ERROR', { status: data?.status, msg: data?.msg || data?.message, body: data });
   const rawMsg = (data?.msg || data?.message || fallback || 'DollarPay failed').toString();
@@ -91,6 +106,13 @@ function assertOk(data, fallback, { sanitize = true } = {}) {
   err.dollarpayStatus = data?.status;
   err.rawMessage = rawMsg;
   err.raw = data;
+  if (logError) recordProviderError({
+    provider: 'dollarpay',
+    message: err.message,
+    httpStatus: 400,
+    errorCode: data?.status,
+    response: data
+  });
   throw err;
 }
 
@@ -133,9 +155,10 @@ async function queryPayin({ merchantId, apiKey, outerOrderSn }) {
       merchant_id: String(merchantId),
       outer_order_sn: String(outerOrderSn)
     },
-    apiKey
+    apiKey,
+    { logError: false }
   );
-  return assertOk(data, 'DollarPay payin query failed.');
+  return assertOk(data, 'DollarPay payin query failed.', { logError: false });
 }
 
 async function createPayout({ merchantId, apiKey, orderSn, amount, payoutType, accountNo, notifyUrl }) {
@@ -173,9 +196,10 @@ async function queryPayout({ merchantId, apiKey, outerOrderSn }) {
       merchant_id: String(merchantId),
       outer_order_sn: String(outerOrderSn)
     },
-    apiKey
+    apiKey,
+    { logError: false }
   );
-  return assertOk(data, 'DollarPay payout query failed.', { sanitize: false });
+  return assertOk(data, 'DollarPay payout query failed.', { sanitize: false, logError: false });
 }
 
 module.exports = { createPayin, queryPayin, createPayout, queryPayout, IS_PAY, PAYOUT_PATH, formatAmount };

@@ -9,6 +9,8 @@ const {
   buildPayoutWayParam
 } = require('./xxpay.wayCodes');
 const { paymentLog, paymentErrorLog } = require('../../../libs/logger');
+const { recordProviderError } = require('../../userErrors/userErrorLog.service');
+const { sanitizePlayerFacingMessage } = require('../../../utils/playerFacingMessage');
 
 function resolveBaseUrl(override) {
   const fromEnv = (process.env.XXPAY_BASE_URL || '').toString().trim().replace(/\/+$/, '');
@@ -16,7 +18,7 @@ function resolveBaseUrl(override) {
   return fromOverride || fromEnv || '';
 }
 
-async function postJson(path, params, { apiKey, baseUrl } = {}) {
+async function postJson(path, params, { apiKey, baseUrl, logError = true } = {}) {
   const root = resolveBaseUrl(baseUrl);
   if (!root) {
     const err = new Error(
@@ -48,6 +50,12 @@ async function postJson(path, params, { apiKey, baseUrl } = {}) {
     });
   } catch (err) {
     paymentErrorLog('XXPay network error', path, err.message);
+    if (logError) recordProviderError({
+      provider: 'xxpay',
+      message: err.message || 'XXPay request failed',
+      apiPath: path,
+      httpMethod: 'POST'
+    });
     const e = new Error('XXPay request failed. Please try again.');
     e.statusCode = 502;
     throw e;
@@ -59,6 +67,14 @@ async function postJson(path, params, { apiKey, baseUrl } = {}) {
     data = JSON.parse(text);
   } catch {
     paymentErrorLog('XXPay bad response', path, text?.slice?.(0, 200));
+    if (logError) recordProviderError({
+      provider: 'xxpay',
+      message: 'XXPay returned an invalid response.',
+      httpStatus: res.status,
+      apiPath: path,
+      httpMethod: 'POST',
+      response: text
+    });
     const e = new Error('XXPay returned an invalid response.');
     e.statusCode = 502;
     throw e;
@@ -78,13 +94,20 @@ async function postJson(path, params, { apiKey, baseUrl } = {}) {
   return data;
 }
 
-function assertOk(data, fallback) {
+function assertOk(data, fallback, { logError = true } = {}) {
   if (Number(data?.code) === 0) return data;
   const rawMsg = (data?.msg || data?.message || fallback || 'XXPay failed').toString();
   const err = new Error(rawMsg);
   err.statusCode = 400;
   err.xxpayCode = data?.code;
   err.raw = data;
+  if (logError) recordProviderError({
+    provider: 'xxpay',
+    message: sanitizePlayerFacingMessage(rawMsg),
+    httpStatus: 400,
+    errorCode: data?.code,
+    response: data
+  });
   throw err;
 }
 
@@ -147,8 +170,8 @@ async function queryPayin({ mchNo, apiKey, baseUrl, mchOrderNo, payOrderNo }) {
   };
   if (mchOrderNo) params.mchOrderNo = String(mchOrderNo);
   if (payOrderNo) params.payOrderNo = String(payOrderNo);
-  const data = await postJson('/api/pay/query', params, { apiKey, baseUrl });
-  return assertOk(data, 'XXPay pay-in query failed.');
+  const data = await postJson('/api/pay/query', params, { apiKey, baseUrl, logError: false });
+  return assertOk(data, 'XXPay pay-in query failed.', { logError: false });
 }
 
 async function createTransfer({
@@ -226,8 +249,8 @@ async function queryTransfer({ mchNo, apiKey, baseUrl, mchOrderNo, transferOrder
   };
   if (mchOrderNo) params.mchOrderNo = String(mchOrderNo);
   if (transferOrderNo) params.transferOrderNo = String(transferOrderNo);
-  const data = await postJson('/api/transfer/query', params, { apiKey, baseUrl });
-  return assertOk(data, 'XXPay transfer query failed.');
+  const data = await postJson('/api/transfer/query', params, { apiKey, baseUrl, logError: false });
+  return assertOk(data, 'XXPay transfer query failed.', { logError: false });
 }
 
 module.exports = {

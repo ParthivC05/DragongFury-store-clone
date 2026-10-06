@@ -356,3 +356,14 @@
     transform: none;
   }
 }
+
+.pj-seo-games .pj-seo-layout {
+  max-width: none;
+  padding: 2.25rem 0 0;
+}
+
+.pj-seo-games details.pj-seo-faq-item summary {
+  cursor: pointer;
+  color: #ffe06a;
+  font-weight: 700;
+}

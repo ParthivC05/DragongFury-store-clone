@@ -174,7 +174,8 @@ export const ROUTE_ACCESS = {
   'footer': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'footer/pages/new': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
   'footer/pages/:id/edit': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
-  'footer/legal/:pageKey': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN]
+  'footer/legal/:pageKey': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN],
+  'footer/games/:slug': [ROLES.MASTER_ADMIN, ROLES.STORE_ADMIN]
 }
 
 /** Path segment -> permission key for store_admin permission check. */

@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { site } from '../config/site';
 import { useStoreFooter } from '../hooks/useStoreFooter';
+import { useGamePageLinks } from '../hooks/useGamePageLinks';
 
 const FOOTER_PARTICLES = [
   { id: 1, e: '✦', style: { top: '18%', left: '8%' }, delay: 0 },
@@ -27,6 +28,7 @@ const DEFAULT_NAV_LINKS = [
 export function AppFooter() {
   const reduceMotion = useReducedMotion();
   const { menus } = useStoreFooter();
+  const gameLinks = useGamePageLinks();
 
   const cmsLinks = menus.flatMap((menu) =>
     (menu.pages || []).map((page) => ({
@@ -79,6 +81,16 @@ export function AppFooter() {
             </motion.span>
           ))}
         </div>
+
+        {gameLinks.length > 0 && (
+          <nav className="dash-footer-games" aria-label="Games">
+            {gameLinks.map((link) => (
+              <Link key={link.key} to={link.to} className="dash-footer-nav-link">
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         <nav className="dash-footer-nav" aria-label="Footer">
           {navLinks.map((link) => (

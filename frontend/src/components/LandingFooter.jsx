@@ -4,6 +4,7 @@ import { openSupportWidget } from './intercomApi';
 import { SiteLogo } from './SiteLogo';
 import { LandingSocialLinks } from './LandingSocialLinks';
 import { useStoreFooter } from '../hooks/useStoreFooter';
+import { useGamePageLinks } from '../hooks/useGamePageLinks';
 import '../pages/Landing/landing-footer.css';
 
 function footerPageHref(page) {
@@ -50,6 +51,7 @@ function filterCmsPages(pages, reservedPaths) {
 
 export function LandingFooter() {
   const { menus, showDefaultMenus } = useStoreFooter();
+  const gameLinks = useGamePageLinks();
   const reservedPaths = new Set([
     '/',
     '/contact',
@@ -122,6 +124,17 @@ export function LandingFooter() {
             </section>
           </>
         ) : null}
+
+        {gameLinks.length > 0 && (
+          <section className="premium-footer__section premium-footer__games" aria-labelledby="premium-footer-games">
+            <h3 id="premium-footer-games">Games</h3>
+            <nav aria-label="Game pages">
+              {gameLinks.map((link) => (
+                <FooterNavLink key={link.key} to={link.to}>{link.label}</FooterNavLink>
+              ))}
+            </nav>
+          </section>
+        )}
 
         {cmsMenus.map((menu) => (
           <section

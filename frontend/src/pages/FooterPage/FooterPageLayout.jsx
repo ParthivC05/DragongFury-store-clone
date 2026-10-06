@@ -170,7 +170,7 @@ function Split({ block, buttonWithMedia, headingClass, headingTag, indexLabel })
   );
 }
 
-export function FooterPageLayout({ sections, fallbackTitle }) {
+export function FooterPageLayout({ sections, fallbackTitle, showIndex = true }) {
   const hero = sections?.hero || {};
   const blocks = Array.isArray(sections?.blocks) ? sections.blocks.filter(hasBlockContent) : [];
   const showHero = hasBlockContent(hero);
@@ -212,7 +212,7 @@ export function FooterPageLayout({ sections, fallbackTitle }) {
               buttonWithMedia={false}
               headingClass="pj-fp-section-title"
               headingTag="h2"
-              indexLabel={IS_DRAGONFURY ? String(index + 1).padStart(2, '0') : undefined}
+              indexLabel={IS_DRAGONFURY && showIndex ? String(index + 1).padStart(2, '0') : undefined}
             />
           </section>
         );

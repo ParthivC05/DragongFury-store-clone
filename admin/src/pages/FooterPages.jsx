@@ -9,6 +9,8 @@ import {
   getAdminFooterSettings,
   updateAdminFooterSettings,
   getAdminLegalPages,
+  getAdminGameSeoPages,
+  setAdminGameSeoPageVisibility,
   getStores
 } from '../api/admin'
 import { LEGAL_PAGE_OPTIONS } from '../constants/legalPages'
@@ -44,6 +46,9 @@ export default function FooterPages() {
   const [showDefaultMenus, setShowDefaultMenus] = useState(true)
   const [savingDefaults, setSavingDefaults] = useState(false)
   const [legalPages, setLegalPages] = useState(LEGAL_PAGE_OPTIONS)
+  const [gamePages, setGamePages] = useState([])
+  const [gamesLoading, setGamesLoading] = useState(false)
+  const [gameVisibilitySlug, setGameVisibilitySlug] = useState('')
   const menuFormRef = useRef(null)
   const menuNameRef = useRef(null)
 
@@ -107,6 +112,47 @@ export default function FooterPages() {
   useEffect(() => {
     loadLegalPages()
   }, [loadLegalPages])
+
+  const gameStoreCode = String(settingsStoreCode || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+  const showGamePages = gameStoreCode === 'playjuwa' || gameStoreCode === 'dragonfury'
+  const gameStoreLabel = gameStoreCode === 'dragonfury' ? 'Dragon Fury' : 'PlayJuwa'
+
+  useEffect(() => {
+    if (!showGamePages) {
+      setGamePages([])
+      return
+    }
+    setGamesLoading(true)
+    getAdminGameSeoPages({ storeCode: settingsStoreCode })
+      .then((res) => setGamePages(res.game_pages || []))
+      .catch((err) => {
+        toast.error(err.message || 'Failed to load game pages')
+        setGamePages([])
+      })
+      .finally(() => setGamesLoading(false))
+  }, [showGamePages, settingsStoreCode, toast])
+
+  const toggleGameVisibility = async (page) => {
+    const nextActive = page.isActive === false
+    setGameVisibilitySlug(page.slug)
+    try {
+      const res = await setAdminGameSeoPageVisibility(page.slug, {
+        storeCode: settingsStoreCode,
+        isActive: nextActive
+      })
+      const saved = res.game_page
+      setGamePages((rows) => rows.map((row) => (
+        row.slug === page.slug ? { ...row, isActive: saved ? saved.isActive !== false : nextActive } : row
+      )))
+      toast.success(nextActive
+        ? `${page.name} is visible on the games page and in the footer.`
+        : `${page.name} is hidden on the games page and in the footer.`)
+    } catch (err) {
+      toast.error(err.message || 'Could not update this game page.')
+    } finally {
+      setGameVisibilitySlug('')
+    }
+  }
 
   const saveDefaultMenus = async (next) => {
     if (!settingsStoreCode) {
@@ -338,6 +384,61 @@ export default function FooterPages() {
       <p className="footer-admin-lead">
         Add a group, then add pages under it. Visitors open /page-name — the group name is only the footer heading.
       </p>
+
+      {showGamePages && (
+        <section className="footer-menu-card">
+          <div className="footer-menu-card-header">
+            <h3>{gameStoreLabel} game pages</h3>
+          </div>
+          <p>These are the platform pages at /games. Hide removes a game from the games page and the footer. Edit changes the hero, buttons, sections, FAQ, and SEO.</p>
+          {gamesLoading ? <p>Loading games…</p> : (
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>Game</th>
+                    <th>Page</th>
+                    <th>Status</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  {gamePages.map((page) => (
+                    <tr key={page.slug}>
+                      <td>{page.name}</td>
+                      <td><code className="footer-slug-code">/games/{page.slug}</code></td>
+                      <td>
+                        <span className={`blog-admin-badge${page.isActive !== false ? ' is-active' : ''}`}>
+                          {page.isActive !== false ? 'Live' : 'Hidden'}
+                        </span>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end' }}>
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-secondary"
+                            disabled={gameVisibilitySlug === page.slug}
+                            onClick={() => toggleGameVisibility(page)}
+                          >
+                            {page.isActive === false ? 'Show' : 'Hide'}
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-secondary"
+                            onClick={() => navigate(`/footer/games/${page.slug}?storeCode=${encodeURIComponent(settingsStoreCode || 'dragonfury')}`)}
+                          >
+                            Edit
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      )}
 
       {isMaster && (
         <form

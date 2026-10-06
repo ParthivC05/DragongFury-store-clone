@@ -170,6 +170,16 @@
   margin-top: 0.55rem;
 }
 
+.fpl-add-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.fpl-add-row .fpl-add-section {
+  flex: 1 1 220px;
+}
+
 .fpl-add-section {
   min-height: 2.7rem;
   border: 1px dashed #94a3b8;

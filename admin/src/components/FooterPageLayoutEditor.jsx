@@ -20,18 +20,26 @@ function normalizeIncoming(raw) {
       buttonText: typeof heroSrc.buttonText === 'string' ? heroSrc.buttonText : 'DEPOSIT NOW',
       buttonUrl: heroSrc.buttonUrl || ''
     }),
-    blocks: blocksSrc.map((b) => emptyBlock({
-      id: b.id || newId(),
-      title: b.title || '',
-      body: b.body || '',
-      links: Array.isArray(b.links) ? b.links.map((l) => ({ text: l.text || '', url: l.url || '' })) : [],
-      imageUrl: b.imageUrl || '',
-      imageAlt: b.imageAlt || '',
-      imagePosition: b.imagePosition === 'left' ? 'left' : 'right',
-      showButton: b.showButton === true,
-      buttonText: typeof b.buttonText === 'string' ? b.buttonText : 'DEPOSIT NOW',
-      buttonUrl: b.buttonUrl || ''
-    }))
+    blocks: blocksSrc.map((b) => {
+      if (b?.type === 'faq') {
+        const items = Array.isArray(b.items) && b.items.length
+          ? b.items.map((item) => ({ question: item.question || '', answer: item.answer || '' }))
+          : [{ question: '', answer: '' }]
+        return { type: 'faq', id: b.id || newId(), title: b.title || 'FAQ', items }
+      }
+      return emptyBlock({
+        id: b.id || newId(),
+        title: b.title || '',
+        body: b.body || '',
+        links: Array.isArray(b.links) ? b.links.map((l) => ({ text: l.text || '', url: l.url || '' })) : [],
+        imageUrl: b.imageUrl || '',
+        imageAlt: b.imageAlt || '',
+        imagePosition: b.imagePosition === 'left' ? 'left' : 'right',
+        showButton: b.showButton === true,
+        buttonText: typeof b.buttonText === 'string' ? b.buttonText : 'DEPOSIT NOW',
+        buttonUrl: b.buttonUrl || b.buttonHref || ''
+      })
+    })
   }
 }
 
@@ -270,10 +278,49 @@ function BlockFields({
   )
 }
 
-export function FooterPageLayoutEditor({ value, onChange, legacyHtml = '' }) {
+function FaqFields({ block, onChange }) {
+  const items = Array.isArray(block.items) && block.items.length ? block.items : [{ question: '', answer: '' }]
+  const setItems = (next) => onChange({ ...block, items: next })
+  return (
+    <div className="fpl-block-fields">
+      <label className="blog-admin-field">
+        <span>FAQ heading</span>
+        <input type="text" value={block.title || ''} onChange={(e) => onChange({ ...block, title: e.target.value })} placeholder="FAQ" />
+      </label>
+      {items.map((item, index) => (
+        <div key={`${block.id}-q-${index}`} className="fpl-button-fields">
+          <label className="blog-admin-field">
+            <span>Question</span>
+            <input
+              type="text"
+              value={item.question || ''}
+              onChange={(e) => setItems(items.map((row, i) => (i === index ? { ...row, question: e.target.value } : row)))}
+            />
+          </label>
+          <label className="blog-admin-field">
+            <span>Answer</span>
+            <textarea
+              rows={3}
+              value={item.answer || ''}
+              onChange={(e) => setItems(items.map((row, i) => (i === index ? { ...row, answer: e.target.value } : row)))}
+            />
+          </label>
+          <button type="button" className="admin-btn admin-btn-danger admin-btn-sm" onClick={() => setItems(items.filter((_, i) => i !== index))}>
+            Remove question
+          </button>
+        </div>
+      ))}
+      <button type="button" className="admin-btn admin-btn-secondary admin-btn-sm" onClick={() => setItems([...items, { question: '', answer: '' }])}>
+        Add question
+      </button>
+    </div>
+  )
+}
+
+export function FooterPageLayoutEditor({ value, onChange, legacyHtml = '', allowFaq = false, hideHero = false }) {
   const sections = normalizeIncoming(value)
   const [uploadingKey, setUploadingKey] = useState('')
-  const [openKey, setOpenKey] = useState('hero')
+  const [openKey, setOpenKey] = useState(hideHero ? '' : 'hero')
 
   const setHero = (hero) => onChange({ ...sections, hero })
   const setBlocks = (blocks) => onChange({ ...sections, blocks })
@@ -297,6 +344,7 @@ export function FooterPageLayoutEditor({ value, onChange, legacyHtml = '' }) {
         </div>
       ) : null}
 
+      {hideHero ? null : (
       <section className={`fpl-card${openKey === 'hero' ? ' is-open' : ''}`}>
         <button type="button" className="fpl-card-toggle" onClick={() => toggle('hero')}>
           <div>
@@ -327,17 +375,20 @@ export function FooterPageLayoutEditor({ value, onChange, legacyHtml = '' }) {
           </div>
         ) : null}
       </section>
+      )}
 
       {sections.blocks.map((block, index) => {
         const key = block.id
         const open = openKey === key
+        const isFaq = allowFaq && block.type === 'faq'
+        const sectionNumber = sections.blocks.slice(0, index + 1).filter((row) => row.type !== 'faq').length
         return (
           <section className={`fpl-card${open ? ' is-open' : ''}`} key={key}>
             <div className="fpl-card-head">
               <button type="button" className="fpl-card-toggle" onClick={() => toggle(key)}>
                 <div>
-                  <h3>Section {index + 1}</h3>
-                  <p>{block.title || 'Heading, text, and photo'}</p>
+                  <h3>{isFaq ? 'FAQ' : `Section ${hideHero ? sectionNumber : index + 1}`}</h3>
+                  <p>{block.title || (isFaq ? 'Questions and answers' : 'Heading, text, and photo')}</p>
                 </div>
                 <span>{open ? 'Hide' : 'Edit'}</span>
               </button>
@@ -369,32 +420,66 @@ export function FooterPageLayoutEditor({ value, onChange, legacyHtml = '' }) {
             </div>
             {open ? (
               <div className="fpl-card-body">
-                <BlockFields
-                  block={block}
-                  onChange={(next) => setBlocks(sections.blocks.map((row, i) => (i === index ? next : row)))}
-                  namePrefix={block.id}
-                  showTitle
-                  titleLabel="Heading"
-                  uploadingKey={uploadingKey}
-                  setUploadingKey={setUploadingKey}
-                />
+                {isFaq ? (
+                  <FaqFields
+                    block={block}
+                    onChange={(next) => setBlocks(sections.blocks.map((row, i) => (i === index ? next : row)))}
+                  />
+                ) : (
+                  <BlockFields
+                    block={block}
+                    onChange={(next) => setBlocks(sections.blocks.map((row, i) => (i === index ? next : row)))}
+                    namePrefix={block.id}
+                    showTitle
+                    titleLabel="Heading"
+                    uploadingKey={uploadingKey}
+                    setUploadingKey={setUploadingKey}
+                  />
+                )}
               </div>
             ) : null}
           </section>
         )
       })}
 
-      <button
-        type="button"
-        className="fpl-add-section"
-        onClick={() => {
-          const next = emptyBlock()
-          setBlocks([...sections.blocks, next])
-          setOpenKey(next.id)
-        }}
-      >
-        + Add another section
-      </button>
+      {allowFaq ? (
+        <div className="fpl-add-row">
+          <button
+            type="button"
+            className="fpl-add-section"
+            onClick={() => {
+              const next = emptyBlock()
+              setBlocks([...sections.blocks, next])
+              setOpenKey(next.id)
+            }}
+          >
+            + Add another section
+          </button>
+          <button
+            type="button"
+            className="fpl-add-section"
+            onClick={() => {
+              const next = { type: 'faq', id: newId(), title: 'FAQ', items: [{ question: '', answer: '' }] }
+              setBlocks([...sections.blocks, next])
+              setOpenKey(next.id)
+            }}
+          >
+            + Add FAQ
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className="fpl-add-section"
+          onClick={() => {
+            const next = emptyBlock()
+            setBlocks([...sections.blocks, next])
+            setOpenKey(next.id)
+          }}
+        >
+          + Add another section
+        </button>
+      )}
     </div>
   )
 }

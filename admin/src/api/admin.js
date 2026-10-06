@@ -1070,6 +1070,34 @@ export function updateAdminFooterPage(id, body) {
   })
 }
 
+export function getAdminGameSeoPages(params = {}) {
+  const q = new URLSearchParams()
+  if (params.storeCode) q.set('storeCode', params.storeCode)
+  const query = q.toString()
+  return request(`${ADMIN}/footer/game-pages${query ? `?${query}` : ''}`)
+}
+
+export function getAdminGameSeoPage(slug, params = {}) {
+  const q = new URLSearchParams()
+  if (params.storeCode) q.set('storeCode', params.storeCode)
+  const query = q.toString()
+  return request(`${ADMIN}/footer/game-pages/${encodeURIComponent(slug)}${query ? `?${query}` : ''}`)
+}
+
+export function updateAdminGameSeoPage(slug, body) {
+  return request(`${ADMIN}/footer/game-pages/${encodeURIComponent(slug)}`, {
+    method: 'PUT',
+    body: JSON.stringify(body)
+  })
+}
+
+export function setAdminGameSeoPageVisibility(slug, body) {
+  return request(`${ADMIN}/footer/game-pages/${encodeURIComponent(slug)}/visibility`, {
+    method: 'PATCH',
+    body: JSON.stringify(body || {})
+  })
+}
+
 export function deleteAdminFooterPage(id) {
   return request(`${ADMIN}/footer/pages/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }

@@ -5,6 +5,7 @@ const { ROLES } = require('../../constants/roles');
 const { can, canAdmin } = require('../../utils/permissionHelpers');
 const { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const footer = require('../../services/footer/footer.service');
+const gameSeoPages = require('../../services/seo/gameSeoPages.service');
 const legalPages = require('../../services/legal/legalPages.service');
 const { uploadImageBuffer } = require('../../utils/s3Upload');
 
@@ -19,7 +20,7 @@ const DENY = 'You don\'t have access to Footer pages. Please contact your admini
 
 function footerErrorMessage(err, fallback) {
   const msg = String(err?.message || '');
-  if (/relation ["']?footer_(menus|pages)["']? does not exist/i.test(msg)) {
+  if (/relation ["']?(footer_(menus|pages)|game_seo_pages)["']? does not exist/i.test(msg)) {
     return 'Footer database tables are missing. Run backend migrations (npm run migrate), then retry.';
   }
   return msg || fallback;
@@ -205,6 +206,46 @@ async function uploadImage(req, res) {
   }
 }
 
+async function listGamePages(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.listAdmin(req, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, footerErrorMessage(err, 'Failed to list game pages.'), err.statusCode || 500);
+  }
+}
+
+async function getGamePage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.getAdmin(req, req.params.slug, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Not found.', err.statusCode || 500);
+  }
+}
+
+async function setGamePageVisibility(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.setVisibilityAdmin(req, req.params.slug, req.body || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Update failed.', err.statusCode || 500);
+  }
+}
+
+async function updateGamePage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.updateAdmin(req, req.params.slug, req.body || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Update failed.', err.statusCode || 500);
+  }
+}
+
 module.exports = {
   listMenus,
   getMenu,
@@ -221,5 +262,9 @@ module.exports = {
   listLegalPages,
   getLegalPage,
   updateLegalPage,
-  uploadImage
+  uploadImage,
+  listGamePages,
+  getGamePage,
+  updateGamePage,
+  setGamePageVisibility
 };

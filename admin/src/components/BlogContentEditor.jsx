@@ -13,6 +13,12 @@ const PREVIEW_STYLES = `
   figure[data-align='full']{width:100%}
   figure[data-align='left']{float:left;width:46%;margin:0.2rem 0.85rem 0.7rem 0}
   figure[data-align='right']{float:right;width:46%;margin:0.2rem 0 0.7rem 0.85rem}
+  .pj-blog-faq{margin:1.5rem 0;font-family:system-ui,sans-serif}
+  .pj-blog-faq-title{margin:0 0 0.75rem;font-size:1.25rem}
+  .pj-blog-faq-item{border:1px solid #e2e8f0;border-radius:12px;margin:0 0 0.55rem;background:#fff}
+  .pj-blog-faq-q{display:block;padding:0.8rem 1rem;font-weight:700;cursor:pointer}
+  .pj-blog-faq-a{padding:0 1rem 0.9rem;color:#334155}
+  .pj-blog-faq-a p{margin:0 0 0.5rem}
 `
 
 function writePreview(frame, html) {

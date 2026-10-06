@@ -51,6 +51,12 @@
   color: #475569;
 }
 
+.bbc-add-btn-faq {
+  background: #ecfeff;
+  border-color: #67e8f9;
+  color: #0e7490;
+}
+
 .bbc-add-slim {
   margin: 0.25rem 0;
 }
@@ -148,6 +154,7 @@
 .bbc-card-image .bbc-type { color: #c026d3; }
 .bbc-card-heading .bbc-type { color: #0f766e; }
 .bbc-card-quote .bbc-type { color: #b45309; }
+.bbc-card-faq .bbc-type { color: #0e7490; }
 
 .bbc-card-actions {
   display: flex;
@@ -316,8 +323,103 @@
   margin: 0.6rem 0;
 }
 
+.bbc-faq {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bbc-faq-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.bbc-faq-label input,
+.bbc-faq-item input,
+.bbc-faq-item textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.bbc-faq-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.7rem;
+  border: 1px solid #cffafe;
+  border-radius: 12px;
+  background: #f8fdff;
+}
+
+.bbc-faq-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #0e7490;
+}
+
+.bbc-faq-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.bbc-faq-item-actions button,
+.bbc-faq-add {
+  appearance: none;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+}
+
+.bbc-faq-item-actions button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.bbc-faq-item textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.bbc-faq-add {
+  align-self: flex-start;
+  border-color: #67e8f9;
+  background: #ecfeff;
+  color: #0e7490;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+}
+
 @media (max-width: 720px) {
   .bbc-heading {
     grid-template-columns: 1fr;
+  }
+
+  .bbc-faq-item-head {
+    align-items: flex-start;
+    flex-wrap: wrap;
   }
 }

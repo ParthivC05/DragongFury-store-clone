@@ -139,6 +139,43 @@ function escapeAttr(value) {
   return escapeHtml(value).replace(/\n/g, ' ');
 }
 
+function isNearBlackColor(value) {
+  const v = String(value || '').trim().toLowerCase().replace(/\s+/g, '');
+  if (v === 'black' || v === 'windowtext' || v === 'canvastext') return true;
+  const hex = v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/);
+  if (hex) {
+    let h = hex[1];
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+    const channels = [h.slice(0, 2), h.slice(2, 4), h.slice(4, 6)].map((c) => parseInt(c, 16));
+    return channels.every((n) => n <= 48);
+  }
+  const rgb = v.match(/^rgba?\((\d{1,3}),(\d{1,3}),(\d{1,3})/);
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].every((n) => Number(n) <= 48);
+  return false;
+}
+
+/** Pasted Docs/Word copy stores color:rgb(0,0,0) and <font color="#000000">, which hide on the dark blog. */
+function stripDefaultDarkTextColors(html) {
+  if (!html) return '';
+  return String(html)
+    .replace(/\sstyle\s*=\s*(["'])([\s\S]*?)\1/gi, (full, quote, style) => {
+      const next = style
+        .split(';')
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .filter((decl) => {
+          const match = decl.match(/^([a-z-]+)\s*:\s*(.+)$/i);
+          if (!match) return true;
+          return !(match[1].toLowerCase() === 'color' && isNearBlackColor(match[2]));
+        })
+        .join('; ');
+      return next ? ` style=${quote}${next}${quote}` : '';
+    })
+    .replace(/(<font\b[^>]*?)\scolor\s*=\s*(["']?)([^"'>\s]+)\2/gi, (full, start, _quote, value) => (
+      isNearBlackColor(value) ? start : full
+    ));
+}
+
 /** Pull the inner article out of a pasted full HTML document. */
 function extractArticleHtml(raw) {
   if (!raw || typeof raw !== 'string') return '';
@@ -154,7 +191,7 @@ function extractArticleHtml(raw) {
     .trim();
   html = html.replace(/^\s*<main[^>]*>/i, '').replace(/<\/main>\s*$/i, '').trim();
   html = html.replace(/^\s*<article[^>]*>/i, '').replace(/<\/article>\s*$/i, '').trim();
-  return html;
+  return stripDefaultDarkTextColors(html);
 }
 
 function w3cDate(value) {
@@ -204,6 +241,11 @@ ${extraHead}
     figure[data-align="right"]{float:right;width:42%;margin:0 0 1rem 1rem}
     table{width:100%;border-collapse:collapse}
     td,th{border:1px solid #333;padding:8px;text-align:left}
+    .pj-blog-faq{margin:28px 0}
+    .pj-blog-faq-title{margin:0 0 12px;color:#ffe06a}
+    .pj-blog-faq-item{border:1px solid #665016;border-radius:12px;padding:0 14px;margin:0 0 10px;background:#111}
+    .pj-blog-faq-q{cursor:pointer;font-weight:700;padding:12px 0;color:#fff}
+    .pj-blog-faq-a{color:#e2e8f0;padding-bottom:12px}
   </style>
 </head>
 <body>

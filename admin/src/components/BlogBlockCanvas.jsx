@@ -79,6 +79,10 @@ function AddButtons({ onInsert }) {
       <button type="button" className="bbc-add-btn bbc-add-btn-quiet" onClick={() => onInsert('heading')}>
         Add a title
       </button>
+      <button type="button" className="bbc-add-btn bbc-add-btn-faq" onClick={() => onInsert('faq')}>
+        <span aria-hidden>?</span>
+        Add FAQ
+      </button>
     </div>
   )
 }
@@ -180,12 +184,84 @@ function ImageBlock({ block, onChange, onUploadImage, uploading, autoPick }) {
   )
 }
 
+function newFaqItem() {
+  return {
+    id: `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+    question: '',
+    answer: ''
+  }
+}
+
+function FaqBlock({ block, onChange }) {
+  const items = Array.isArray(block.items) && block.items.length ? block.items : [newFaqItem()]
+
+  const updateItem = (id, patch) => {
+    onChange({ items: items.map((item) => (item.id === id ? { ...item, ...patch } : item)) })
+  }
+
+  const moveItem = (index, dir) => {
+    const to = index + dir
+    if (to < 0 || to >= items.length) return
+    const next = [...items]
+    const [row] = next.splice(index, 1)
+    next.splice(to, 0, row)
+    onChange({ items: next })
+  }
+
+  const removeItem = (id) => {
+    const next = items.filter((item) => item.id !== id)
+    onChange({ items: next.length ? next : [newFaqItem()] })
+  }
+
+  return (
+    <div className="bbc-faq">
+      <label className="bbc-faq-label">
+        Section title
+        <input
+          type="text"
+          value={block.title ?? ''}
+          onChange={(e) => onChange({ title: e.target.value })}
+          placeholder="FAQ"
+        />
+      </label>
+      {items.map((item, index) => (
+        <div key={item.id} className="bbc-faq-item">
+          <div className="bbc-faq-item-head">
+            <span>Question {index + 1}</span>
+            <div className="bbc-faq-item-actions">
+              <button type="button" disabled={index === 0} onClick={() => moveItem(index, -1)}>Up</button>
+              <button type="button" disabled={index === items.length - 1} onClick={() => moveItem(index, 1)}>Down</button>
+              <button type="button" onClick={() => removeItem(item.id)}>Remove</button>
+            </div>
+          </div>
+          <input
+            type="text"
+            value={item.question || ''}
+            onChange={(e) => updateItem(item.id, { question: e.target.value })}
+            placeholder="Type the question"
+          />
+          <textarea
+            rows={3}
+            value={item.answer || ''}
+            onChange={(e) => updateItem(item.id, { answer: e.target.value })}
+            placeholder="Type the answer"
+          />
+        </div>
+      ))}
+      <button type="button" className="bbc-faq-add" onClick={() => onChange({ items: [...items, newFaqItem()] })}>
+        Add a question
+      </button>
+    </div>
+  )
+}
+
 const TYPE_LABEL = {
   text: 'Words',
   image: 'Picture',
   heading: 'Title',
   quote: 'Quote',
-  divider: 'Line'
+  divider: 'Line',
+  faq: 'FAQ'
 }
 
 export function BlogBlockCanvas({ value = '', onChange, onUploadImage }) {
@@ -245,7 +321,7 @@ export function BlogBlockCanvas({ value = '', onChange, onUploadImage }) {
 
   return (
     <div className="bbc bbc-easy">
-      <p className="bbc-hint">Write in the boxes. Tap a button to add a picture or more words.</p>
+      <p className="bbc-hint">Write in the boxes. Tap a button to add a picture, more words, or an FAQ.</p>
       <AddButtons onInsert={(type) => insertAt(0, type)} />
       {blocks.map((block, index) => (
         <div key={block.id}>
@@ -307,6 +383,13 @@ export function BlogBlockCanvas({ value = '', onChange, onUploadImage }) {
             )}
 
             {block.type === 'divider' && <hr className="bbc-divider" />}
+
+            {block.type === 'faq' && (
+              <FaqBlock
+                block={block}
+                onChange={(patch) => updateBlock(block.id, patch)}
+              />
+            )}
           </article>
           <AddButtons onInsert={(type) => insertAt(index + 1, type)} />
         </div>

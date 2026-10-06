@@ -28,6 +28,16 @@ export function createBlock(type, extra = {}) {
     return { ...base, html: extra.html || extra.text || '' }
   }
   if (type === 'divider') return base
+  if (type === 'faq') {
+    const items = Array.isArray(extra.items) && extra.items.length
+      ? extra.items.map((item) => ({
+          id: item.id || newBlockId(),
+          question: item.question || '',
+          answer: item.answer || ''
+        }))
+      : [{ id: newBlockId(), question: '', answer: '' }]
+    return { ...base, title: extra.title ?? 'FAQ', items }
+  }
   return { ...base, html: extra.html || '' }
 }
 
@@ -63,6 +73,44 @@ function readAlign(el, img) {
   return 'center'
 }
 
+function plainFromHtml(node) {
+  const clone = node.cloneNode(true)
+  clone.querySelectorAll('br').forEach((br) => br.replaceWith('\n'))
+  return (clone.textContent || '').replace(/\u00a0/g, ' ').trim()
+}
+
+function faqFromElement(el) {
+  const titleEl = el.querySelector(':scope > .pj-blog-faq-title')
+  const itemEls = el.querySelectorAll(':scope > .pj-blog-faq-item, :scope > details')
+  const items = [...itemEls].map((item) => {
+    const questionEl = item.querySelector('summary, .pj-blog-faq-q')
+    const answerEl = item.querySelector('.pj-blog-faq-a')
+    let answer = ''
+    if (answerEl) {
+      const paragraphs = [...answerEl.querySelectorAll(':scope > p')]
+      answer = (paragraphs.length ? paragraphs : [answerEl]).map(plainFromHtml).filter(Boolean).join('\n\n')
+    }
+    return {
+      question: (questionEl?.textContent || '').trim(),
+      answer
+    }
+  }).filter((item) => item.question || item.answer)
+
+  return createBlock('faq', {
+    title: titleEl ? titleEl.textContent.trim() : '',
+    items: items.length ? items : [{ question: '', answer: '' }]
+  })
+}
+
+function answerToHtml(answer) {
+  return String(answer || '')
+    .split(/\n{2,}/)
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .map((part) => `<p>${escapeHtml(part).replace(/\n/g, '<br>')}</p>`)
+    .join('')
+}
+
 function imageFromElement(el) {
   const img = el.tagName === 'IMG' ? el : el.querySelector?.('img')
   if (!img?.getAttribute('src')) return null
@@ -86,6 +134,11 @@ function nodeToBlocks(node) {
   const el = node
   const marked = el.getAttribute('data-blog-block')
   const tag = el.tagName
+
+  if (marked === 'faq' || el.classList?.contains('pj-blog-faq')) {
+    const block = faqFromElement(el)
+    return block ? [block] : []
+  }
 
   if (marked === 'heading' || /^H[1-6]$/.test(tag)) {
     const text = el.textContent || ''
@@ -196,6 +249,22 @@ function blockToHtml(block) {
     }
     case 'divider':
       return '<hr data-blog-block="divider">'
+    case 'faq': {
+      const items = (Array.isArray(block.items) ? block.items : [])
+        .map((item) => {
+          const question = String(item?.question || '').trim()
+          if (!question) return ''
+          const answerHtml = answerToHtml(item?.answer)
+          const body = answerHtml ? `<div class="pj-blog-faq-a">${answerHtml}</div>` : ''
+          return `<details class="pj-blog-faq-item"><summary class="pj-blog-faq-q">${escapeHtml(question)}</summary>${body}</details>`
+        })
+        .filter(Boolean)
+      if (!items.length) return ''
+      const title = String(block.title || '').trim()
+      const titleHtml = title ? `<h2 class="pj-blog-faq-title">${escapeHtml(title)}</h2>` : ''
+      if (items[0].startsWith('<details ')) items[0] = items[0].replace('<details ', '<details open ')
+      return `<section class="pj-blog-faq" data-blog-block="faq">${titleHtml}${items.join('')}</section>`
+    }
     default:
       return ''
   }
@@ -203,6 +272,21 @@ function blockToHtml(block) {
 
 export function blocksToHtml(blocks) {
   return (Array.isArray(blocks) ? blocks : []).map(blockToHtml).filter(Boolean).join('\n')
+}
+
+function isNearBlackColor(value) {
+  const v = String(value || '').trim().toLowerCase().replace(/\s+/g, '')
+  if (v === 'black' || v === 'windowtext' || v === 'canvastext') return true
+  const hex = v.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/)
+  if (hex) {
+    let h = hex[1]
+    if (h.length === 3) h = h.split('').map((c) => c + c).join('')
+    const channels = [h.slice(0, 2), h.slice(2, 4), h.slice(4, 6)].map((c) => parseInt(c, 16))
+    return channels.every((n) => n <= 48)
+  }
+  const rgb = v.match(/^rgba?\((\d{1,3}),(\d{1,3}),(\d{1,3})/)
+  if (rgb) return [rgb[1], rgb[2], rgb[3]].every((n) => Number(n) <= 48)
+  return false
 }
 
 export function sanitizeFragment(html) {
@@ -216,6 +300,23 @@ export function sanitizeFragment(html) {
         el.removeAttribute(attr.name)
       }
     })
+    if (el.hasAttribute('color') && isNearBlackColor(el.getAttribute('color'))) {
+      el.removeAttribute('color')
+    }
+    if (el.hasAttribute('style')) {
+      const next = el.getAttribute('style')
+        .split(';')
+        .map((part) => part.trim())
+        .filter(Boolean)
+        .filter((decl) => {
+          const match = decl.match(/^([a-z-]+)\s*:\s*(.+)$/i)
+          if (!match) return true
+          return !(match[1].toLowerCase() === 'color' && isNearBlackColor(match[2]))
+        })
+        .join('; ')
+      if (next) el.setAttribute('style', next)
+      else el.removeAttribute('style')
+    }
   })
   return root.innerHTML
 }

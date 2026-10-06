@@ -15,6 +15,26 @@ import { ROLES } from '../constants/roles'
 import { ADMIN_FEATURE_KEYS, filterStoreCodesByAdminScope } from '../constants/permissions'
 import './BlogPosts.css'
 
+const COVER_WIDTH = 2172
+const COVER_HEIGHT = 724
+
+function readImageSize(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      const size = { width: img.naturalWidth, height: img.naturalHeight }
+      URL.revokeObjectURL(url)
+      resolve(size)
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('Could not read that picture.'))
+    }
+    img.src = url
+  })
+}
+
 const EMPTY = {
   title: '',
   slug: '',
@@ -123,6 +143,16 @@ export default function BlogPostForm() {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
+    try {
+      const { width, height } = await readImageSize(file)
+      if (width !== COVER_WIDTH || height !== COVER_HEIGHT) {
+        toast.error(`Use a picture that is exactly ${COVER_WIDTH} × ${COVER_HEIGHT} pixels. This one is ${width} × ${height}.`)
+        return
+      }
+    } catch (err) {
+      toast.error(err.message || 'Could not read that picture.')
+      return
+    }
     setUploadingCover(true)
     try {
       const res = await uploadAdminBlogImage(file)
@@ -288,7 +318,7 @@ export default function BlogPostForm() {
           <p className="blog-easy-num">{isMaster ? '4' : '3'}</p>
           <div className="blog-easy-step-body">
             <span className="blog-easy-label">Add a big picture</span>
-            <p className="blog-easy-help">This picture shows at the top of the post. Tap the box to pick one.</p>
+            <p className="blog-easy-help">This picture shows at the top of the post. It must be exactly 2172 × 724 pixels.</p>
             <label className={`blog-easy-cover${form.titleImage ? ' has-pic' : ''}`}>
               {form.titleImage ? (
                 <img src={form.titleImage} alt="Cover" />

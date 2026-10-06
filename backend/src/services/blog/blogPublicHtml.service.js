@@ -302,7 +302,8 @@ function buildBlogIndexHtml({ origin, storeLabel, posts }) {
 
 function buildBlogPostHtml({ origin, storeLabel, post }) {
   const slug = String(post.slug || '').trim();
-  const canonical = originPath(origin, `/blog/${slug}`);
+  const customCanonical = String(post.canonicalUrl || post.canonical_url || '').trim();
+  const canonical = customCanonical || originPath(origin, `/blog/${slug}`);
   const title = String(post.metaTitle || post.title || 'Blog').trim();
   const description = String(post.metaDescription || '').trim();
   const robots = post.allowIndex === false ? 'noindex, nofollow' : 'index, follow';

@@ -24,6 +24,7 @@ const EMPTY = {
   metaTitle: '',
   metaDescription: '',
   metaTags: '',
+  canonicalUrl: '',
   allowIndex: true,
   isActive: true,
   storeCode: ''
@@ -96,6 +97,7 @@ export default function BlogPostForm() {
           metaTitle: post.metaTitle || '',
           metaDescription: post.metaDescription || '',
           metaTags: post.metaTags || '',
+          canonicalUrl: post.canonicalUrl || '',
           allowIndex: post.allowIndex !== false,
           isActive: post.isActive !== false,
           storeCode: post.storeCode || ''
@@ -172,6 +174,7 @@ export default function BlogPostForm() {
       metaTitle: form.metaTitle.trim() || null,
       metaDescription: form.metaDescription.trim() || null,
       metaTags: form.metaTags.trim() || null,
+      canonicalUrl: form.canonicalUrl.trim() || null,
       allowIndex: form.allowIndex !== false,
       isActive: Boolean(form.isActive)
     }
@@ -277,7 +280,7 @@ export default function BlogPostForm() {
         <section className="blog-easy-step">
           <p className="blog-easy-num">{isMaster ? '3' : '2'}</p>
           <div className="blog-easy-step-body">
-            <SeoMetaFields form={form} setField={setField} showIndexControl indexNoun="post" indexControlName="blog-google-index" />
+            <SeoMetaFields form={form} setField={setField} showIndexControl showCanonical indexNoun="post" indexControlName="blog-google-index" />
           </div>
         </section>
 

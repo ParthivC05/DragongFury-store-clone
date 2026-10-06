@@ -8,6 +8,7 @@ export function SeoMetaFields({
   titleHint,
   hideHeading = false,
   showIndexControl = false,
+  showCanonical = false,
   indexNoun = 'post',
   indexControlName = 'blog-google-index'
 }) {
@@ -53,6 +54,22 @@ export function SeoMetaFields({
         />
         <span className="blog-admin-hint">Comma-separated keywords.</span>
       </label>
+      {showCanonical && (
+        <label className="blog-admin-field">
+          <span>Canonical URL</span>
+          <input
+            type="url"
+            value={form.canonicalUrl || ''}
+            onChange={(e) => setField('canonicalUrl', e.target.value)}
+            placeholder="https://example.com/blog/post-slug"
+            maxLength={1024}
+          />
+          <span className="blog-admin-hint">
+            Optional. Full https address search engines should treat as the original page.
+            Leave blank to use this post&apos;s own URL.
+          </span>
+        </label>
+      )}
       {showIndexControl && (
         <div className="blog-admin-field">
           <span>Google indexing</span>

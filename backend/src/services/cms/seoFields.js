@@ -47,7 +47,38 @@ function seoToPlain(p = {}) {
   };
 }
 
+const CANONICAL_MAX = 1024;
+
+/** Optional absolute http(s) URL. Undefined = leave unchanged. Empty = clear. */
+function canonicalUrlFromBody(body = {}) {
+  if (body.canonicalUrl === undefined && body.canonical_url === undefined) return undefined;
+  const raw = body.canonicalUrl ?? body.canonical_url;
+  if (raw == null) return null;
+  const s = String(raw).trim();
+  if (!s) return null;
+  if (s.length > CANONICAL_MAX) {
+    const err = new Error(`Canonical URL is too long (max ${CANONICAL_MAX} characters).`);
+    err.statusCode = 400;
+    throw err;
+  }
+  let url;
+  try {
+    url = new URL(s);
+  } catch {
+    const err = new Error('Canonical URL must be a full link starting with http:// or https://.');
+    err.statusCode = 400;
+    throw err;
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    const err = new Error('Canonical URL must start with http:// or https://.');
+    err.statusCode = 400;
+    throw err;
+  }
+  return url.href;
+}
+
 module.exports = {
   seoFromBody,
-  seoToPlain
+  seoToPlain,
+  canonicalUrlFromBody
 };

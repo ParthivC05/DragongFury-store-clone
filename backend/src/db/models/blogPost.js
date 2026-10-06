@@ -52,6 +52,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'meta_tags'
       },
+      canonicalUrl: {
+        type: DataTypes.STRING(1024),
+        allowNull: true,
+        field: 'canonical_url'
+      },
       allowIndex: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

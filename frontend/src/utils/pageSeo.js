@@ -49,18 +49,41 @@ export function applyDefaultPageSeo({ title, description } = {}) {
   });
 }
 
+function bindCustomCanonical(href) {
+  const next = String(href || '').trim();
+  if (!next || typeof document === 'undefined') return () => {};
+  let el = document.querySelector('link[rel="canonical"]');
+  if (!el) {
+    el = document.createElement('link');
+    el.setAttribute('rel', 'canonical');
+    document.head.appendChild(el);
+  }
+  const prevHref = el.getAttribute('href');
+  el.dataset.custom = '1';
+  el.setAttribute('href', next);
+  upsertMeta('property', 'og:url', next);
+  return () => {
+    if (!el.isConnected) return;
+    delete el.dataset.custom;
+    if (prevHref) el.setAttribute('href', prevHref);
+    else el.remove();
+  };
+}
+
 /** Apply CMS SEO after a footer page or blog post loads. Restores site defaults on leave. */
-export function usePageSeo({ ready, title, description, keywords, noIndex } = {}) {
+export function usePageSeo({ ready, title, description, keywords, noIndex, canonical } = {}) {
   useEffect(() => {
     if (!ready) return undefined;
     applyPageSeo({ title, description, keywords });
+    const releaseCanonical = canonical ? bindCustomCanonical(canonical) : null;
     if (noIndex === true) {
       applyRobotsMeta('noindex, nofollow');
     } else if (noIndex === false) {
       applyRobotsMeta('index, follow');
     }
     return () => {
+      releaseCanonical?.();
       applyDefaultPageSeo();
     };
-  }, [ready, title, description, keywords, noIndex]);
+  }, [ready, title, description, keywords, noIndex, canonical]);
 }

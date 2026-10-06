@@ -230,7 +230,11 @@ function RouteTitleManager() {
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
-    canonical.setAttribute('href', canonicalHref);
+    const onBlogPost = /^\/blog\/.+/.test(pathname || '/');
+    if (!(onBlogPost && canonical.dataset.custom === '1')) {
+      delete canonical.dataset.custom;
+      canonical.setAttribute('href', canonicalHref);
+    }
 
     applyRouteSchema(pathname);
 

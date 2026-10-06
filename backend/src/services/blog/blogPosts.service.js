@@ -4,7 +4,7 @@ const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
-const { seoFromBody, seoToPlain } = require('../cms/seoFields');
+const { seoFromBody, seoToPlain, canonicalUrlFromBody } = require('../cms/seoFields');
 
 function normalizeStoreCode(str) {
   if (!str || typeof str !== 'string') return '';
@@ -135,6 +135,7 @@ function toPlain(row) {
     category: p.category,
     titleImage: p.titleImage ?? p.title_image,
     ...seoToPlain(p),
+    canonicalUrl: p.canonicalUrl ?? p.canonical_url ?? null,
     allowIndex: p.allowIndex !== false && p.allow_index !== false,
     isActive: p.isActive ?? p.is_active,
     createdAt: p.createdAt ?? p.created_at,
@@ -258,6 +259,7 @@ async function createAdmin(req, body = {}) {
   await assertUniqueSlug(storeCode, slug);
 
   const seo = seoFromBody(body);
+  const canonicalUrl = canonicalUrlFromBody(body);
   const row = await db.BlogPost.create({
     storeCode,
     title,
@@ -268,6 +270,7 @@ async function createAdmin(req, body = {}) {
     metaTitle: seo.metaTitle ?? null,
     metaDescription: seo.metaDescription ?? null,
     metaTags: seo.metaTags ?? null,
+    canonicalUrl: canonicalUrl ?? null,
     allowIndex,
     isActive
   });
@@ -330,6 +333,8 @@ async function updateAdmin(req, id, body = {}) {
   const allowIndex = allowIndexFromBody(body);
   if (allowIndex !== undefined) patch.allowIndex = allowIndex;
   Object.assign(patch, seoFromBody(body));
+  const canonicalUrl = canonicalUrlFromBody(body);
+  if (canonicalUrl !== undefined) patch.canonicalUrl = canonicalUrl;
   if (req.role === ROLES.MASTER_ADMIN && body.storeCode != null) {
     const storeCode = normalizeStoreCode(body.storeCode);
     if (!storeCode) {

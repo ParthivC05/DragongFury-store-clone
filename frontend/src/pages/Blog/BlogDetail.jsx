@@ -32,12 +32,14 @@ export function BlogDetail() {
   const seoDescription = post?.metaDescription || post?.meta_description || '';
   const seoTags = post?.metaTags || post?.meta_tags || '';
   const noIndex = post?.allowIndex === false || post?.allow_index === false;
+  const canonical = String(post?.canonicalUrl || post?.canonical_url || '').trim();
   usePageSeo({
     ready: Boolean(post) && !loading,
     title: seoTitle,
     description: seoDescription,
     keywords: seoTags,
-    noIndex
+    noIndex,
+    canonical
   });
 
   useEffect(() => {

@@ -4245,15 +4245,16 @@
 
 .lp-s6-inner {
   width: 100%;
-  max-width: 560px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 8px 20px 44px;
+  padding: 8px 16px calc(44px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) {
   .lp-s6-inner {
-    max-width: 640px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 }
 
@@ -4286,6 +4287,8 @@
 
 .lp-social-row {
   display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -4452,17 +4455,17 @@ body.intercom-maximized .lp-social-dock {
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 28px 32px;
-  max-width: min(960px, 100%);
+  gap: 22px 20px;
+  max-width: 100%;
   margin: 0 auto 28px;
   text-align: left;
   width: 100%;
 }
 
 .lp-footer-col {
-  flex: 0 0 auto;
+  flex: 1 1 calc(50% - 12px);
   min-width: 0;
-  max-width: 100%;
+  max-width: calc(50% - 12px);
 }
 
 .lp-footer-col-head {
@@ -4471,24 +4474,24 @@ body.intercom-maximized .lp-social-dock {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--lp-ember);
-  margin-bottom: 14px;
-  white-space: nowrap;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
 }
 
 .lp-footer-col-link {
   display: flex;
   align-items: center;
-  width: max-content;
+  width: auto;
   max-width: 100%;
-  min-height: 44px;
+  min-height: 40px;
   font-size: 15px;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1.35;
   color: #8ea4bf;
   text-decoration: none;
-  margin-bottom: 4px;
-  padding: 8px 0;
-  white-space: nowrap;
+  margin-bottom: 2px;
+  padding: 6px 0;
+  overflow-wrap: anywhere;
   transition: color 0.2s ease;
 }
 
@@ -4496,28 +4499,69 @@ body.intercom-maximized .lp-social-dock {
   color: var(--lp-teal);
 }
 
+.lp-footer-col--games {
+  flex: 1 1 100%;
+  max-width: 100%;
+}
+
+.lp-footer-games-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+  justify-items: start;
+  width: 100%;
+}
+
+@media (max-width: 359px) {
+  .lp-footer-games-links {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (min-width: 768px) {
+  .lp-footer-col--games {
+    flex: 1 1 18rem;
+    max-width: none;
+    min-width: 16rem;
+  }
+
+  .lp-footer-games-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: start;
+    gap: 0 1.25rem;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
   .lp-footer-cols {
-    gap: 32px 44px;
-    max-width: min(900px, 100%);
+    gap: 28px 36px;
+  }
+
+  .lp-footer-col:not(.lp-footer-col--games) {
+    flex: 0 1 11.5rem;
+    max-width: 16rem;
   }
 
   .lp-footer-col-head {
     font-size: 14px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .lp-footer-col-link {
     font-size: 16px;
-    margin-bottom: 11px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .lp-footer-games-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 1100px) {
   .lp-footer-cols {
-    /* Content-sized columns; 4th wraps to next row when it doesn't fit */
-    gap: 36px 56px;
-    max-width: min(1080px, 100%);
+    gap: 32px 48px;
   }
 
   .lp-footer-col-head {
@@ -4538,7 +4582,7 @@ body.intercom-maximized .lp-social-dock {
 
 .lp-footer-trust {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: clamp(4px, 1.8vw, 10px);

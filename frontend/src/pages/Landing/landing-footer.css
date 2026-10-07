@@ -147,14 +147,12 @@
 }
 
 .premium-footer__games .premium-footer__nav-link {
-  width: max-content;
+  width: auto;
   max-width: 100%;
-}
-
-@media (min-width: 900px) {
-  .premium-footer__games nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+  justify-content: flex-start;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .premium-footer__company nav,
@@ -377,13 +375,62 @@
 }
 
 @media (min-width: 1024px) {
-  .premium-footer__company,
-  .premium-footer__explore,
-  .premium-footer__legal,
+  .premium-footer__container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    column-gap: 36px;
+  }
+
+  .premium-footer__brand,
   .premium-footer__social,
-  .premium-footer__trust {
+  .premium-footer__trust,
+  .premium-footer__bottom {
+    flex: 1 1 100%;
     max-width: 1120px;
     margin-inline: auto;
+  }
+
+  .premium-footer__company,
+  .premium-footer__explore,
+  .premium-footer__legal {
+    flex: 0 1 11rem;
+    max-width: 14rem;
+    min-width: 0;
+  }
+
+  .premium-footer__company h3,
+  .premium-footer__explore h3,
+  .premium-footer__legal h3,
+  .premium-footer__games h3 {
+    text-align: left;
+  }
+
+  .premium-footer__company nav,
+  .premium-footer__explore nav,
+  .premium-footer__legal nav {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px 0;
+  }
+
+  .premium-footer__games {
+    flex: 1 1 18rem;
+    max-width: none;
+    min-width: 16rem;
+  }
+
+  .premium-footer__games nav {
+    justify-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .premium-footer__games nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

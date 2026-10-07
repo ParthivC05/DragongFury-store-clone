@@ -20,6 +20,7 @@ import {
   normalizePlatformSearch,
   searchPlatformGames,
 } from '../../../utils/platformGameSearch';
+import { searchSlotCatalogGames } from '../../../utils/slotCatalogSearch';
 import { DepositGameModal } from './DepositGameModal';
 import { WithdrawGameModal } from './WithdrawGameModal';
 import { GuestPlatformsGrid } from './GuestPlatformsGrid';
@@ -346,18 +347,20 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
   }, [games, filter, favoriteIds, isAuthenticated]);
 
   const searchQuery = normalizePlatformSearch(deferredSearch);
-  const isSearchActive =
+  const isPlatformSearchActive =
     isAuthenticated && searchQuery.length > 0 && PLATFORM_FILTER_IDS.has(filter);
+  const isCasinoSearchActive =
+    isAuthenticated && searchQuery.length > 0 && (CASINO_FILTER_IDS.has(filter) || filter === 'all' || filter === 'registered');
+  const isSearchActive = isPlatformSearchActive || isCasinoSearchActive;
 
   const filteredGames = useMemo(
-    () => (isSearchActive ? searchPlatformGames(tabFilteredGames, deferredSearch) : tabFilteredGames),
-    [tabFilteredGames, deferredSearch, isSearchActive]
+    () => (isPlatformSearchActive ? searchPlatformGames(tabFilteredGames, deferredSearch) : tabFilteredGames),
+    [tabFilteredGames, deferredSearch, isPlatformSearchActive]
   );
 
   const guestPlatformGames = useMemo(() => buildGuestPlatformGames(games), [games]);
 
   const gamesGridClassName = `dash-games-grid${filter === 'all' || filter === 'web' ? ' dash-games-grid--3' : ''}`;
-  const searchResultCount = filteredGames.length;
   const searchEmptyQueryLabel = normalizePlatformSearch(search) || searchQuery;
   const casinoCategories = useDragonFuryHomeCasinoCategories({
     enabled: isAuthenticated,
@@ -374,9 +377,25 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
     () => casinoCatalogGames.filter((game) => favoriteIds.includes(slotFavoriteId(game))),
     [casinoCatalogGames, favoriteIds]
   );
+  const casinoSearchSource = showingFavorites ? favoriteSlotGames : casinoCatalogGames;
+  const searchedCasinoGames = useMemo(
+    () => (isCasinoSearchActive ? searchSlotCatalogGames(casinoSearchSource, deferredSearch) : casinoSearchSource),
+    [casinoSearchSource, deferredSearch, isCasinoSearchActive]
+  );
   const showCasinoCatalog =
     isAuthenticated && (isCasinoFilterEffective || filter === 'all' || showingFavorites);
   const catalogInitialTab = CASINO_FILTER_IDS.has(filter) ? filter : 'all';
+  const searchResultCount = isCasinoFilterEffective
+    ? searchedCasinoGames.length
+    : isPlatformSearchActive && showCasinoCatalog
+      ? filteredGames.length + searchedCasinoGames.length
+      : filteredGames.length;
+  const casinoSearchEmpty =
+    isCasinoSearchActive &&
+    searchedCasinoGames.length === 0 &&
+    (isCasinoFilterEffective ||
+      showingFavorites ||
+      (filter === 'all' && filteredGames.length === 0));
   const firekirinExclusive = useFirekirinExclusiveGames({ enabled: isAuthenticated });
   const lobbyMixRows = useMemo(
     () =>
@@ -737,21 +756,37 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
 
       <div className="dash-games-panel">
       {isCasinoFilterEffective ? (
-        <SlotGamesCatalogGrid
-          games={casinoCatalogGames}
-          categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
-          loading={casinoLoading}
-          onPlay={handleCasinoPlay}
-          playingGameId={casinoLaunchingId}
-          embedded
-          hideIntro
-          showCategoryTabs={false}
-          lobbyMode
-          initialTab={catalogInitialTab}
-        />
+        casinoSearchEmpty ? (
+          <div className="dash-games-empty dash-slot-search-empty">
+            <span className="dash-games-empty-icon" aria-hidden>🔍</span>
+            <p className="dash-games-empty-title">No games found</p>
+            <p className="dash-games-empty-sub">
+              Nothing matched “{searchEmptyQueryLabel}”. Try another name.
+            </p>
+            <div className="dash-platform-search-empty-actions">
+              <button type="button" className="dash-btn-outline mt-3" onClick={clearSearch}>
+                Clear search
+              </button>
+            </div>
+          </div>
+        ) : (
+          <SlotGamesCatalogGrid
+            games={casinoCatalogGames}
+            categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
+            loading={casinoLoading}
+            onPlay={handleCasinoPlay}
+            playingGameId={casinoLaunchingId}
+            embedded
+            hideIntro
+            showCategoryTabs={false}
+            lobbyMode
+            initialTab={catalogInitialTab}
+            searchQuery={deferredSearch}
+          />
+        )
       ) : gamesLoading && games.length === 0 && isAuthenticated ? (
         <AppLoader fillPage={false} message="Loading games" />
-      ) : isSearchActive && searchResultCount === 0 ? (
+      ) : isPlatformSearchActive && searchResultCount === 0 && !showCasinoCatalog ? (
         <div className="dash-games-empty dash-slot-search-empty">
           <span className="dash-games-empty-icon" aria-hidden>🔍</span>
           <p className="dash-games-empty-title">No platforms found</p>
@@ -774,7 +809,7 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
             ) : null}
           </div>
         </div>
-      ) : filteredGames.length === 0 && isAuthenticated && !(showingFavorites && (favoriteSlotGames.length > 0 || casinoLoading)) ? (
+      ) : filteredGames.length === 0 && isAuthenticated && !(showingFavorites && (favoriteSlotGames.length > 0 || casinoLoading)) && !isCasinoSearchActive ? (
         <div className="dash-games-empty">
           <span className="dash-games-empty-icon" aria-hidden>🎮</span>
           <p className="dash-games-empty-title">
@@ -822,22 +857,38 @@ export function GamesSection({ pageMode = false, initialFilter = null } = {}) {
       )}
 
       {showCasinoCatalog && !isCasinoFilterEffective ? (
-        <div className="df-lobby-slots-block">
-          {!pageMode && !showingFavorites ? <h3 className="df-lobby-slots-title">DragonFury Slots</h3> : null}
-          <SlotGamesCatalogGrid
-            games={showingFavorites ? favoriteSlotGames : casinoCatalogGames}
-            categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
-            loading={showingFavorites ? false : casinoLoading}
-            onPlay={handleCasinoPlay}
-            playingGameId={casinoLaunchingId}
-            embedded
-            hideIntro
-            showCategoryTabs={false}
-            lobbyMode
-            initialTab="slots"
-            favoritesOnly={showingFavorites}
-          />
-        </div>
+        casinoSearchEmpty ? (
+          <div className="dash-games-empty dash-slot-search-empty">
+            <span className="dash-games-empty-icon" aria-hidden>🔍</span>
+            <p className="dash-games-empty-title">No games found</p>
+            <p className="dash-games-empty-sub">
+              Nothing matched “{searchEmptyQueryLabel}”. Try another name.
+            </p>
+            <div className="dash-platform-search-empty-actions">
+              <button type="button" className="dash-btn-outline mt-3" onClick={clearSearch}>
+                Clear search
+              </button>
+            </div>
+          </div>
+        ) : isCasinoSearchActive && searchedCasinoGames.length === 0 ? null : (
+          <div className="df-lobby-slots-block">
+            {!pageMode && !showingFavorites ? <h3 className="df-lobby-slots-title">DragonFury Slots</h3> : null}
+            <SlotGamesCatalogGrid
+              games={showingFavorites ? favoriteSlotGames : casinoCatalogGames}
+              categories={casinoCatalogCategories.length ? casinoCatalogCategories : casinoCategories}
+              loading={showingFavorites ? false : casinoLoading}
+              onPlay={handleCasinoPlay}
+              playingGameId={casinoLaunchingId}
+              embedded
+              hideIntro
+              showCategoryTabs={false}
+              lobbyMode
+              initialTab="slots"
+              favoritesOnly={showingFavorites}
+              searchQuery={deferredSearch}
+            />
+          </div>
+        )
       ) : null}
       </div>
 

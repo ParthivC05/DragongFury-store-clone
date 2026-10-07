@@ -272,7 +272,7 @@ export function Navbar() {
             <DesktopAuthNav pathname={location.pathname} />
 
             <div className="dash-nav-end df-lobby-header-actions">
-              <div className="relative">
+              <div className="relative df-profile-trigger-wrap">
                 <button
                   type="button"
                   onClick={() => setProfileOpen((o) => !o)}

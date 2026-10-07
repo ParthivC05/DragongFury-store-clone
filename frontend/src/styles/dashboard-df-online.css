@@ -3155,11 +3155,12 @@ html body button.fdb-close.dragonfury-close-button::after {
   }
 }
 
-.df-lobby-header-actions > .relative {
+.df-lobby-header-actions > .relative,
+.df-lobby-header-actions > .df-profile-trigger-wrap {
   display: inline-grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: var(--df-hud-control, 44px);
+  height: var(--df-hud-control, 44px);
   flex: 0 0 auto;
 }
 
@@ -3182,6 +3183,7 @@ html body button.fdb-close.dragonfury-close-button::after {
 
   .dash-nav-inner--auth .df-wallet-hud {
     --w-plus: var(--df-hud-control);
+    gap: 4px;
     align-items: center;
   }
 
@@ -3237,12 +3239,92 @@ html body button.fdb-close.dragonfury-close-button::after {
   }
 }
 
-@media (max-width: 340px) {
-  .df-wallet-hud {
-    --w-bar: min(132px, 42vw);
-    --w-close: 17px;
+/* Narrow phones: shrink wallet + header controls so + / ? / menu do not collide. */
+@media (max-width: 420px) {
+  .dash-nav--authenticated {
+    --df-hud-control: 36px;
+  }
+
+  .dash-nav-inner--auth {
+    gap: 4px !important;
+    padding-inline: max(8px, env(safe-area-inset-left)) max(8px, env(safe-area-inset-right)) !important;
+  }
+
+  .dash-nav-inner--auth .df-auth-balances {
+    height: var(--df-hud-control);
+    width: min(160px, calc(100vw - 112px));
+  }
+
+  .dash-nav-inner--auth .df-auth-balances .df-wallet-hud {
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    left: max(8px, env(safe-area-inset-left, 0px));
+    gap: 2px;
+  }
+
+  .dash-nav-inner--auth .df-wallet-hud__bar {
+    width: min(120px, calc(100vw - 148px)) !important;
+    height: var(--df-hud-control) !important;
+  }
+
+  .dash-nav-inner--auth .df-wallet-hud__amount {
+    font-size: 12px;
+    min-height: 0;
+  }
+
+  .dash-nav-inner--auth .df-lobby-header-actions {
+    gap: 6px !important;
+    min-width: 0;
+  }
+
+  .dash-nav-inner--auth .df-tour-btn,
+  .dash-nav-inner--auth .df-menu-btn {
+    overflow: hidden;
+  }
+
+  .dash-nav-inner--auth .df-tour-btn img {
+    width: calc(var(--df-hud-control) * 1.18) !important;
+    height: calc(var(--df-hud-control) * 1.18) !important;
+  }
+
+  .dash-nav-inner--auth .df-menu-btn img,
+  .dash-nav-inner--auth .df-menu-btn__dots {
+    width: var(--df-hud-control) !important;
+    height: var(--df-hud-control) !important;
+  }
+
+  /* Profile stays in the hamburger menu on compact phones. */
+  .dash-nav-inner--auth .df-profile-trigger-wrap {
+    display: none !important;
   }
 }
+
+@media (max-width: 340px) {
+  .dash-nav--authenticated {
+    --df-hud-control: 30px;
+  }
+
+  .df-wallet-hud {
+    --w-bar: min(104px, 34vw);
+    --w-close: 17px;
+  }
+
+  .dash-nav-inner--auth .df-auth-balances {
+    width: min(136px, calc(100vw - 96px));
+  }
+
+  .dash-nav-inner--auth .df-wallet-hud__bar {
+    width: min(104px, calc(100vw - 136px)) !important;
+  }
+
+  .dash-nav-inner--auth .df-wallet-hud__amount {
+    font-size: 10.5px;
+  }
+
+  .dash-nav-inner--auth .df-lobby-header-actions {
+    gap: 4px !important;
+  }
+}
+
 
 /* ─── Bottom menubar (live df-nav-hud) ─── */
 body.guest-landing-active .df-nav-hud {
@@ -3436,14 +3518,22 @@ html body .df-nav-hud .df-nav-hud__item--home.df-nav-hud__item--active .df-nav-h
 
 @media (max-width: 400px) {
   html body .df-nav-hud {
-    --hud-h: 79px;
-    --hud-icon: 48px;
-    --hud-home: 54px;
-    --art-bottom: 22px;
+    --hud-h: 76px;
+    --hud-icon: 44px;
+    --hud-home: 50px;
+    --art-bottom: 20px;
+    width: min(100% - 8px, var(--hud-max)) !important;
+    padding-inline: 4px !important;
+  }
+
+  html body .df-nav-hud .df-nav-hud__item {
+    min-width: 0 !important;
+    padding-inline: 0 !important;
   }
 
   html body .df-nav-hud .df-nav-hud__label {
-    font-size: 8px !important;
+    font-size: 7.5px !important;
+    letter-spacing: 0 !important;
   }
 }
 

@@ -100,7 +100,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Live: 148px limited cards, horizontal scroll on mobile */
+/* Live: limited cards, horizontal scroll on mobile — two visible on narrow phones */
 .store-limited-offers__scroll {
   display: grid !important;
   grid-auto-flow: column;
@@ -113,6 +113,13 @@
   scroll-padding-inline: 2px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 380px) {
+  .store-limited-offers__scroll {
+    grid-auto-columns: calc((100% - 10px) / 2);
+    gap: 10px !important;
+  }
 }
 
 .store-limited-offers__scroll::-webkit-scrollbar {
@@ -307,10 +314,18 @@ button.df-store-price-button:disabled {
 .df-store-page .store-package-grid.df-store-grid,
 .df-store-page .store-quick-buy .store-package-grid.df-store-grid {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 12px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 10px !important;
   width: 100%;
   align-items: stretch;
+}
+
+@media (min-width: 381px) and (max-width: 699px) {
+  .df-store-page .store-package-grid.df-store-grid,
+  .df-store-page .store-quick-buy .store-package-grid.df-store-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
 }
 
 .store-package-card.df-store-card {
@@ -656,10 +671,69 @@ button.df-store-price-button:disabled {
   }
 }
 
+@media (max-width: 380px) {
+  .df-store-page.store-route-page {
+    padding-inline: 8px;
+  }
+
+  .df-store-all-section.store-quick-buy,
+  .store-quick-buy {
+    padding: 10px 8px;
+  }
+
+  .store-package-card.df-store-card {
+    grid-template-rows: 18px 112px auto 46px;
+    min-height: 268px;
+    padding: 10px 8px 12px;
+    border-radius: 20px;
+  }
+
+  .df-store-card__art {
+    height: 112px;
+  }
+
+  .df-store-card .df-store-chest-image {
+    width: calc(108px * var(--chest-scale, 1));
+    height: calc(108px * var(--chest-scale, 1));
+  }
+
+  .df-store-card__details h3 {
+    font-size: 14px;
+  }
+
+  .df-store-card__amount {
+    font-size: 18px;
+  }
+
+  .df-store-card__price {
+    font-size: 16px;
+    min-height: 44px;
+    padding-inline: 4px;
+  }
+
+  .df-store-card__price > span {
+    font-size: 7px;
+    letter-spacing: 0.04em;
+  }
+}
+
 @media (max-width: 350px) {
   .store-limited-package {
     min-height: 224px !important;
     padding-inline: 7px !important;
+  }
+
+  .store-limited-package .df-store-chest-image,
+  .store-limited-package__art img {
+    width: min(34vw, 120px) !important;
+  }
+
+  button.df-store-price-button {
+    font-size: 15px;
+  }
+
+  button.df-store-price-button > span {
+    font-size: 7px;
   }
 }
 

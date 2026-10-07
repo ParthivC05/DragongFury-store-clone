@@ -7,6 +7,7 @@ import { canGuestLandingSpin } from '../SpinWheel/guestLandingSpinCooldown';
 import { slotFavoriteId } from '../../utils/gameFavorites';
 import { GameFavoriteButton } from './GameFavoriteButton';
 import { useGuestLandingScrollCount, isWelcomeLandingBlocked } from '../../hooks/useGuestLandingScrollCount';
+import { searchSlotCatalogGames } from '../../utils/slotCatalogSearch';
 
 const PREVIEW_ROWS = 3;
 const SPIN_MODAL_SCROLL = 3;
@@ -223,6 +224,7 @@ export function SlotGamesCatalogGrid({
   showCategoryTabs = false,
   lobbyMode = false,
   favoritesOnly = false,
+  searchQuery = '',
 }) {
   const gridRef = useRef(null);
   const [activeTab, setActiveTab] = useState(initialTab || 'all');
@@ -286,10 +288,15 @@ export function SlotGamesCatalogGrid({
     return [...preferred, ...extras];
   }, [tabCounts]);
 
-  const filteredGames = useMemo(
-    () => (favoritesOnly ? uniqueGames(allGames) : gamesForTab(activeTab, categoryList, allGames)),
-    [activeTab, allGames, categoryList, favoritesOnly]
-  );
+  const filteredGames = useMemo(() => {
+    const hasSearch = Boolean(String(searchQuery || '').trim());
+    const source = favoritesOnly
+      ? uniqueGames(allGames)
+      : hasSearch
+        ? uniqueGames(allGames)
+        : gamesForTab(activeTab, categoryList, allGames);
+    return searchSlotCatalogGames(source, searchQuery);
+  }, [activeTab, allGames, categoryList, favoritesOnly, searchQuery]);
 
   const pageSize = Math.max(cols * PREVIEW_ROWS, PREVIEW_ROWS);
   const visibleGames = filteredGames.slice(0, pageSize * visiblePages);
@@ -328,7 +335,7 @@ export function SlotGamesCatalogGrid({
 
   useEffect(() => {
     setVisiblePages(1);
-  }, [filteredGames.length, cols]);
+  }, [filteredGames.length, cols, searchQuery]);
 
   useEffect(() => {
     if (!showGuestSpinModal || loading) return;

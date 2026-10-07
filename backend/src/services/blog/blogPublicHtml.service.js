@@ -313,6 +313,7 @@ function buildBlogPostHtml({ origin, storeLabel, post }) {
     .replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, '')
     .trim();
   const image = post.titleImage ? String(post.titleImage).trim() : '';
+  const imageAlt = String(post.titleImageAlt || post.title_image_alt || post.title || '').trim();
   const published = w3cDate(post.createdAt);
   const modified = w3cDate(post.updatedAt || post.createdAt);
   let schemaScript = '';
@@ -342,7 +343,7 @@ function buildBlogPostHtml({ origin, storeLabel, post }) {
       ${post.category ? `<p>${escapeHtml(post.category)}</p>` : ''}
       <h1>${escapeHtml(post.title || title)}</h1>
       ${published ? `<p><time datetime="${escapeAttr(published)}">${escapeHtml(xmlDate(post.createdAt))}</time></p>` : ''}
-      ${image ? `<p><img src="${escapeAttr(image)}" alt=""></p>` : ''}
+      ${image ? `<p><img src="${escapeAttr(image)}" alt="${escapeAttr(imageAlt)}"></p>` : ''}
       ${articleHtml}
     </article>`;
   return htmlShell({

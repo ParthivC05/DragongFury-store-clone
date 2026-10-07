@@ -43,6 +43,7 @@ const EMPTY = {
   slug: '',
   category: '',
   titleImage: '',
+  titleImageAlt: '',
   content: '',
   metaTitle: '',
   metaDescription: '',
@@ -123,6 +124,7 @@ export default function BlogPostForm() {
           slug: post.slug || '',
           category: post.category || '',
           titleImage: post.titleImage || '',
+          titleImageAlt: post.titleImageAlt || '',
           content: post.content || '',
           metaTitle: post.metaTitle || '',
           metaDescription: post.metaDescription || '',
@@ -225,6 +227,7 @@ export default function BlogPostForm() {
       slug,
       category: form.category.trim() || null,
       titleImage: form.titleImage.trim(),
+      titleImageAlt: form.titleImageAlt.trim(),
       content: form.content || '',
       metaTitle: form.metaTitle.trim() || null,
       metaDescription: form.metaDescription.trim() || null,
@@ -371,7 +374,7 @@ export default function BlogPostForm() {
             <p className="blog-easy-help">This picture shows at the top of the post. It must be exactly 2172 × 724 pixels.</p>
             <label className={`blog-easy-cover${form.titleImage ? ' has-pic' : ''}`}>
               {form.titleImage ? (
-                <img src={form.titleImage} alt="Cover" />
+                <img src={form.titleImage} alt={form.titleImageAlt || 'Cover'} />
               ) : (
                 <span>{uploadingCover ? 'Adding picture…' : 'Tap here to pick a picture'}</span>
               )}
@@ -388,11 +391,23 @@ export default function BlogPostForm() {
                 type="button"
                 className="admin-btn admin-btn-danger"
                 disabled={uploadingCover || saving}
-                onClick={() => setField('titleImage', '')}
+                onClick={() => { setField('titleImage', ''); setField('titleImageAlt', ''); }}
               >
                 Remove picture
               </button>
             )}
+
+            <label className="blog-admin-field" style={{ marginTop: '0.85rem' }}>
+              <span>Picture alt text</span>
+              <input
+                type="text"
+                value={form.titleImageAlt}
+                onChange={(e) => setField('titleImageAlt', e.target.value)}
+                maxLength={512}
+                placeholder="Describe this picture"
+              />
+              <span className="blog-admin-hint">Used by screen readers and Google. Example: Panda Master banner with trust checks.</span>
+            </label>
           </div>
         </section>
 

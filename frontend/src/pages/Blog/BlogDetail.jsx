@@ -119,7 +119,7 @@ export function BlogDetail() {
       <header className="pj-journal-hero">
         {post.titleImage && (
           <div className="pj-journal-hero-media">
-            <img src={post.titleImage} alt="" />
+            <img src={post.titleImage} alt={post.titleImageAlt || post.title || ''} />
           </div>
         )}
         <div className="pj-journal-hero-copy">

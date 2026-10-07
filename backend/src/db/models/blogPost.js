@@ -37,6 +37,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'title_image'
       },
+      titleImageAlt: {
+        type: DataTypes.STRING(512),
+        allowNull: true,
+        field: 'title_image_alt'
+      },
       metaTitle: {
         type: DataTypes.STRING(512),
         allowNull: true,

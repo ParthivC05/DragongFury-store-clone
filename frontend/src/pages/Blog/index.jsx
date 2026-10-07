@@ -95,7 +95,7 @@ export function Blog() {
           <Link to={`/blog/${featured.slug}`} className="pj-journal-feature-card">
             <div className="pj-journal-feature-media">
               {featured.titleImage ? (
-                <img src={featured.titleImage} alt="" />
+                <img src={featured.titleImage} alt={featured.titleImageAlt || featured.title || ''} />
               ) : (
                 <div className="pj-journal-placeholder" aria-hidden />
               )}
@@ -119,7 +119,7 @@ export function Blog() {
             <Link key={post.id} to={`/blog/${post.slug}`} className="pj-journal-row">
               <div className="pj-journal-row-media">
                 {post.titleImage ? (
-                  <img src={post.titleImage} alt="" loading="lazy" />
+                  <img src={post.titleImage} alt={post.titleImageAlt || post.title || ''} loading="lazy" />
                 ) : (
                   <div className="pj-journal-placeholder" aria-hidden />
                 )}

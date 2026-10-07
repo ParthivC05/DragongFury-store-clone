@@ -145,6 +145,7 @@ function toPlain(row) {
     content: p.content,
     category: p.category,
     titleImage: p.titleImage ?? p.title_image,
+    titleImageAlt: p.titleImageAlt ?? p.title_image_alt ?? '',
     ...seoToPlain(p),
     canonicalUrl: p.canonicalUrl ?? p.canonical_url ?? null,
     allowIndex: p.allowIndex !== false && p.allow_index !== false,
@@ -253,6 +254,9 @@ async function createAdmin(req, body = {}) {
   const titleImage = body.titleImage != null && String(body.titleImage).trim()
     ? String(body.titleImage).trim()
     : null;
+  const titleImageAltRaw = body.titleImageAlt !== undefined ? body.titleImageAlt : body.title_image_alt;
+  const titleImageAltText = titleImageAltRaw == null ? '' : String(titleImageAltRaw).trim().replace(/\s+/g, ' ');
+  const titleImageAlt = titleImageAltText ? titleImageAltText.slice(0, 512) : null;
   const isActive = body.isActive !== false && body.isActive !== 'false';
   const allowIndex = allowIndexFromBody(body) !== false;
 
@@ -287,6 +291,7 @@ async function createAdmin(req, body = {}) {
     content,
     category,
     titleImage,
+    titleImageAlt,
     metaTitle: seo.metaTitle ?? null,
     metaDescription: seo.metaDescription ?? null,
     metaTags: seo.metaTags ?? null,
@@ -348,6 +353,11 @@ async function updateAdmin(req, id, body = {}) {
     const err = new Error('Cover image is required. Please upload an image.');
     err.statusCode = 400;
     throw err;
+  }
+  if (body.titleImageAlt !== undefined || body.title_image_alt !== undefined) {
+    const raw = body.titleImageAlt !== undefined ? body.titleImageAlt : body.title_image_alt;
+    const text = raw == null ? '' : String(raw).trim().replace(/\s+/g, ' ');
+    patch.titleImageAlt = text ? text.slice(0, 512) : null;
   }
   if (body.isActive !== undefined) {
     patch.isActive = body.isActive !== false && body.isActive !== 'false';
@@ -443,7 +453,7 @@ async function listPublic(storeCodeRaw, query = {}) {
   const rows = await db.BlogPost.findAll({
     where,
     order: [['created_at', 'DESC']],
-    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'metaDescription', 'allowIndex', 'permanentRedirect', 'created_at', 'updated_at']
+    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'titleImageAlt', 'metaDescription', 'allowIndex', 'permanentRedirect', 'created_at', 'updated_at']
   });
 
   return { blog_posts: rows.map(toPlain) };

@@ -63,6 +63,29 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: true,
         field: 'allow_index'
       },
+      schemaEnabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+        field: 'schema_enabled'
+      },
+      schemaType: {
+        type: DataTypes.STRING(32),
+        allowNull: false,
+        defaultValue: 'BlogPosting',
+        field: 'schema_type'
+      },
+      schemaFields: {
+        type: DataTypes.JSONB,
+        allowNull: false,
+        defaultValue: {},
+        field: 'schema_fields'
+      },
+      schemaCustom: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: 'schema_custom'
+      },
       isActive: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

@@ -79,6 +79,7 @@ import SocialLinks from './pages/SocialLinks'
 import LandingPaymentLinks from './pages/LandingPaymentLinks'
 import BlogPosts from './pages/BlogPosts'
 import BlogPostForm from './pages/BlogPostForm'
+import HomeSchemaForm from './pages/HomeSchemaForm'
 import Link2PlayGames from './pages/Link2PlayGames'
 import Link2PlayGameForm from './pages/Link2PlayGameForm'
 import FooterPages from './pages/FooterPages'
@@ -261,6 +262,7 @@ export default function App() {
         <Route path="landing-payment-links" element={<RoleRoute><LandingPaymentLinks /></RoleRoute>} />
         <Route path="blog" element={<RoleRoute><Outlet /></RoleRoute>}>
           <Route index element={<BlogPosts />} />
+          <Route path="home-schema" element={<HomeSchemaForm />} />
           <Route path="new" element={<BlogPostForm />} />
           <Route path=":id/edit" element={<BlogPostForm />} />
         </Route>

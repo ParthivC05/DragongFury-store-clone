@@ -8,6 +8,8 @@ import { getGamePage } from '../../api/gamePages';
 import { buildPlatformFaq } from '../../constants/landingFaq';
 import { GameImage } from '../../components/Games/GameImage';
 import { FooterPageLayout } from '../FooterPage/FooterPageLayout';
+import { applyManagedSchema } from '../../utils/managedSchema';
+import { applySitewideSchema } from '../../utils/schemaOrg';
 import { usePageSeo } from '../../utils/pageSeo';
 import '../FooterPage/FooterPage.css';
 import './SeoGames.css';
@@ -104,6 +106,15 @@ export function SeoGameCategory() {
   }, [gameId, redirectTo]);
 
   const saved = remote && !remote.hidden ? remote : null;
+
+  useEffect(() => {
+    if (!saved || saved.schema === undefined) return undefined;
+    applyManagedSchema(saved.schema);
+    return () => {
+      applyManagedSchema(null);
+      applySitewideSchema();
+    };
+  }, [saved]);
   const page = saved
     ? {
         name: saved.name,

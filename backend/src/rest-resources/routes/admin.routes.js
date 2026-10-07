@@ -405,6 +405,8 @@ router.post(
   adminBlogController.uploadImage
 );
 router.get('/blog', adminBlogController.list);
+router.get('/page-schema/home', adminBlogController.getHomeSchema);
+router.put('/page-schema/home', adminBlogController.saveHomeSchema);
 router.get('/blog/:id', adminBlogController.getOne);
 router.post('/blog', adminBlogController.create);
 router.put('/blog/:id', adminBlogController.update);

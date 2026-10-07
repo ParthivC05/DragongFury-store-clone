@@ -5,6 +5,7 @@ const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const { seoFromBody, seoToPlain } = require('../cms/seoFields');
+const { schemaFromBody, schemaForFooterPage, PLAYJUWA_ORIGIN } = require('../seo/pageSchema.service');
 const {
   sectionsFromBody,
   hasLayout,
@@ -204,6 +205,10 @@ function toPagePlain(row) {
     linkType: redirectPath && String(redirectPath).trim() ? 'redirect' : 'content',
     ...seoToPlain(p),
     allowIndex: p.allowIndex !== false && p.allow_index !== false,
+    schemaEnabled: p.schemaEnabled !== false && p.schema_enabled !== false,
+    schemaType: p.schemaType || p.schema_type || 'WebPage',
+    schemaFields: p.schemaFields || p.schema_fields || {},
+    schemaCustom: p.schemaCustom || p.schema_custom || '',
     sortOrder: p.sortOrder ?? p.sort_order ?? 0,
     isActive: p.isActive ?? p.is_active,
     createdAt: p.createdAt ?? p.created_at,
@@ -582,6 +587,9 @@ async function createPageAdmin(req, body = {}) {
   await assertUniqueSlug(storeCode, slug);
 
   const seo = seoFromBody(body);
+  const schemaPatch = !redirectPath && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
+    ? schemaFromBody(body, 'WebPage')
+    : null;
   const row = await db.FooterPage.create({
     storeCode,
     menuId,
@@ -594,6 +602,7 @@ async function createPageAdmin(req, body = {}) {
     metaDescription: seo.metaDescription ?? null,
     metaTags: seo.metaTags ?? null,
     allowIndex,
+    ...(schemaPatch || {}),
     sortOrder,
     isActive
   });
@@ -694,6 +703,9 @@ async function updatePageAdmin(req, id, body = {}) {
   const allowIndex = allowIndexFromBody(body);
   if (allowIndex !== undefined) patch.allowIndex = allowIndex;
   Object.assign(patch, seoFromBody(body));
+  if (!nextRedirectPath && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)) {
+    Object.assign(patch, schemaFromBody(body, 'WebPage'));
+  }
 
   await row.update(patch);
   return toPagePlain(row);
@@ -806,6 +818,11 @@ async function getPagePublic(storeCodeRaw, { slug, id } = {}) {
   }
 
   const plain = toPagePlain(row);
+  const schema = schemaForFooterPage({
+    origin: PLAYJUWA_ORIGIN,
+    storeLabel: PLAYJUWA_ORIGIN.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+    page: plain
+  });
   return {
     footer_page: {
       id: plain.id,
@@ -818,7 +835,8 @@ async function getPagePublic(storeCodeRaw, { slug, id } = {}) {
       metaDescription: plain.metaDescription,
       metaTags: plain.metaTags,
       allowIndex: plain.allowIndex,
-      updatedAt: plain.updatedAt
+      updatedAt: plain.updatedAt,
+      ...(schema === undefined ? {} : { schema })
     }
   };
 }

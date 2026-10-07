@@ -1,5 +1,7 @@
 'use strict';
 
+const homeSchema = require('../../services/seo/homeSchema.service');
+
 const blogPosts = require('../../services/blog/blogPosts.service');
 const {
   listIndexablePosts,
@@ -154,7 +156,12 @@ async function marketingPage(req, res) {
 
     if (path === '/') {
       const posts = await listIndexablePosts(storeCode);
-      return sendHtml(res, buildHomeHtml({ origin, storeLabel, posts }));
+      let pageSchema = null;
+      if (homeSchema.isPlayjuwa(storeCode)) {
+        const saved = await homeSchema.getHome({ origin, storeLabel });
+        pageSchema = saved.schema || null;
+      }
+      return sendHtml(res, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
     }
 
     const legalPage = await tryLegalPage(storeCode, path);

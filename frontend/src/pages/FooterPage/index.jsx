@@ -3,6 +3,8 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { getFooterPage } from '../../api/footer';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { site } from '../../config/site';
+import { applyManagedSchema } from '../../utils/managedSchema';
+import { applySitewideSchema } from '../../utils/schemaOrg';
 import { usePageSeo } from '../../utils/pageSeo';
 import { FooterPageLayout, hasFooterLayout } from './FooterPageLayout';
 import '../Blog/Blog.css';
@@ -75,6 +77,15 @@ export function FooterPage() {
   const [emptyState, setEmptyState] = useState(null);
 
   usePageContentReady(!loading);
+
+  useEffect(() => {
+    if (!page || page.redirectPath || page.schema === undefined) return undefined;
+    applyManagedSchema(page.schema);
+    return () => {
+      applyManagedSchema(null);
+      applySitewideSchema();
+    };
+  }, [page]);
 
   const seoTitle = page?.metaTitle || page?.meta_title || (page?.title ? `${page.title} | ${site.platformName}` : '');
   const seoDescription = page?.metaDescription || page?.meta_description || '';

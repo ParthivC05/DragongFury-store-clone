@@ -1013,6 +1013,17 @@ export function updateAdminBlogPost(id, body) {
   })
 }
 
+export function getAdminHomeSchema() {
+  return request(`${ADMIN}/page-schema/home`)
+}
+
+export function saveAdminHomeSchema(body) {
+  return request(`${ADMIN}/page-schema/home`, {
+    method: 'PUT',
+    body: JSON.stringify(body || {})
+  })
+}
+
 export function toggleAdminBlogPost(id, status) {
   return request(`${ADMIN}/blog/${encodeURIComponent(id)}/toggle`, {
     method: 'PUT',

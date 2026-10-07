@@ -3,6 +3,7 @@
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { canonicalUrlFromBody } = require('../cms/seoFields');
+const { schemaFromBody, schemaForGamePage, PLAYJUWA_ORIGIN } = require('./pageSchema.service');
 const { normalizeSections: normalizeFooterSections } = require('../footer/footerPageSections');
 const STORE = 'dragonfury';
 const PLAYJUWA = 'playjuwa';
@@ -206,6 +207,12 @@ function toPlain(row) {
     metaTags: p.metaTags || '',
     canonicalUrl: p.canonicalUrl || '',
     allowIndex: p.allowIndex !== false,
+    schemaEnabled: p.schemaEnabled !== false && p.schema_enabled !== false,
+    schemaType: p.schemaType || p.schema_type || 'WebPage',
+    schemaFields: p.schemaFields || p.schema_fields || {},
+    schemaCustom: p.schemaCustom || p.schema_custom || '',
+    createdAt: p.createdAt || p.created_at || '',
+    updatedAt: p.updatedAt || p.updated_at || '',
     sortOrder: p.sortOrder ?? 0,
     isActive: p.isActive !== false,
     title: p.metaTitle || `${name} Online | Dragon Fury`,
@@ -328,6 +335,9 @@ async function updateAdmin(req, slug, body = {}) {
   const metaTitle = String(body.metaTitle ?? body.meta_title ?? '').trim().slice(0, 512) || null;
   const metaDescription = String(body.metaDescription ?? body.meta_description ?? '').trim().slice(0, 2000) || null;
   const metaTags = String(body.metaTags ?? body.meta_tags ?? '').trim().slice(0, 1024) || null;
+  const schemaPatch = (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
+    ? schemaFromBody(body, 'WebPage')
+    : null;
   const canonicalUrl = canonicalUrlFromBody(body);
   const allowIndex = body.allowIndex === undefined && body.allow_index === undefined
     ? row.allowIndex
@@ -348,6 +358,7 @@ async function updateAdmin(req, slug, body = {}) {
     metaDescription,
     metaTags,
     ...(canonicalUrl !== undefined ? { canonicalUrl } : {}),
+    ...(schemaPatch || {}),
     allowIndex,
     isActive
   });
@@ -385,7 +396,14 @@ async function getPublic(storeCode, slug) {
   const row = await db.GameSeoPage.findOne({ where: { storeCode: sc, slug: resolved } });
   if (!row) return { game_page: null };
   if (row.isActive === false) return { game_page: null, hidden: true };
-  return { game_page: toPlain(row) };
+  const game_page = toPlain(row);
+  const schema = schemaForGamePage({
+    origin: PLAYJUWA_ORIGIN,
+    storeLabel: PLAYJUWA_ORIGIN.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+    page: game_page
+  });
+  if (schema !== undefined) game_page.schema = schema;
+  return { game_page };
 }
 
 module.exports = {

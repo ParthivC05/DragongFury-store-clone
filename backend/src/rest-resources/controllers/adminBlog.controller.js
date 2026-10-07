@@ -5,6 +5,8 @@ const { ROLES } = require('../../constants/roles');
 const { can, canAdmin } = require('../../utils/permissionHelpers');
 const { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const blogPosts = require('../../services/blog/blogPosts.service');
+const homeSchema = require('../../services/seo/homeSchema.service');
+const pageSchema = require('../../services/seo/pageSchema.service');
 const { uploadImageBuffer } = require('../../utils/s3Upload');
 
 function hasBlogAccess(req) {
@@ -115,6 +117,40 @@ async function uploadImage(req, res) {
   }
 }
 
+function assertStoreSchema(req) {
+  if (!hasBlogAccess(req)) {
+    const err = new Error('You don\'t have access to Blog posts. Please contact your administrator if you need access.');
+    err.statusCode = 403;
+    throw err;
+  }
+  if (req.role === ROLES.STORE_ADMIN && !homeSchema.isPlayjuwa(req.storeCode)) {
+    const err = new Error('Home page schema is only available for this website.');
+    err.statusCode = 403;
+    throw err;
+  }
+  blogPosts.assertAdminCanAccessStore(req, pageSchema.PLAYJUWA);
+}
+
+async function getHomeSchema(req, res) {
+  try {
+    assertStoreSchema(req);
+    const data = await homeSchema.getHome();
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Could not load home schema.', err.statusCode || 500);
+  }
+}
+
+async function saveHomeSchema(req, res) {
+  try {
+    assertStoreSchema(req);
+    const data = await homeSchema.saveHome(req.body || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Could not save home schema.', err.statusCode || 500);
+  }
+}
+
 module.exports = {
   list,
   getOne,
@@ -122,5 +158,7 @@ module.exports = {
   update,
   toggle,
   remove,
-  uploadImage
+  uploadImage,
+  getHomeSchema,
+  saveHomeSchema
 };

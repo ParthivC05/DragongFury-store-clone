@@ -22,7 +22,9 @@ import {
 import { Home } from './pages/Home';
 import { GuestRoute } from './components/GuestRoute';
 import { site } from './config/site';
-import { applyRouteSchema, SITE_ORIGIN } from './utils/schemaOrg';
+import { applyManagedSchema } from './utils/managedSchema';
+import { getHomePageSchema } from './api/pageSchema';
+import { applyRouteSchema, SITE_ORIGIN, applySitewideSchema } from './utils/schemaOrg';
 import { applyDefaultPageSeo, applyRobotsMeta } from './utils/pageSeo';
 import { getRouteSeo, isGameCategorySlug, getGameCategoryRedirect, getGameCategoryCanonicalPath } from './config/seoPages';
 import { WIN568_GAMES_SLUG, isWin568HiddenPath } from './config/win568';
@@ -334,6 +336,20 @@ function RouteTitleManager() {
       : (pageTitle ? `${pageTitle} | ${baseTitle}` : seoTitle);
     applyDefaultPageSeo({ title: nextTitle });
   }, [pathname, search]);
+
+  useEffect(() => {
+    if ((pathname || '/') !== '/') return undefined;
+    let cancelled = false;
+    getHomePageSchema()
+      .then((res) => {
+        if (!cancelled) applyManagedSchema(res?.schema ?? null);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      applySitewideSchema();
+    };
+  }, [pathname]);
 
   return null;
 }

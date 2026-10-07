@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { getAdminGameSeoPage, updateAdminGameSeoPage, uploadAdminFooterImage } from '../api/admin'
 import { SeoMetaFields } from '../components/SeoMetaFields'
+import { SchemaEditor, schemaErrorFor } from '../components/SchemaEditor'
+import { gameSchemaAuto, originForStore } from '../utils/pageSchema'
 import { FooterPageLayoutEditor } from '../components/FooterPageLayoutEditor'
 import { emptySections } from '../components/footerPageLayoutDefaults'
 import { useToast } from '../context/ToastContext'
@@ -42,7 +44,13 @@ export default function GameSeoPageForm() {
           metaTags: page.metaTags || '',
           canonicalUrl: page.canonicalUrl || '',
           allowIndex: page.allowIndex !== false,
-          isActive: page.isActive !== false
+          isActive: page.isActive !== false,
+          schemaEnabled: page.schemaEnabled !== false,
+          schemaType: page.schemaType || 'WebPage',
+          schemaFields: page.schemaFields || {},
+          schemaCustom: page.schemaCustom || '',
+          createdAt: page.createdAt || '',
+          updatedAt: page.updatedAt || ''
         })
       })
       .catch((err) => {
@@ -72,6 +80,14 @@ export default function GameSeoPageForm() {
   const save = async (e) => {
     e.preventDefault()
     if (!form) return
+    const schemaError = schemaErrorFor(
+      { ...form, slug },
+      gameSchemaAuto({ ...form, slug }, originForStore(storeCode))
+    )
+    if (schemaError) {
+      toast.error(schemaError)
+      return
+    }
     setSaving(true)
     try {
       await updateAdminGameSeoPage(slug, {
@@ -88,7 +104,11 @@ export default function GameSeoPageForm() {
         metaTags: form.metaTags.trim() || null,
         canonicalUrl: form.canonicalUrl.trim() || null,
         allowIndex: form.allowIndex !== false,
-        isActive: form.isActive !== false
+        isActive: form.isActive !== false,
+        schemaEnabled: form.schemaEnabled !== false,
+        schemaType: form.schemaType || 'WebPage',
+        schemaFields: form.schemaFields || {},
+        schemaCustom: form.schemaCustom || ''
       })
       toast.success('Game page saved.')
       navigate('/footer')
@@ -230,6 +250,15 @@ export default function GameSeoPageForm() {
         indexNoun="game page"
         indexControlName="game-page-google-index"
       />
+      <div className="footer-form-panel">
+        <p className="footer-form-panel-title">Schema</p>
+        <SchemaEditor
+          value={form}
+          auto={gameSchemaAuto({ ...form, slug }, originForStore(storeCode))}
+          defaultType="WebPage"
+          onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+        />
+      </div>
       </div>
     </form>
   )

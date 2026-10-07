@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { getBlogPost } from '../../api/blog';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { site } from '../../config/site';
+import { applyManagedSchema } from '../../utils/managedSchema';
+import { applySitewideSchema } from '../../utils/schemaOrg';
 import { usePageSeo } from '../../utils/pageSeo';
 import { extractBlogInnerHtml, formatBlogDate, readingMinutes } from '../../utils/blogHtml';
 import './Blog.css';
@@ -27,6 +29,15 @@ export function BlogDetail() {
   const contentRef = useRef(null);
 
   usePageContentReady(!loading);
+
+  useEffect(() => {
+    if (!post || post.schema === undefined) return undefined;
+    applyManagedSchema(post.schema);
+    return () => {
+      applyManagedSchema(null);
+      applySitewideSchema();
+    };
+  }, [post]);
 
   const seoTitle = post?.metaTitle || post?.meta_title || (post?.title ? `${post.title} | ${site.platformName}` : '');
   const seoDescription = post?.metaDescription || post?.meta_description || '';

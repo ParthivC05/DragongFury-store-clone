@@ -132,9 +132,16 @@ export default function BlogPosts() {
               : 'Add a blog post for your website. It is okay to go slow.'}
           </p>
         </div>
-        <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
-          Add blog post
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {(isMaster || String(user?.storeCode || '').toLowerCase() === 'dragonfury') && (
+            <button type="button" className="admin-btn admin-btn-secondary" onClick={() => navigate('/blog/home-schema')}>
+              Home page schema
+            </button>
+          )}
+          <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
+            Add blog post
+          </button>
+        </div>
       </div>
 
       {!isMaster && user?.storeCode && (

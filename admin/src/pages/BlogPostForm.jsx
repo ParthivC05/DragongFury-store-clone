@@ -9,6 +9,8 @@ import {
 } from '../api/admin'
 import { BlogContentEditor } from '../components/BlogContentEditor'
 import { SeoMetaFields } from '../components/SeoMetaFields'
+import { SchemaEditor, schemaErrorFor } from '../components/SchemaEditor'
+import { blogSchemaAuto } from '../utils/pageSchema'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { ROLES } from '../constants/roles'
@@ -47,7 +49,13 @@ const EMPTY = {
   canonicalUrl: '',
   allowIndex: true,
   isActive: true,
-  storeCode: ''
+  storeCode: '',
+  schemaEnabled: true,
+  schemaType: 'BlogPosting',
+  schemaFields: {},
+  schemaCustom: '',
+  createdAt: '',
+  updatedAt: ''
 }
 
 function slugify(title) {
@@ -120,7 +128,13 @@ export default function BlogPostForm() {
           canonicalUrl: post.canonicalUrl || '',
           allowIndex: post.allowIndex !== false,
           isActive: post.isActive !== false,
-          storeCode: post.storeCode || ''
+          storeCode: post.storeCode || '',
+          schemaEnabled: post.schemaEnabled !== false,
+          schemaType: post.schemaType || 'BlogPosting',
+          schemaFields: post.schemaFields || {},
+          schemaCustom: post.schemaCustom || '',
+          createdAt: post.createdAt || '',
+          updatedAt: post.updatedAt || ''
         })
         setSlugTouched(true)
       })
@@ -193,6 +207,14 @@ export default function BlogPostForm() {
       toast.error('Pick which website this post is for.')
       return
     }
+    const schemaPost = String(form.storeCode || '').trim().toLowerCase() === 'dragonfury'
+    if (schemaPost) {
+      const schemaError = schemaErrorFor(form, blogSchemaAuto(form))
+      if (schemaError) {
+        toast.error(schemaError)
+        return
+      }
+    }
 
     setSaving(true)
     const body = {
@@ -209,6 +231,12 @@ export default function BlogPostForm() {
       isActive: Boolean(form.isActive)
     }
     if (isMaster) body.storeCode = form.storeCode.trim()
+    if (String(form.storeCode || '').trim().toLowerCase() === 'dragonfury') {
+      body.schemaEnabled = form.schemaEnabled !== false
+      body.schemaType = form.schemaType || 'BlogPosting'
+      body.schemaFields = form.schemaFields || {}
+      body.schemaCustom = form.schemaCustom || ''
+    }
 
     try {
       if (isEdit) {
@@ -314,8 +342,22 @@ export default function BlogPostForm() {
           </div>
         </section>
 
+        {String(form.storeCode || '').trim().toLowerCase() === 'dragonfury' && (
+          <section className="blog-easy-step">
+            <p className="blog-easy-num">{isMaster ? '4' : '3'}</p>
+            <div className="blog-easy-step-body">
+              <SchemaEditor
+                value={form}
+                auto={blogSchemaAuto(form)}
+                defaultType="BlogPosting"
+                onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+              />
+            </div>
+          </section>
+        )}
+
         <section className="blog-easy-step">
-          <p className="blog-easy-num">{isMaster ? '4' : '3'}</p>
+          <p className="blog-easy-num">{(isMaster ? 4 : 3) + (String(form.storeCode || '').trim().toLowerCase() === 'dragonfury' ? 1 : 0)}</p>
           <div className="blog-easy-step-body">
             <span className="blog-easy-label">Add a big picture</span>
             <p className="blog-easy-help">This picture shows at the top of the post. It must be exactly 2172 × 724 pixels.</p>
@@ -347,7 +389,7 @@ export default function BlogPostForm() {
         </section>
 
         <section className="blog-easy-step">
-          <p className="blog-easy-num">{isMaster ? '5' : '4'}</p>
+          <p className="blog-easy-num">{(isMaster ? 5 : 4) + (String(form.storeCode || '').trim().toLowerCase() === 'dragonfury' ? 1 : 0)}</p>
           <div className="blog-easy-step-body">
             <span className="blog-easy-label">Write the post</span>
             <p className="blog-easy-help">Easy uses boxes. Switch to Visual editor, HTML editor, or Preview anytime.</p>
@@ -361,7 +403,7 @@ export default function BlogPostForm() {
         </section>
 
         <section className="blog-easy-step">
-          <p className="blog-easy-num">{isMaster ? '6' : '5'}</p>
+          <p className="blog-easy-num">{(isMaster ? 6 : 5) + (String(form.storeCode || '').trim().toLowerCase() === 'dragonfury' ? 1 : 0)}</p>
           <div className="blog-easy-step-body">
             <span className="blog-easy-label">Show it on the website?</span>
             <div className="blog-easy-yesno">

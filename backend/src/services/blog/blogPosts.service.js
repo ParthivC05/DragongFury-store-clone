@@ -5,6 +5,7 @@ const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const { seoFromBody, seoToPlain, canonicalUrlFromBody } = require('../cms/seoFields');
+const { isPlayjuwa, schemaFromBody, schemaForBlogPost, PLAYJUWA_ORIGIN } = require('../seo/pageSchema.service');
 
 function normalizeStoreCode(str) {
   if (!str || typeof str !== 'string') return '';
@@ -137,6 +138,10 @@ function toPlain(row) {
     ...seoToPlain(p),
     canonicalUrl: p.canonicalUrl ?? p.canonical_url ?? null,
     allowIndex: p.allowIndex !== false && p.allow_index !== false,
+    schemaEnabled: p.schemaEnabled !== false && p.schema_enabled !== false,
+    schemaType: p.schemaType || p.schema_type || 'BlogPosting',
+    schemaFields: p.schemaFields || p.schema_fields || {},
+    schemaCustom: p.schemaCustom || p.schema_custom || '',
     isActive: p.isActive ?? p.is_active,
     createdAt: p.createdAt ?? p.created_at,
     updatedAt: p.updatedAt ?? p.updated_at
@@ -258,6 +263,9 @@ async function createAdmin(req, body = {}) {
 
   await assertUniqueSlug(storeCode, slug);
 
+  const schemaPatch = isPlayjuwa(storeCode) && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
+    ? schemaFromBody(body, 'BlogPosting')
+    : null;
   const seo = seoFromBody(body);
   const canonicalUrl = canonicalUrlFromBody(body);
   const row = await db.BlogPost.create({
@@ -271,6 +279,7 @@ async function createAdmin(req, body = {}) {
     metaDescription: seo.metaDescription ?? null,
     metaTags: seo.metaTags ?? null,
     canonicalUrl: canonicalUrl ?? null,
+    ...(schemaPatch || {}),
     allowIndex,
     isActive
   });
@@ -335,6 +344,10 @@ async function updateAdmin(req, id, body = {}) {
   Object.assign(patch, seoFromBody(body));
   const canonicalUrl = canonicalUrlFromBody(body);
   if (canonicalUrl !== undefined) patch.canonicalUrl = canonicalUrl;
+  const nextStore = patch.storeCode || row.storeCode;
+  if (isPlayjuwa(nextStore) && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)) {
+    Object.assign(patch, schemaFromBody(body, 'BlogPosting'));
+  }
   if (req.role === ROLES.MASTER_ADMIN && body.storeCode != null) {
     const storeCode = normalizeStoreCode(body.storeCode);
     if (!storeCode) {
@@ -432,7 +445,15 @@ async function getPublic(storeCodeRaw, { slug, id } = {}) {
     err.statusCode = 404;
     throw err;
   }
-  return { blog_post: toPlain(row) };
+  const blog_post = toPlain(row);
+  if (isPlayjuwa(storeCode)) {
+    blog_post.schema = schemaForBlogPost({
+      origin: PLAYJUWA_ORIGIN,
+      storeLabel: PLAYJUWA_ORIGIN.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+      post: blog_post
+    });
+  }
+  return { blog_post };
 }
 
 module.exports = {
@@ -445,5 +466,6 @@ module.exports = {
   toggleAdmin,
   deleteAdmin,
   listPublic,
-  getPublic
+  getPublic,
+  assertAdminCanAccessStore
 };

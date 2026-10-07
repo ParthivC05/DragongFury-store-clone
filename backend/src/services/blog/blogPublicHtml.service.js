@@ -1,5 +1,7 @@
 'use strict';
 
+const { schemaForBlogPost, isPlayjuwa, schemaForFooterPage } = require('../seo/pageSchema.service');
+
 const blogPosts = require('./blogPosts.service');
 
 const STATIC_SITEMAP_PATHS = [
@@ -313,19 +315,26 @@ function buildBlogPostHtml({ origin, storeLabel, post }) {
   const image = post.titleImage ? String(post.titleImage).trim() : '';
   const published = w3cDate(post.createdAt);
   const modified = w3cDate(post.updatedAt || post.createdAt);
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: title,
-    description,
-    mainEntityOfPage: canonical,
-    datePublished: published || undefined,
-    dateModified: modified || undefined,
-    image: image || undefined,
-    author: { '@type': 'Organization', name: storeLabel },
-    publisher: { '@type': 'Organization', name: storeLabel }
-  };
-  const extraHead = `  <script type="application/ld+json">${JSON.stringify(schema)}</script>${
+  let schemaScript = '';
+  if (isPlayjuwa(post.storeCode)) {
+    const managed = schemaForBlogPost({ origin, storeLabel, post });
+    if (managed) schemaScript = `  <script type="application/ld+json">${JSON.stringify(managed)}</script>`;
+  } else {
+    const schema = {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description,
+      mainEntityOfPage: canonical,
+      datePublished: published || undefined,
+      dateModified: modified || undefined,
+      image: image || undefined,
+      author: { '@type': 'Organization', name: storeLabel },
+      publisher: { '@type': 'Organization', name: storeLabel }
+    };
+    schemaScript = `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`;
+  }
+  const extraHead = `${schemaScript}${
     image ? `\n  <meta property="og:image" content="${escapeAttr(image)}">` : ''
   }`;
   const body = `    <p><a href="${escapeAttr(originPath(origin, '/blog'))}">← Back to blog</a></p>
@@ -412,6 +421,10 @@ ${extra}`;
 
 function buildFooterPageHtml({ origin, storeLabel, path, page }) {
   const canonical = originPath(origin, path);
+  const managedSchema = schemaForFooterPage({ origin, storeLabel, page });
+  const schemaTag = managedSchema
+    ? `  <script type="application/ld+json">${JSON.stringify(managedSchema)}</script>`
+    : '';
   const title = String(page.metaTitle || page.title || storeLabel).trim();
   const description = String(page.metaDescription || '').trim() || `${page.title || 'Page'} | ${storeLabel}`;
   const articleHtml = extractArticleHtml(page.content || '').trim();
@@ -424,14 +437,14 @@ function buildFooterPageHtml({ origin, storeLabel, path, page }) {
     canonical,
     robots: 'index, follow',
     ogType: 'website',
-    extraHead: page.updatedAt
+    extraHead: [schemaTag, page.updatedAt
       ? `  <meta property="article:modified_time" content="${escapeAttr(w3cDate(page.updatedAt))}">`
-      : '',
+      : ''].filter(Boolean).join('\n'),
     body
   });
 }
 
-function buildHomeHtml({ origin, storeLabel, posts }) {
+function buildHomeHtml({ origin, storeLabel, posts, pageSchema }) {
   const copy = MARKETING_PAGE_COPY['/'];
   const canonical = originPath(origin, '/');
   const items = (posts || [])
@@ -449,12 +462,16 @@ function buildHomeHtml({ origin, storeLabel, posts }) {
     <h1>${escapeHtml(copy.heading(storeLabel))}</h1>
 ${paragraphs}
 ${blogBlock}`;
+  const homeSchemaScript = pageSchema
+    ? `\n  <script type="application/ld+json">${JSON.stringify(pageSchema)}</script>`
+    : '';
   return htmlShell({
     title: copy.title(storeLabel),
     description: copy.description(storeLabel),
     canonical,
     robots: 'index, follow',
     ogType: 'website',
+    extraHead: homeSchemaScript,
     body
   });
 }

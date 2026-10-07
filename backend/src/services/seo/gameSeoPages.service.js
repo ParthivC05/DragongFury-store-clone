@@ -1,6 +1,5 @@
 'use strict';
 
-const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { canonicalUrlFromBody } = require('../cms/seoFields');
@@ -420,8 +419,7 @@ async function listPublic(storeCode) {
     where: {
       storeCode: sc,
       isActive: true,
-      deletedAt: null,
-      [Op.or]: [{ permanentRedirect: null }, { permanentRedirect: '' }]
+      deletedAt: null
     },
     order: [['sortOrder', 'ASC'], ['name', 'ASC']]
   });

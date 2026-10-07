@@ -260,7 +260,7 @@ ${body}
 
 async function listIndexablePosts(storeCode) {
   const { blog_posts: posts } = await blogPosts.listPublic(storeCode, {});
-  return (posts || []).filter((post) => post.allowIndex !== false);
+  return (posts || []).filter((post) => post.allowIndex !== false && !String(post.permanentRedirect || '').trim());
 }
 
 function buildSitemapXml({ origin, posts }) {

@@ -12,7 +12,6 @@ const {
   stampDelete,
   stampRestore,
   deletionWhere,
-  visibleWhere,
   redirectPatch,
   redirectResult,
   lifecyclePlain
@@ -436,7 +435,7 @@ async function listPublic(storeCodeRaw, query = {}) {
     throw err;
   }
 
-  const where = { storeCode, isActive: true, ...visibleWhere() };
+  const where = { storeCode, isActive: true, deletedAt: null };
   if (query.category && typeof query.category === 'string' && query.category.trim()) {
     where.category = query.category.trim();
   }
@@ -444,7 +443,7 @@ async function listPublic(storeCodeRaw, query = {}) {
   const rows = await db.BlogPost.findAll({
     where,
     order: [['created_at', 'DESC']],
-    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'metaDescription', 'allowIndex', 'created_at', 'updated_at']
+    attributes: ['id', 'title', 'slug', 'category', 'titleImage', 'metaDescription', 'allowIndex', 'permanentRedirect', 'created_at', 'updated_at']
   });
 
   return { blog_posts: rows.map(toPlain) };

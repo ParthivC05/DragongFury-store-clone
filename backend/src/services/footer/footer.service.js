@@ -832,8 +832,7 @@ async function listPublic(storeCodeRaw) {
       required: false,
       where: {
         isActive: true,
-        deletedAt: null,
-        [Op.or]: [{ permanentRedirect: null }, { permanentRedirect: '' }]
+        deletedAt: null
       },
       attributes: ['id', 'title', 'slug', 'sortOrder', 'isActive', 'redirectPath']
     }],

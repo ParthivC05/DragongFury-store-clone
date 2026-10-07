@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { getBlogPost } from '../../api/blog';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { site } from '../../config/site';
@@ -24,6 +24,7 @@ function wrapTablesForScroll(root) {
 export function BlogDetail() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
+  const [hop, setHop] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const contentRef = useRef(null);
@@ -58,9 +59,15 @@ export function BlogDetail() {
     setLoading(true);
     setError('');
     setPost(null);
+    setHop('');
     getBlogPost(slug)
       .then((res) => {
-        if (!cancelled) setPost(res?.blog_post ?? null);
+        if (cancelled) return;
+        if (res?.redirect) {
+          setHop(res.redirect);
+          return;
+        }
+        setPost(res?.blog_post ?? null);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -80,6 +87,14 @@ export function BlogDetail() {
     if (!post?.content) return;
     wrapTablesForScroll(contentRef.current);
   }, [post?.content]);
+
+  if (hop) {
+    if (/^https?:\/\//i.test(hop)) {
+      window.location.replace(hop);
+      return null;
+    }
+    return <Navigate to={hop} replace />;
+  }
 
   if (loading) {
     return (

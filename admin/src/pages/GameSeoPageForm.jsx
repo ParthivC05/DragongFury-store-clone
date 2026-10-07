@@ -4,6 +4,7 @@ import { getAdminGameSeoPage, updateAdminGameSeoPage, uploadAdminFooterImage } f
 import { SeoMetaFields } from '../components/SeoMetaFields'
 import { SchemaEditor, schemaErrorFor } from '../components/SchemaEditor'
 import { gameSchemaAuto, originForStore } from '../utils/pageSchema'
+import { PermanentRedirectField } from '../components/RecordActivity'
 import { FooterPageLayoutEditor } from '../components/FooterPageLayoutEditor'
 import { emptySections } from '../components/footerPageLayoutDefaults'
 import { useToast } from '../context/ToastContext'
@@ -43,6 +44,7 @@ export default function GameSeoPageForm() {
           metaDescription: page.metaDescription || '',
           metaTags: page.metaTags || '',
           canonicalUrl: page.canonicalUrl || '',
+          permanentRedirect: page.permanentRedirect || '',
           allowIndex: page.allowIndex !== false,
           isActive: page.isActive !== false,
           schemaEnabled: page.schemaEnabled !== false,
@@ -103,6 +105,7 @@ export default function GameSeoPageForm() {
         metaDescription: form.metaDescription.trim() || null,
         metaTags: form.metaTags.trim() || null,
         canonicalUrl: form.canonicalUrl.trim() || null,
+        permanentRedirect: form.permanentRedirect.trim(),
         allowIndex: form.allowIndex !== false,
         isActive: form.isActive !== false,
         schemaEnabled: form.schemaEnabled !== false,
@@ -249,6 +252,10 @@ export default function GameSeoPageForm() {
         showCanonical
         indexNoun="game page"
         indexControlName="game-page-google-index"
+      />
+      <PermanentRedirectField
+        value={form.permanentRedirect}
+        onChange={(value) => setField('permanentRedirect', value)}
       />
       <div className="footer-form-panel">
         <p className="footer-form-panel-title">Schema</p>

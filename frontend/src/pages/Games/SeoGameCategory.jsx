@@ -91,7 +91,8 @@ export function SeoGameCategory() {
     getGamePage(gameId)
       .then((res) => {
         if (cancelled) return;
-        if (res?.hidden) setRemote({ hidden: true });
+        if (res?.redirect) setRemote({ redirect: res.redirect });
+        else if (res?.hidden) setRemote({ hidden: true });
         else setRemote(res?.game_page || null);
       })
       .catch(() => {
@@ -105,7 +106,7 @@ export function SeoGameCategory() {
     };
   }, [gameId, redirectTo]);
 
-  const saved = remote && !remote.hidden ? remote : null;
+  const saved = remote && !remote.hidden && !remote.redirect ? remote : null;
 
   useEffect(() => {
     if (!saved || saved.schema === undefined) return undefined;
@@ -128,7 +129,7 @@ export function SeoGameCategory() {
       }
     : staticPage;
 
-  usePageContentReady(Boolean(redirectTo) || (checked && Boolean(page)) || (checked && remote?.hidden));
+  usePageContentReady(Boolean(redirectTo) || Boolean(remote?.redirect) || (checked && Boolean(page)) || (checked && remote?.hidden));
 
   const blocks = Array.isArray(saved?.sections?.blocks) ? saved.sections.blocks : [];
   const hasFaqBlock = blocks.some((block) => block.type === 'faq' && Array.isArray(block.items) && block.items.length);
@@ -143,6 +144,13 @@ export function SeoGameCategory() {
   });
 
   if (redirectTo) return <Navigate to={redirectTo} replace />;
+  if (remote?.redirect) {
+    if (/^https?:\/\//i.test(remote.redirect)) {
+      window.location.replace(remote.redirect);
+      return null;
+    }
+    return <Navigate to={remote.redirect} replace />;
+  }
   if (!checked) {
     return (
       <div className="pj-seo-games">

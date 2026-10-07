@@ -83,6 +83,20 @@ async function toggle(req, res) {
   }
 }
 
+async function restore(req, res) {
+  try {
+    if (!hasBlogAccess(req)) {
+      return sendError(res, 'You don\'t have access to Blog posts. Please contact your administrator if you need access.', 403);
+    }
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return sendError(res, 'Invalid id.', 400);
+    const blog_post = await blogPosts.restoreAdmin(req, id);
+    return sendSuccess(res, { blog_post });
+  } catch (err) {
+    return sendError(res, err.message || 'Restore failed.', err.statusCode || 500);
+  }
+}
+
 async function remove(req, res) {
   try {
     if (!hasBlogAccess(req)) {
@@ -157,6 +171,7 @@ module.exports = {
   create,
   update,
   toggle,
+  restore,
   remove,
   uploadImage,
   getHomeSchema,

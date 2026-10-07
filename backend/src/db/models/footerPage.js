@@ -86,6 +86,42 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'schema_custom'
       },
+
+      permanentRedirect: {
+        type: DataTypes.STRING(1024),
+        allowNull: true,
+        field: 'permanent_redirect'
+      },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'deleted_at'
+      },
+      deletedById: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'deleted_by_id'
+      },
+      deletedByName: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'deleted_by_name'
+      },
+      restoredAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'restored_at'
+      },
+      restoredById: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: 'restored_by_id'
+      },
+      restoredByName: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+        field: 'restored_by_name'
+      },
       sortOrder: {
         type: DataTypes.INTEGER,
         allowNull: false,

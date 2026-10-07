@@ -10,6 +10,7 @@ router.get('/sitemap.xml', blogSeoController.sitemap);
 router.get('/api/sitemap.xml', blogSeoController.sitemap);
 router.get('/blog', blogSeoController.blogIndex);
 router.get('/blog/:slug', blogSeoController.blogPost);
+router.get('/games/:slug', blogSeoController.gameRedirect);
 
 for (const path of MARKETING_SEO_PATHS) {
   router.get(path, blogSeoController.marketingPage);

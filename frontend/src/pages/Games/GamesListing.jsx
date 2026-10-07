@@ -27,8 +27,8 @@ export function GamesListing() {
     let cancelled = false;
     getGamePages()
       .then((res) => {
-        const list = Array.isArray(res?.game_pages) ? res.game_pages : [];
-        if (cancelled || !list.length) return;
+        const list = res?.game_pages;
+        if (cancelled || !Array.isArray(list)) return;
         setPages(list.map((page) => ({
           slug: page.slug,
           name: page.name,

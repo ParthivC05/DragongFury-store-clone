@@ -1035,6 +1035,10 @@ export function deleteAdminBlogPost(id) {
   return request(`${ADMIN}/blog/${encodeURIComponent(id)}`, { method: 'DELETE' })
 }
 
+export function restoreAdminBlogPost(id) {
+  return request(`${ADMIN}/blog/${encodeURIComponent(id)}/restore`, { method: 'POST' })
+}
+
 /** Footer menus — store-scoped. Query: storeCode?, isActive? */
 export function getAdminFooterMenus(params = {}) {
   const q = new URLSearchParams(
@@ -1056,6 +1060,10 @@ export function updateAdminFooterMenu(id, body) {
 
 export function deleteAdminFooterMenu(id) {
   return request(`${ADMIN}/footer/menus/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+export function restoreAdminFooterMenu(id) {
+  return request(`${ADMIN}/footer/menus/${encodeURIComponent(id)}/restore`, { method: 'POST' })
 }
 
 /** Footer pages — store-scoped. Query: storeCode?, menuId?, search?, isActive? */
@@ -1109,8 +1117,30 @@ export function setAdminGameSeoPageVisibility(slug, body) {
   })
 }
 
+export function deleteAdminGameSeoPage(slug, params = {}) {
+  const q = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString()
+  return request(`${ADMIN}/footer/game-pages/${encodeURIComponent(slug)}${q ? `?${q}` : ''}`, {
+    method: 'DELETE'
+  })
+}
+
+export function restoreAdminGameSeoPage(slug, params = {}) {
+  const q = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== ''))
+  ).toString()
+  return request(`${ADMIN}/footer/game-pages/${encodeURIComponent(slug)}/restore${q ? `?${q}` : ''}`, {
+    method: 'POST'
+  })
+}
+
 export function deleteAdminFooterPage(id) {
   return request(`${ADMIN}/footer/pages/${encodeURIComponent(id)}`, { method: 'DELETE' })
+}
+
+export function restoreAdminFooterPage(id) {
+  return request(`${ADMIN}/footer/pages/${encodeURIComponent(id)}/restore`, { method: 'POST' })
 }
 
 const MAX_FOOTER_IMAGE_BYTES = 5 * 1024 * 1024

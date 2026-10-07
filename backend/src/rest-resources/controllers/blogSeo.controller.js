@@ -16,6 +16,8 @@ const {
   MARKETING_SEO_PATHS
 } = require('../../services/blog/blogPublicHtml.service');
 const footer = require('../../services/footer/footer.service');
+const { absoluteTarget } = require('../../services/cms/contentLifecycle');
+const gameSeoPages = require('../../services/seo/gameSeoPages.service');
 const legalPages = require('../../services/legal/legalPages.service');
 const { resolvePublicStoreContext } = require('../../services/store/publicHostStore.service');
 
@@ -97,6 +99,9 @@ async function blogPost(req, res) {
       return sendHtml(res, buildNotFoundHtml({ origin, storeLabel }), 400);
     }
     const data = await blogPosts.getPublic(storeCode, { slug: req.params.slug });
+    if (data?.redirect) {
+      return res.redirect(301, absoluteTarget(origin, data.redirect));
+    }
     const post = data?.blog_post;
     if (!post) {
       return sendHtml(res, buildNotFoundHtml({ origin, storeLabel }), 404);
@@ -131,6 +136,7 @@ async function tryFooterPage(storeCode, path) {
   if (!storeCode || !slug) return null;
   try {
     const data = await footer.getPagePublic(storeCode, { slug });
+    if (data?.redirect) return { redirect: data.redirect };
     const page = data?.footer_page;
     if (!page || page.redirectPath) return null;
     return page;
@@ -170,6 +176,9 @@ async function marketingPage(req, res) {
     }
 
     const footerPage = await tryFooterPage(storeCode, path);
+    if (footerPage?.redirect) {
+      return res.redirect(301, absoluteTarget(origin, footerPage.redirect));
+    }
     if (footerPage) {
       return sendHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
     }
@@ -185,4 +194,22 @@ async function marketingPage(req, res) {
   }
 }
 
-module.exports = { sitemap, blogIndex, blogPost, marketingPage };
+async function gameRedirect(req, res, next) {
+  try {
+    const ctx = await resolvePublicStoreContext(req, req.query.store_code || req.query.storeCode);
+    const storeCode = ctx.storeCode || 'dragonfury';
+    const data = await gameSeoPages.getPublic(storeCode, req.params.slug);
+    const dest = String(data?.redirect || '').trim();
+    if (dest) {
+      if (/^https?:\/\//i.test(dest)) return res.redirect(301, dest);
+      const origin = String(ctx.origin || '').replace(/\/$/, '');
+      const path = dest.startsWith('/') ? dest : `/${dest}`;
+      return res.redirect(301, `${origin}${path}`);
+    }
+  } catch {
+    /* leave the request for the site shell */
+  }
+  return next();
+}
+
+module.exports = { sitemap, blogIndex, blogPost, marketingPage, gameRedirect };

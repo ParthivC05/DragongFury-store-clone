@@ -10,6 +10,7 @@ import {
 import { BlogContentEditor } from '../components/BlogContentEditor'
 import { SeoMetaFields } from '../components/SeoMetaFields'
 import { SchemaEditor, schemaErrorFor } from '../components/SchemaEditor'
+import { PermanentRedirectField } from '../components/RecordActivity'
 import { blogSchemaAuto } from '../utils/pageSchema'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
@@ -47,6 +48,7 @@ const EMPTY = {
   metaDescription: '',
   metaTags: '',
   canonicalUrl: '',
+  permanentRedirect: '',
   allowIndex: true,
   isActive: true,
   storeCode: '',
@@ -126,6 +128,7 @@ export default function BlogPostForm() {
           metaDescription: post.metaDescription || '',
           metaTags: post.metaTags || '',
           canonicalUrl: post.canonicalUrl || '',
+          permanentRedirect: post.permanentRedirect || '',
           allowIndex: post.allowIndex !== false,
           isActive: post.isActive !== false,
           storeCode: post.storeCode || '',
@@ -227,6 +230,7 @@ export default function BlogPostForm() {
       metaDescription: form.metaDescription.trim() || null,
       metaTags: form.metaTags.trim() || null,
       canonicalUrl: form.canonicalUrl.trim() || null,
+      permanentRedirect: form.permanentRedirect.trim(),
       allowIndex: form.allowIndex !== false,
       isActive: Boolean(form.isActive)
     }
@@ -339,6 +343,10 @@ export default function BlogPostForm() {
           <p className="blog-easy-num">{isMaster ? '3' : '2'}</p>
           <div className="blog-easy-step-body">
             <SeoMetaFields form={form} setField={setField} showIndexControl showCanonical indexNoun="post" indexControlName="blog-google-index" />
+            <PermanentRedirectField
+              value={form.permanentRedirect}
+              onChange={(value) => setField('permanentRedirect', value)}
+            />
           </div>
         </section>
 

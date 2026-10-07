@@ -4,8 +4,10 @@ import {
   getAdminBlogPosts,
   toggleAdminBlogPost,
   deleteAdminBlogPost,
+  restoreAdminBlogPost,
   getStores
 } from '../api/admin'
+import { RecordActivity } from '../components/RecordActivity'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { useConfirm } from '../context/ConfirmContext'
@@ -38,11 +40,12 @@ export default function BlogPosts() {
   const [storeDraft, setStoreDraft] = useState('')
   const [appliedStore, setAppliedStore] = useState('')
   const [storeOptions, setStoreOptions] = useState([])
+  const [recordStatus, setRecordStatus] = useState('live')
   const [busyId, setBusyId] = useState(null)
 
   const load = useCallback(() => {
     setLoading(true)
-    const params = { page, limit: PAGE_SIZE }
+    const params = { page, limit: PAGE_SIZE, status: recordStatus }
     if (appliedSearch.trim()) params.search = appliedSearch.trim()
     if (isMaster && appliedStore.trim()) params.storeCode = appliedStore.trim()
     getAdminBlogPosts(params)
@@ -56,7 +59,7 @@ export default function BlogPosts() {
         setTotal(0)
       })
       .finally(() => setLoading(false))
-  }, [page, appliedSearch, appliedStore, isMaster, toast])
+  }, [page, appliedSearch, appliedStore, recordStatus, isMaster, toast])
 
   useEffect(() => {
     load()
@@ -98,10 +101,23 @@ export default function BlogPosts() {
     }
   }
 
+  const handleRestore = async (post) => {
+    setBusyId(post.id)
+    try {
+      await restoreAdminBlogPost(post.id)
+      toast.success('Blog post restored.')
+      load()
+    } catch (err) {
+      toast.error(err.message || 'Failed to restore.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   const handleDelete = async (post) => {
     const ok = await confirm({
       title: 'Delete blog post?',
-      message: `Delete “${post.title}”? This cannot be undone.`,
+      message: `Remove “${post.title}” from the website? You can restore it from Deleted. Set a permanent redirect on the edit screen first if this address should send people somewhere else.`,
       confirmLabel: 'Delete',
       variant: 'danger'
     })
@@ -163,6 +179,17 @@ export default function BlogPosts() {
           value={searchDraft}
           onChange={(e) => setSearchDraft(e.target.value)}
         />
+        <select
+          className="ccw-filter-input"
+          value={recordStatus}
+          onChange={(e) => {
+            setRecordStatus(e.target.value)
+            setPage(1)
+          }}
+        >
+          <option value="live">Live</option>
+          <option value="deleted">Deleted</option>
+        </select>
         {isMaster && (
           <select
             className="ccw-filter-input"
@@ -182,7 +209,7 @@ export default function BlogPosts() {
         <p className="blog-studio-empty">Loading blog posts…</p>
       ) : posts.length === 0 ? (
         <div className="blog-studio-empty">
-          <p>No blog posts yet.</p>
+          <p>{recordStatus === 'deleted' ? 'No deleted blog posts.' : 'No blog posts yet.'}</p>
           <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
             Add blog post
           </button>
@@ -214,26 +241,43 @@ export default function BlogPosts() {
                   {formatDate(post.createdAt)}
                   {isMaster && post.storeCode ? ` · ${post.storeCode}` : ''}
                 </p>
+                <RecordActivity item={post} />
+                {post.permanentRedirect ? (
+                  <p className="blog-studio-slug">301 → {post.permanentRedirect}</p>
+                ) : null}
                 <div className="blog-admin-actions">
                   <Link className="admin-btn admin-btn-secondary admin-btn-sm" to={`/blog/${post.id}/edit`}>
                     Edit
                   </Link>
-                  <button
-                    type="button"
-                    className="admin-btn admin-btn-secondary admin-btn-sm"
-                    disabled={busyId === post.id}
-                    onClick={() => handleToggle(post)}
-                  >
-                    {post.isActive ? 'Hide' : 'Show'}
-                  </button>
-                  <button
-                    type="button"
-                    className="admin-btn admin-btn-danger admin-btn-sm"
-                    disabled={busyId === post.id}
-                    onClick={() => handleDelete(post)}
-                  >
-                    Delete
-                  </button>
+                  {recordStatus === 'deleted' ? (
+                    <button
+                      type="button"
+                      className="admin-btn admin-btn-primary admin-btn-sm"
+                      disabled={busyId === post.id}
+                      onClick={() => handleRestore(post)}
+                    >
+                      Restore
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-secondary admin-btn-sm"
+                        disabled={busyId === post.id}
+                        onClick={() => handleToggle(post)}
+                      >
+                        {post.isActive ? 'Hide' : 'Show'}
+                      </button>
+                      <button
+                        type="button"
+                        className="admin-btn admin-btn-danger admin-btn-sm"
+                        disabled={busyId === post.id}
+                        onClick={() => handleDelete(post)}
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </article>

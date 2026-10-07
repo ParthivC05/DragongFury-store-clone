@@ -70,6 +70,18 @@ async function updateMenu(req, res) {
   }
 }
 
+async function restoreMenu(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return sendError(res, 'Invalid id.', 400);
+    const footer_menu = await footer.restoreMenuAdmin(req, id);
+    return sendSuccess(res, { footer_menu });
+  } catch (err) {
+    return sendError(res, err.message || 'Restore failed.', err.statusCode || 500);
+  }
+}
+
 async function removeMenu(req, res) {
   try {
     if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
@@ -123,6 +135,18 @@ async function updatePage(req, res) {
     return sendSuccess(res, { footer_page });
   } catch (err) {
     return sendError(res, err.message || 'Update failed.', err.statusCode || 500, err.code || null);
+  }
+}
+
+async function restorePage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const id = parseInt(req.params.id, 10);
+    if (!Number.isFinite(id)) return sendError(res, 'Invalid id.', 400);
+    const footer_page = await footer.restorePageAdmin(req, id);
+    return sendSuccess(res, { footer_page });
+  } catch (err) {
+    return sendError(res, err.message || 'Restore failed.', err.statusCode || 500);
   }
 }
 
@@ -236,6 +260,26 @@ async function setGamePageVisibility(req, res) {
   }
 }
 
+async function removeGamePage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.deleteAdmin(req, req.params.slug, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Delete failed.', err.statusCode || 500);
+  }
+}
+
+async function restoreGamePage(req, res) {
+  try {
+    if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
+    const data = await gameSeoPages.restoreAdmin(req, req.params.slug, req.query || {});
+    return sendSuccess(res, data);
+  } catch (err) {
+    return sendError(res, err.message || 'Restore failed.', err.statusCode || 500);
+  }
+}
+
 async function updateGamePage(req, res) {
   try {
     if (!hasFooterAccess(req)) return sendError(res, DENY, 403);
@@ -252,11 +296,13 @@ module.exports = {
   createMenu,
   updateMenu,
   removeMenu,
+  restoreMenu,
   listPages,
   getPage,
   createPage,
   updatePage,
   removePage,
+  restorePage,
   getSettings,
   updateSettings,
   listLegalPages,
@@ -266,5 +312,7 @@ module.exports = {
   listGamePages,
   getGamePage,
   updateGamePage,
+  removeGamePage,
+  restoreGamePage,
   setGamePageVisibility
 };

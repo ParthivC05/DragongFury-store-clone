@@ -593,3 +593,31 @@
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
+
+.permanent-redirect-field {
+  margin-top: 0.35rem;
+}
+
+.permanent-redirect-field input {
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  background: #fff;
+  color: #0f172a;
+  box-sizing: border-box;
+}
+
+.permanent-redirect-field input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.permanent-redirect-field input:focus {
+  outline: none;
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}

@@ -73,6 +73,7 @@ function friendlyFooterError(err) {
 export function FooterPage() {
   const { slug } = useParams();
   const [page, setPage] = useState(null);
+  const [hop, setHop] = useState('');
   const [loading, setLoading] = useState(true);
   const [emptyState, setEmptyState] = useState(null);
 
@@ -104,9 +105,15 @@ export function FooterPage() {
     setLoading(true);
     setEmptyState(null);
     setPage(null);
+    setHop('');
     getFooterPage(slug)
       .then((res) => {
-        if (!cancelled) setPage(res?.footer_page ?? null);
+        if (cancelled) return;
+        if (res?.redirect) {
+          setHop(res.redirect);
+          return;
+        }
+        setPage(res?.footer_page ?? null);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -133,6 +140,14 @@ export function FooterPage() {
     if (!dest || !/^https?:\/\//i.test(dest)) return;
     window.location.replace(dest);
   }, [page?.redirectPath]);
+
+  if (hop) {
+    if (/^https?:\/\//i.test(hop)) {
+      window.location.replace(hop);
+      return null;
+    }
+    return <Navigate to={hop} replace />;
+  }
 
   if (loading) {
     return <FooterPageSkeleton />;

@@ -1,10 +1,19 @@
 'use strict';
 
+const { Op } = require('sequelize');
 const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { canonicalUrlFromBody } = require('../cms/seoFields');
 const { schemaFromBody, schemaForGamePage, PLAYJUWA_ORIGIN } = require('./pageSchema.service');
 const { normalizeSections: normalizeFooterSections } = require('../footer/footerPageSections');
+const {
+  actorFromReq,
+  stampDelete,
+  stampRestore,
+  deletionWhere,
+  redirectPatch,
+  lifecyclePlain
+} = require('../cms/contentLifecycle');
 const STORE = 'dragonfury';
 const PLAYJUWA = 'playjuwa';
 const GAME_STORES = new Set([STORE, PLAYJUWA]);
@@ -211,6 +220,7 @@ function toPlain(row) {
     schemaType: p.schemaType || p.schema_type || 'WebPage',
     schemaFields: p.schemaFields || p.schema_fields || {},
     schemaCustom: p.schemaCustom || p.schema_custom || '',
+    ...lifecyclePlain(p),
     createdAt: p.createdAt || p.created_at || '',
     updatedAt: p.updatedAt || p.updated_at || '',
     sortOrder: p.sortOrder ?? 0,
@@ -300,7 +310,7 @@ async function listAdmin(req, query = {}) {
   const storeCode = assertStore(req, query.storeCode || query.store_code || req.storeCode);
   await ensureCatalog(storeCode);
   const rows = await db.GameSeoPage.findAll({
-    where: { storeCode },
+    where: { storeCode, ...deletionWhere(query.status) },
     order: [['sortOrder', 'ASC'], ['name', 'ASC']]
   });
   return { game_pages: rows.map(toPlain) };
@@ -345,6 +355,7 @@ async function updateAdmin(req, slug, body = {}) {
   const isActive = body.isActive === undefined
     ? row.isActive
     : !(body.isActive === false || body.isActive === 'false');
+  const permanentRedirect = redirectPatch(body, storeCode, 'game', `/games/${resolved}`);
 
   await row.update({
     name,
@@ -360,8 +371,33 @@ async function updateAdmin(req, slug, body = {}) {
     ...(canonicalUrl !== undefined ? { canonicalUrl } : {}),
     ...(schemaPatch || {}),
     allowIndex,
-    isActive
+    isActive,
+    ...(permanentRedirect !== undefined ? { permanentRedirect } : {})
   });
+  return { game_page: toPlain(row) };
+}
+
+async function deleteAdmin(req, slug, query = {}) {
+  const storeCode = assertStore(req, query.storeCode || query.store_code || req.storeCode);
+  await ensureCatalog(storeCode);
+  const resolved = resolveSlug(slug);
+  const row = await db.GameSeoPage.findOne({ where: { storeCode, slug: resolved } });
+  if (!row) throw fail('Game page not found.', 404);
+  if (!row.deletedAt) {
+    await row.update(stampDelete(await actorFromReq(req)));
+  }
+  return { deleted: true, slug: resolved, soft: true };
+}
+
+async function restoreAdmin(req, slug, query = {}) {
+  const storeCode = assertStore(req, query.storeCode || query.store_code || req.storeCode);
+  await ensureCatalog(storeCode);
+  const resolved = resolveSlug(slug);
+  const row = await db.GameSeoPage.findOne({ where: { storeCode, slug: resolved } });
+  if (!row) throw fail('Game page not found.', 404);
+  if (row.deletedAt) {
+    await row.update(stampRestore(await actorFromReq(req)));
+  }
   return { game_page: toPlain(row) };
 }
 
@@ -381,7 +417,12 @@ async function listPublic(storeCode) {
   if (!GAME_STORES.has(sc)) return { game_pages: [] };
   await ensureCatalog(sc);
   const rows = await db.GameSeoPage.findAll({
-    where: { storeCode: sc, isActive: true },
+    where: {
+      storeCode: sc,
+      isActive: true,
+      deletedAt: null,
+      [Op.or]: [{ permanentRedirect: null }, { permanentRedirect: '' }]
+    },
     order: [['sortOrder', 'ASC'], ['name', 'ASC']]
   });
   return { game_pages: rows.map(toPlain) };
@@ -395,7 +436,9 @@ async function getPublic(storeCode, slug) {
   await ensureCatalog(sc);
   const row = await db.GameSeoPage.findOne({ where: { storeCode: sc, slug: resolved } });
   if (!row) return { game_page: null };
-  if (row.isActive === false) return { game_page: null, hidden: true };
+  const dest = String(row.permanentRedirect || '').trim();
+  if (dest) return { redirect: dest, status: 301 };
+  if (row.deletedAt || row.isActive === false) return { game_page: null, hidden: true };
   const game_page = toPlain(row);
   const schema = schemaForGamePage({
     origin: PLAYJUWA_ORIGIN,
@@ -412,6 +455,8 @@ module.exports = {
   getAdmin,
   updateAdmin,
   setVisibilityAdmin,
+  deleteAdmin,
+  restoreAdmin,
   listPublic,
   getPublic,
   resolveSlug

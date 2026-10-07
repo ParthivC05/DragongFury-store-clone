@@ -13,6 +13,16 @@ const {
   emptySections,
   normalizeSections
 } = require('./footerPageSections');
+const {
+  supportsLifecycle,
+  actorFromReq,
+  stampDelete,
+  stampRestore,
+  deletionWhere,
+  redirectPatch,
+  redirectResult,
+  lifecyclePlain
+} = require('../cms/contentLifecycle');
 
 function normalizeStoreCode(str) {
   if (!str || typeof str !== 'string') return '';
@@ -149,6 +159,7 @@ function toMenuPlain(row, includePages = false) {
     label: p.label,
     sortOrder: p.sortOrder ?? p.sort_order ?? 0,
     isActive: p.isActive ?? p.is_active,
+    ...lifecyclePlain(p),
     createdAt: p.createdAt ?? p.created_at,
     updatedAt: p.updatedAt ?? p.updated_at
   };
@@ -211,6 +222,8 @@ function toPagePlain(row) {
     schemaCustom: p.schemaCustom || p.schema_custom || '',
     sortOrder: p.sortOrder ?? p.sort_order ?? 0,
     isActive: p.isActive ?? p.is_active,
+    ...lifecyclePlain(p),
+    menuDeletedAt: p.menu?.deletedAt || p.menu?.deleted_at || null,
     createdAt: p.createdAt ?? p.created_at,
     updatedAt: p.updatedAt ?? p.updated_at,
     menuLabel: p.menu?.label || p.menuLabel || null
@@ -382,9 +395,12 @@ function assertSlugAllowed(slug) {
 /* ---------- Menus ---------- */
 
 async function listMenusAdmin(req, query = {}) {
-  const where = listScopeWhere(req, query);
+  const where = { ...listScopeWhere(req, query), ...deletionWhere(query.status) };
   if (query.isActive === 'true') where.isActive = true;
   if (query.isActive === 'false') where.isActive = false;
+  const pageWhere = String(query.status || '').trim().toLowerCase() === 'deleted'
+    ? {}
+    : { deletedAt: null };
 
   const rows = await db.FooterMenu.findAll({
     where,
@@ -392,6 +408,7 @@ async function listMenusAdmin(req, query = {}) {
       model: db.FooterPage,
       as: 'pages',
       required: false,
+      where: pageWhere,
       order: [['sort_order', 'ASC'], ['id', 'ASC']]
     }],
     order: [['sort_order', 'ASC'], ['id', 'ASC']]
@@ -487,14 +504,59 @@ async function deleteMenuAdmin(req, id) {
     throw err;
   }
   assertScope(req, row);
+  if (supportsLifecycle('footer', row.storeCode)) {
+    if (!row.deletedAt) {
+      const stamp = stampDelete(await actorFromReq(req));
+      await db.sequelize.transaction(async (transaction) => {
+        await db.FooterPage.update(stamp, {
+          where: { menuId: row.id, deletedAt: null },
+          transaction
+        });
+        await row.update(stamp, { transaction });
+      });
+    }
+    return { deleted: true, id, soft: true };
+  }
   await row.destroy();
   return { deleted: true, id };
+}
+
+async function restoreMenuAdmin(req, id) {
+  const row = await db.FooterMenu.findByPk(id);
+  if (!row) {
+    const err = new Error('Footer menu not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+  assertScope(req, row);
+  if (row.deletedAt) {
+    const when = new Date(row.deletedAt).getTime();
+    const actorId = row.deletedById;
+    const pages = await db.FooterPage.findAll({
+      where: { menuId: row.id, deletedAt: { [Op.ne]: null } }
+    });
+    const pageIds = pages
+      .filter((page) => {
+        const deleted = new Date(page.deletedAt).getTime();
+        const sameActor = actorId == null || page.deletedById === actorId;
+        return sameActor && Number.isFinite(deleted) && Math.abs(deleted - when) < 2000;
+      })
+      .map((page) => page.id);
+    const stamp = stampRestore(await actorFromReq(req));
+    await db.sequelize.transaction(async (transaction) => {
+      if (pageIds.length) {
+        await db.FooterPage.update(stamp, { where: { id: pageIds }, transaction });
+      }
+      await row.update(stamp, { transaction });
+    });
+  }
+  return toMenuPlain(row, false);
 }
 
 /* ---------- Pages ---------- */
 
 async function listPagesAdmin(req, query = {}) {
-  const where = listScopeWhere(req, query);
+  const where = { ...listScopeWhere(req, query), ...deletionWhere(query.status) };
   if (query.menuId != null && String(query.menuId).trim() !== '') {
     const menuId = parseInt(query.menuId, 10);
     if (Number.isFinite(menuId)) where.menuId = menuId;
@@ -511,7 +573,7 @@ async function listPagesAdmin(req, query = {}) {
 
   const rows = await db.FooterPage.findAll({
     where,
-    include: [{ model: db.FooterMenu, as: 'menu', attributes: ['id', 'label'], required: false }],
+    include: [{ model: db.FooterMenu, as: 'menu', attributes: ['id', 'label', 'deletedAt'], required: false }],
     order: [['sort_order', 'ASC'], ['id', 'ASC']]
   });
 
@@ -590,6 +652,9 @@ async function createPageAdmin(req, body = {}) {
   const schemaPatch = !redirectPath && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
     ? schemaFromBody(body, 'WebPage')
     : null;
+  const permanentRedirect = redirectPath
+    ? null
+    : redirectPatch(body, storeCode, 'footer', `/${slug}`);
   const row = await db.FooterPage.create({
     storeCode,
     menuId,
@@ -603,6 +668,7 @@ async function createPageAdmin(req, body = {}) {
     metaTags: seo.metaTags ?? null,
     allowIndex,
     ...(schemaPatch || {}),
+    ...(permanentRedirect !== undefined ? { permanentRedirect } : {}),
     sortOrder,
     isActive
   });
@@ -706,6 +772,9 @@ async function updatePageAdmin(req, id, body = {}) {
   if (!nextRedirectPath && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)) {
     Object.assign(patch, schemaFromBody(body, 'WebPage'));
   }
+  const hop = redirectPatch(body, row.storeCode, 'footer', `/${patch.slug || row.slug}`);
+  if (nextRedirectPath) patch.permanentRedirect = null;
+  else if (hop !== undefined) patch.permanentRedirect = hop;
 
   await row.update(patch);
   return toPagePlain(row);
@@ -719,8 +788,28 @@ async function deletePageAdmin(req, id) {
     throw err;
   }
   assertScope(req, row);
+  if (supportsLifecycle('footer', row.storeCode)) {
+    if (!row.deletedAt) {
+      await row.update(stampDelete(await actorFromReq(req)));
+    }
+    return { deleted: true, id, soft: true };
+  }
   await row.destroy();
   return { deleted: true, id };
+}
+
+async function restorePageAdmin(req, id) {
+  const row = await db.FooterPage.findByPk(id);
+  if (!row) {
+    const err = new Error('Footer page not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+  assertScope(req, row);
+  if (row.deletedAt) {
+    await row.update(stampRestore(await actorFromReq(req)));
+  }
+  return toPagePlain(row);
 }
 
 /* ---------- Public ---------- */
@@ -736,12 +825,16 @@ async function listPublic(storeCodeRaw) {
   const settings = await readFooterSettings(storeCode);
 
   const menus = await db.FooterMenu.findAll({
-    where: { storeCode, isActive: true },
+    where: { storeCode, isActive: true, deletedAt: null },
     include: [{
       model: db.FooterPage,
       as: 'pages',
       required: false,
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        deletedAt: null,
+        [Op.or]: [{ permanentRedirect: null }, { permanentRedirect: '' }]
+      },
       attributes: ['id', 'title', 'slug', 'sortOrder', 'isActive', 'redirectPath']
     }],
     order: [['sort_order', 'ASC'], ['id', 'ASC']]
@@ -784,7 +877,7 @@ async function getPagePublic(storeCodeRaw, { slug, id } = {}) {
     throw err;
   }
 
-  const where = { storeCode, isActive: true };
+  const where = { storeCode };
   if (id != null && String(id).trim() !== '') {
     const parsed = parseInt(id, 10);
     if (!Number.isFinite(parsed)) {
@@ -806,12 +899,19 @@ async function getPagePublic(storeCodeRaw, { slug, id } = {}) {
     include: [{
       model: db.FooterMenu,
       as: 'menu',
-      attributes: ['id', 'label', 'isActive'],
-      required: true,
-      where: { isActive: true }
+      attributes: ['id', 'label', 'isActive', 'deletedAt'],
+      required: false
     }]
   });
   if (!row) {
+    const err = new Error('Footer page not found.');
+    err.statusCode = 404;
+    throw err;
+  }
+  const hop = redirectResult(row.permanentRedirect);
+  if (hop) return hop;
+  const menu = row.menu;
+  if (row.deletedAt || row.isActive === false || !menu || menu.isActive === false || menu.deletedAt) {
     const err = new Error('Footer page not found.');
     err.statusCode = 404;
     throw err;
@@ -850,11 +950,13 @@ module.exports = {
   createMenuAdmin,
   updateMenuAdmin,
   deleteMenuAdmin,
+  restoreMenuAdmin,
   listPagesAdmin,
   getPageAdmin,
   createPageAdmin,
   updatePageAdmin,
   deletePageAdmin,
+  restorePageAdmin,
   getSettingsAdmin,
   updateSettingsAdmin,
   listPublic,

@@ -149,11 +149,9 @@ export default function BlogPosts() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {(isMaster || String(user?.storeCode || '').toLowerCase() === 'dragonfury') && (
-            <button type="button" className="admin-btn admin-btn-secondary" onClick={() => navigate('/blog/home-schema')}>
+          <button type="button" className="admin-btn admin-btn-secondary" onClick={() => navigate('/blog/home-schema')}>
               Home page schema
             </button>
-          )}
           <button type="button" className="admin-btn admin-btn-primary" onClick={() => navigate('/blog/new')}>
             Add blog post
           </button>

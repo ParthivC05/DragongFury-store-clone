@@ -1013,14 +1013,15 @@ export function updateAdminBlogPost(id, body) {
   })
 }
 
-export function getAdminHomeSchema() {
-  return request(`${ADMIN}/page-schema/home`)
+export function getAdminHomeSchema(storeCode) {
+  const q = storeCode ? `?storeCode=${encodeURIComponent(storeCode)}` : ''
+  return request(`${ADMIN}/page-schema/home${q}`)
 }
 
-export function saveAdminHomeSchema(body) {
+export function saveAdminHomeSchema(body, storeCode) {
   return request(`${ADMIN}/page-schema/home`, {
     method: 'PUT',
-    body: JSON.stringify(body || {})
+    body: JSON.stringify({ ...(body || {}), ...(storeCode ? { storeCode } : {}) })
   })
 }
 

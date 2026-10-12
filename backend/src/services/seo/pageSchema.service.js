@@ -200,7 +200,6 @@ function schemaFromBody(body = {}, defaultType) {
 }
 
 function schemaForBlogPost({ origin, storeLabel, post }) {
-  if (!isPlayjuwa(post?.storeCode || post?.store_code)) return undefined;
   const auto = blogAuto({ origin, storeLabel, post });
   try {
     return buildManagedSchema({
@@ -219,6 +218,25 @@ function schemaForBlogPost({ origin, storeLabel, post }) {
 function hostFromOrigin(origin) {
   return originBase(origin).replace(/^https?:\/\//, '');
 }
+
+const STORE_ORIGINS = {
+  playjuwa: 'https://playjuwa.com',
+  dragonfury: 'https://dragonfury.casino',
+  winners4: 'https://winners4.com',
+  sweepstakebet: 'https://sweepstakebet.com',
+  myvepower: 'https://myvepower.com',
+  casinoslots: 'https://casinoslots.casino',
+  goodgdragon: 'https://goodgdragon.com',
+  goodwork: 'https://luckywinnerspower.com',
+  grandsweeps: 'https://grandsweep.xyz',
+  betgamezone: 'https://betgamezone.com'
+};
+
+function originForStore(storeCode) {
+  const code = String(storeCode || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  return STORE_ORIGINS[code] || PLAYJUWA_ORIGIN;
+}
+
 
 function contentSchema(page, auto, defaultType) {
   try {
@@ -281,7 +299,6 @@ function gameAuto({ origin, storeLabel, page }) {
 }
 
 function schemaForFooterPage({ origin, storeLabel, page }) {
-  if (!isPlayjuwa(page?.storeCode || page?.store_code)) return undefined;
   if (clean(page?.redirectPath || page?.redirect_path)) return null;
   return contentSchema(page, footerAuto({ origin, storeLabel, page }), 'WebPage');
 }
@@ -307,5 +324,7 @@ module.exports = {
   footerAuto,
   gameAuto,
   schemaForFooterPage,
-  schemaForGamePage
+  schemaForGamePage,
+  originForStore,
+  hostFromOrigin
 };

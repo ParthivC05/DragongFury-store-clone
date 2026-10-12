@@ -100,37 +100,41 @@ export function buildManagedSchema({ enabled, type, fields, custom, auto }) {
   return breadcrumbSchema(customCrumbs)
 }
 
-export function blogSchemaAuto(form) {
-  const slug = clean(form.slug) || 'post'
-  const ownUrl = `${PLAYJUWA_ORIGIN}/blog/${slug}`
-  const url = clean(form.canonicalUrl) || ownUrl
-  const title = clean(form.title)
+export function blogSchemaAuto(form, origin) {
+  const base = String(origin || originForStore(form?.storeCode) || PLAYJUWA_ORIGIN).replace(/\/$/, '')
+  const slug = clean(form?.slug) || 'post'
+  const ownUrl = `${base}/blog/${slug}`
+  const url = clean(form?.canonicalUrl) || ownUrl
+  const title = clean(form?.title)
+  const host = hostOf(base)
   return {
-    name: clean(form.metaTitle) || title,
-    description: clean(form.metaDescription),
+    name: clean(form?.metaTitle) || title,
+    description: clean(form?.metaDescription),
     url,
-    image: clean(form.titleImage),
-    author: 'dragonfury.casino',
-    logo: `${PLAYJUWA_ORIGIN}/logo.png`,
-    datePublished: clean(form.createdAt),
-    dateModified: clean(form.updatedAt) || clean(form.createdAt),
+    image: clean(form?.titleImage),
+    author: host,
+    logo: `${base}/logo.png`,
+    datePublished: clean(form?.createdAt),
+    dateModified: clean(form?.updatedAt) || clean(form?.createdAt),
     breadcrumbs: [
-      { name: 'Home', url: `${PLAYJUWA_ORIGIN}/` },
-      { name: 'Blog', url: `${PLAYJUWA_ORIGIN}/blog` },
+      { name: 'Home', url: `${base}/` },
+      { name: 'Blog', url: `${base}/blog` },
       { name: title || 'Post', url }
     ]
   }
 }
 
-export function homeSchemaAuto() {
-  const url = `${PLAYJUWA_ORIGIN}/`
+export function homeSchemaAuto(origin) {
+  const base = String(origin || PLAYJUWA_ORIGIN).replace(/\/$/, '')
+  const host = hostOf(base)
+  const url = `${base}/`
   return {
-    name: 'dragonfury.casino | USA Sweepstakes Casino Games & Bonuses',
-    description: 'Play sweepstakes casino games online with dragonfury.casino. Explore platforms, fish games, bonuses, and secure play across the USA.',
+    name: `${host} | USA Sweepstakes Casino Games & Bonuses`,
+    description: `Play sweepstakes casino games online with ${host}. Explore platforms, fish games, bonuses, and secure play across the USA.`,
     url,
     image: '',
-    author: 'dragonfury.casino',
-    logo: `${PLAYJUWA_ORIGIN}/logo.png`,
+    author: host,
+    logo: `${base}/logo.png`,
     breadcrumbs: [{ name: 'Home', url }]
   }
 }

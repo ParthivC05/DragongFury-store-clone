@@ -162,11 +162,8 @@ async function marketingPage(req, res) {
 
     if (path === '/') {
       const posts = await listIndexablePosts(storeCode);
-      let pageSchema = null;
-      if (homeSchema.isPlayjuwa(storeCode)) {
-        const saved = await homeSchema.getHome({ origin, storeLabel });
-        pageSchema = saved.schema || null;
-      }
+      const savedHome = await homeSchema.getHome(storeCode, { origin, storeLabel });
+      const pageSchema = savedHome.schema || null;
       return sendHtml(res, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
     }
 

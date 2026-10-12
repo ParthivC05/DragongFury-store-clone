@@ -5,7 +5,7 @@ const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const { seoFromBody, seoToPlain, canonicalUrlFromBody } = require('../cms/seoFields');
-const { isPlayjuwa, schemaFromBody, schemaForBlogPost, PLAYJUWA_ORIGIN } = require('../seo/pageSchema.service');
+const { schemaFromBody, schemaForBlogPost, originForStore, hostFromOrigin } = require('../seo/pageSchema.service');
 const {
   supportsLifecycle,
   actorFromReq,
@@ -278,7 +278,7 @@ async function createAdmin(req, body = {}) {
 
   await assertUniqueSlug(storeCode, slug);
 
-  const schemaPatch = isPlayjuwa(storeCode) && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
+  const schemaPatch = (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)
     ? schemaFromBody(body, 'BlogPosting')
     : null;
   const seo = seoFromBody(body);
@@ -367,8 +367,7 @@ async function updateAdmin(req, id, body = {}) {
   Object.assign(patch, seoFromBody(body));
   const canonicalUrl = canonicalUrlFromBody(body);
   if (canonicalUrl !== undefined) patch.canonicalUrl = canonicalUrl;
-  const nextStore = patch.storeCode || row.storeCode;
-  if (isPlayjuwa(nextStore) && (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined)) {
+  if (body.schemaEnabled !== undefined || body.schemaType || body.schemaFields || body.schemaCustom !== undefined) {
     Object.assign(patch, schemaFromBody(body, 'BlogPosting'));
   }
   const hop = redirectPatch(body, row.storeCode, 'blog', `/blog/${patch.slug || row.slug}`);
@@ -499,13 +498,12 @@ async function getPublic(storeCodeRaw, { slug, id } = {}) {
     throw err;
   }
   const blog_post = toPlain(row);
-  if (isPlayjuwa(storeCode)) {
-    blog_post.schema = schemaForBlogPost({
-      origin: PLAYJUWA_ORIGIN,
-      storeLabel: PLAYJUWA_ORIGIN.replace(/^https?:\/\//, '').replace(/\/$/, ''),
-      post: blog_post
-    });
-  }
+  const origin = originForStore(storeCode);
+  blog_post.schema = schemaForBlogPost({
+    origin,
+    storeLabel: hostFromOrigin(origin),
+    post: blog_post
+  });
   return { blog_post };
 }
 

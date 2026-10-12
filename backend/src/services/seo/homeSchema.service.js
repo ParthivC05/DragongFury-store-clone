@@ -2,12 +2,13 @@
 
 const db = require('../../db/models');
 const {
-  PLAYJUWA,
   PLAYJUWA_ORIGIN,
   isPlayjuwa,
   buildManagedSchema,
   homeAuto,
-  schemaFromBody
+  schemaFromBody,
+  originForStore,
+  hostFromOrigin
 } = require('./pageSchema.service');
 
 const HOME_KEY = 'home';
@@ -38,25 +39,49 @@ function buildHome(record, { origin, storeLabel } = {}) {
   return { ...saved, auto, schema, schemaError };
 }
 
-async function getHome({ origin, storeLabel } = {}) {
-  const row = await db.PageSchema.findOne({
-    where: { storeCode: PLAYJUWA, pageKey: HOME_KEY }
-  });
-  return buildHome(row, { origin, storeLabel });
+function normalizeSchemaStore(storeCode) {
+  return String(storeCode || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-async function saveHome(body = {}) {
+async function getHome(storeCode, { origin, storeLabel } = {}) {
+  const code = normalizeSchemaStore(storeCode);
+  if (!code) {
+    const err = new Error('storeCode is required.');
+    err.statusCode = 400;
+    throw err;
+  }
+  const row = await db.PageSchema.findOne({
+    where: { storeCode: code, pageKey: HOME_KEY }
+  });
+  const resolvedOrigin = origin || originForStore(code);
+  return buildHome(row, {
+    origin: resolvedOrigin,
+    storeLabel: storeLabel || hostFromOrigin(resolvedOrigin)
+  });
+}
+
+async function saveHome(storeCode, body = {}, { origin, storeLabel } = {}) {
+  const code = normalizeSchemaStore(storeCode);
+  if (!code) {
+    const err = new Error('storeCode is required.');
+    err.statusCode = 400;
+    throw err;
+  }
   const saved = schemaFromBody(body, 'WebPage');
   const [row] = await db.PageSchema.findOrCreate({
-    where: { storeCode: PLAYJUWA, pageKey: HOME_KEY },
+    where: { storeCode: code, pageKey: HOME_KEY },
     defaults: {
-      storeCode: PLAYJUWA,
+      storeCode: code,
       pageKey: HOME_KEY,
       ...saved
     }
   });
   await row.update(saved);
-  return buildHome(row, { origin: PLAYJUWA_ORIGIN, storeLabel: 'dragonfury.casino' });
+  const resolvedOrigin = origin || originForStore(code);
+  return buildHome(row, {
+    origin: resolvedOrigin,
+    storeLabel: storeLabel || hostFromOrigin(resolvedOrigin)
+  });
 }
 
 module.exports = {

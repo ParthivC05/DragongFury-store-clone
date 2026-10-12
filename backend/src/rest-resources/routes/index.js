@@ -85,11 +85,11 @@ router.get('/api/game-pages', gameSeoPagesController.list);
 router.get('/api/game-pages/:slug', gameSeoPagesController.getOne);
 router.get('/api/page-schema/home', (req, res) => {
   const homeSchema = require('../../services/seo/homeSchema.service');
-  const storeCode = req.query.store_code || req.query.storeCode || '';
-  if (!homeSchema.isPlayjuwa(storeCode)) {
+  const storeCode = String(req.query.store_code || req.query.storeCode || '').trim();
+  if (!storeCode) {
     return res.json({ schema: null });
   }
-  return homeSchema.getHome()
+  return homeSchema.getHome(storeCode)
     .then((data) => res.json({ schema: data.schema || null }))
     .catch((err) => res.status(err.statusCode || 500).json({ message: err.message || 'Could not load schema.' }));
 });

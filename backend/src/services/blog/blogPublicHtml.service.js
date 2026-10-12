@@ -1,6 +1,6 @@
 'use strict';
 
-const { schemaForBlogPost, isPlayjuwa, schemaForFooterPage } = require('../seo/pageSchema.service');
+const { schemaForBlogPost, schemaForFooterPage } = require('../seo/pageSchema.service');
 
 const blogPosts = require('./blogPosts.service');
 
@@ -315,26 +315,10 @@ function buildBlogPostHtml({ origin, storeLabel, post }) {
   const image = post.titleImage ? String(post.titleImage).trim() : '';
   const imageAlt = String(post.titleImageAlt || post.title_image_alt || post.title || '').trim();
   const published = w3cDate(post.createdAt);
-  const modified = w3cDate(post.updatedAt || post.createdAt);
-  let schemaScript = '';
-  if (isPlayjuwa(post.storeCode)) {
-    const managed = schemaForBlogPost({ origin, storeLabel, post });
-    if (managed) schemaScript = `  <script type="application/ld+json">${JSON.stringify(managed)}</script>`;
-  } else {
-    const schema = {
-      '@context': 'https://schema.org',
-      '@type': 'BlogPosting',
-      headline: title,
-      description,
-      mainEntityOfPage: canonical,
-      datePublished: published || undefined,
-      dateModified: modified || undefined,
-      image: image || undefined,
-      author: { '@type': 'Organization', name: storeLabel },
-      publisher: { '@type': 'Organization', name: storeLabel }
-    };
-    schemaScript = `  <script type="application/ld+json">${JSON.stringify(schema)}</script>`;
-  }
+  const managed = schemaForBlogPost({ origin, storeLabel, post });
+  const schemaScript = managed
+    ? `  <script type="application/ld+json">${JSON.stringify(managed)}</script>`
+    : '';
   const extraHead = `${schemaScript}${
     image ? `\n  <meta property="og:image" content="${escapeAttr(image)}">` : ''
   }`;

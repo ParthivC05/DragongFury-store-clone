@@ -5,7 +5,7 @@ const db = require('../../db/models');
 const { ROLES } = require('../../constants/roles');
 const { ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const { seoFromBody, seoToPlain } = require('../cms/seoFields');
-const { schemaFromBody, schemaForFooterPage, PLAYJUWA_ORIGIN } = require('../seo/pageSchema.service');
+const { schemaFromBody, schemaForFooterPage, originForStore, hostFromOrigin } = require('../seo/pageSchema.service');
 const {
   sectionsFromBody,
   hasLayout,
@@ -917,9 +917,10 @@ async function getPagePublic(storeCodeRaw, { slug, id } = {}) {
   }
 
   const plain = toPagePlain(row);
+  const origin = originForStore(storeCode);
   const schema = schemaForFooterPage({
-    origin: PLAYJUWA_ORIGIN,
-    storeLabel: PLAYJUWA_ORIGIN.replace(/^https?:\/\//, '').replace(/\/$/, ''),
+    origin,
+    storeLabel: hostFromOrigin(origin),
     page: plain
   });
   return {

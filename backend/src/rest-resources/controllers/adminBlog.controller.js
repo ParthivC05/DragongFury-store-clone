@@ -6,7 +6,6 @@ const { can, canAdmin } = require('../../utils/permissionHelpers');
 const { STORE_FEATURE_KEYS, ADMIN_FEATURE_KEYS } = require('../../constants/permissions');
 const blogPosts = require('../../services/blog/blogPosts.service');
 const homeSchema = require('../../services/seo/homeSchema.service');
-const pageSchema = require('../../services/seo/pageSchema.service');
 const { uploadImageBuffer } = require('../../utils/s3Upload');
 
 function hasBlogAccess(req) {
@@ -131,24 +130,37 @@ async function uploadImage(req, res) {
   }
 }
 
-function assertStoreSchema(req) {
+function resolveSchemaStore(req) {
   if (!hasBlogAccess(req)) {
     const err = new Error('You don\'t have access to Blog posts. Please contact your administrator if you need access.');
     err.statusCode = 403;
     throw err;
   }
-  if (req.role === ROLES.STORE_ADMIN && !homeSchema.isPlayjuwa(req.storeCode)) {
-    const err = new Error('Home page schema is only available for this website.');
-    err.statusCode = 403;
+  if (req.role === ROLES.STORE_ADMIN) {
+    const storeCode = blogPosts.normalizeStoreCode(req.storeCode);
+    if (!storeCode) {
+      const err = new Error('Store admin must have a store code.');
+      err.statusCode = 400;
+      throw err;
+    }
+    return storeCode;
+  }
+  const raw = (req.query && (req.query.storeCode || req.query.store_code))
+    || (req.body && (req.body.storeCode || req.body.store_code));
+  const storeCode = blogPosts.normalizeStoreCode(raw);
+  if (!storeCode) {
+    const err = new Error('Pick a store for the home page schema.');
+    err.statusCode = 400;
     throw err;
   }
-  blogPosts.assertAdminCanAccessStore(req, pageSchema.PLAYJUWA);
+  blogPosts.assertAdminCanAccessStore(req, storeCode);
+  return storeCode;
 }
 
 async function getHomeSchema(req, res) {
   try {
-    assertStoreSchema(req);
-    const data = await homeSchema.getHome();
+    const storeCode = resolveSchemaStore(req);
+    const data = await homeSchema.getHome(storeCode);
     return sendSuccess(res, data);
   } catch (err) {
     return sendError(res, err.message || 'Could not load home schema.', err.statusCode || 500);
@@ -157,8 +169,8 @@ async function getHomeSchema(req, res) {
 
 async function saveHomeSchema(req, res) {
   try {
-    assertStoreSchema(req);
-    const data = await homeSchema.saveHome(req.body || {});
+    const storeCode = resolveSchemaStore(req);
+    const data = await homeSchema.saveHome(storeCode, req.body || {});
     return sendSuccess(res, data);
   } catch (err) {
     return sendError(res, err.message || 'Could not save home schema.', err.statusCode || 500);

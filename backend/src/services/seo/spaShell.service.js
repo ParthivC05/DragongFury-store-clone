@@ -13,8 +13,21 @@ const INDEX_CANDIDATES = [
 
 let cached = { mtimeMs: 0, file: '', html: '' };
 
+function decodeHtmlEntities(value) {
+  let s = String(value == null ? '' : value);
+  for (let i = 0; i < 3 && /&amp;/.test(s); i += 1) {
+    s = s.replace(/&amp;/g, '&');
+  }
+  return s
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/gi, "'");
+}
+
 function escapeAttr(value) {
-  return String(value == null ? '' : value)
+  return decodeHtmlEntities(value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -81,8 +94,8 @@ function injectExtraHead(html, extraHead) {
 function injectPrerender(html, prerenderHtml) {
   const body = String(prerenderHtml || '').trim();
   if (!body) return html;
-  if (/<div id="root">\s*<\/div>/i.test(html)) {
-    return html.replace(/<div id="root">\s*<\/div>/i, `<div id="root">${body}</div>`);
+  if (/<div id=["']root["'][^>]*>\s*<\/div>/i.test(html)) {
+    return html.replace(/<div id=["']root["'][^>]*>\s*<\/div>/i, `<div id="root">${body}</div>`);
   }
   return html;
 }

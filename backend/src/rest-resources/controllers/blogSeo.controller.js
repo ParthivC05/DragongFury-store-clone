@@ -248,7 +248,7 @@ async function gameCategoryPage(req, res) {
         title: page.title || page.name || slug,
         metaTitle: page.metaTitle || page.title || page.name,
         metaDescription: page.metaDescription || page.description || '',
-        content: page.content || `<h1>${page.name || slug}</h1><p>${page.description || ''}</p>`
+        content: page.content || (page.description ? `<p>${page.description}</p>` : '')
       }
     });
     return sendPublicHtml(res, html);

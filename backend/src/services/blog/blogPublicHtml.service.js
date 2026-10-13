@@ -428,7 +428,9 @@ function buildFooterPageHtml({ origin, storeLabel, path, page }) {
     : '';
   const title = String(page.metaTitle || page.title || storeLabel).trim();
   const description = String(page.metaDescription || '').trim() || `${page.title || 'Page'} | ${storeLabel}`;
-  const articleHtml = extractArticleHtml(page.content || '').trim();
+  const articleHtml = extractArticleHtml(page.content || '')
+    .replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, '')
+    .trim();
   const body = `    <p>${navLinks(origin, path)}</p>
     <h1>${escapeHtml(page.title || title)}</h1>
     ${articleHtml || `<p>${escapeHtml(description)}</p>`}`;

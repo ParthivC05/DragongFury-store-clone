@@ -5,3 +5,8 @@ import { getRequest } from '../services/request';
 export function getHomePageSchema() {
   return getRequest(`${API_BASE}/api/page-schema/home`, { store_code: STORE_CODE });
 }
+
+
+export function getCommonPageSeo() {
+  return getRequest(`${API_BASE}/api/page-seo`, { store_code: STORE_CODE });
+}

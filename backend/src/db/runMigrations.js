@@ -409,6 +409,32 @@ async function ensureLegalPagesSchema(sequelize) {
   `);
 }
 
+
+async function ensurePageSeoSchema(sequelize) {
+  const has = await tableExists(sequelize, 'page_schemas');
+  if (!has) return;
+  await sequelize.query(`
+    ALTER TABLE page_schemas
+    ADD COLUMN IF NOT EXISTS meta_title VARCHAR(512) NULL
+  `);
+  await sequelize.query(`
+    ALTER TABLE page_schemas
+    ADD COLUMN IF NOT EXISTS meta_description TEXT NULL
+  `);
+  await sequelize.query(`
+    ALTER TABLE page_schemas
+    ADD COLUMN IF NOT EXISTS meta_tags VARCHAR(1024) NULL
+  `);
+  await sequelize.query(`
+    ALTER TABLE page_schemas
+    ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(1024) NULL
+  `);
+  await sequelize.query(`
+    ALTER TABLE page_schemas
+    ADD COLUMN IF NOT EXISTS allow_index BOOLEAN NOT NULL DEFAULT TRUE
+  `);
+}
+
 async function runMigrations(sequelize) {
   await ensureSettingsTable(sequelize);
   await seedSettingsDefaults(sequelize);
@@ -478,6 +504,7 @@ async function runMigrations(sequelize) {
   } finally {
     // Always heal missing schema (even when history bootstrap/repair skips ups).
     await ensureFooterMenusPagesSchema(sequelize);
+    await ensurePageSeoSchema(sequelize);
     await ensurePushCampaignsSchema(sequelize);
     await ensureLegalPagesSchema(sequelize);
     await ensureStoreStaffAttendanceSchema(sequelize);

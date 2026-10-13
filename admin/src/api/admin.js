@@ -1018,6 +1018,23 @@ export function getAdminHomeSchema(storeCode) {
   return request(`${ADMIN}/page-schema/home${q}`)
 }
 
+export function getAdminPageSeo(storeCode) {
+  const q = storeCode ? `?storeCode=${encodeURIComponent(storeCode)}` : ''
+  return request(`${ADMIN}/page-seo${q}`)
+}
+
+export function getAdminPageSeoOne(pageKey, storeCode) {
+  const q = storeCode ? `?storeCode=${encodeURIComponent(storeCode)}` : ''
+  return request(`${ADMIN}/page-seo/${encodeURIComponent(pageKey)}${q}`)
+}
+
+export function saveAdminPageSeo(pageKey, body, storeCode) {
+  return request(`${ADMIN}/page-seo/${encodeURIComponent(pageKey)}`, {
+    method: 'PUT',
+    body: JSON.stringify({ ...(body || {}), ...(storeCode ? { storeCode } : {}) })
+  })
+}
+
 export function saveAdminHomeSchema(body, storeCode) {
   return request(`${ADMIN}/page-schema/home`, {
     method: 'PUT',

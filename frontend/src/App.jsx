@@ -24,6 +24,8 @@ import { GuestRoute } from './components/GuestRoute';
 import { site } from './config/site';
 import { applyManagedSchema } from './utils/managedSchema';
 import { getHomePageSchema } from './api/pageSchema';
+import { useSavedPageSeo } from './hooks/useSavedPageSeo';
+import { applyCommonPageSeo } from './utils/applyCommonPageSeo';
 import { applyRouteSchema, SITE_ORIGIN, applySitewideSchema } from './utils/schemaOrg';
 import { applyDefaultPageSeo, applyRobotsMeta } from './utils/pageSeo';
 import { getRouteSeo, isGameCategorySlug, getGameCategoryRedirect, getGameCategoryCanonicalPath } from './config/seoPages';
@@ -216,8 +218,11 @@ function HomeOrLanding() {
 
 function RouteTitleManager() {
   const { pathname, search } = useLocation();
+  const savedCommonSeo = useSavedPageSeo(pathname);
 
   useEffect(() => {
+    if (savedCommonSeo === undefined) return;
+    if (applyCommonPageSeo(savedCommonSeo)) return;
     const pathnameNorm = pathname || '/';
     const gameSlug = pathnameNorm.startsWith('/games/')
       ? pathnameNorm.slice('/games/'.length).split('/')[0]
@@ -335,7 +340,7 @@ function RouteTitleManager() {
       ? seoTitle
       : (pageTitle ? `${pageTitle} | ${baseTitle}` : seoTitle);
     applyDefaultPageSeo({ title: nextTitle });
-  }, [pathname, search]);
+  }, [pathname, search, savedCommonSeo]);
 
   useEffect(() => {
     if ((pathname || '/') !== '/') return undefined;
@@ -349,7 +354,7 @@ function RouteTitleManager() {
       cancelled = true;
       applySitewideSchema();
     };
-  }, [pathname]);
+  }, [pathname, savedCommonSeo]);
 
   return null;
 }

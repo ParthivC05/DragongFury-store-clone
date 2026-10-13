@@ -83,6 +83,14 @@ router.use('/api/cron', cronRoutes);
 router.use('/api/help', helpRoutes);
 router.get('/api/game-pages', gameSeoPagesController.list);
 router.get('/api/game-pages/:slug', gameSeoPagesController.getOne);
+router.get('/api/page-seo', (req, res) => {
+  const pageSeo = require('../../services/seo/pageSeo.service');
+  const storeCode = String(req.query.store_code || req.query.storeCode || '').trim();
+  if (!storeCode) return res.json({ pages: {} });
+  return pageSeo.listPublic(storeCode)
+    .then((data) => res.json(data))
+    .catch((err) => res.status(err.statusCode || 500).json({ message: err.message || 'Could not load page SEO.' }));
+});
 router.get('/api/page-schema/home', (req, res) => {
   const homeSchema = require('../../services/seo/homeSchema.service');
   const storeCode = String(req.query.store_code || req.query.storeCode || '').trim();

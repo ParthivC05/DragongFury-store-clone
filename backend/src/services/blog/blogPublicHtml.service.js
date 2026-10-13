@@ -19,7 +19,8 @@ const STATIC_SITEMAP_PATHS = [
   { path: '/slots', changefreq: 'weekly', priority: '0.7' },
   { path: '/games', changefreq: 'weekly', priority: '0.9' },
   { path: '/casino', changefreq: 'weekly', priority: '0.8' },
-  { path: '/bonus', changefreq: 'weekly', priority: '0.7' }
+  { path: '/bonus', changefreq: 'weekly', priority: '0.7' },
+  { path: '/platform', changefreq: 'weekly', priority: '0.7' }
 ];
 
 /** Public SPA paths that should return crawler HTML (not /blog — that has its own builders). */
@@ -385,6 +386,18 @@ function navLinks(origin, currentPath) {
 function fallbackCopyForPath(path) {
   if (MARKETING_PAGE_COPY[path]) return MARKETING_PAGE_COPY[path];
   if (path === '/casino') return MARKETING_PAGE_COPY['/slots'];
+  if (path === '/bonus' || path === '/platform') {
+    const heading = path === '/bonus' ? 'Bonuses' : 'Platforms';
+    return {
+      heading: () => heading,
+      title: (label) => `${heading} | ${label}`,
+      description: (label) => `${heading} on ${label}.`,
+      paragraphs: (label) => [
+        `Open ${heading.toLowerCase()} on ${label} from the official website.`,
+        'Sign in if you have an account. Availability depends on your location.'
+      ]
+    };
+  }
   return null;
 }
 

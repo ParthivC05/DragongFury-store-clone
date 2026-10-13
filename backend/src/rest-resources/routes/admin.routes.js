@@ -29,6 +29,7 @@ const adminRedeemPercentageController = require('../controllers/adminRedeemPerce
 const adminTransactionFeesController = require('../controllers/adminTransactionFees.controller');
 const adminHelpController = require('../controllers/adminHelp.controller');
 const adminBlogController = require('../controllers/adminBlog.controller');
+const adminPageSeoController = require('../controllers/adminPageSeo.controller');
 const adminLink2PlayController = require('../controllers/adminLink2Play.controller');
 const adminFooterController = require('../controllers/adminFooter.controller');
 const adminChimeCashappWithdrawalsController = require('../controllers/adminChimeCashappWithdrawals.controller');
@@ -406,6 +407,9 @@ router.post(
 );
 router.get('/blog', adminBlogController.list);
 router.get('/page-schema/home', adminBlogController.getHomeSchema);
+router.get('/page-seo', adminPageSeoController.list);
+router.get('/page-seo/:pageKey', adminPageSeoController.getOne);
+router.put('/page-seo/:pageKey', adminPageSeoController.save);
 router.put('/page-schema/home', adminBlogController.saveHomeSchema);
 router.get('/blog/:id', adminBlogController.getOne);
 router.post('/blog', adminBlogController.create);

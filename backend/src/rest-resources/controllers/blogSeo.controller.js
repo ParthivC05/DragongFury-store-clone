@@ -1,6 +1,7 @@
 'use strict';
 
 const homeSchema = require('../../services/seo/homeSchema.service');
+const pageSeo = require('../../services/seo/pageSeo.service');
 
 const blogPosts = require('../../services/blog/blogPosts.service');
 const {
@@ -46,6 +47,19 @@ function sendHtml(res, html, status = 200) {
   return res.status(status).send(html);
 }
 
+async function sendStoreHtml(res, storeCode, path, html, status = 200) {
+  let next = html;
+  if (status === 200) {
+    try {
+      next = pageSeo.overlayHtml(html, await pageSeo.getPublic(storeCode, path));
+    } catch {
+      next = html;
+    }
+  }
+  return (typeof sendPublicHtml === 'function' ? sendPublicHtml : sendHtml)(res, next, status);
+}
+
+
 /** Same full HTML for people and crawlers (prerender into the SPA shell). */
 function sendPublicHtml(res, fullHtml, status = 200) {
   if (status !== 200) return sendHtml(res, fullHtml, status);
@@ -54,12 +68,14 @@ function sendPublicHtml(res, fullHtml, status = 200) {
   const canonical = (fullHtml.match(/rel=["']canonical["'] href=["']([^"']*)/i) || [])[1] || '';
   const robots = (fullHtml.match(/name=["']robots["'] content=["']([^"']*)/i) || [])[1] || 'index, follow';
   const extraHead = (fullHtml.match(/<script type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi) || []).join('\n');
+  const keywords = (fullHtml.match(/name=["']keywords["'] content=["']([^"']*)/i) || [])[1] || '';
   const body = (fullHtml.match(/<div class="seo-wrap">([\s\S]*)<\/div>\s*<\/body>/i) || [])[1] || '';
   const spa = buildSpaHtml({
     title,
     description,
     canonical,
     robots,
+    keywords,
     extraHead,
     prerenderHtml: body
   });
@@ -193,12 +209,12 @@ async function marketingPage(req, res) {
       const posts = await listIndexablePosts(storeCode);
       const savedHome = await homeSchema.getHome(storeCode, { origin, storeLabel });
       const pageSchema = savedHome.schema || null;
-      return sendPublicHtml(res, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
+      return sendStoreHtml(res, storeCode, path, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
     }
 
     const legalPage = await tryLegalPage(storeCode, path);
     if (legalPage) {
-      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
+      return sendStoreHtml(res, storeCode, path, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
     }
 
     const footerPage = await tryFooterPage(storeCode, path);
@@ -206,10 +222,10 @@ async function marketingPage(req, res) {
       return res.redirect(301, absoluteTarget(origin, footerPage.redirect));
     }
     if (footerPage) {
-      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
+      return sendStoreHtml(res, storeCode, path, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
     }
 
-    return sendPublicHtml(res, buildMarketingFallbackHtml({ origin, storeLabel, path }));
+    return sendStoreHtml(res, storeCode, path, buildMarketingFallbackHtml({ origin, storeLabel, path }));
   } catch (err) {
     const status = err.statusCode || 500;
     return sendHtml(
@@ -278,14 +294,14 @@ async function cmsPage(req, res) {
     }
     const legalPage = await tryLegalPage(storeCode, path);
     if (legalPage) {
-      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
+      return sendStoreHtml(res, storeCode, path, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
     }
     const footerPage = await tryFooterPage(storeCode, path);
     if (footerPage?.redirect) {
       return res.redirect(301, absoluteTarget(origin, footerPage.redirect));
     }
     if (footerPage) {
-      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
+      return sendStoreHtml(res, storeCode, path, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
     }
     return sendHtml(res, buildNotFoundHtml({ origin, storeLabel, kind: 'page' }), 404);
   } catch (err) {

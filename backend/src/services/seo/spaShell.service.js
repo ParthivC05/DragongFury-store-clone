@@ -61,7 +61,7 @@ function replaceMeta(html, attr, key, value) {
   return html.replace('</title>', `</title>\n    ${tag}`);
 }
 
-function injectSpaHead(html, { title, description, canonical, robots }) {
+function injectSpaHead(html, { title, description, canonical, robots, keywords }) {
   let next = html;
   next = next.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeAttr(title)}</title>`);
   if (canonical) {
@@ -81,6 +81,7 @@ function injectSpaHead(html, { title, description, canonical, robots }) {
   next = replaceMeta(next, 'name', 'twitter:title', title);
   next = replaceMeta(next, 'name', 'twitter:description', description);
   if (robots) next = replaceMeta(next, 'name', 'robots', robots);
+  if (keywords) next = replaceMeta(next, 'name', 'keywords', keywords);
   return next;
 }
 
@@ -94,8 +95,9 @@ function injectExtraHead(html, extraHead) {
 function injectPrerender(html, prerenderHtml) {
   const body = String(prerenderHtml || '').trim();
   if (!body) return html;
-  if (/<div id=["']root["'][^>]*>\s*<\/div>/i.test(html)) {
-    return html.replace(/<div id=["']root["'][^>]*>\s*<\/div>/i, `<div id="root">${body}</div>`);
+  const re = /<div id=["']root["'][^>]*>[\s\S]*?<\/div>/i;
+  if (re.test(html)) {
+    return html.replace(re, `<div id="root">${body}</div>`);
   }
   return html;
 }

@@ -114,6 +114,7 @@ function emptyPlain(storeCode, catalog) {
     metaTitle: null,
     metaDescription: null,
     metaTags: null,
+    canonicalUrl: null,
     allowIndex: true,
     isActive: true,
     createdAt: null,
@@ -218,6 +219,7 @@ async function upsertAdmin(req, pageKeyRaw, body = {}) {
       metaTitle: seo.metaTitle ?? null,
       metaDescription: seo.metaDescription ?? null,
       metaTags: seo.metaTags ?? null,
+      canonicalUrl: seo.canonicalUrl ?? null,
       allowIndex: allowIndex !== false,
       isActive
     }
@@ -261,6 +263,7 @@ async function getPublic(storeCodeRaw, pageKeyRaw) {
       metaTitle: published ? plain.metaTitle : null,
       metaDescription: published ? plain.metaDescription : null,
       metaTags: published ? plain.metaTags : null,
+      canonicalUrl: published ? plain.canonicalUrl : null,
       allowIndex: published ? plain.allowIndex : true,
       isActive: plain.isActive !== false,
       updatedAt: published ? plain.updatedAt : null

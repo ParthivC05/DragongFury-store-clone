@@ -26,6 +26,7 @@ function defaultForm(catalog, storeCode = '') {
     metaTitle: '',
     metaDescription: '',
     metaTags: '',
+    canonicalUrl: '',
     allowIndex: true
   }
 }
@@ -98,6 +99,7 @@ export default function LegalPageForm() {
           metaTitle: page.metaTitle || '',
           metaDescription: page.metaDescription || '',
           metaTags: page.metaTags || '',
+          canonicalUrl: page.canonicalUrl || '',
           allowIndex: page.allowIndex !== false
         })
       })
@@ -150,6 +152,7 @@ export default function LegalPageForm() {
         metaTitle: form.metaTitle.trim() || null,
         metaDescription: form.metaDescription.trim() || null,
         metaTags: form.metaTags.trim() || null,
+        canonicalUrl: form.canonicalUrl.trim() || null,
         allowIndex: form.allowIndex !== false
       }
       if (isMaster) body.storeCode = form.storeCode.trim()
@@ -235,6 +238,7 @@ export default function LegalPageForm() {
             setField={setField}
             hideHeading
             showIndexControl
+            showCanonical
             indexControlName={`legal-google-index-${pageKey}`}
             indexNoun="page"
             titleHint="Shown in the browser tab and Google. Leave blank to use the page title."

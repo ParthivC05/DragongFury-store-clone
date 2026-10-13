@@ -420,7 +420,8 @@ ${extra}`;
 }
 
 function buildFooterPageHtml({ origin, storeLabel, path, page }) {
-  const canonical = originPath(origin, path);
+  const customCanonical = String(page.canonicalUrl || page.canonical_url || '').trim();
+  const canonical = page.allowIndex === false ? '' : (customCanonical || originPath(origin, path));
   const managedSchema = schemaForFooterPage({ origin, storeLabel, page });
   const schemaTag = managedSchema
     ? `  <script type="application/ld+json" id="pj-schema-webpage">${JSON.stringify(managedSchema)}</script>`

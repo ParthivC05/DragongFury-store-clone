@@ -113,6 +113,7 @@ export function LegalDocument({ pageKey }) {
     description: seoDescription,
     keywords: seoTags,
     noIndex,
+    canonical: page?.canonicalUrl || page?.canonical_url || pageUrl,
     url: pageUrl
   });
 

@@ -187,6 +187,10 @@ async function ensureFooterMenusPagesSchema(sequelize) {
       ALTER TABLE footer_pages
       ADD COLUMN IF NOT EXISTS sections JSONB NULL
     `);
+    await sequelize.query(`
+      ALTER TABLE footer_pages
+      ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(1024) NULL
+    `);
     return;
   }
 
@@ -243,6 +247,10 @@ async function ensureFooterMenusPagesSchema(sequelize) {
   await sequelize.query(`
     ALTER TABLE footer_pages
     ADD COLUMN IF NOT EXISTS sections JSONB NULL
+  `);
+  await sequelize.query(`
+    ALTER TABLE footer_pages
+    ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(1024) NULL
   `);
   await sequelize.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS footer_pages_store_slug_uidx
@@ -394,6 +402,10 @@ async function ensureLegalPagesSchema(sequelize) {
   await sequelize.query(`
     CREATE UNIQUE INDEX IF NOT EXISTS legal_pages_store_code_page_key_uq
     ON legal_pages (store_code, page_key)
+  `);
+  await sequelize.query(`
+    ALTER TABLE legal_pages
+    ADD COLUMN IF NOT EXISTS canonical_url VARCHAR(1024)
   `);
 }
 

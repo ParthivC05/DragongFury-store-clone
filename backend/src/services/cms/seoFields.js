@@ -36,6 +36,8 @@ function seoFromBody(body = {}) {
   if (metaTitle !== undefined) out.metaTitle = metaTitle;
   if (metaDescription !== undefined) out.metaDescription = metaDescription;
   if (metaTags !== undefined) out.metaTags = metaTags;
+  const canonicalUrl = canonicalUrlFromBody(body);
+  if (canonicalUrl !== undefined) out.canonicalUrl = canonicalUrl;
   return out;
 }
 
@@ -43,7 +45,8 @@ function seoToPlain(p = {}) {
   return {
     metaTitle: p.metaTitle ?? p.meta_title ?? null,
     metaDescription: p.metaDescription ?? p.meta_description ?? null,
-    metaTags: p.metaTags ?? p.meta_tags ?? null
+    metaTags: p.metaTags ?? p.meta_tags ?? null,
+    canonicalUrl: p.canonicalUrl ?? p.canonical_url ?? null
   };
 }
 

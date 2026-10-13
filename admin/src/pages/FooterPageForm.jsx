@@ -54,6 +54,7 @@ const EMPTY = {
   metaTitle: '',
   metaDescription: '',
   metaTags: '',
+  canonicalUrl: '',
   permanentRedirect: '',
   allowIndex: true,
   sections: emptySections(),
@@ -146,6 +147,7 @@ export default function FooterPageForm() {
           metaTitle: page.metaTitle || '',
           metaDescription: page.metaDescription || '',
           metaTags: page.metaTags || '',
+          canonicalUrl: page.canonicalUrl || '',
           permanentRedirect: page.permanentRedirect || '',
           allowIndex: page.allowIndex !== false,
           sections: page.sections || emptySections(),
@@ -237,6 +239,7 @@ export default function FooterPageForm() {
         metaTitle: form.metaTitle.trim() || null,
         metaDescription: form.metaDescription.trim() || null,
         metaTags: form.metaTags.trim() || null,
+        canonicalUrl: form.canonicalUrl.trim() || null,
         allowIndex: form.allowIndex !== false,
         permanentRedirect: isRedirect ? '' : form.permanentRedirect.trim(),
         ...(isRedirect ? {} : {
@@ -434,6 +437,7 @@ export default function FooterPageForm() {
                 setField={setField}
                 hideHeading
                 showIndexControl
+                showCanonical
                 indexControlName="footer-google-index"
                 indexNoun="page"
                 titleHint="Shown in the browser tab and Google. Leave blank to use the page title."

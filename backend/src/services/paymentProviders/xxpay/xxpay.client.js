@@ -22,7 +22,7 @@ async function postJson(path, params, { apiKey, baseUrl, logError = true } = {})
   const root = resolveBaseUrl(baseUrl);
   if (!root) {
     const err = new Error(
-      'XXPay base URL missing. Set VITE_XXPAY_BASE_URL on the store frontend or XXPAY_BASE_URL on the backend.'
+      'XXPay base URL missing. Set XXPAY_BASE_URL on the backend (optional _STORECODE suffix).'
     );
     err.statusCode = 503;
     throw err;

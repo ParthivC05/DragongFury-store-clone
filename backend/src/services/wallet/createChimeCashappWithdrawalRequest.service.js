@@ -153,7 +153,7 @@ async function createChimeCashappWithdrawalRequest(userId, body, dollarpayCreds 
     xxpayBaseUrl = xxpayCreds.baseUrl ? String(xxpayCreds.baseUrl).trim().slice(0, 255) : null;
   } else if (usesXxpay) {
     const err = new Error(
-      'XXPay credentials missing. Set VITE_XXPAY_MCH_NO and VITE_XXPAY_API_KEY on the store frontend.'
+      'XXPay credentials missing. Set XXPAY_MCH_NO and XXPAY_API_KEY on the backend (optional _STORECODE suffix).'
     );
     err.statusCode = 400;
     throw err;

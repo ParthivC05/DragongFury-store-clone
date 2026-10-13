@@ -7,18 +7,6 @@
  * across stores. Pools are shuffled on every page load.
  */
 
-const STORE_LANES = [
-  'dragonfury',
-  'myvepower',
-  'winners4',
-  'goodwork',
-  'betgamezone',
-  'sweepstakebet',
-  'goodgdragon',
-  'grandsweeps',
-  'casinoslots',
-];
-
 const LANE_COUNT = 16;
 
 /** First names with unique 4-letter prefixes (verified at module load). */
@@ -112,9 +100,7 @@ function hashStore(value) {
 
 export function getWinnerNameLane(storeCode) {
   const key = normalizeStoreCode(storeCode);
-  const known = STORE_LANES.indexOf(key);
-  if (known >= 0) return known;
-  return 9 + (hashStore(key || 'store') % 7);
+  return hashStore(key || 'store') % LANE_COUNT;
 }
 
 function sliceForLane(list, lane) {

@@ -1,35 +1,15 @@
 /**
- * XXPay credentials from store frontend Vite env.
- * VITE_XXPAY_MCH_NO / VITE_XXPAY_API_KEY / VITE_XXPAY_BASE_URL
+ * XXPay is resolved on the backend (XXPAY_MCH_NO / XXPAY_API_KEY).
+ * Do not put secrets in VITE_ — they are compiled into the public JS bundle.
  */
-const mchNoRaw = import.meta.env.VITE_XXPAY_MCH_NO;
-const keyRaw = import.meta.env.VITE_XXPAY_API_KEY;
-const baseUrlRaw = import.meta.env.VITE_XXPAY_BASE_URL;
-
 export function hasXxpayCredentials() {
-  return Boolean(
-    typeof mchNoRaw === 'string' &&
-      mchNoRaw.trim() &&
-      typeof keyRaw === 'string' &&
-      keyRaw.trim()
-  );
+  return true;
 }
 
 export function xxpayHeaders() {
-  const mchNo = typeof mchNoRaw === 'string' ? mchNoRaw.trim() : '';
-  const apiKey = typeof keyRaw === 'string' ? keyRaw.trim() : '';
-  const baseUrl = typeof baseUrlRaw === 'string' ? baseUrlRaw.trim().replace(/\/+$/, '') : '';
-  if (!mchNo || !apiKey) return null;
-  const headers = {
-    'X-Xxpay-Mch-No': mchNo,
-    'X-Xxpay-Key': apiKey
-  };
-  if (baseUrl) headers['X-Xxpay-Base-Url'] = baseUrl;
-  return headers;
+  return null;
 }
 
 export function withXxpay(config = {}) {
-  const extra = xxpayHeaders();
-  if (!extra) return config;
-  return { ...config, headers: { ...extra, ...(config.headers || {}) } };
+  return config;
 }

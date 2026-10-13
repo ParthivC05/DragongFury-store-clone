@@ -41,7 +41,6 @@ import { getSlotLobbyCategoryMeta, SlotLobbyIcon } from '../SlotGames/slotLobbyM
 import { SlotGamesCarousel } from '../SlotGames/SlotGamesCarousel';
 import { SlotGamesSearchBar } from '../SlotGames/SlotGamesSearchBar';
 import { AppLoader } from '../AppLoader';
-import { RecentBigWins } from './RecentBigWins';
 import { SlotGamesCatalogGrid } from './SlotGamesCatalogGrid';
 import { usePageContentReady } from '../../context/PageReadyContext';
 import { DepositRequiredModal } from '../Games/DepositRequiredModal';
@@ -966,7 +965,6 @@ export function DashboardSlotGamesSection({ catalogOnly = false, categoryId = nu
           </p>
         </div>
 
-        {isSearchActive ? null : <RecentBigWins variant="lobby" />}
 
         <SlotGamesSearchBar
           value={search}

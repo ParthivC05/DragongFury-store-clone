@@ -1,5 +1,5 @@
 import { site } from '../config/site';
-import { LANDING_FAQ, SEO_FAQ, buildPlatformFaq } from '../constants/landingFaq';
+import { SEO_FAQ } from '../constants/landingFaq';
 import {
   GAME_CATEGORY_ITEMLIST_SLUGS,
   getGameCategoryBySlug,
@@ -27,6 +27,25 @@ function setJsonLd(id, data) {
     el?.remove();
     return;
   }
+  const type = data['@type'];
+  if (type) {
+    document.querySelectorAll('script[type="application/ld+json"]').forEach((node) => {
+      if (node.id === scriptId) return;
+      try {
+        const parsed = JSON.parse(node.textContent || '{}');
+        if (parsed['@type'] === type) {
+          if (!el && !String(node.id || '').startsWith(SCRIPT_PREFIX)) {
+            el = node;
+            el.id = scriptId;
+          } else if (node.id !== scriptId) {
+            node.remove();
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    });
+  }
   if (!el) {
     el = document.createElement('script');
     el.type = 'application/ld+json';
@@ -38,6 +57,41 @@ function setJsonLd(id, data) {
 
 function clearJsonLd(id) {
   document.getElementById(`${SCRIPT_PREFIX}${id}`)?.remove();
+}
+
+function serverSchemaNodes() {
+  return [...document.querySelectorAll('script[type="application/ld+json"]')].filter(
+    (el) => !String(el.id || '').startsWith(SCRIPT_PREFIX)
+  );
+}
+
+/** Drop every JSON-LD block the client added. Leaves the server HTML script in place. */
+export function clearClientSchema() {
+  document.querySelectorAll(`script[id^="${SCRIPT_PREFIX}"]`).forEach((el) => el.remove());
+}
+
+export function releaseServerGameSchema() {
+  document.querySelectorAll('script[data-pj-server-schema="1"]').forEach((el) => el.remove());
+}
+
+let gamePageOwnsServerSchema = false;
+
+/** Keep the server JSON-LD. Add the admin schema only when the server did not print one. */
+export function keepOnlyGameSchema(schema) {
+  clearClientSchema();
+  const existing = serverSchemaNodes().filter((el) => !el.hasAttribute('data-pj-server-schema'));
+  if (existing.length) {
+    gamePageOwnsServerSchema = true;
+    return;
+  }
+  if (!schema) return;
+  releaseServerGameSchema();
+  const el = document.createElement('script');
+  el.type = 'application/ld+json';
+  el.setAttribute('data-pj-server-schema', '1');
+  el.textContent = typeof schema === 'string' ? schema : JSON.stringify(schema);
+  document.head.appendChild(el);
+  gamePageOwnsServerSchema = true;
 }
 
 function sameAsLinks() {
@@ -185,9 +239,22 @@ export function applySitewideSchema() {
  */
 export function applyRouteSchema(pathname, pageMeta = {}) {
   const path = pathname || '/';
+  const earlySlug = path.startsWith('/games/') ? path.slice('/games/'.length).split('/')[0] : '';
+  const earlyCategory = isGameCategorySlug(earlySlug) ? getGameCategoryBySlug(earlySlug) : null;
+  if (earlyCategory && serverSchemaNodes().length) {
+    clearClientSchema();
+    gamePageOwnsServerSchema = true;
+    return;
+  }
+  if (!earlyCategory && gamePageOwnsServerSchema) {
+    gamePageOwnsServerSchema = false;
+    releaseServerGameSchema();
+    serverSchemaNodes().forEach((el) => el.remove());
+    applySitewideSchema();
+  }
 
   if (path === '/') {
-    setJsonLd('faq', buildFaqPageSchema(LANDING_FAQ));
+    clearJsonLd('faq');
     setJsonLd(
       'webpage',
       {
@@ -237,7 +304,7 @@ export function applyRouteSchema(pathname, pageMeta = {}) {
   if (category) {
     const gameUrl = `/games/${category.slug}`;
     setJsonLd('game-app', buildVideoGameSchema(category));
-    setJsonLd('game-faq', buildFaqPageSchema(buildPlatformFaq(category.name)));
+    clearJsonLd('game-faq');
     setJsonLd(
       'breadcrumb',
       buildBreadcrumbSchema([
@@ -265,7 +332,7 @@ export function applyRouteSchema(pathname, pageMeta = {}) {
         image: pageMeta.gameImage,
       })
     );
-    setJsonLd('game-faq', buildFaqPageSchema(buildPlatformFaq(pageMeta.gameName)));
+    clearJsonLd('game-faq');
     setJsonLd(
       'breadcrumb',
       buildBreadcrumbSchema([

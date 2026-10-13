@@ -35,6 +35,36 @@ export const CONTACT_SEO = {
     'Reach DragonFury customer support by email or live chat. Use official channels only, and never share your login details.',
 };
 
+export const HELP_SEO = {
+  title: 'DragonFury Help | Account, Play & Redemption',
+  description:
+    'Help for DragonFury accounts, deposits, game play, and prize redemption. Use official support channels only.',
+};
+
+export const CASINO_SEO = {
+  title: 'Casino Games | DragonFury',
+  description:
+    'Play sweepstakes casino-style games on DragonFury in your browser. Sign in and open the live lobby.',
+};
+
+export const BONUS_SEO = {
+  title: 'Bonuses | DragonFury',
+  description:
+    'See current DragonFury bonuses and promotional Sweeps Coins. Offers change and have rules.',
+};
+
+export const PLATFORM_SEO = {
+  title: 'Game Platforms | DragonFury',
+  description:
+    'Open supported game platforms from one DragonFury lobby.',
+};
+
+export const LINK2PLAY_SEO = {
+  title: 'Play on your device | DragonFury',
+  description:
+    'Open DragonFury games in a supported browser. Use the official website only.',
+};
+
 function toSlug(name) {
   return String(name || '')
     .trim()
@@ -237,7 +267,12 @@ export const ROUTE_SEO = {
   '/games': GAMES_LISTING_SEO,
   '/blog': BLOG_SEO,
   '/faq': FAQ_SEO,
+  '/help': HELP_SEO,
   '/contact': CONTACT_SEO,
+  '/casino': CASINO_SEO,
+  '/bonus': BONUS_SEO,
+  '/platform': PLATFORM_SEO,
+  '/link2play': LINK2PLAY_SEO,
 };
 
 export function getRouteSeo(pathname) {

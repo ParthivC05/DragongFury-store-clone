@@ -9,7 +9,7 @@ import { buildPlatformFaq } from '../../constants/landingFaq';
 import { GameImage } from '../../components/Games/GameImage';
 import { FooterPageLayout } from '../FooterPage/FooterPageLayout';
 import { applyManagedSchema } from '../../utils/managedSchema';
-import { applySitewideSchema } from '../../utils/schemaOrg';
+import { applySitewideSchema, clearClientSchema, keepOnlyGameSchema } from '../../utils/schemaOrg';
 import { usePageSeo } from '../../utils/pageSeo';
 import '../FooterPage/FooterPage.css';
 import './SeoGames.css';
@@ -110,6 +110,14 @@ export function SeoGameCategory() {
 
   useEffect(() => {
     if (!saved || saved.schema === undefined) return undefined;
+    const custom = saved.schemaType === 'Custom' && saved.schema;
+    const serverPrinted = !!document.querySelector('script[type="application/ld+json"]:not([id^="pj-schema-"])');
+    if (custom || serverPrinted) {
+      keepOnlyGameSchema(saved.schema || null);
+      return () => {
+        clearClientSchema();
+      };
+    }
     applyManagedSchema(saved.schema);
     return () => {
       applyManagedSchema(null);

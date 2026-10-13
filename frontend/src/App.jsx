@@ -245,7 +245,7 @@ function RouteTitleManager() {
     if (hideFromIndex) {
       applyRobotsMeta('noindex, nofollow');
     } else if (!isBlogPostPage) {
-      applyRobotsMeta(null);
+      applyRobotsMeta('index, follow');
     }
 
     const routeSeo = getRouteSeo(pathname);

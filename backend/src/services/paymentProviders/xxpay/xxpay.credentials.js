@@ -1,23 +1,25 @@
 'use strict';
 
-/**
- * Credentials from store frontend Vite env headers (not backend .env).
- * VITE_XXPAY_MCH_NO / VITE_XXPAY_API_KEY / optional VITE_XXPAY_BASE_URL
- */
-function getXxpayCredentialsFromRequest(req) {
-  const h = req?.headers || {};
-  const mchNo = String(h['x-xxpay-mch-no'] || '').trim();
-  const apiKey = String(h['x-xxpay-key'] || '').trim();
-  const baseUrl = String(h['x-xxpay-base-url'] || '').trim().replace(/\/+$/, '');
+const { readStoreEnv, resolveStoreCodeFromReq } = require('../../../utils/storeEnv.helpers');
+
+function credentialsFromEnv(storeCode) {
+  const mchNo = readStoreEnv('XXPAY_MCH_NO', storeCode);
+  const apiKey = readStoreEnv('XXPAY_API_KEY', storeCode);
+  const baseUrl = readStoreEnv('XXPAY_BASE_URL', storeCode).replace(/\/+$/, '');
   if (!mchNo || !apiKey) return null;
   return { mchNo, apiKey, baseUrl: baseUrl || null };
+}
+
+function getXxpayCredentialsFromRequest(req) {
+  const storeCode = resolveStoreCodeFromReq(req);
+  return credentialsFromEnv(storeCode);
 }
 
 function requireXxpayCredentials(req) {
   const creds = getXxpayCredentialsFromRequest(req);
   if (!creds) {
     const err = new Error(
-      'XXPay credentials missing. Set VITE_XXPAY_MCH_NO and VITE_XXPAY_API_KEY on the store frontend.'
+      'XXPay credentials missing. Set XXPAY_MCH_NO_DRAGONFURY and XXPAY_API_KEY_DRAGONFURY on the backend.'
     );
     err.statusCode = 400;
     throw err;

@@ -143,15 +143,13 @@ function resolveGitslotparkConfig(req) {
   const storeCfg = readStoreProviderConfig(credentialStore, provider);
   const envCfg = readEnvProviderConfig(provider);
 
-  const headerBase = headerValue(req, 'x-gitslotpark-api-base-url');
-  const headerToken = headerValue(req, 'x-gitslotpark-auth-token');
-  const headerAgentId = headerValue(req, 'x-gitslotpark-agent-id');
   const headerLobbyUrl = headerValue(req, 'x-gitslotpark-lobby-url');
 
   const defaultBase = provider === 'pragmatic' ? DEFAULT_BASE_URL : '';
-  const baseUrl = firstNonEmpty(storeCfg.baseUrl, headerBase, envCfg.baseUrl, defaultBase).replace(/\/+$/, '');
-  const authToken = firstNonEmpty(storeCfg.authToken, headerToken, envCfg.authToken);
-  const agentId = firstNonEmpty(storeCfg.agentId, headerAgentId, envCfg.agentId);
+  const rawBase = firstNonEmpty(storeCfg.baseUrl, envCfg.baseUrl, defaultBase).replace(/\/+$/, '');
+  const baseUrl = rawBase.replace(/^http:\/\//i, 'https://');
+  const authToken = firstNonEmpty(storeCfg.authToken, envCfg.authToken);
+  const agentId = firstNonEmpty(storeCfg.agentId, envCfg.agentId);
   const lobbyUrl = firstNonEmpty(storeCfg.lobbyUrl, headerLobbyUrl, envCfg.lobbyUrl).replace(/\/+$/, '');
   const secretKey = firstNonEmpty(storeCfg.secretKey, envCfg.secretKey);
 

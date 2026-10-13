@@ -13,13 +13,15 @@ const {
   buildFooterPageHtml,
   buildHomeHtml,
   slugFromPath,
+  originPath,
   MARKETING_SEO_PATHS
 } = require('../../services/blog/blogPublicHtml.service');
 const footer = require('../../services/footer/footer.service');
 const { absoluteTarget } = require('../../services/cms/contentLifecycle');
-const gameSeoPages = require('../../services/seo/gameSeoPages.service');
 const legalPages = require('../../services/legal/legalPages.service');
+const gameSeoPages = require('../../services/seo/gameSeoPages.service');
 const { resolvePublicStoreContext } = require('../../services/store/publicHostStore.service');
+const { buildSpaHtml } = require('../../services/seo/spaShell.service');
 
 function storeLabelFromOrigin(origin, storeCode) {
   if (origin) {
@@ -44,6 +46,26 @@ function sendHtml(res, html, status = 200) {
   return res.status(status).send(html);
 }
 
+/** Same full HTML for people and crawlers (prerender into the SPA shell). */
+function sendPublicHtml(res, fullHtml, status = 200) {
+  if (status !== 200) return sendHtml(res, fullHtml, status);
+  const title = (fullHtml.match(/<title>([^<]*)/i) || [])[1] || '';
+  const description = (fullHtml.match(/name=["']description["'] content=["']([^"']*)/i) || [])[1] || '';
+  const canonical = (fullHtml.match(/rel=["']canonical["'] href=["']([^"']*)/i) || [])[1] || '';
+  const robots = (fullHtml.match(/name=["']robots["'] content=["']([^"']*)/i) || [])[1] || 'index, follow';
+  const extraHead = (fullHtml.match(/<script type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi) || []).join('\n');
+  const body = (fullHtml.match(/<div class="seo-wrap">([\s\S]*)<\/div>\s*<\/body>/i) || [])[1] || '';
+  const spa = buildSpaHtml({
+    title,
+    description,
+    canonical,
+    robots,
+    extraHead,
+    prerenderHtml: body
+  });
+  return sendHtml(res, spa || fullHtml, status);
+}
+
 async function sitemap(req, res) {
   try {
     const { storeCode, origin } = await resolvePublicStoreContext(
@@ -54,7 +76,14 @@ async function sitemap(req, res) {
       return sendXml(res, buildSitemapXml({ origin: origin || 'https://localhost', posts: [] }));
     }
     const posts = await listIndexablePosts(storeCode);
-    return sendXml(res, buildSitemapXml({ origin, posts }));
+    let gamePages = [];
+    try {
+      const listed = await gameSeoPages.listPublic(storeCode);
+      gamePages = (listed.game_pages || []).filter((page) => page && page.slug);
+    } catch {
+      gamePages = [];
+    }
+    return sendXml(res, buildSitemapXml({ origin, posts, gamePages }));
   } catch (err) {
     return sendXml(res, buildSitemapXml({ origin: 'https://localhost', posts: [] }));
   }
@@ -70,7 +99,7 @@ async function blogIndex(req, res) {
       return sendHtml(res, buildNotFoundHtml({ origin: origin || '', storeLabel: 'Blog' }), 400);
     }
     const posts = await listIndexablePosts(storeCode);
-    return sendHtml(
+    return sendPublicHtml(
       res,
       buildBlogIndexHtml({
         origin,
@@ -106,7 +135,7 @@ async function blogPost(req, res) {
     if (!post) {
       return sendHtml(res, buildNotFoundHtml({ origin, storeLabel }), 404);
     }
-    return sendHtml(res, buildBlogPostHtml({ origin, storeLabel, post }));
+    return sendPublicHtml(res, buildBlogPostHtml({ origin, storeLabel, post }));
   } catch (err) {
     const status = err.statusCode || 500;
     return sendHtml(
@@ -164,12 +193,12 @@ async function marketingPage(req, res) {
       const posts = await listIndexablePosts(storeCode);
       const savedHome = await homeSchema.getHome(storeCode, { origin, storeLabel });
       const pageSchema = savedHome.schema || null;
-      return sendHtml(res, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
+      return sendPublicHtml(res, buildHomeHtml({ origin, storeLabel, posts, pageSchema }));
     }
 
     const legalPage = await tryLegalPage(storeCode, path);
     if (legalPage) {
-      return sendHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
+      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
     }
 
     const footerPage = await tryFooterPage(storeCode, path);
@@ -177,10 +206,10 @@ async function marketingPage(req, res) {
       return res.redirect(301, absoluteTarget(origin, footerPage.redirect));
     }
     if (footerPage) {
-      return sendHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
+      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
     }
 
-    return sendHtml(res, buildMarketingFallbackHtml({ origin, storeLabel, path }));
+    return sendPublicHtml(res, buildMarketingFallbackHtml({ origin, storeLabel, path }));
   } catch (err) {
     const status = err.statusCode || 500;
     return sendHtml(
@@ -191,22 +220,81 @@ async function marketingPage(req, res) {
   }
 }
 
-async function gameRedirect(req, res, next) {
+async function gameCategoryPage(req, res) {
+  let origin = '';
+  let storeCode = '';
   try {
     const ctx = await resolvePublicStoreContext(req, req.query.store_code || req.query.storeCode);
-    const storeCode = ctx.storeCode || 'dragonfury';
+    origin = ctx.origin || '';
+    storeCode = ctx.storeCode || 'dragonfury';
+    const storeLabel = storeLabelFromOrigin(origin, storeCode);
     const data = await gameSeoPages.getPublic(storeCode, req.params.slug);
-    const dest = String(data?.redirect || '').trim();
-    if (dest) {
+    if (data?.redirect) {
+      const dest = String(data.redirect || '').trim();
       if (/^https?:\/\//i.test(dest)) return res.redirect(301, dest);
-      const origin = String(ctx.origin || '').replace(/\/$/, '');
       const path = dest.startsWith('/') ? dest : `/${dest}`;
-      return res.redirect(301, `${origin}${path}`);
+      return res.redirect(301, `${String(origin || '').replace(/\/$/, '')}${path}`);
     }
-  } catch {
-    /* leave the request for the site shell */
+    const page = data?.game_page;
+    if (!page || data?.hidden) {
+      return sendHtml(res, buildNotFoundHtml({ origin, storeLabel, kind: 'page' }), 404);
+    }
+    const slug = String(page.slug || req.params.slug || '').trim();
+    const html = buildFooterPageHtml({
+      origin,
+      storeLabel,
+      path: `/games/${slug}`,
+      page: {
+        title: page.title || page.name || slug,
+        metaTitle: page.metaTitle || page.title || page.name,
+        metaDescription: page.metaDescription || page.description || '',
+        content: page.content || `<h1>${page.name || slug}</h1><p>${page.description || ''}</p>`
+      }
+    });
+    return sendPublicHtml(res, html);
+  } catch (err) {
+    return sendHtml(
+      res,
+      buildNotFoundHtml({ origin, storeLabel: storeLabelFromOrigin(origin, storeCode), kind: 'page' }),
+      err.statusCode === 404 ? 404 : 500
+    );
   }
-  return next();
 }
 
-module.exports = { sitemap, blogIndex, blogPost, marketingPage, gameRedirect };
+async function cmsPage(req, res) {
+  let origin = '';
+  let storeCode = '';
+  const slug = slugFromPath(req.params.slug || req.path);
+  try {
+    const ctx = await resolvePublicStoreContext(req, req.query.store_code || req.query.storeCode);
+    origin = ctx.origin || '';
+    storeCode = ctx.storeCode || '';
+    const storeLabel = storeLabelFromOrigin(origin, storeCode);
+    const path = `/${slug}`;
+    if (MARKETING_SEO_PATHS.includes(path) || path === '/casino' || path === '/slots') {
+      req.url = path;
+      req.path = path;
+      return marketingPage(req, res);
+    }
+    const legalPage = await tryLegalPage(storeCode, path);
+    if (legalPage) {
+      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: legalPage }));
+    }
+    const footerPage = await tryFooterPage(storeCode, path);
+    if (footerPage?.redirect) {
+      return res.redirect(301, absoluteTarget(origin, footerPage.redirect));
+    }
+    if (footerPage) {
+      return sendPublicHtml(res, buildFooterPageHtml({ origin, storeLabel, path, page: footerPage }));
+    }
+    return sendHtml(res, buildNotFoundHtml({ origin, storeLabel, kind: 'page' }), 404);
+  } catch (err) {
+    return sendHtml(
+      res,
+      buildNotFoundHtml({ origin, storeLabel: storeLabelFromOrigin(origin, storeCode), kind: 'page' }),
+      err.statusCode === 404 ? 404 : 500
+    );
+  }
+}
+
+module.exports = { sitemap, blogIndex, blogPost, marketingPage, gameCategoryPage, cmsPage };

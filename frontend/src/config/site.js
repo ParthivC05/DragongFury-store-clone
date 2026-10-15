@@ -13,16 +13,16 @@ export const site = {
   platformName: typeof import.meta !== 'undefined' && import.meta.env?.VITE_SITE_TITLE
     ? String(import.meta.env.VITE_SITE_TITLE).trim()
     : 'Dragon Fury',
-  /** Default document title / SEO title (homepage) */
+  /** Default document title / SEO title (homepage) — must match SSR + HOME_SEO */
   seoTitle:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_TITLE
       ? String(import.meta.env.VITE_SEO_TITLE).trim()
-      : 'DragonFury | Games & Account Website',
+      : 'Dragon Fury | USA Sweepstakes Casino Games & Bonuses',
   /** Default meta description for SEO */
   seoDescription:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEO_DESCRIPTION
       ? String(import.meta.env.VITE_SEO_DESCRIPTION).trim()
-      : 'Dragon Fury is the game platform featured here. Browse listed games; use this website for your player account, wallet tools and support.',
+      : 'Play sweepstakes casino games online with Dragon Fury. Explore platforms, fish games, bonuses, and secure play across the USA.',
   /** Header / auth / footer / landing logo image */
   logoUrl:
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LOGO_URL

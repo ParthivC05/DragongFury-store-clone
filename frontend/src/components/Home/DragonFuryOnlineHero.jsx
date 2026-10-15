@@ -32,20 +32,21 @@ export function DragonFuryOnlineHero() {
   const logo = useMemo(() => site.logoUrl || '/logo.webp', []);
 
   return (
-    <section className="df-online-hero" aria-label="DragonFury welcome">
+    <section className="df-online-hero" aria-label="Dragon Fury welcome">
       <div className="df-online-hero__inner">
         <img
           className="df-online-hero__logo"
           src={logo}
-          alt={site.platformName || 'DragonFury'}
+          alt=""
           width={460}
           height={348}
           decoding="async"
           fetchPriority="high"
         />
+        <h1 className="df-online-hero__title">{site.platformName || 'Dragon Fury'}</h1>
         <p className="df-online-hero__tagline">
-          Dragon Fury is the game platform featured here. Browse its listed games; use
-          DragonFury.casino for your player account, wallet tools and support.
+          Play online sweepstakes games, fish games, and slots. Browse listed games; use
+          this site for your player account, wallet tools, and support.
         </p>
         <div className="df-jackpots" role="group" aria-label="Jackpot marquee">
           {JACKPOTS.map((jackpot, i) => (

@@ -24,10 +24,24 @@ const gameSeoPages = require('../../services/seo/gameSeoPages.service');
 const { resolvePublicStoreContext } = require('../../services/store/publicHostStore.service');
 const { buildSpaHtml } = require('../../services/seo/spaShell.service');
 
+/** Brand display name for titles/h1/schema — never the bare domain. */
+const STORE_BRAND_LABELS = {
+  dragonfury: 'Dragon Fury',
+  playjuwa: 'PlayJuwa',
+  goodgdragon: 'GoodGDragon'
+};
+
 function storeLabelFromOrigin(origin, storeCode) {
+  const code = String(storeCode || '')
+    .trim()
+    .toLowerCase();
+  if (STORE_BRAND_LABELS[code]) return STORE_BRAND_LABELS[code];
   if (origin) {
     try {
-      return new URL(origin).hostname.replace(/^www\./, '');
+      const host = new URL(origin).hostname.replace(/^www\./, '').toLowerCase();
+      if (host.includes('dragonfury')) return 'Dragon Fury';
+      if (host.includes('playjuwa')) return 'PlayJuwa';
+      if (host.includes('goodgdragon')) return 'GoodGDragon';
     } catch {
       /* fall through */
     }

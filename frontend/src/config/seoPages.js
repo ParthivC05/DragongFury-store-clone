@@ -5,10 +5,12 @@
 import { FEATURED_PLATFORM_GAMES } from './featuredPlatformGames';
 import { getGameDisplayName } from '../utils/gameDisplay';
 
+/** Keep in sync with backend MARKETING_PAGE_COPY['/'] + site.seoTitle (brand, not domain). */
 export const HOME_SEO = {
-  title: 'DragonFury - Access 20+ Sweepstakes Game Systems Online',
+  title: 'Dragon Fury | USA Sweepstakes Casino Games & Bonuses',
+  h1: 'Dragon Fury',
   description:
-    'Dragon Fury, Orion Stars, Golden Dragon, Fire Kirin & more — all in one place. Explore our full games list and start playing today.',
+    'Play sweepstakes casino games online with Dragon Fury. Explore platforms, fish games, bonuses, and secure play across the USA.',
 };
 
 export const GAMES_LISTING_SEO = {

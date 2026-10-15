@@ -26,7 +26,7 @@ function formatUpdatedAt(value) {
 function Switch({ id, checked, disabled, onChange, title }) {
   return (
     <label
-      className="pp-switch"
+      className={`pp-switch${checked ? ' pp-switch--on' : ''}`}
       htmlFor={id}
       title={title}
       style={disabled ? { opacity: 0.55, cursor: 'not-allowed' } : undefined}

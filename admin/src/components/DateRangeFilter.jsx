@@ -1,8 +1,12 @@
 /**
  * Reusable date range filter: presets (Today / Yesterday / 7D / 30D) + custom start/end.
  */
-import { PRESETS, getPresetRange, getTodayDateStr, isPresetRange } from '../utils/dateRange'
+import { PRESETS, getPresetRange, getPresetRangeInTimeZone, getTodayDateStr, getCalendarDateInTimeZone } from '../utils/dateRange'
 import './DateRangeFilter.css'
+
+function presetRange(preset, timeZone) {
+  return timeZone ? getPresetRangeInTimeZone(preset, timeZone) : getPresetRange(preset)
+}
 
 export default function DateRangeFilter({
   startDate,
@@ -12,7 +16,9 @@ export default function DateRangeFilter({
   onPresetClick,
   label = 'Date range',
   /** When true, render only inner fields (no outer dashboard-filter-bar). Use inside a parent filter bar. */
-  embedded = false
+  embedded = false,
+  /** IANA timezone. Presets and the latest selectable date use this calendar. */
+  timeZone
 }) {
   const handleStartDateChange = (value) => {
     if (onStartDateChange) onStartDateChange(value)
@@ -29,7 +35,7 @@ export default function DateRangeFilter({
   }
 
   const handlePreset = (preset) => {
-    const range = getPresetRange(preset)
+    const range = presetRange(preset, timeZone)
     if (onPresetClick) {
       onPresetClick(range)
     } else {
@@ -38,11 +44,15 @@ export default function DateRangeFilter({
     }
   }
 
-  const isToday = isPresetRange(startDate, endDate, PRESETS.TODAY)
-  const isYesterday = isPresetRange(startDate, endDate, PRESETS.YESTERDAY)
-  const is7D = isPresetRange(startDate, endDate, PRESETS.LAST_7)
-  const is30D = isPresetRange(startDate, endDate, PRESETS.LAST_30)
-  const maxSelectableDate = getTodayDateStr()
+  const matchesPreset = (preset) => {
+    const range = presetRange(preset, timeZone)
+    return startDate === range.startDate && endDate === range.endDate
+  }
+  const isToday = matchesPreset(PRESETS.TODAY)
+  const isYesterday = matchesPreset(PRESETS.YESTERDAY)
+  const is7D = matchesPreset(PRESETS.LAST_7)
+  const is30D = matchesPreset(PRESETS.LAST_30)
+  const maxSelectableDate = timeZone ? getCalendarDateInTimeZone(timeZone) : getTodayDateStr()
 
   const inner = (
     <>

@@ -4,8 +4,9 @@ import { useAuth } from '../context/AuthContext'
 import { getBonusReportSummary, getBonusReportTransactions, getBonusReportFilterOptions } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import { ROLES } from '../constants/roles'
-import { formatTransactionDateTime, getPresetRange, PRESETS } from '../utils/dateRange'
+import { formatTransactionDateTime, getAdminTimeZone, getPresetRange, PRESETS } from '../utils/dateRange'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './SlotsTransactions.css'
@@ -63,6 +64,7 @@ export default function BonusReport() {
 
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [typeInput, setTypeInput] = useState('all')
   const [usernameInput, setUsernameInput] = useState('')
   const [storeInput, setStoreInput] = useState('')
@@ -72,6 +74,7 @@ export default function BonusReport() {
   const [appliedStore, setAppliedStore] = useState('')
   const [appliedStartDate, setAppliedStartDate] = useState(defaultRange.startDate)
   const [appliedEndDate, setAppliedEndDate] = useState(defaultRange.endDate)
+  const [appliedTimezone, setAppliedTimezone] = useState(() => getAdminTimeZone())
   const [applyKey, setApplyKey] = useState(0)
 
   const [page, setPage] = useState(1)
@@ -106,7 +109,8 @@ export default function BonusReport() {
       page,
       limit: pageSize,
       startDate: appliedStartDate,
-      endDate: appliedEndDate
+      endDate: appliedEndDate,
+      timezone: appliedTimezone
     }
     if (appliedType && appliedType !== 'all') params.type = appliedType
     if (appliedSearch) params.search = appliedSearch
@@ -128,7 +132,7 @@ export default function BonusReport() {
         setTotal(0)
       })
       .finally(() => setLoading(false))
-  }, [page, pageSize, appliedStartDate, appliedEndDate, appliedType, appliedSearch, appliedStore, isMaster, toast, applyKey])
+  }, [page, pageSize, appliedStartDate, appliedEndDate, appliedTimezone, appliedType, appliedSearch, appliedStore, isMaster, toast, applyKey])
 
   useEffect(() => {
     load()
@@ -142,12 +146,15 @@ export default function BonusReport() {
     setAppliedStore(storeInput)
     setAppliedStartDate(startDate)
     setAppliedEndDate(endDate)
+    setAppliedTimezone(timezone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
 
   function clearFilters() {
+    const zone = getAdminTimeZone()
     const range = getPresetRange(PRESETS.LAST_7) || getPresetRange(PRESETS.TODAY)
+    setTimezone(zone)
     setStartDate(range.startDate)
     setEndDate(range.endDate)
     setTypeInput('all')
@@ -158,6 +165,7 @@ export default function BonusReport() {
     setAppliedStore('')
     setAppliedStartDate(range.startDate)
     setAppliedEndDate(range.endDate)
+    setAppliedTimezone(zone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
@@ -250,10 +258,12 @@ export default function BonusReport() {
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
             onPresetClick={handlePreset}
+            timeZone={timezone}
             label="Date range"
             embedded
           />
         </div>
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} />
 
         <div className="stx-filter-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={applyFilters}>
@@ -322,8 +332,8 @@ export default function BonusReport() {
                 ) : (
                   rows.map((row) => (
                     <tr key={row.id}>
-                      <td className="ccw-td-date" title={formatTransactionDateTime(row.createdAt)}>
-                        {formatTransactionDateTime(row.createdAt)}
+                      <td className="ccw-td-date" title={formatTransactionDateTime(row.createdAt, appliedTimezone)}>
+                        {formatTransactionDateTime(row.createdAt, appliedTimezone)}
                       </td>
                       {showStoreColumn && (
                         <td className="ccw-td-store" title={row.storeCode || undefined}>

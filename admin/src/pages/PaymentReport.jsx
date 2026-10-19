@@ -2,14 +2,15 @@ import { useCallback, useEffect, useMemo, useState, Fragment } from 'react'
 import { getPaymentReportSummary, getPaymentReportFilterOptions } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import '../components/DateRangeFilter.css'
 import {
   getPresetRange,
   formatDateRangeLabel,
   PRESETS,
   getAdminTimeZone,
-  getTodayDateStr,
-  getCurrentTimeStr,
+  getCalendarDateInTimeZone,
+  getCurrentTimeStrInTimeZone,
   getDefaultEndTimeForDate,
   compareDateTime,
   clampTimeStr
@@ -221,9 +222,9 @@ function ProviderBlock({ provider, loading }) {
 
 export default function PaymentReport() {
   const toast = useToast()
-  const adminTimeZone = getAdminTimeZone()
-  const todayStr = getTodayDateStr()
-  const currentTimeStr = getCurrentTimeStr()
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
+  const todayStr = getCalendarDateInTimeZone(timezone)
+  const currentTimeStr = getCurrentTimeStrInTimeZone(timezone)
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
   const [startTime, setStartTime] = useState(defaultStartTime)
@@ -257,9 +258,9 @@ export default function PaymentReport() {
     setAppliedStartDate(nextStart)
     setAppliedEndDate(nextEnd)
     setAppliedStartTime(nextStartTime || defaultStartTime)
-    setAppliedEndTime(nextEndTime || getDefaultEndTimeForDate(nextEnd))
+    setAppliedEndTime(nextEndTime || getDefaultEndTimeForDate(nextEnd, timezone))
     setRefreshKey((n) => n + 1)
-  }, [])
+  }, [timezone])
 
   const clampEndTimeForDates = (nextStart, nextEnd, currentStartTime, currentEndTime) => {
     const maxEnd = nextEnd === todayStr ? currentTimeStr : '23:59'
@@ -300,7 +301,7 @@ export default function PaymentReport() {
   }
 
   const handlePresetClick = (range) => {
-    const resetEndTime = getDefaultEndTimeForDate(range.endDate)
+    const resetEndTime = getDefaultEndTimeForDate(range.endDate, timezone)
     setStartDate(range.startDate)
     setEndDate(range.endDate)
     setStartTime(defaultStartTime)
@@ -313,7 +314,7 @@ export default function PaymentReport() {
       toast.error('End date/time must be on or after start date/time')
       return
     }
-    applyRange(startDate, endDate, startTime || defaultStartTime, endTime || getDefaultEndTimeForDate(endDate))
+    applyRange(startDate, endDate, startTime || defaultStartTime, endTime || getDefaultEndTimeForDate(endDate, timezone))
   }
 
   useEffect(() => {
@@ -337,7 +338,8 @@ export default function PaymentReport() {
       startDate: appliedStartDate,
       endDate: appliedEndDate,
       startTime: appliedStartTime || defaultStartTime,
-      endTime: appliedEndTime || getDefaultEndTimeForDate(appliedEndDate)
+      endTime: appliedEndTime || getDefaultEndTimeForDate(appliedEndDate, timezone),
+      timezone
     }
     if (storeFilter && storeFilter !== 'all') params.storeCode = storeFilter
     getPaymentReportSummary(params)
@@ -360,6 +362,7 @@ export default function PaymentReport() {
     appliedEndTime,
     storeFilter,
     refreshKey,
+    timezone,
     toast
   ])
 
@@ -405,7 +408,9 @@ export default function PaymentReport() {
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
             onPresetClick={handlePresetClick}
+            timeZone={timezone}
           />
+          <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="payment-report-timezone" />
         </section>
 
         <section className="pr-filter-section">
@@ -488,7 +493,7 @@ export default function PaymentReport() {
           </p>
         )}
         <p className="pr-tz-note">
-          Dates and times use your local timezone{adminTimeZone && adminTimeZone !== 'local' ? ` (${adminTimeZone})` : ''}.
+          Dates and times use {timezone && timezone !== 'local' ? timezone : 'your local timezone'}.
           {' '}Quick ranges and From/To apply immediately. After changing start or end time, click Apply filter.
         </p>
       </div>

@@ -10,8 +10,9 @@ import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
 import { ROLES } from '../constants/roles'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import '../components/DateRangeFilter.css'
-import { formatTransactionDateTime, getPresetRange, PRESETS } from '../utils/dateRange'
+import { formatTransactionDateTime, getAdminTimeZone, getPresetRange, PRESETS } from '../utils/dateRange'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './BonusScUsageReport.css'
@@ -93,6 +94,7 @@ export default function DailyScReport() {
   const isStoreAdmin = user?.role === ROLES.STORE_ADMIN
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [storeFilter, setStoreFilter] = useState('')
   const [storeOptions, setStoreOptions] = useState([])
   const [data, setData] = useState(null)
@@ -117,7 +119,7 @@ export default function DailyScReport() {
 
   const load = useCallback(() => {
     setLoading(true)
-    const params = { startDate, endDate }
+    const params = { startDate, endDate, timezone }
     if (storeFilter) params.storeCode = storeFilter
     getDailyScReportSummary(params)
       .then((res) => {
@@ -133,7 +135,7 @@ export default function DailyScReport() {
         setData(null)
       })
       .finally(() => setLoading(false))
-  }, [startDate, endDate, storeFilter, toast])
+  }, [startDate, endDate, timezone, storeFilter, toast])
 
   useEffect(() => {
     load()
@@ -152,6 +154,7 @@ export default function DailyScReport() {
     const params = {
       startDate: drill.date,
       endDate: drill.date,
+      timezone,
       metric: drill.metric,
       page: drillPage,
       limit: drillPageSize
@@ -174,7 +177,7 @@ export default function DailyScReport() {
       })
       .finally(() => setDrillLoading(false))
     return undefined
-  }, [drill, drillPage, drillPageSize, storeFilter, toast])
+  }, [drill, drillPage, drillPageSize, timezone, storeFilter, toast])
 
   const days = Array.isArray(data?.days) ? data.days : []
   const totals = data?.totals || {}
@@ -265,7 +268,9 @@ export default function DailyScReport() {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          timeZone={timezone}
         />
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="daily-sc-timezone" />
         {!isStoreAdmin ? (
           <label className="dashboard-filter-field" htmlFor="dsr-store">
             <span className="dashboard-filter-field-label">Store</span>
@@ -518,7 +523,7 @@ export default function DailyScReport() {
                         <tr><td colSpan={10}>No transactions in this number for this day.</td></tr>
                       ) : drillRows.map((row) => (
                         <tr key={row.id}>
-                          <td>{formatTransactionDateTime(row.createdAt)}</td>
+                          <td>{formatTransactionDateTime(row.createdAt, timezone)}</td>
                           <td>
                             <Link className="bsu-user-link" to={`/users/${row.userId}`}>{playerLabel(row)}</Link>
                           </td>

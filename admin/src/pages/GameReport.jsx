@@ -3,8 +3,9 @@ import { useAuth } from '../context/AuthContext'
 import { getGameReport, getStores } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import { ROLES } from '../constants/roles'
-import { getPresetRange, PRESETS } from '../utils/dateRange'
+import { getAdminTimeZone, getPresetRange, PRESETS } from '../utils/dateRange'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './SlotsTransactions.css'
@@ -60,6 +61,7 @@ export default function GameReport() {
 
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [providerInput, setProviderInput] = useState('all')
   const [searchInput, setSearchInput] = useState('')
   const [storeInput, setStoreInput] = useState('')
@@ -70,6 +72,7 @@ export default function GameReport() {
   const [appliedStore, setAppliedStore] = useState('')
   const [appliedStartDate, setAppliedStartDate] = useState(defaultRange.startDate)
   const [appliedEndDate, setAppliedEndDate] = useState(defaultRange.endDate)
+  const [appliedTimezone, setAppliedTimezone] = useState(() => getAdminTimeZone())
   const [applyKey, setApplyKey] = useState(0)
 
   const [page, setPage] = useState(1)
@@ -95,6 +98,7 @@ export default function GameReport() {
     }
     if (appliedStartDate) params.startDate = appliedStartDate
     if (appliedEndDate) params.endDate = appliedEndDate
+    if (appliedTimezone) params.timezone = appliedTimezone
     if (appliedSearch) params.search = appliedSearch
     if (isMaster && appliedStore) params.storeCode = appliedStore
 
@@ -122,6 +126,7 @@ export default function GameReport() {
     appliedStore,
     appliedStartDate,
     appliedEndDate,
+    appliedTimezone,
     applyKey,
     isMaster,
     toast
@@ -183,12 +188,15 @@ export default function GameReport() {
     setAppliedStore(storeInput.trim())
     setAppliedStartDate(startDate)
     setAppliedEndDate(endDate)
+    setAppliedTimezone(timezone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
 
   function clearFilters() {
+    const zone = getAdminTimeZone()
     const range = getPresetRange(PRESETS.LAST_7) || getPresetRange(PRESETS.TODAY)
+    setTimezone(zone)
     setProviderInput('all')
     setSearchInput('')
     setStoreInput('')
@@ -199,6 +207,7 @@ export default function GameReport() {
     setAppliedStore('')
     setAppliedStartDate(range.startDate)
     setAppliedEndDate(range.endDate)
+    setAppliedTimezone(zone)
     setOrderBy('sc_wagered')
     setOrderDirection('DESC')
     setPage(1)
@@ -345,10 +354,12 @@ export default function GameReport() {
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
             onPresetClick={handlePreset}
+            timeZone={timezone}
             label="Date range"
             embedded
           />
         </div>
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="game-report-timezone" />
 
         <div className="stx-filter-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={applyFilters}>

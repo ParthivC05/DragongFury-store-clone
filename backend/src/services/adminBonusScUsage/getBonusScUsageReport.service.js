@@ -21,7 +21,7 @@ function defaultDateRange() {
   };
 }
 
-function resolveDateRange(startDate, endDate) {
+function resolveDateRange(startDate, endDate, timezoneOffset) {
   const normalizedStart =
     startDate && String(startDate).trim() && String(startDate).trim() !== 'undefined'
       ? String(startDate).trim()
@@ -36,8 +36,8 @@ function resolveDateRange(startDate, endDate) {
   return {
     rangeStart,
     rangeEnd,
-    from: toDateRangeStart(rangeStart),
-    to: toDateRangeEnd(rangeEnd)
+    from: toDateRangeStart(rangeStart, timezoneOffset),
+    to: toDateRangeEnd(rangeEnd, timezoneOffset)
   };
 }
 
@@ -309,8 +309,8 @@ function buildStoreRows(userRows) {
 /**
  * Summary + per-store + per-player breakdown for Bonus SC used vs unused.
  */
-async function getBonusScUsageReport({ startDate, endDate, filterStoreCode, page, limit } = {}) {
-  const { rangeStart, rangeEnd, from, to } = resolveDateRange(startDate, endDate);
+async function getBonusScUsageReport({ startDate, endDate, filterStoreCode, page, limit, timezoneOffset } = {}) {
+  const { rangeStart, rangeEnd, from, to } = resolveDateRange(startDate, endDate, timezoneOffset);
   const store = filterStoreCode ? String(filterStoreCode).trim() : undefined;
   const paging = parsePageLimit(page, limit);
 

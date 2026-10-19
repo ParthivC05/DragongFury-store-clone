@@ -58,13 +58,14 @@ async function updateSettings(req, res) {
 async function getReports(req, res) {
   try {
     if (!hasAccess(req)) return sendError(res, 'You do not have access to KYC reports.', 403);
-    const { storeCode, status, search, startDate, endDate, page, limit } = req.query || {};
+    const { storeCode, status, search, startDate, endDate, timezoneOffset, page, limit } = req.query || {};
     const data = await getKycReports({
       storeCode,
       status,
       search,
       startDate,
       endDate,
+      timezoneOffset,
       page,
       limit
     });
@@ -80,13 +81,14 @@ async function getReports(req, res) {
 async function getReportsSummary(req, res) {
   try {
     if (!hasAccess(req)) return sendError(res, 'You do not have access to KYC reports.', 403);
-    const { storeCode, status, search, startDate, endDate } = req.query || {};
+    const { storeCode, status, search, startDate, endDate, timezoneOffset } = req.query || {};
     const data = await getKycReportsSummary({
       storeCode,
       status,
       search,
       startDate,
-      endDate
+      endDate,
+      timezoneOffset
     });
     return sendSuccess(res, data);
   } catch (err) {

@@ -1,0 +1,17 @@
+.report-timezone-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 240px;
+  max-width: 340px;
+  flex: 1 1 240px;
+}
+
+.report-timezone-filter .timezone-select-search,
+.report-timezone-filter .timezone-select select {
+  font-size: 0.875rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  border-color: #cbd5e1;
+  background: #fff;
+}

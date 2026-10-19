@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import { getBonusScUsageSummary, getBonusScUsageFilterOptions } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import '../components/DateRangeFilter.css'
-import { getPresetRange, PRESETS } from '../utils/dateRange'
+import { getAdminTimeZone, getPresetRange, PRESETS } from '../utils/dateRange'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './BonusScUsageReport.css'
@@ -21,6 +22,7 @@ export default function BonusScUsageReport() {
   const toast = useToast()
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [storeFilter, setStoreFilter] = useState('')
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(25)
@@ -37,11 +39,11 @@ export default function BonusScUsageReport() {
 
   useEffect(() => {
     setPage(1)
-  }, [startDate, endDate, storeFilter])
+  }, [startDate, endDate, timezone, storeFilter])
 
   const load = useCallback(() => {
     setLoading(true)
-    const params = { startDate, endDate, page, limit: pageSize }
+    const params = { startDate, endDate, timezone, page, limit: pageSize }
     if (storeFilter) params.storeCode = storeFilter
 
     getBonusScUsageSummary(params)
@@ -51,7 +53,7 @@ export default function BonusScUsageReport() {
         setData(null)
       })
       .finally(() => setLoading(false))
-  }, [startDate, endDate, storeFilter, page, pageSize, toast])
+  }, [startDate, endDate, timezone, storeFilter, page, pageSize, toast])
 
   useEffect(() => {
     load()
@@ -103,7 +105,9 @@ export default function BonusScUsageReport() {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          timeZone={timezone}
         />
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="bonus-sc-timezone" />
         <label className="dashboard-filter-field" htmlFor="bsu-store">
           <span className="dashboard-filter-field-label">Store</span>
           <select

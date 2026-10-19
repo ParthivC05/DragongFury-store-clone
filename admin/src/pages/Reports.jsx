@@ -3,9 +3,10 @@ import { getReportsSummary, getReportsTrend, getReportsBreakdown, getReportsFilt
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { getScopeFromUser } from '../utils/dashboardScope'
-import { getDefaultDateRange, getPresetRange, getDatesInRange, formatDateRangeLabel, PRESETS } from '../utils/dateRange'
+import { getDefaultDateRange, getPresetRange, getDatesInRange, formatDateRangeLabel, PRESETS, getAdminTimeZone } from '../utils/dateRange'
 import { formatCurrency } from '../utils/format'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import TrendLineChart from '../components/charts/TrendLineChart'
 import SimpleBarChart from '../components/charts/SimpleBarChart'
 import MultiSelectDropdown from '../components/MultiSelectDropdown'
@@ -113,11 +114,13 @@ function IconCashApp() {
 }
 
 /** Date/time for table (like user frontend Transactions). */
-function formatTxDate(d) {
+function formatTxDate(d, timeZone) {
   if (!d) return '—'
   const date = new Date(d)
-  const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  const timeStr = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false })
+  if (isNaN(date.getTime())) return '—'
+  const zoneOpts = timeZone && timeZone !== 'local' ? { timeZone } : undefined
+  const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', ...(zoneOpts || {}) })
+  const timeStr = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, ...(zoneOpts || {}) })
   return `${dateStr} ${timeStr}`
 }
 
@@ -199,6 +202,7 @@ export default function Reports() {
 
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [filterTypes, setFilterTypes] = useState([])
   const [filterDistributorCodes, setFilterDistributorCodes] = useState([])
   const [filterStoreCodes, setFilterStoreCodes] = useState([])
@@ -236,17 +240,17 @@ export default function Reports() {
     setLoadingBreakdown(true)
     setLoadingChime(true)
     Promise.all([
-      getReportsSummary({ startDate: start, endDate: end, type: summaryType }).then(setSummary).catch(() => setSummary(null)),
-      getReportsTrend({ startDate: start, endDate: end }).then(setTrend).catch(() => setTrend([])),
-      getReportsBreakdown({ startDate: start, endDate: end }).then(setBreakdown).catch(() => setBreakdown([])),
-      getChimeCashappWithdrawals({ status: 'completed', payoutType: 'chime,cashapp', startDate: start, endDate: end, limit: 500 }).then((res) => setChimeWithdrawals(res.list || [])).catch(() => setChimeWithdrawals([]))
+      getReportsSummary({ startDate: start, endDate: end, timezone, type: summaryType }).then(setSummary).catch(() => setSummary(null)),
+      getReportsTrend({ startDate: start, endDate: end, timezone }).then(setTrend).catch(() => setTrend([])),
+      getReportsBreakdown({ startDate: start, endDate: end, timezone }).then(setBreakdown).catch(() => setBreakdown([])),
+      getChimeCashappWithdrawals({ status: 'completed', payoutType: 'chime,cashapp', startDate: start, endDate: end, timezone, limit: 500 }).then((res) => setChimeWithdrawals(res.list || [])).catch(() => setChimeWithdrawals([]))
     ]).finally(() => {
       setLoadingSummary(false)
       setLoadingTrend(false)
       setLoadingBreakdown(false)
       setLoadingChime(false)
     })
-  }, [applied])
+  }, [applied, timezone])
 
   useEffect(() => {
     fetchReport()
@@ -296,12 +300,13 @@ export default function Reports() {
     const rangeStart = (startDate && String(startDate).trim()) || defaultRange.startDate
     const rangeEnd = (endDate && String(endDate).trim()) || defaultRange.endDate
     const { type: ty, distributorCode: dc, storeCode: sc } = applied
-    const thisRequest = { rangeStart, rangeEnd, page: currentPage, pageSize }
+    const thisRequest = { rangeStart, rangeEnd, page: currentPage, pageSize, timezone }
     transactionsRequestRef.current = thisRequest
     setLoadingTable(true)
     const params = {
       startDate: rangeStart,
       endDate: rangeEnd,
+      timezone,
       type: ty || undefined,
       distributorCode: dc || undefined,
       storeCode: sc || undefined,
@@ -313,16 +318,16 @@ export default function Reports() {
     getReportsTransactions(params)
       .then((data) => {
         const latest = transactionsRequestRef.current
-        if (!latest || latest.rangeStart !== thisRequest.rangeStart || latest.rangeEnd !== thisRequest.rangeEnd || latest.page !== thisRequest.page || latest.pageSize !== thisRequest.pageSize) return
+        if (!latest || latest.rangeStart !== thisRequest.rangeStart || latest.rangeEnd !== thisRequest.rangeEnd || latest.page !== thisRequest.page || latest.pageSize !== thisRequest.pageSize || latest.timezone !== thisRequest.timezone) return
         setTransactions({ rows: data.rows || [], total: data.total || 0, page: data.page || 1, limit: data.limit || pageSize, totalPages: data.totalPages || 0 })
       })
       .catch(() => {
         const latest = transactionsRequestRef.current
-        if (!latest || latest.rangeStart !== thisRequest.rangeStart || latest.rangeEnd !== thisRequest.rangeEnd || latest.page !== thisRequest.page || latest.pageSize !== thisRequest.pageSize) return
+        if (!latest || latest.rangeStart !== thisRequest.rangeStart || latest.rangeEnd !== thisRequest.rangeEnd || latest.page !== thisRequest.page || latest.pageSize !== thisRequest.pageSize || latest.timezone !== thisRequest.timezone) return
         setTransactions({ rows: [], total: 0, page: 1, limit: pageSize, totalPages: 0 })
       })
       .finally(() => setLoadingTable(false))
-  }, [startDate, endDate, applied, currentPage, pageSize])
+  }, [startDate, endDate, applied, currentPage, pageSize, timezone])
 
   const handlePreset = (range) => {
     if (!range || range.startDate == null || range.endDate == null) return
@@ -388,6 +393,7 @@ export default function Reports() {
         const data = await getReportsTransactions({
           startDate: s,
           endDate: e,
+          timezone,
           type: ty || undefined,
           distributorCode: dc || undefined,
           storeCode: sc || undefined,
@@ -470,8 +476,10 @@ export default function Reports() {
               onStartDateChange={setStartDate}
               onEndDateChange={setEndDate}
               onPresetClick={handlePreset}
+              timeZone={timezone}
               label=""
             />
+            <ReportTimezoneFilter value={timezone} onChange={setTimezone} />
             <div className="reports-export-dropdown" ref={exportMenuRef}>
               <button type="button" className="reports-export-btn" onClick={() => setExportMenuAnchor((a) => (a === 'header' ? null : 'header'))} disabled={exporting} aria-expanded={exportMenuAnchor === 'header'} aria-haspopup="menu">
                 {exporting ? 'Exporting…' : 'Export'}
@@ -664,7 +672,7 @@ export default function Reports() {
                 <tbody>
                   {transactions.rows.map((tx) => (
                     <tr key={tx.id}>
-                      <td className="reports-td-date">{formatTxDate(tx.createdAt)}</td>
+                      <td className="reports-td-date">{formatTxDate(tx.createdAt, timezone)}</td>
                       <td className="reports-td-username">{tx.username ?? tx.userPhone ?? tx.userId ?? '—'}</td>
                       <td>{typeLabel(tx.type)}</td>
                       <td className="reports-td-desc">{tx.description || '—'}</td>
@@ -781,7 +789,7 @@ export default function Reports() {
               ) : (
                 chimeWithdrawals.filter((cw) => ['chime', 'cashapp'].includes(String(cw.payoutType || '').toLowerCase())).map((cw) => (
                   <tr key={cw.id}>
-                    <td className="reports-td-date">{formatTxDate(cw.approvedAt || cw.updatedAt)}</td>
+                    <td className="reports-td-date">{formatTxDate(cw.approvedAt || cw.updatedAt, timezone)}</td>
                     <td>
                       <div style={{ fontWeight: 500 }}>{cw.user?.username || cw.user?.firstName || '—'}</div>
                       <div style={{ fontSize: '0.75rem', color: '#64748b' }}>ID: {cw.userId}</div>

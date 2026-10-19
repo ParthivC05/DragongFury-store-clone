@@ -32,7 +32,7 @@ function parsePage(page) {
   return Math.floor(n);
 }
 
-function resolveDateRange(startDate, endDate) {
+function resolveDateRange(startDate, endDate, timezoneOffset) {
   const normalizedStart =
     startDate && String(startDate).trim() && String(startDate).trim() !== 'undefined'
       ? String(startDate).trim()
@@ -47,8 +47,8 @@ function resolveDateRange(startDate, endDate) {
   return {
     rangeStart: normalizedStart,
     rangeEnd: normalizedEnd,
-    from: normalizedStart ? toDateRangeStart(normalizedStart) : null,
-    to: normalizedEnd ? toDateRangeEnd(normalizedEnd) : null
+    from: normalizedStart ? toDateRangeStart(normalizedStart, timezoneOffset) : null,
+    to: normalizedEnd ? toDateRangeEnd(normalizedEnd, timezoneOffset) : null
   };
 }
 
@@ -73,7 +73,7 @@ function resolveAllowedStoreCodes(filterStoreCode) {
   return null;
 }
 
-function buildWhere({ storeCode, status, search, startDate, endDate }) {
+function buildWhere({ storeCode, status, search, startDate, endDate, timezoneOffset }) {
   const where = { role: ROLES.USER };
   const and = [];
   const allowedStores = resolveAllowedStoreCodes(storeCode);
@@ -127,7 +127,7 @@ function buildWhere({ storeCode, status, search, startDate, endDate }) {
     and.push({ [Op.or]: searchOr });
   }
 
-  const { from, to } = resolveDateRange(startDate, endDate);
+  const { from, to } = resolveDateRange(startDate, endDate, timezoneOffset);
   if (from || to) {
     const range = {};
     if (from) range[Op.gte] = from;
@@ -169,10 +169,11 @@ async function getKycReports({
   search,
   startDate,
   endDate,
+  timezoneOffset,
   page,
   limit
 } = {}) {
-  const where = buildWhere({ storeCode, status, search, startDate, endDate });
+  const where = buildWhere({ storeCode, status, search, startDate, endDate, timezoneOffset });
   const pageNum = parsePage(page);
   const pageLimit = parseLimit(limit);
   const offset = (pageNum - 1) * pageLimit;
@@ -215,16 +216,17 @@ async function getKycReports({
 /**
  * Status counts for the same filter set (ignores status filter for breakdown).
  */
-async function getKycReportsSummary({ storeCode, search, startDate, endDate, status } = {}) {
+async function getKycReportsSummary({ storeCode, search, startDate, endDate, timezoneOffset, status } = {}) {
   // Summary respects store/search/date; if a specific status is selected, still show full breakdown
   // but totalPlayers matches the list filter.
-  const listWhere = buildWhere({ storeCode, status, search, startDate, endDate });
+  const listWhere = buildWhere({ storeCode, status, search, startDate, endDate, timezoneOffset });
   const baseWhere = buildWhere({
     storeCode,
     status: 'all',
     search,
     startDate,
-    endDate
+    endDate,
+    timezoneOffset
   });
 
   const [totalPlayers, grouped] = await Promise.all([

@@ -490,7 +490,7 @@ export function getBonusReportFilterOptions() {
 /** Bonus SC used vs unused (master/technical staff). Still left + already used + given. */
 export function getBonusScUsageSummary(params = {}) {
   const clean = Object.fromEntries(
-    Object.entries(params).filter(([, v]) => v != null && v !== '' && v !== 'all')
+    Object.entries(withDateRangeTimezone(params)).filter(([, v]) => v != null && v !== '' && v !== 'all')
   )
   const q = new URLSearchParams(clean).toString()
   return request(`${ADMIN}/bonus-sc-usage/summary${q ? `?${q}` : ''}`)
@@ -1563,7 +1563,7 @@ export function updatePhoneVerificationSettings(body) {
 /** Didit KYC player reports (`/api/admin/didit-kyc/reports`). Master admin. */
 export function getDiditKycReports(params = {}) {
   const q = new URLSearchParams()
-  Object.entries(params).forEach(([k, v]) => {
+  Object.entries(withDateRangeTimezone(params)).forEach(([k, v]) => {
     if (v != null && v !== '') q.set(k, v)
   })
   const qs = q.toString()
@@ -1572,7 +1572,7 @@ export function getDiditKycReports(params = {}) {
 
 export function getDiditKycReportsSummary(params = {}) {
   const q = new URLSearchParams()
-  Object.entries(params).forEach(([k, v]) => {
+  Object.entries(withDateRangeTimezone(params)).forEach(([k, v]) => {
     if (v != null && v !== '') q.set(k, v)
   })
   const qs = q.toString()

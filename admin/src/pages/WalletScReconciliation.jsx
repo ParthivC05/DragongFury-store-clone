@@ -9,8 +9,9 @@ import { useToast } from '../context/ToastContext'
 import { useAuth } from '../context/AuthContext'
 import { ROLES } from '../constants/roles'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import '../components/DateRangeFilter.css'
-import { formatTransactionDateTime, formatDateRangeLabel, getPresetRange, PRESETS } from '../utils/dateRange'
+import { formatTransactionDateTime, formatDateRangeLabel, getPresetRange, getPresetRangeInTimeZone, getCalendarDateInTimeZone, addCalendarDays, getAdminTimeZone, PRESETS } from '../utils/dateRange'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './BonusScUsageReport.css'
@@ -19,26 +20,18 @@ import './WalletScReconciliation.css'
 const defaultRange = getPresetRange(PRESETS.TODAY)
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
 
-function toLocalDateStr(d) {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
+function thisWeekRange(timeZone) {
+  const endDate = getCalendarDateInTimeZone(timeZone)
+  const [y, m, d] = endDate.split('-').map(Number)
+  const weekday = new Date(Date.UTC(y, m - 1, d)).getUTCDay()
+  const mondayOffset = weekday === 0 ? 6 : weekday - 1
+  return { startDate: addCalendarDays(endDate, -mondayOffset), endDate }
 }
 
-function thisWeekRange() {
-  const end = new Date()
-  const start = new Date(end)
-  const day = start.getDay()
-  const mondayOffset = day === 0 ? 6 : day - 1
-  start.setDate(start.getDate() - mondayOffset)
-  return { startDate: toLocalDateStr(start), endDate: toLocalDateStr(end) }
-}
-
-function thisMonthRange() {
-  const end = new Date()
-  const start = new Date(end.getFullYear(), end.getMonth(), 1)
-  return { startDate: toLocalDateStr(start), endDate: toLocalDateStr(end) }
+function thisMonthRange(timeZone) {
+  const endDate = getCalendarDateInTimeZone(timeZone)
+  const [y, m] = endDate.split('-')
+  return { startDate: `${y}-${m}-01`, endDate }
 }
 
 function formatSc(amount) {
@@ -111,6 +104,7 @@ export default function WalletScReconciliation() {
   const isStoreAdmin = user?.role === ROLES.STORE_ADMIN
   const [startDate, setStartDate] = useState(defaultRange.startDate)
   const [endDate, setEndDate] = useState(defaultRange.endDate)
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [storeFilter, setStoreFilter] = useState('')
   const [playerQuery, setPlayerQuery] = useState('')
   const [appliedPlayer, setAppliedPlayer] = useState('')
@@ -127,8 +121,9 @@ export default function WalletScReconciliation() {
   const [drillLoading, setDrillLoading] = useState(false)
   const [drilldown, setDrilldown] = useState(null)
 
-  const week = useMemo(() => thisWeekRange(), [])
-  const month = useMemo(() => thisMonthRange(), [])
+  const week = useMemo(() => thisWeekRange(timezone), [timezone])
+  const month = useMemo(() => thisMonthRange(timezone), [timezone])
+  const todayInZone = getCalendarDateInTimeZone(timezone)
   const isWeek = startDate === week.startDate && endDate === week.endDate
   const isMonth = startDate === month.startDate && endDate === month.endDate
 
@@ -141,7 +136,7 @@ export default function WalletScReconciliation() {
 
   const load = useCallback(() => {
     setLoading(true)
-    const params = { startDate, endDate }
+    const params = { startDate, endDate, timezone }
     if (storeFilter) params.storeCode = storeFilter
     if (appliedPlayer) {
       if (/^\d+$/.test(appliedPlayer)) params.userId = appliedPlayer
@@ -154,7 +149,7 @@ export default function WalletScReconciliation() {
         setData(null)
       })
       .finally(() => setLoading(false))
-  }, [startDate, endDate, storeFilter, appliedPlayer, toast])
+  }, [startDate, endDate, timezone, storeFilter, appliedPlayer, toast])
 
   useEffect(() => {
     load()
@@ -173,6 +168,7 @@ export default function WalletScReconciliation() {
     const params = {
       startDate,
       endDate,
+      timezone,
       metric: drill.metric,
       page: drillPage,
       limit: drillPageSize
@@ -198,7 +194,7 @@ export default function WalletScReconciliation() {
       })
       .finally(() => setDrillLoading(false))
     return undefined
-  }, [drill, drillPage, drillPageSize, startDate, endDate, storeFilter, appliedPlayer, toast])
+  }, [drill, drillPage, drillPageSize, startDate, endDate, timezone, storeFilter, appliedPlayer, toast])
 
   const psc = data?.psc || {}
   const bonus = data?.bonus || {}
@@ -227,7 +223,7 @@ export default function WalletScReconciliation() {
         <div className="wsc-period">
           <span className="dashboard-filter-field-label">Quick dates</span>
           <div className="wsc-period-btns">
-            <button type="button" className={`wsc-chip ${startDate === endDate && startDate === defaultRange.startDate ? 'is-on' : ''}`} onClick={() => { const r = getPresetRange(PRESETS.TODAY); setStartDate(r.startDate); setEndDate(r.endDate) }}>Day</button>
+            <button type="button" className={`wsc-chip ${startDate === endDate && startDate === todayInZone ? 'is-on' : ''}`} onClick={() => { const r = getPresetRangeInTimeZone(PRESETS.TODAY, timezone); setStartDate(r.startDate); setEndDate(r.endDate) }}>Day</button>
             <button type="button" className={`wsc-chip ${isWeek ? 'is-on' : ''}`} onClick={() => { setStartDate(week.startDate); setEndDate(week.endDate) }}>Week</button>
             <button type="button" className={`wsc-chip ${isMonth ? 'is-on' : ''}`} onClick={() => { setStartDate(month.startDate); setEndDate(month.endDate) }}>Month</button>
           </div>
@@ -240,7 +236,9 @@ export default function WalletScReconciliation() {
           endDate={endDate}
           onStartDateChange={setStartDate}
           onEndDateChange={setEndDate}
+          timeZone={timezone}
         />
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="wallet-sc-timezone" />
         {!isStoreAdmin ? (
         <label className="dashboard-filter-field" htmlFor="wsc-store">
           <span className="dashboard-filter-field-label">Store</span>
@@ -497,7 +495,7 @@ export default function WalletScReconciliation() {
                         <tr><td colSpan={11}>No coins in this number for these dates.</td></tr>
                       ) : drillRows.map((row) => (
                         <tr key={row.id}>
-                          <td>{formatTransactionDateTime(row.createdAt)}</td>
+                          <td>{formatTransactionDateTime(row.createdAt, timezone)}</td>
                           <td>
                             <Link className="bsu-user-link" to={`/users/${row.userId}`}>{playerLabel(row)}</Link>
                           </td>

@@ -24,6 +24,134 @@ function toLocalDateStr(d) {
 }
 
 /**
+ * YYYY-MM-DD calendar date in an IANA timezone.
+ * Falls back to the browser calendar date when no zone is given.
+ * @param {string} [timeZone]
+ * @param {Date} [at]
+ * @returns {string}
+ */
+export function getCalendarDateInTimeZone(timeZone, at = new Date()) {
+  const date = at instanceof Date ? at : new Date(at)
+  if (!timeZone || timeZone === 'local') return toLocalDateStr(isNaN(date.getTime()) ? new Date() : date)
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).formatToParts(date)
+    const map = {}
+    for (const part of parts) {
+      if (part.type !== 'literal') map[part.type] = part.value
+    }
+    return `${map.year}-${map.month}-${map.day}`
+  } catch {
+    return toLocalDateStr(new Date())
+  }
+}
+
+/**
+ * Shift a YYYY-MM-DD calendar date by a number of days.
+ * @param {string} dateStr
+ * @param {number} days
+ * @returns {string}
+ */
+export function addCalendarDays(dateStr, days) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateStr || ''))
+  if (!match) return dateStr
+  const dt = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])))
+  dt.setUTCDate(dt.getUTCDate() + days)
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}-${String(dt.getUTCDate()).padStart(2, '0')}`
+}
+
+/**
+ * Current HH:mm in an IANA timezone.
+ * @param {string} [timeZone]
+ * @returns {string}
+ */
+export function getCurrentTimeStrInTimeZone(timeZone) {
+  if (!timeZone || timeZone === 'local') return getCurrentTimeStr()
+  try {
+    const parts = new Intl.DateTimeFormat('en-GB', {
+      timeZone,
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23'
+    }).formatToParts(new Date())
+    const map = {}
+    for (const part of parts) {
+      if (part.type !== 'literal') map[part.type] = part.value
+    }
+    const hour = map.hour === '24' ? '00' : map.hour
+    return `${hour}:${map.minute}`
+  } catch {
+    return getCurrentTimeStr()
+  }
+}
+
+/**
+ * Minutes to add to a wall-clock time in `timeZone` to get UTC.
+ * Same sign as Date.getTimezoneOffset() (for example IST is -330).
+ * @param {string} timeZone
+ * @param {Date} [at]
+ * @returns {number}
+ */
+export function timezoneOffsetForZone(timeZone, at = new Date()) {
+  if (!timeZone || timeZone === 'local') {
+    const date = at instanceof Date ? at : new Date(at)
+    return isNaN(date.getTime()) ? new Date().getTimezoneOffset() : date.getTimezoneOffset()
+  }
+  try {
+    const date = at instanceof Date ? at : new Date(at)
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hourCycle: 'h23',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).formatToParts(date)
+    const map = {}
+    for (const part of parts) {
+      if (part.type !== 'literal') map[part.type] = part.value
+    }
+    let hour = Number(map.hour)
+    if (hour === 24) hour = 0
+    const asUtc = Date.UTC(
+      Number(map.year),
+      Number(map.month) - 1,
+      Number(map.day),
+      hour,
+      Number(map.minute),
+      Number(map.second)
+    )
+    return Math.round((date.getTime() - asUtc) / 60000)
+  } catch {
+    return new Date().getTimezoneOffset()
+  }
+}
+
+/**
+ * Preset range using the calendar of an IANA timezone.
+ * @param {string} preset
+ * @param {string} timeZone
+ * @returns {{ startDate: string, endDate: string }}
+ */
+export function getPresetRangeInTimeZone(preset, timeZone) {
+  const today = getCalendarDateInTimeZone(timeZone)
+  if (preset === PRESETS.TODAY) return { startDate: today, endDate: today }
+  if (preset === PRESETS.YESTERDAY) {
+    const yesterday = addCalendarDays(today, -1)
+    return { startDate: yesterday, endDate: yesterday }
+  }
+  if (preset === PRESETS.LAST_7) return { startDate: addCalendarDays(today, -6), endDate: today }
+  if (preset === PRESETS.LAST_30) return { startDate: addCalendarDays(today, -29), endDate: today }
+  return { startDate: addCalendarDays(today, -6), endDate: today }
+}
+
+/**
  * Today's date as YYYY-MM-DD in the user's local timezone (not UTC).
  * @returns {string}
  */
@@ -63,9 +191,11 @@ export function getCurrentTimeStrUtc() {
  * @param {string} dateStr - YYYY-MM-DD
  * @returns {string}
  */
-export function getDefaultEndTimeForDate(dateStr) {
+export function getDefaultEndTimeForDate(dateStr, timeZone) {
   if (!dateStr) return '23:59'
-  return dateStr === getTodayDateStr() ? getCurrentTimeStr() : '23:59'
+  const today = timeZone ? getCalendarDateInTimeZone(timeZone) : getTodayDateStr()
+  const now = timeZone ? getCurrentTimeStrInTimeZone(timeZone) : getCurrentTimeStr()
+  return dateStr === today ? now : '23:59'
 }
 
 /**
@@ -263,8 +393,18 @@ export function formatDateForAxis(dateStr) {
  * @returns {Record<string, unknown>}
  */
 export function withDateRangeTimezone(params = {}) {
-  if (!params.startDate && !params.endDate) return params
-  return { ...params, timezoneOffset: new Date().getTimezoneOffset() }
+  const hasRange = params.startDate || params.endDate || params.dateFrom || params.dateTo
+  if (!hasRange) return params
+  const { timezone, ...rest } = params
+  let at = new Date()
+  const dateStr = params.startDate || params.dateFrom || params.endDate || params.dateTo
+  if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(String(dateStr))) {
+    at = new Date(`${dateStr}T12:00:00Z`)
+  }
+  const timezoneOffset = timezone
+    ? timezoneOffsetForZone(timezone, at)
+    : new Date().getTimezoneOffset()
+  return { ...rest, timezoneOffset }
 }
 
 /**
@@ -284,12 +424,12 @@ export function getAdminTimeZone() {
  * @param {string|Date|number|null|undefined} value
  * @returns {string}
  */
-export function formatTransactionDateTime(value) {
+export function formatTransactionDateTime(value, timeZone) {
   if (value == null || value === '') return '—'
   const date = value instanceof Date ? value : new Date(value)
   if (isNaN(date.getTime())) return '—'
-  const timeZone = getAdminTimeZone()
-  const opts = timeZone && timeZone !== 'local' ? { timeZone } : undefined
+  const zone = timeZone || getAdminTimeZone()
+  const opts = zone && zone !== 'local' ? { timeZone: zone } : undefined
   const dateStr = date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

@@ -23,13 +23,14 @@ async function getSummary(req, res) {
     if (!hasBonusScUsageAccess(req)) {
       return sendError(res, 'You do not have access to the Bonus SC used & left report.', 403);
     }
-    const { startDate, endDate, storeCode, page, limit } = req.query || {};
+    const { startDate, endDate, storeCode, page, limit, timezoneOffset } = req.query || {};
     const data = await getBonusScUsageReport({
       startDate,
       endDate,
       filterStoreCode: storeCode ? String(storeCode).trim() : undefined,
       page,
-      limit
+      limit,
+      timezoneOffset
     });
     return sendSuccess(res, data);
   } catch (err) {

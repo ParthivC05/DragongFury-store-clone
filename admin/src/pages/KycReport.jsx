@@ -6,8 +6,9 @@ import {
   getDiditKycReportsFilterOptions
 } from '../api/admin'
 import { useToast } from '../context/ToastContext'
-import { formatTransactionDateTime, getPresetRange, PRESETS } from '../utils/dateRange'
+import { formatTransactionDateTime, getAdminTimeZone, getPresetRange, PRESETS } from '../utils/dateRange'
 import DateRangeFilter from '../components/DateRangeFilter'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './SlotsTransactions.css'
@@ -44,6 +45,7 @@ export default function KycReport() {
 
   const [startDate, setStartDate] = useState(defaultReportRange?.startDate || '')
   const [endDate, setEndDate] = useState(defaultReportRange?.endDate || '')
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
   const [statusInput, setStatusInput] = useState('all')
   const [playerInput, setPlayerInput] = useState('')
   const [storeInput, setStoreInput] = useState('')
@@ -53,6 +55,7 @@ export default function KycReport() {
   const [appliedStore, setAppliedStore] = useState('')
   const [appliedStartDate, setAppliedStartDate] = useState(defaultReportRange?.startDate || '')
   const [appliedEndDate, setAppliedEndDate] = useState(defaultReportRange?.endDate || '')
+  const [appliedTimezone, setAppliedTimezone] = useState(() => getAdminTimeZone())
   const [applyKey, setApplyKey] = useState(0)
 
   const [page, setPage] = useState(1)
@@ -87,7 +90,8 @@ export default function KycReport() {
       page,
       limit: pageSize,
       startDate: appliedStartDate,
-      endDate: appliedEndDate
+      endDate: appliedEndDate,
+      timezone: appliedTimezone
     }
     if (appliedStatus && appliedStatus !== 'all') params.status = appliedStatus
     if (appliedSearch) params.search = appliedSearch
@@ -114,6 +118,7 @@ export default function KycReport() {
     pageSize,
     appliedStartDate,
     appliedEndDate,
+    appliedTimezone,
     appliedStatus,
     appliedSearch,
     appliedStore,
@@ -131,13 +136,16 @@ export default function KycReport() {
     setAppliedStore(storeInput)
     setAppliedStartDate(startDate)
     setAppliedEndDate(endDate)
+    setAppliedTimezone(timezone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
 
   function clearReportFilters() {
+    const zone = getAdminTimeZone()
     const range =
       getPresetRange(PRESETS.LAST_30) || getPresetRange(PRESETS.LAST_7) || getPresetRange(PRESETS.TODAY)
+    setTimezone(zone)
     setStartDate(range?.startDate || '')
     setEndDate(range?.endDate || '')
     setStatusInput('all')
@@ -148,6 +156,7 @@ export default function KycReport() {
     setAppliedStore('')
     setAppliedStartDate(range?.startDate || '')
     setAppliedEndDate(range?.endDate || '')
+    setAppliedTimezone(zone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
@@ -242,10 +251,12 @@ export default function KycReport() {
             onStartDateChange={setStartDate}
             onEndDateChange={setEndDate}
             onPresetClick={handlePreset}
+            timeZone={timezone}
             label="Updated date"
             embedded
           />
         </div>
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="kyc-report-timezone" />
 
         <div className="stx-filter-actions">
           <button type="button" className="admin-btn admin-btn-secondary" onClick={applyReportFilters}>
@@ -324,9 +335,9 @@ export default function KycReport() {
                 ) : (
                   reportRows.map((row) => (
                     <tr key={row.userId}>
-                      <td className="ccw-td-date" title={formatTransactionDateTime(row.kycUpdatedAt)}>
+                      <td className="ccw-td-date" title={formatTransactionDateTime(row.kycUpdatedAt, appliedTimezone)}>
                         {row.kycUpdatedAt ? (
-                          formatTransactionDateTime(row.kycUpdatedAt)
+                          formatTransactionDateTime(row.kycUpdatedAt, appliedTimezone)
                         ) : (
                           <span className="ccw-dash">—</span>
                         )}
@@ -349,7 +360,7 @@ export default function KycReport() {
                       </td>
                       <td className="ccw-td-date">
                         {row.kycVerifiedAt ? (
-                          formatTransactionDateTime(row.kycVerifiedAt)
+                          formatTransactionDateTime(row.kycVerifiedAt, appliedTimezone)
                         ) : (
                           <span className="ccw-dash">—</span>
                         )}

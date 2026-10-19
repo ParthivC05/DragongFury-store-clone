@@ -5,7 +5,8 @@ import { getReferralTransactions, getStores } from '../api/admin'
 import { useToast } from '../context/ToastContext'
 import { ROLES } from '../constants/roles'
 import { canViewPlayerEmail, canShowPlayerEmailColumn } from '../utils/playerEmailVisibility'
-import { formatTransactionDateTime } from '../utils/dateRange'
+import { formatTransactionDateTime, getAdminTimeZone } from '../utils/dateRange'
+import ReportTimezoneFilter from '../components/ReportTimezoneFilter'
 import './ChimeCashappWithdrawals.css'
 import './Deposits.css'
 import './ReferralTransactions.css'
@@ -22,8 +23,8 @@ const SIMPLE_FILTERS = [
   { value: 'inviter_blocked', label: 'Inviter blocked by weekly limit' }
 ]
 
-function formatDate(d) {
-  return formatTransactionDateTime(d)
+function formatDate(d, timeZone) {
+  return formatTransactionDateTime(d, timeZone)
 }
 
 function UserCell({ user, label, showPlayerEmail }) {
@@ -98,12 +99,14 @@ export default function ReferralTransactions() {
   const [searchInput, setSearchInput] = useState('')
   const [startDateInput, setStartDateInput] = useState('')
   const [endDateInput, setEndDateInput] = useState('')
+  const [timezone, setTimezone] = useState(() => getAdminTimeZone())
 
   const [appliedStore, setAppliedStore] = useState('')
   const [appliedFilter, setAppliedFilter] = useState('')
   const [appliedSearch, setAppliedSearch] = useState('')
   const [appliedStartDate, setAppliedStartDate] = useState('')
   const [appliedEndDate, setAppliedEndDate] = useState('')
+  const [appliedTimezone, setAppliedTimezone] = useState(() => getAdminTimeZone())
   const [applyKey, setApplyKey] = useState(0)
 
   const isMaster = user?.role === ROLES.MASTER_ADMIN
@@ -119,6 +122,7 @@ export default function ReferralTransactions() {
     if (appliedSearch) params.search = appliedSearch
     if (appliedStartDate) params.startDate = appliedStartDate
     if (appliedEndDate) params.endDate = appliedEndDate
+    if ((appliedStartDate || appliedEndDate) && appliedTimezone) params.timezone = appliedTimezone
     getReferralTransactions(params)
       .then((res) => {
         setList(res.list || [])
@@ -138,6 +142,7 @@ export default function ReferralTransactions() {
     appliedSearch,
     appliedStartDate,
     appliedEndDate,
+    appliedTimezone,
     applyKey,
     isMaster,
     toast
@@ -187,11 +192,14 @@ export default function ReferralTransactions() {
     setAppliedSearch(searchInput.trim())
     setAppliedStartDate(startDateInput)
     setAppliedEndDate(endDateInput)
+    setAppliedTimezone(timezone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
 
   function clearFilters() {
+    const zone = getAdminTimeZone()
+    setTimezone(zone)
     setStoreInput('')
     setFilterInput('')
     setSearchInput('')
@@ -202,6 +210,7 @@ export default function ReferralTransactions() {
     setAppliedSearch('')
     setAppliedStartDate('')
     setAppliedEndDate('')
+    setAppliedTimezone(zone)
     setPage(1)
     setApplyKey((k) => k + 1)
   }
@@ -290,6 +299,7 @@ export default function ReferralTransactions() {
           }}
         />
 
+        <ReportTimezoneFilter value={timezone} onChange={setTimezone} id="referral-report-timezone" />
         <div className="dep-date-range">
           <div className="dep-date-field">
             <label className="ccw-filter-label" htmlFor="rt-date-start">
@@ -354,8 +364,8 @@ export default function ReferralTransactions() {
                 ) : (
                   list.map((r) => (
                     <tr key={r.id}>
-                      <td className="ccw-td-date" title={formatDate(r.createdAt)}>
-                        {formatDate(r.createdAt)}
+                      <td className="ccw-td-date" title={formatDate(r.createdAt, appliedTimezone)}>
+                        {formatDate(r.createdAt, appliedTimezone)}
                       </td>
                       {showStoreColumn && (
                         <td className="ccw-td-store" title={r.storeCode || undefined}>

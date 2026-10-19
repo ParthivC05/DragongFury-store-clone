@@ -109,7 +109,15 @@ if (site?.faviconUrl) {
     favicon.rel = 'icon'
     document.head.appendChild(favicon)
   }
-  favicon.href = site.faviconUrl
+  const href = String(site.faviconUrl)
+  favicon.href = href
+  if (href.endsWith('.png')) favicon.type = 'image/png'
+  else if (href.endsWith('.ico')) favicon.type = 'image/x-icon'
+  else if (href.endsWith('.svg')) favicon.type = 'image/svg+xml'
+  else if (href.endsWith('.webp')) favicon.type = 'image/webp'
+  if (href.includes('192')) favicon.sizes = '192x192'
+  else if (href.includes('48')) favicon.sizes = '48x48'
+  else favicon.removeAttribute('sizes')
 }
 
 startClubClickSounds()

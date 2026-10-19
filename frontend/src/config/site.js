@@ -37,10 +37,10 @@ export const site = {
     typeof import.meta !== 'undefined' && import.meta.env?.VITE_LOADER_LOGO_URL
       ? String(import.meta.env.VITE_LOADER_LOGO_URL).trim()
       : '/logo.webp',
-  /** Browser tab icon (favicon) */
+  /** Browser tab icon (favicon). Square PNG — Google ignores the wide wordmark. */
   faviconUrl: typeof import.meta !== 'undefined' && import.meta.env?.VITE_FAVICON_URL
     ? String(import.meta.env.VITE_FAVICON_URL).trim()
-    : '/logo.webp',
+    : '/favicon-192.png',
   /** Current year for copyright */
   year: new Date().getFullYear(),
   /** Copyright text */
